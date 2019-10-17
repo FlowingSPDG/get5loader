@@ -46,7 +46,7 @@ func SendRCON(host string, pass string, cmd string) (string, error) {
 }
 
 func CheckServerConnection(srv GameServerData) bool {
-	_, err := SendRCON(srv.IPstring, srv.RconPassword, "status")
+	_, err := SendRCON(srv.ip_string, srv.rcon_password, "status")
 	if err != nil {
 		return false
 	}
@@ -60,7 +60,7 @@ type GET5AvailableDatas struct {
 }
 
 func CheckServerAvailability(srv GameServerData) (bool, string) { // available or error string
-	resp, err := SendRCON(srv.IPstring, srv.RconPassword, "get5_web_avaliable")
+	resp, err := SendRCON(srv.ip_string, srv.rcon_password, "get5_web_avaliable")
 	if err != nil {
 		return false, "Connect fails"
 	}

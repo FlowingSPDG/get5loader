@@ -1,0 +1,13 @@
+[sql]
+host = "YOURMYSQLSERVER"
+user = ""
+pass = ""
+port = 3306
+database = ""
+ 
+[Steam]
+APIKey = "YOURSTEAMAPIKEY"
+
+[GET5]
+HOST = "localhost:8080"
+DefaultPage = "/matches"
