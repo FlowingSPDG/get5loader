@@ -112,17 +112,13 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if _, ok := session.Values["Name"]; ok {
-		if ok {
-			name, _ = session.Values["Name"].(string)
-			loggedin = true
-		}
+		name, _ = session.Values["Name"].(string)
+		loggedin = true
 	}
 
 	if _, ok := session.Values["UserID"]; ok {
-		if ok {
-			userid, _ = session.Values["UserID"].(string)
-			loggedin = true
-		}
+		userid, _ = session.Values["UserID"].(string)
+		loggedin = true
 	}
 
 	m.UserID = userid
