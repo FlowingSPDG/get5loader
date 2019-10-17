@@ -1,3 +1,0 @@
-[submodule "steam_go"]
-	path = steam_go
-	url = https://github.com/solovev/steam_go.git
