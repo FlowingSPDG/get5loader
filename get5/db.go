@@ -84,6 +84,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		session, _ := SessionStore.Get(r, SessionData)
 		session.Options = &sessions.Options{MaxAge: 0}
 		// Set some session values.
+		session.Values["Loggedin"] = true
 		session.Values["UserID"] = user.SteamId
 		session.Values["Name"] = user.PersonaName
 		// Save it before we write to the response/return from the handler.
@@ -114,9 +115,17 @@ func LogoutHandler(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/", 302)
 }
 
-func MySQLGetUserData(host string, user string, pass string, db string, port int) []SQLUserData {
-	//mysqlへ接続。ドライバ名（mysql）と、ユーザー名・データソース(ここではgosample)を指定。
-	sqloption := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s", user, pass, host, port, db)
+type MySQLConf struct {
+	host  string
+	user  string
+	pass  string
+	db    string
+	port  int
+	limit int
+}
+
+func MySQLGetUserData(conf MySQLConf) []SQLUserData {
+	sqloption := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s", conf.user, conf.pass, conf.host, conf.port, conf.db)
 	fmt.Println(sqloption)
 
 	s, err := sql.Open("mysql", sqloption)
@@ -138,7 +147,7 @@ func MySQLGetUserData(host string, user string, pass string, db string, port int
 	Users := make([]SQLUserData, 0)
 	//レコード一件一件をあらかじめ用意しておいた構造体に当てはめていく。
 	for rows.Next() {
-		var User SQLUserData //構造体Person型の変数personを定義
+		var User SQLUserData
 		err := rows.Scan(&User.id, &User.steam_id, &User.name, &User.steam_id)
 
 		if err != nil {
@@ -150,9 +159,8 @@ func MySQLGetUserData(host string, user string, pass string, db string, port int
 	return Users
 }
 
-func MySQLGetTeamData(host string, user string, pass string, db string, port int) []SQLTeamData {
-	//mysqlへ接続。ドライバ名（mysql）と、ユーザー名・データソース(ここではgosample)を指定。
-	sqloption := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s", user, pass, host, port, db)
+func MySQLGetTeamData(conf MySQLConf) []SQLTeamData {
+	sqloption := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s", conf.user, conf.pass, conf.host, conf.port, conf.db)
 	fmt.Println(sqloption)
 
 	s, err := sql.Open("mysql", sqloption)
@@ -174,7 +182,7 @@ func MySQLGetTeamData(host string, user string, pass string, db string, port int
 	Teams := make([]SQLTeamData, 0)
 	//レコード一件一件をあらかじめ用意しておいた構造体に当てはめていく。
 	for rows.Next() {
-		var Team SQLTeamData //構造体Person型の変数personを定義
+		var Team SQLTeamData
 		err := rows.Scan(&Team.id, &Team.user_id, &Team.name, &Team.flag, &Team.logo, &Team.auth, &Team.tag, &Team.public_team)
 
 		if err != nil {
@@ -186,9 +194,8 @@ func MySQLGetTeamData(host string, user string, pass string, db string, port int
 	return Teams
 }
 
-func MySQLGetMatchData(host string, user string, pass string, db string, port int) []SQLMatchData {
-	//mysqlへ接続。ドライバ名（mysql）と、ユーザー名・データソース(ここではgosample)を指定。
-	sqloption := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s", user, pass, host, port, db)
+func MySQLGetMatchData(conf MySQLConf) []SQLMatchData {
+	sqloption := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s", conf.user, conf.pass, conf.host, conf.port, conf.db)
 	fmt.Println(sqloption)
 
 	s, err := sql.Open("mysql", sqloption)
@@ -210,7 +217,7 @@ func MySQLGetMatchData(host string, user string, pass string, db string, port in
 	Matches := make([]SQLMatchData, 0)
 	//レコード一件一件をあらかじめ用意しておいた構造体に当てはめていく。
 	for rows.Next() {
-		var Match SQLMatchData //構造体Person型の変数personを定義
+		var Match SQLMatchData
 		err := rows.Scan(&Match.id, &Match.user_id, &Match.server_id, &Match.team1_id, &Match.team2_id, &Match.winner, &Match.cancelled, &Match.start_time, &Match.end_time, &Match.max_maps, &Match.title, &Match.skip_veto, &Match.api_key, &Match.veto_mappool, &Match.team1_score, &Match.team2_score, &Match.team1_string, &Match.team2_string, &Match.forfeit, &Match.plugin_version)
 		if err != nil {
 			panic(err)
@@ -221,9 +228,8 @@ func MySQLGetMatchData(host string, user string, pass string, db string, port in
 	return Matches
 }
 
-func MySQLGetPlayerStatsData(host string, user string, pass string, db string, port int) []SQLPlayerStatsData {
-	//mysqlへ接続。ドライバ名（mysql）と、ユーザー名・データソース(ここではgosample)を指定。
-	sqloption := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s", user, pass, host, port, db)
+func MySQLGetPlayerStatsData(conf MySQLConf) []SQLPlayerStatsData {
+	sqloption := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s", conf.user, conf.pass, conf.host, conf.port, conf.db)
 	fmt.Println(sqloption)
 
 	s, err := sql.Open("mysql", sqloption)
@@ -245,7 +251,7 @@ func MySQLGetPlayerStatsData(host string, user string, pass string, db string, p
 	StatsDatas := make([]SQLPlayerStatsData, 0)
 	//レコード一件一件をあらかじめ用意しておいた構造体に当てはめていく。
 	for rows.Next() {
-		var StatsData SQLPlayerStatsData //構造体Person型の変数personを定義
+		var StatsData SQLPlayerStatsData
 		err := rows.Scan(&StatsData.id, &StatsData.match_id, &StatsData.map_id, &StatsData.team_id, &StatsData.steam_id, &StatsData.name, &StatsData.kills, &StatsData.deaths, &StatsData.roundsplayed, &StatsData.assists, &StatsData.flashbang_assists, &StatsData.teamkills, &StatsData.suicides, &StatsData.headshot_kills, &StatsData.damage, &StatsData.bomb_plants, &StatsData.bomb_defuses, &StatsData.v1, &StatsData.v2, &StatsData.v3, &StatsData.v4, &StatsData.v5, &StatsData.k1, &StatsData.k2, &StatsData.k3, &StatsData.k4, &StatsData.k5, &StatsData.firstdeath_Ct, &StatsData.firstdeath_t, &StatsData.firstkill_ct, &StatsData.firstkill_t)
 		if err != nil {
 			panic(err)
@@ -256,9 +262,8 @@ func MySQLGetPlayerStatsData(host string, user string, pass string, db string, p
 	return StatsDatas
 }
 
-func MySQLGetMapStatsData(host string, user string, pass string, db string, port int) []SQLMapStatsData {
-	//mysqlへ接続。ドライバ名（mysql）と、ユーザー名・データソース(ここではgosample)を指定。
-	sqloption := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s", user, pass, host, port, db)
+func MySQLGetMapStatsData(conf MySQLConf) []SQLMapStatsData {
+	sqloption := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s", conf.user, conf.pass, conf.host, conf.port, conf.db)
 	fmt.Println(sqloption)
 
 	s, err := sql.Open("mysql", sqloption)
@@ -280,7 +285,7 @@ func MySQLGetMapStatsData(host string, user string, pass string, db string, port
 	MapStatsDatas := make([]SQLMapStatsData, 0)
 	//レコード一件一件をあらかじめ用意しておいた構造体に当てはめていく。
 	for rows.Next() {
-		var MapStatsData SQLMapStatsData //構造体Person型の変数personを定義
+		var MapStatsData SQLMapStatsData
 		err := rows.Scan(&MapStatsData.id, &MapStatsData.match_id, &MapStatsData.map_number, &MapStatsData.map_name, &MapStatsData.start_time, &MapStatsData.end_time, &MapStatsData.winner, &MapStatsData.team1_score, &MapStatsData.team2_score)
 		if err != nil {
 			panic(err)
@@ -291,9 +296,8 @@ func MySQLGetMapStatsData(host string, user string, pass string, db string, port
 	return MapStatsDatas
 }
 
-func MySQLGetGameServerData(host string, user string, pass string, db string, port int) []GameServerData {
-	//mysqlへ接続。ドライバ名（mysql）と、ユーザー名・データソース(ここではgosample)を指定。
-	sqloption := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s", user, pass, host, port, db)
+func MySQLGetGameServerData(conf MySQLConf) []GameServerData {
+	sqloption := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s", conf.user, conf.pass, conf.host, conf.port, conf.db)
 	fmt.Println(sqloption)
 
 	s, err := sql.Open("mysql", sqloption)
@@ -315,7 +319,7 @@ func MySQLGetGameServerData(host string, user string, pass string, db string, po
 	GameServerDatas := make([]GameServerData, 0)
 	//レコード一件一件をあらかじめ用意しておいた構造体に当てはめていく。
 	for rows.Next() {
-		var serverdata GameServerData //構造体Person型の変数personを定義
+		var serverdata GameServerData
 		err := rows.Scan(&serverdata.id, &serverdata.user_id, &serverdata.in_use, &serverdata.ip_string, &serverdata.port, &serverdata.rcon_password, &serverdata.display_name, &serverdata.public_server)
 		if err != nil {
 			panic(err)

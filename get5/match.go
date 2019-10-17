@@ -74,10 +74,16 @@ func MatchBackupHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 }
 
+type MatchesPageData struct {
+	LoggedIn bool
+	Content  interface{} // should be template
+	UserName string
+	UserID   string
+}
+
 func MatchesHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r) //パスパラメータ取得
 	fmt.Printf("MatchesHandler\nvars : %v", vars)
-	//w.WriteHeader(http.StatusOK)
 	tpl := template.Must(template.ParseFiles("get5/templates/layout.html", "get5/templates/matches.html")) // template
 	fmt.Printf("HomeHandler\nvars : %v\n", vars)
 
@@ -86,23 +92,16 @@ func MatchesHandler(w http.ResponseWriter, r *http.Request) {
 	loggedin := false
 	session, _ := SessionStore.Get(r, SessionData)
 
-	m := &HomeData{
+	m := &MatchesPageData{
 		LoggedIn: false,
 		Content:  tpl,
 		UserName: name,
 		UserID:   userid,
 	}
 
-	if _, ok := session.Values["Name"]; ok {
-		name, _ = session.Values["Name"].(string)
-		loggedin = true
+	if _, ok := session.Values["Loggedin"]; ok {
+		loggedin = session.Values["Loggedin"].(bool)
 	}
-
-	if _, ok := session.Values["UserID"]; ok {
-		userid, _ = session.Values["UserID"].(string)
-		loggedin = true
-	}
-
 	m.UserID = userid
 	m.LoggedIn = loggedin
 
