@@ -4,12 +4,19 @@ import (
 	"./get5"
 	"fmt"
 	"github.com/gorilla/mux"
+	"log"
 	"net/http"
+)
+
+var (
+	STATIC_DIR = "./static"
+	HOST       = "localhost:8081"
 )
 
 func main() {
 	fmt.Println("Gorilla test")
 	r := mux.NewRouter()
+	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
 	//s := r.Host("get5.flowing.tokyo").Subrouter()
 	r.HandleFunc("/", get5.HomeHandler)
 	r.HandleFunc("/login", get5.LoginHandler)
@@ -20,5 +27,5 @@ func main() {
 	r.HandleFunc("/user/{userID}", get5.UserHandler)
 	r.Methods("GET", "POST")
 	http.Handle("/", r)
-	http.ListenAndServe(":8080", nil)
+	log.Fatal(http.ListenAndServe(HOST, nil))
 }
