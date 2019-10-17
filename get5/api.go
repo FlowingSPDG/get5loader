@@ -40,3 +40,9 @@ func MatchMapPlayerUpdateHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Printf("MatchMapPlayerUpdateHandler\nvars : %v", vars)
 	w.WriteHeader(http.StatusOK)
 }
+
+func UserHandler(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r) //パスパラメータ取得
+	fmt.Printf("UserHandler\nvars : %v", vars)
+	w.WriteHeader(http.StatusOK)
+}

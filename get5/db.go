@@ -157,6 +157,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 			panic(err)
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 		}
+		fmt.Printf("\nUserName : %s\n", user.PersonaName)
 		UserDatas[user.SteamId] = &UserData{
 			SteamID: user.SteamId,
 			Name:    user.PersonaName,
@@ -192,10 +193,4 @@ func LogoutHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	http.Redirect(w, r, "/", 302)
-}
-
-func UserHandler(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r) //パスパラメータ取得
-	fmt.Printf("UserHandler\nvars : %v", vars)
-	w.WriteHeader(http.StatusOK)
 }
