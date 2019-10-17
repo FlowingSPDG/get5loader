@@ -3,14 +3,19 @@ package get5
 import (
 	"fmt"
 	"github.com/gorilla/mux"
+	"github.com/gorilla/sessions"
 	"github.com/solovev/steam_go"
 	"html/template"
 	"net/http"
+	_ "strconv"
 	"time"
 )
 
 type HomeData struct {
-	Content interface{} // should be template
+	LoggedIn bool
+	Content  interface{} // should be template
+	UserName string
+	UserID   string
 }
 
 type UserData struct {
@@ -83,18 +88,47 @@ type MapStatsData struct {
 }
 
 var (
-	UserDatas   = map[string]*UserData{}
-	SteamAPIKey = "7A9C505B9AA359CC5DF2AF43448B33B7"
+	UserDatas    = map[string]*UserData{}
+	SteamAPIKey  = "7A9C505B9AA359CC5DF2AF43448B33B7"
+	SessionStore = sessions.NewCookieStore([]byte("GET5_GO_SESSIONKEY"))
+	SessionData  = "SessionData"
 )
 
 func HomeHandler(w http.ResponseWriter, r *http.Request) {
 	tpl := template.Must(template.ParseFiles("get5/templates/layout.html", "get5/templates/matches.html")) // template
 	vars := mux.Vars(r)                                                                                    //パスパラメータ取得
-	fmt.Printf("HomeHandler\nvars : %v", vars)
+	fmt.Printf("HomeHandler\nvars : %v\n", vars)
+
+	name := ""
+	userid := ""
+	loggedin := false
+	session, _ := SessionStore.Get(r, SessionData)
 
 	m := &HomeData{
-		Content: tpl,
+		LoggedIn: false,
+		Content:  tpl,
+		UserName: name,
+		UserID:   userid,
 	}
+
+	if _, ok := session.Values["Name"]; ok {
+		if ok {
+			name, _ = session.Values["Name"].(string)
+			loggedin = true
+		}
+	}
+
+	if _, ok := session.Values["UserID"]; ok {
+		if ok {
+			userid, _ = session.Values["UserID"].(string)
+			loggedin = true
+		}
+	}
+
+	m.UserID = userid
+	m.LoggedIn = loggedin
+
+	fmt.Println(m)
 
 	// テンプレートを描画
 	tpl.Execute(w, m)
@@ -104,12 +138,10 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	opID := steam_go.NewOpenId(r)
 	switch opID.Mode() {
 	case "":
-		http.Redirect(w, r, opID.AuthUrl(), 301)
+		http.Redirect(w, r, opID.AuthUrl(), 302)
 	case "cancel":
 		//w.Write([]byte("Authorization cancelled"))
-		http.Redirect(w, r, "/", 301)
-		break
-		//steamId
+		http.Redirect(w, r, "/", 302)
 	default:
 		user, err := opID.ValidateAndGetUser(SteamAPIKey)
 		if err != nil {
@@ -129,40 +161,65 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 			SteamID: user.SteamId,
 			Name:    user.PersonaName,
 		}
+		session, _ := SessionStore.Get(r, SessionData)
+		session.Options = &sessions.Options{MaxAge: 0}
+		// Set some session values.
+		session.Values["UserID"] = user.SteamId
+		session.Values["Name"] = user.PersonaName
+		// Save it before we write to the response/return from the handler.
+		err = session.Save(r, w)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
 		// Register to DB if its new player
-		http.Redirect(w, r, "/", 301)
+		http.Redirect(w, r, "/", 302)
 	}
 	vars := mux.Vars(r) //パスパラメータ取得
-	fmt.Printf("HomeHandler\nvars : %v", vars)
+	fmt.Printf("LoginHandler\nvars : %v\n", vars)
 	w.WriteHeader(http.StatusOK)
+}
+
+func LogoutHandler(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r) //パスパラメータ取得
+	fmt.Printf("LogoutHandler\nvars : %v", vars)
+	session, _ := SessionStore.Get(r, SessionData)
+	session.Options.MaxAge = -1
+	err := session.Save(r, w)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	http.Redirect(w, r, "/", 302)
 }
 
 func MatchesHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r) //パスパラメータ取得
-	fmt.Printf("HomeHandler\nvars : %v", vars)
+	fmt.Printf("MatchesHandler\nvars : %v", vars)
 	w.WriteHeader(http.StatusOK)
 }
 
 func MatchesWithIDHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r) //パスパラメータ取得
-	fmt.Printf("HomeHandler\nvars : %v", vars)
+	fmt.Printf("MatchesWithIDHandler\nvars : %v", vars)
 	w.WriteHeader(http.StatusOK)
 }
 
 func MatchHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r) //パスパラメータ取得
-	fmt.Printf("HomeHandler\nvars : %v", vars)
+	fmt.Printf("MatchHandler\nvars : %v", vars)
 	w.WriteHeader(http.StatusOK)
 }
 
 func TeamHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r) //パスパラメータ取得
-	fmt.Printf("HomeHandler\nvars : %v", vars)
+	fmt.Printf("TeamHandler\nvars : %v", vars)
 	w.WriteHeader(http.StatusOK)
 }
 
 func UserHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r) //パスパラメータ取得
-	fmt.Printf("HomeHandler\nvars : %v", vars)
+	fmt.Printf("UserHandler\nvars : %v", vars)
 	w.WriteHeader(http.StatusOK)
 }
