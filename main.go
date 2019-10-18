@@ -1,12 +1,13 @@
 package main
 
 import (
-	"./get5"
 	"fmt"
-	"github.com/go-ini/ini"
-	"github.com/gorilla/mux"
 	"log"
 	"net/http"
+
+	"github.com/FlowingSPDG/get5-web-go/src/get5"
+	"github.com/go-ini/ini"
+	"github.com/gorilla/mux"
 )
 
 type Config struct {
