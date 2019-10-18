@@ -5,8 +5,10 @@ import (
 	"github.com/gorilla/mux"
 	_ "github.com/gorilla/sessions"
 	_ "github.com/solovev/steam_go"
-	"html/template"
-	_ "html/template"
+	//_ "html/template"
+	"./helper"
+	"github.com/FlowingSPDG/get5-web-go"
+	"github.com/valyala/quicktemplate/examples/basicserver/templates"
 	"net/http"
 	_ "strconv"
 	_ "time"
@@ -84,7 +86,7 @@ type MatchesPageData struct {
 func MatchesHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r) //パスパラメータ取得
 	fmt.Printf("MatchesHandler\nvars : %v", vars)
-	tpl := template.Must(template.ParseFiles("get5/templates/layout.html", "get5/templates/matches.html")) // template
+	//tpl := template.Must(template.ParseFiles("get5/templates/layout.html", "get5/templates/matches.html")) // template
 	fmt.Printf("HomeHandler\nvars : %v\n", vars)
 
 	name := ""
@@ -94,7 +96,7 @@ func MatchesHandler(w http.ResponseWriter, r *http.Request) {
 
 	m := &MatchesPageData{
 		LoggedIn: false,
-		Content:  tpl,
+		//Content:  tpl,
 		UserName: name,
 		UserID:   userid,
 	}
@@ -108,7 +110,8 @@ func MatchesHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Println(m)
 
 	// テンプレートを描画
-	tpl.Execute(w, m)
+	//tpl.Execute(w, m)
+	fmt.Fprintf(w, tpl.Home(1, user))
 }
 
 func MatchesWithIDHandler(w http.ResponseWriter, r *http.Request) {

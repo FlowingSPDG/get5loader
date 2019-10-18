@@ -8,26 +8,23 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/gorilla/sessions"
 	"github.com/solovev/steam_go"
-	_ "html/template"
+	//_ "html/template"
+	// _ "github.com/valyala/quicktemplate/examples/basicserver/templates"
 	"log"
 	"net/http"
 	_ "strconv"
 	_ "time"
 )
 
-type HomeData struct {
-	LoggedIn bool
-	Content  interface{} // should be template
-	UserName string
-	UserID   string
-}
-
 type Config struct {
 	SteamAPIKey string
 	DefaultPage string
 	SQLHost     string
+	SQLUser     string
 	SQLPass     string
+	SQLPort     int
 	SQLDBName   string
+	HOST        string
 }
 
 var (
@@ -37,16 +34,39 @@ var (
 	SessionStore = sessions.NewCookieStore([]byte("GET5_GO_SESSIONKEY"))
 	SessionData  = "SessionData"
 	DefaultPage  string
+	sqlconf      MySQLConf
 )
+
+type MySQLConf struct {
+	host  string
+	user  string
+	pass  string
+	db    string
+	port  int
+	limit int
+}
 
 func init() {
 	c, _ := ini.Load("config.ini")
 	Cnf = Config{
 		SteamAPIKey: c.Section("Steam").Key("APIKey").MustString(""),
 		DefaultPage: c.Section("GET5").Key("DefaultPage").MustString(""),
+		HOST:        c.Section("GET5").Key("HOST").MustString(""),
+		SQLHost:     c.Section("sql").Key("host").MustString(""),
+		SQLUser:     c.Section("sql").Key("user").MustString(""),
+		SQLPass:     c.Section("sql").Key("pass").MustString(""),
+		SQLPort:     c.Section("sql").Key("port").MustInt(3306),
+		SQLDBName:   c.Section("sql").Key("database").MustString(""),
 	}
 	SteamAPIKey = Cnf.SteamAPIKey
 	DefaultPage = Cnf.DefaultPage
+	sqlconf = MySQLConf{
+		host: Cnf.SQLHost,
+		user: Cnf.SQLUser,
+		pass: Cnf.SQLPass,
+		port: Cnf.SQLPort,
+		db:   Cnf.SQLDBName,
+	}
 }
 
 func HomeHandler(w http.ResponseWriter, r *http.Request) {
@@ -115,15 +135,6 @@ func LogoutHandler(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/", 302)
 }
 
-type MySQLConf struct {
-	host  string
-	user  string
-	pass  string
-	db    string
-	port  int
-	limit int
-}
-
 func MySQLGetUserData(conf MySQLConf) []SQLUserData {
 	sqloption := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s", conf.user, conf.pass, conf.host, conf.port, conf.db)
 	fmt.Println(sqloption)
@@ -159,7 +170,7 @@ func MySQLGetUserData(conf MySQLConf) []SQLUserData {
 	return Users
 }
 
-func MySQLGetTeamData(conf MySQLConf) []SQLTeamData {
+func MySQLGetTeamData(conf MySQLConf, query string) ([]SQLTeamData, error) {
 	sqloption := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s", conf.user, conf.pass, conf.host, conf.port, conf.db)
 	fmt.Println(sqloption)
 
@@ -169,14 +180,17 @@ func MySQLGetTeamData(conf MySQLConf) []SQLTeamData {
 	//接続でエラーが発生した場合の処理
 	if err != nil {
 		log.Fatal(err)
+		return nil, err
 	}
 	defer s.Close()
 
 	//データベースへクエリを送信。引っ張ってきたデータがrowsに入る。
-	rows, err := s.Query("SELECT * FROM team")
+	q := "SELECT * FROM `team` " + query
+	fmt.Println(q)
+	rows, err := s.Query(q)
 	defer rows.Close()
 	if err != nil {
-		panic(err.Error())
+		return nil, err
 	}
 
 	Teams := make([]SQLTeamData, 0)
@@ -188,10 +202,10 @@ func MySQLGetTeamData(conf MySQLConf) []SQLTeamData {
 		if err != nil {
 			panic(err.Error())
 		}
-		fmt.Println(Team.id, Team.user_id, Team.name, Team.flag, Team.logo, Team.auth, Team.tag, Team.public_team) //結果　1 yamada 2 suzuki
+		//fmt.Println(Team.id, Team.user_id, Team.name, Team.flag, Team.logo, Team.auth, Team.tag, Team.public_team) //結果　1 yamada 2 suzuki
 		Teams = append(Teams, Team)
 	}
-	return Teams
+	return Teams, nil
 }
 
 func MySQLGetMatchData(conf MySQLConf) []SQLMatchData {
