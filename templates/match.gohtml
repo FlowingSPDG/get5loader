@@ -3,7 +3,7 @@
 		"github.com/FlowingSPDG/get5-web-go/templates/layout"
 		"github.com/FlowingSPDG/get5-web-go/src/models"
 	)
-	var u *models.TeamPageData
+	var u *models.MatchesPageData
 	layout := layout.Base
 }
 
@@ -21,28 +21,6 @@
 	}
 }
 
-@section content {
-	<div id="content">
-		<h1>
-			if u.IsYourTeam == true {
-  				Your teams
-  			} else {
-  				Teams for <a href="/user/{{ owner.id }}"> {{ owner.name }}</a>
-			}
-  		</h1>
-  	<ul class="list-group">
-
-	if len(u.Teams) == 0 {
-    	<li class="list-group-item">No teams found.</li>
-    }
-
-	@for i:=0; i < len(u.Teams); i++ {
-		var n = u.Teams[i];
-
-		<li class="list-group-item">
-			<a href="{{/* team.get_url() */}}" class="col-sm-offset-1"> @n.Name </a>
-	  	</li>
-	}
-  </ul>
-</div>
+@section content{
+	<p>Not impalamented yet!</p>
 }

@@ -76,38 +76,32 @@ func MatchBackupHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func MatchesHandler(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r) //パスパラメータ取得
-	fmt.Printf("MatchesHandler\nvars : %v", vars)
+	//vars := mux.Vars(r) //パスパラメータ取得
+	fmt.Printf("MatchesHandler\n")
 
-	name := ""
-	userid := ""
+	var name string = ""
+	var userid string = ""
 	loggedin := false
 	session, _ := SessionStore.Get(r, SessionData)
 
-	m := &models.MatchesPageData{
-		LoggedIn: false,
-		//Content:  tpl,
-		UserName: name,
-		UserID:   userid,
-	}
-
-	if _, ok := session.Values["Loggedin"]; ok {
-		loggedin = session.Values["Loggedin"].(bool)
-		name = session.Values["Name"].(string)
-		userid = session.Values["UserID"].(string)
-	}
-	m.UserID = userid
-	m.LoggedIn = loggedin
-	m.UserName = name
-
-	PageData := &models.MatchesPageData{
+	u := models.MatchesPageData{
 		LoggedIn: loggedin,
 		UserName: name,
 		UserID:   userid,
 	}
 
-	fmt.Println(m)
-	fmt.Fprintf(w, templates.Home(PageData)) // TODO
+	fmt.Println(u)
+
+	if _, ok := session.Values["Loggedin"]; ok {
+		if session.Values["Loggedin"].(bool) == true {
+			u.LoggedIn = true
+			u.UserName = session.Values["Name"].(string)
+			u.UserID = session.Values["UserID"].(string)
+		}
+	}
+
+	fmt.Println(u)
+	fmt.Fprintf(w, templates.Match(&u)) // TODO
 }
 
 func MatchesWithIDHandler(w http.ResponseWriter, r *http.Request) {

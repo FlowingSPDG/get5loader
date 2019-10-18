@@ -51,14 +51,17 @@ func RenderTeam(_buffer io.StringWriter, u *models.TeamPageData) {
 	}
 
 	_content := func(_buffer io.StringWriter) {
-		for i := 0; i < len(u.Teams); i++ {
-			n := u.Teams[i]
 
-			_buffer.WriteString("<p> ")
+		_buffer.WriteString("<div id=\"content\">\n\t\t<h1>\n\t\t\tif u.IsYourTeam == true {\n  \t\t\t\tYour teams\n  \t\t\t} else {\n  \t\t\t\tTeams for <a href=\"/user/{{ owner.id }}\"> {{ owner.name }}</a>\n\t\t\t}\n  \t\t</h1>\n  \t<ul class=\"list-group\">\n\n\tif len(u.Teams) == 0 {\n    \t<li class=\"list-group-item\">No teams found.</li>\n    }\n\n\t")
+		for i := 0; i < len(u.Teams); i++ {
+			var n = u.Teams[i]
+
+			_buffer.WriteString("<li class=\"list-group-item\">\n\t\t\t<a href=\"{{/* team.get_url() */}}\" class=\"col-sm-offset-1\"> ")
 			_buffer.WriteString(gorazor.HTMLEscape(n.Name))
-			_buffer.WriteString(" </p>")
+			_buffer.WriteString(" </a>\n\t  \t</li>")
 
 		}
+		_buffer.WriteString("\n  </ul>\n</div>")
 
 	}
 

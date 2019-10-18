@@ -173,19 +173,21 @@ type SQLPlayerStatsData struct {
 
 type MatchesPageData struct {
 	LoggedIn bool
-	Content  interface{} // should be template
 	UserName string
 	UserID   string
 }
 
 type TeamPageData struct {
-	LoggedIn bool
-	Teams    []SQLTeamData
+	LoggedIn   bool
+	IsYourTeam bool
+	Teams      []SQLTeamData
+	tp         string
+	test       string
 }
 
-func get_flag_html(country string,scale int)string{
-    width := 32 * scale
-    height := 21 * scale
-    html := fmt.Sprintf(`<img src="%s%s"  width="%d" height="%d">`,"/static/img/valve_flags/",country,width,height)
-    return html
+func get_flag_html(country string, scale int) string {
+	width := 32 * scale
+	height := 21 * scale
+	html := fmt.Sprintf(`<img src="%s%s"  width="%d" height="%d">`, "/static/img/valve_flags/", country, width, height)
+	return html
 }

@@ -40,11 +40,12 @@ func TeamCreateHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 type TeamPageData struct {
-	LoggedIn bool
-	team     models.SQLTeamData
-	tp       string
-	test     string
-	Content  interface{} // should be template
+	LoggedIn   bool
+	IsYourTeam bool
+	team       models.SQLTeamData
+	tp         string
+	test       string
+	Content    interface{} // should be template
 }
 
 func TeamHandler(w http.ResponseWriter, r *http.Request) {
@@ -53,7 +54,7 @@ func TeamHandler(w http.ResponseWriter, r *http.Request) {
 	//tpl := template.Must(template.ParseFiles("get5/templates/layout.html", "get5/templates/team.html")) // template
 	session, _ := SessionStore.Get(r, SessionData)
 	team, err := SQLAccess.MySQLGetTeamData(1, "id = "+t)
-	if(err != nil){
+	if err != nil {
 		panic(err)
 	}
 	fmt.Printf("TeamHandler\nvars : %v", vars)
@@ -65,8 +66,9 @@ func TeamHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	PageData := &models.TeamPageData{
-		LoggedIn: loggedin,
-		Teams:team,
+		LoggedIn:   loggedin,
+		Teams:      team,
+		IsYourTeam: false, // currently steamid
 	}
 	fmt.Println(team[0].Name)
 
