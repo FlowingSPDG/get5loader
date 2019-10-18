@@ -6,7 +6,7 @@ import (
 	_ "github.com/gorilla/sessions"
 	_ "github.com/solovev/steam_go"
 	//_ "html/template"
-	_ "github.com/valyala/quicktemplate/examples/basicserver/templates"
+	"github.com/FlowingSPDG/get5-web-go/template"
 	"net/http"
 	_ "strconv"
 	_ "time"
@@ -109,7 +109,7 @@ func MatchesHandler(w http.ResponseWriter, r *http.Request) {
 
 	// テンプレートを描画
 	//tpl.Execute(w, m)
-	//fmt.Fprintf(w, tpl.Home(1, user)) // TODO
+	fmt.Fprintf(w, tpl.Home(1, user)) // TODO
 }
 
 func MatchesWithIDHandler(w http.ResponseWriter, r *http.Request) {
