@@ -1,22 +1,22 @@
 @{
 	import (
-		"github.com/FlowingSPDG/get5-web-go/templates/helper"
 		"github.com/FlowingSPDG/get5-web-go/templates/layout"
-		"github.com/FlowingSPDG/get5-web-go/src/models"
 	)
+	var IsLoggedin bool
 	layout := layout.Base
-	totalMessage := 0
-	var u *models.UserData
+
 }
 
-
-@helper.Header()
-@helper.Msg(u)
-
-@section title {
-	<title>@u.Name's homepage</title>
-}
-
-@section side {
-	<p>@u.Name has @totalMessage messages</p>
+@section menu {
+	if IsLoggedin == true {
+		<li><a id="mymatches" href="/mymatches">My Matches</a></li>
+            <li><a id="match_create" href="/match/create">Create a Match</a></li>
+            <li><a id="myteams" href="/myteams">My Teams</a></li>
+            <li><a id="team_create" href="/team/create">Create a Team</a></li>
+            <li><a id="myservers" href="/myservers">My Servers</a></li>
+            <li><a id="server_create" href="/server/create">Add a Server</a></li>
+            <li><a href="/logout">Logout</a></li>
+	} else {
+		<li><a href="/login">  <img src="/static/img/login_small.png" height="18"/></a></li>
+	}
 }

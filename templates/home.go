@@ -5,47 +5,48 @@
 package templates
 
 import (
-	"github.com/FlowingSPDG/get5-web-go/src/models"
-	"github.com/FlowingSPDG/get5-web-go/templates/helper"
 	"github.com/FlowingSPDG/get5-web-go/templates/layout"
-	"github.com/sipin/gorazor/gorazor"
 	"io"
 	"strings"
 )
 
 // Home generates templates/home.gohtml
-func Home(u *models.UserData) string {
+func Home(IsLoggedin bool) string {
 	var _b strings.Builder
-	RenderHome(&_b, u)
+	RenderHome(&_b, IsLoggedin)
 	return _b.String()
 }
 
 // RenderHome render templates/home.gohtml
-func RenderHome(_buffer io.StringWriter, u *models.UserData) {
+func RenderHome(_buffer io.StringWriter, IsLoggedin bool) {
 
 	_body := func(_buffer io.StringWriter) {
-		_buffer.WriteString((helper.Header()))
-		_buffer.WriteString((helper.Msg(u)))
 
 	}
 
-	_title := func(_buffer io.StringWriter) {
+	_menu := func(_buffer io.StringWriter) {
+		if IsLoggedin == true {
 
-		_buffer.WriteString("<title>")
-		_buffer.WriteString(gorazor.HTMLEscape(u.Name))
-		_buffer.WriteString("'s homepage</title>")
+			_buffer.WriteString("<li><a id=\"mymatches\" href=\"/mymatches\">My Matches</a></li>")
 
+			_buffer.WriteString("<li><a id=\"match_create\" href=\"/match/create\">Create a Match</a></li>")
+
+			_buffer.WriteString("<li><a id=\"myteams\" href=\"/myteams\">My Teams</a></li>")
+
+			_buffer.WriteString("<li><a id=\"team_create\" href=\"/team/create\">Create a Team</a></li>")
+
+			_buffer.WriteString("<li><a id=\"myservers\" href=\"/myservers\">My Servers</a></li>")
+
+			_buffer.WriteString("<li><a id=\"server_create\" href=\"/server/create\">Add a Server</a></li>")
+
+			_buffer.WriteString("<li><a href=\"/logout\">Logout</a></li>")
+
+		} else {
+
+			_buffer.WriteString("<li><a href=\"/login\">  <img src=\"/static/img/login_small.png\" height=\"18\"/></a></li>")
+
+		}
 	}
 
-	_side := func(_buffer io.StringWriter) {
-
-		_buffer.WriteString("<p>")
-		_buffer.WriteString(gorazor.HTMLEscape(u.Name))
-		_buffer.WriteString(" has ")
-		_buffer.WriteString(gorazor.HTMLEscape(totalMessage))
-		_buffer.WriteString(" messages</p>")
-
-	}
-
-	layout.RenderBase(_buffer, _body, _title, _side)
+	layout.RenderBase(_buffer, _body, _menu)
 }

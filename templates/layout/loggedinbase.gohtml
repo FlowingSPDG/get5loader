@@ -1,6 +1,5 @@
 @{
 	var body string
-  var menu string
 }
 
 
@@ -41,7 +40,13 @@
 	<div class="collapse navbar-collapse" id="myNavbar">
           <ul class="nav navbar-nav">
             <li><a id="matches" href="/matches">All Matches</a></li>
-              @menu
+            <li><a id="mymatches" href="/mymatches">My Matches</a></li>
+            <li><a id="match_create" href="/match/create">Create a Match</a></li>
+            <li><a id="myteams" href="/myteams">My Teams</a></li>
+            <li><a id="team_create" href="/team/create">Create a Team</a></li>
+            <li><a id="myservers" href="/myservers">My Servers</a></li>
+            <li><a id="server_create" href="/server/create">Add a Server</a></li>
+            <li><a href="/logout">Logout</a></li>
           </ul>
         </div>
       </nav>

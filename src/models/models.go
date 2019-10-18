@@ -23,21 +23,21 @@ type UserData struct {
 }
 
 type SQLUserData struct {
-	id       int
-	steam_id string
-	name     string
-	admin    bool
+	Id       int
+	Steam_id string
+	Name     string
+	Admin    bool
 }
 
 type GameServerData struct {
-	id            int
-	user_id       int
-	in_use        bool
-	ip_string     string
-	port          int
-	rcon_password string
-	display_name  string
-	public_server bool
+	Id            int
+	User_id       int
+	In_use        bool
+	Ip_string     string
+	Port          int
+	Rcon_password string
+	Display_name  string
+	Public_server bool
 }
 
 type TeamData struct {
@@ -52,14 +52,14 @@ type TeamData struct {
 }
 
 type SQLTeamData struct {
-	id          int
-	user_id     int
-	name        string
-	flag        string
-	logo        string
-	auth        []byte
-	tag         string
-	public_team bool
+	Id          int
+	User_id     int
+	Name        string
+	Flag        string
+	Logo        string
+	Auth        []byte
+	Tag         string
+	Public_team bool
 }
 
 type MatchData struct {
@@ -88,26 +88,26 @@ type MatchData struct {
 }
 
 type SQLMatchData struct {
-	id             int
-	user_id        int
-	server_id      interface{}
-	team1_id       int
-	team2_id       int
-	winner         interface{}
-	cancelled      bool
-	start_time     interface{}
-	end_time       interface{}
-	max_maps       int
-	title          string
-	skip_veto      bool
-	api_key        string
-	veto_mappool   string
-	team1_score    int
-	team2_score    int
-	team1_string   string
-	team2_string   string
-	forfeit        bool
-	plugin_version string
+	Id             int
+	User_id        int
+	Server_id      interface{}
+	Team1_id       int
+	Team2_id       int
+	Winner         interface{}
+	Cancelled      bool
+	Start_time     interface{}
+	End_time       interface{}
+	Max_maps       int
+	Title          string
+	Skip_veto      bool
+	Api_key        string
+	Veto_mappool   string
+	Team1_score    int
+	Team2_score    int
+	Team1_string   string
+	Team2_string   string
+	Forfeit        bool
+	Plugin_version string
 
 	//VetoMapPool []string
 	//MapStats    []MapStatsData
@@ -126,47 +126,54 @@ type MapStatsData struct {
 }
 
 type SQLMapStatsData struct {
-	id          int
-	match_id    int
-	map_number  int
-	map_name    string
-	start_time  interface{}
-	end_time    interface{}
-	winner      interface{}
-	team1_score int
-	team2_score int
+	Id          int
+	Match_id    int
+	Map_number  int
+	Map_name    string
+	Start_time  interface{}
+	End_time    interface{}
+	Winner      interface{}
+	Team1_score int
+	Team2_score int
 }
 
 type SQLPlayerStatsData struct {
-	id                int
-	match_id          int
-	map_id            int
-	team_id           int
-	steam_id          string
-	name              string
-	kills             int
-	deaths            int
-	roundsplayed      int
-	assists           int
-	flashbang_assists int
-	teamkills         int
-	suicides          int
-	headshot_kills    int
-	damage            int64
-	bomb_plants       int
-	bomb_defuses      int
-	v1                int
-	v2                int
-	v3                int
-	v4                int
-	v5                int
-	k1                int
-	k2                int
-	k3                int
-	k4                int
-	k5                int
-	firstdeath_Ct     int
-	firstdeath_t      int
-	firstkill_ct      int
-	firstkill_t       int
+	Id                int
+	Match_id          int
+	Map_id            int
+	Team_id           int
+	Steam_id          string
+	Name              string
+	Kills             int
+	Deaths            int
+	Roundsplayed      int
+	Assists           int
+	Flashbang_assists int
+	Teamkills         int
+	Suicides          int
+	Headshot_kills    int
+	Damage            int64
+	Bomb_plants       int
+	Bomb_defuses      int
+	V1                int
+	V2                int
+	V3                int
+	V4                int
+	V5                int
+	K1                int
+	K2                int
+	K3                int
+	K4                int
+	K5                int
+	Firstdeath_Ct     int
+	Firstdeath_t      int
+	Firstkill_ct      int
+	Firstkill_t       int
+}
+
+type MatchesPageData struct {
+	LoggedIn bool
+	Content  interface{} // should be template
+	UserName string
+	UserID   string
 }

@@ -2,6 +2,7 @@ package get5
 
 import (
 	"fmt"
+	"github.com/FlowingSPDG/get5-web-go/src/models"
 	"github.com/gorilla/mux"
 	_ "github.com/gorilla/sessions"
 	_ "github.com/solovev/steam_go"
@@ -39,7 +40,7 @@ func TeamCreateHandler(w http.ResponseWriter, r *http.Request) {
 
 type TeamPageData struct {
 	LoggedIn bool
-	team     SQLTeamData
+	team     models.SQLTeamData
 	tp       string
 	test     string
 	Content  interface{} // should be template

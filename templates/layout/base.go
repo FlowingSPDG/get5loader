@@ -10,33 +10,27 @@ import (
 )
 
 // Base generates templates/layout/base.gohtml
-func Base(body string, title string, side string) string {
+func Base(body string, menu string) string {
 	var _b strings.Builder
 
 	_body := func(_buffer io.StringWriter) {
 		_buffer.WriteString(body)
 	}
 
-	_title := func(_buffer io.StringWriter) {
-		_buffer.WriteString(title)
+	_menu := func(_buffer io.StringWriter) {
+		_buffer.WriteString(menu)
 	}
 
-	_side := func(_buffer io.StringWriter) {
-		_buffer.WriteString(side)
-	}
-
-	RenderBase(&_b, _body, _title, _side)
+	RenderBase(&_b, _body, _menu)
 	return _b.String()
 }
 
 // RenderBase render templates/layout/base.gohtml
-func RenderBase(_buffer io.StringWriter, body func(_buffer io.StringWriter), title func(_buffer io.StringWriter), side func(_buffer io.StringWriter)) {
-	_buffer.WriteString("\n<!DOCTYPE html>\n<html>\n<head>\n<meta charset=\"utf-8\" />")
-	title(_buffer)
-	_buffer.WriteString("\n</head>\n<body>\n<div style=\"width: 960px\">\n\t<div style=\"float: left; width: 460px\">")
+func RenderBase(_buffer io.StringWriter, body func(_buffer io.StringWriter), menu func(_buffer io.StringWriter)) {
+	_buffer.WriteString("\n\n\n<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">\n<html xmlns=\"http://www.w3.org/1999/xhtml\">\n\n  <head>\n    <link rel=\"shortcut icon\" href=\"/static/img/favicon.ico\" >\n      <title>Get5 Web Panel</title>\n\n      <link rel=\"stylesheet\" href=\"https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css\" integrity=\"sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7\" crossorigin=\"anonymous\">\n\n      <script src=\"https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js\"></script>\n\n      <script src=\"https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js\" integrity=\"sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS\" crossorigin=\"anonymous\"></script>\n\n      <link rel=\"stylesheet\" href=\"/static/css/chosen.min.css\">\n      <link rel=\"stylesheet\" href=\"/static/css/get5.css\">\n      <script src=\"/static/js/chosen.jquery.min.js\"></script>\n\n      <meta name=\"viewport\" content = \"width=device-width, initial-scale=1.0\">\n      <meta http-equiv=\"content-type\" content=\"text/html; charset=utf-8\" />\n  </head>\n\n  <body>\n    <div id=\"header\">\n\n      <nav class=\"navbar navbar-default\">\n        <div class=\"container-fluid\">\n          <div class=\"navbar-header\">\n            \t\t<button type=\"button\" class=\"navbar-toggle\" data-toggle=\"collapse\" data-target=\"#myNavbar\">\n\t\t        <span class=\"icon-bar\"></span>\n\t        \t<span class=\"icon-bar\"></span>\n            \t\t<span class=\"icon-bar\"></span> \n      \t\t\t</button>\n            <a class=\"navbar-brand\" href=\"/\">Get5 Web Panel</a>\n          </div>\n\t<div class=\"collapse navbar-collapse\" id=\"myNavbar\">\n          <ul class=\"nav navbar-nav\">\n            <li><a id=\"matches\" href=\"/matches\">All Matches</a></li>\n              ")
+	menu(_buffer)
+	_buffer.WriteString("\n          </ul>\n        </div>\n      </nav>\n\t</div>\n    </div>\n\n\n    <div class=\"container\">\n      ")
 	body(_buffer)
-	_buffer.WriteString("</div>\n\t<div style=\"float: right; width: 200px\">")
-	side(_buffer)
-	_buffer.WriteString("</div>\n</div>\n</body>\n</html>")
+	_buffer.WriteString("\n    </div>\n\n    <div class=\"panel-footer text-muted\">\n      <p>\n        Powered by <a href=\"http://steampowered.com\">Steam</a> -\n        <a href=\"/metrics\">Stats</a>\n        {% if COMMIT_STRING %} - Version <a href=\"https://github.com/splewis/get5-web\">{{COMMIT_STRING}}+</a> {% endif %}\n      </p>\n    </div>\n\n  </body>\n\n  <script>\n  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){\n  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),\n  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)\n  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');\n\n  ga('create', 'UA-49074813-2', 'auto');\n  ga('send', 'pageview');\n  </script>\n\n</html>")
 
 }
