@@ -25,6 +25,7 @@ func RenderHome(_buffer io.StringWriter, u *models.UserData) {
 
 	_body := func(_buffer io.StringWriter) {
 		_buffer.WriteString((helper.Header()))
+		_buffer.WriteString((helper.Msg(u)))
 
 	}
 
@@ -40,16 +41,11 @@ func RenderHome(_buffer io.StringWriter, u *models.UserData) {
 
 		_buffer.WriteString("<p>")
 		_buffer.WriteString(gorazor.HTMLEscape(u.Name))
-		_buffer.WriteString(" has no message</p>")
+		_buffer.WriteString(" has ")
+		_buffer.WriteString(gorazor.HTMLEscape(totalMessage))
+		_buffer.WriteString(" messages</p>")
 
 	}
-
-	_body := func(_buffer io.StringWriter) {
-
-		_buffer.WriteString("<h1>HELLO!</h1>")
-
-	}
-	_buffer.WriteString((helper.Footer()))
 
 	layout.RenderBase(_buffer, _body, _title, _side)
 }

@@ -11,17 +11,12 @@
 
 
 @helper.Header()
+@helper.Msg(u)
 
 @section title {
 	<title>@u.Name's homepage</title>
 }
 
 @section side {
-	<p>@u.Name has no message</p>
+	<p>@u.Name has @totalMessage messages</p>
 }
-
-@section body {
-	<h1>HELLO!</h1>
-}
-
-@helper.Footer()
