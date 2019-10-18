@@ -5,27 +5,28 @@
 package templates
 
 import (
+	"github.com/FlowingSPDG/get5-web-go/src/models"
 	"github.com/FlowingSPDG/get5-web-go/templates/layout"
 	"io"
 	"strings"
 )
 
 // Home generates templates/home.gohtml
-func Home(IsLoggedin bool) string {
+func Home(u *models.MatchesPageData) string {
 	var _b strings.Builder
-	RenderHome(&_b, IsLoggedin)
+	RenderHome(&_b, u)
 	return _b.String()
 }
 
 // RenderHome render templates/home.gohtml
-func RenderHome(_buffer io.StringWriter, IsLoggedin bool) {
+func RenderHome(_buffer io.StringWriter, u *models.MatchesPageData) {
 
 	_body := func(_buffer io.StringWriter) {
 
 	}
 
 	_menu := func(_buffer io.StringWriter) {
-		if IsLoggedin == true {
+		if u.LoggedIn == true {
 
 			_buffer.WriteString("<li><a id=\"mymatches\" href=\"/mymatches\">My Matches</a></li>")
 
@@ -43,7 +44,7 @@ func RenderHome(_buffer io.StringWriter, IsLoggedin bool) {
 
 		} else {
 
-			_buffer.WriteString("<li><a href=\"/login\">  <img src=\"/static/img/login_small.png\" height=\"18\"/></a></li>")
+			_buffer.WriteString("<li><a href=\"/login\"><img src=\"/static/img/login_small.png\" height=\"18\"/></a></li>")
 
 		}
 	}

@@ -100,8 +100,14 @@ func MatchesHandler(w http.ResponseWriter, r *http.Request) {
 	m.LoggedIn = loggedin
 	m.UserName = name
 
+	PageData := &models.MatchesPageData{
+		LoggedIn: loggedin,
+		UserName: name,
+		UserID:   userid,
+	}
+
 	fmt.Println(m)
-	fmt.Fprintf(w, templates.Home(loggedin)) // TODO
+	fmt.Fprintf(w, templates.Home(PageData)) // TODO
 }
 
 func MatchesWithIDHandler(w http.ResponseWriter, r *http.Request) {
