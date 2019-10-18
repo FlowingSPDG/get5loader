@@ -7,6 +7,7 @@ package templates
 import (
 	"github.com/FlowingSPDG/get5-web-go/templates/helper"
 	"github.com/FlowingSPDG/get5-web-go/templates/layout"
+	"github.com/FlowingSPDG/get5-web-go/templates/models"
 	"github.com/sipin/gorazor/gorazor"
 	"io"
 	"strings"
