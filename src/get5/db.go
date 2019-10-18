@@ -14,7 +14,7 @@ import (
 	"log"
 	"net/http"
 	_ "strconv"
-	_ "time"
+	"time"
 )
 
 type Config struct {
@@ -28,28 +28,58 @@ type Config struct {
 	HOST        string
 }
 
+type DBdatas struct {
+	Host string
+	User string
+	Pass string
+	Db   string
+	Port int
+	//Limit int
+	sql *sql.DB
+}
+
+func (s *DBdatas) Ping() error {
+	err := s.sql.Ping()
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (s *DBdatas) InitOrReconnect() error {
+	sqloption := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s", s.User, s.Pass, s.Host, s.Port, s.Db)
+	//fmt.Println(sqloption)
+	if s.sql == nil {
+		s.sql, _ = sql.Open("mysql", sqloption)
+	}
+	err := s.sql.Ping()
+	if err != nil {
+		return fmt.Errorf("sql ping failure.")
+	}
+	s.sql.SetConnMaxLifetime(time.Second * 30)
+	return nil
+}
+
+func (s *DBdatas) close() error {
+	err := s.sql.Close()
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 var (
-	Cnf          Config
 	UserDatas    = map[string]*models.UserData{}
 	SteamAPIKey  = ""
 	SessionStore = sessions.NewCookieStore([]byte("GET5_GO_SESSIONKEY"))
 	SessionData  = "SessionData"
 	DefaultPage  string
-	sqlconf      MySQLConf
+	SQLAccess    DBdatas
 )
-
-type MySQLConf struct {
-	host  string
-	user  string
-	pass  string
-	db    string
-	port  int
-	limit int
-}
 
 func init() {
 	c, _ := ini.Load("config.ini")
-	Cnf = Config{
+	Cnf := Config{
 		SteamAPIKey: c.Section("Steam").Key("APIKey").MustString(""),
 		DefaultPage: c.Section("GET5").Key("DefaultPage").MustString(""),
 		HOST:        c.Section("GET5").Key("HOST").MustString(""),
@@ -61,13 +91,6 @@ func init() {
 	}
 	SteamAPIKey = Cnf.SteamAPIKey
 	DefaultPage = Cnf.DefaultPage
-	sqlconf = MySQLConf{
-		host: Cnf.SQLHost,
-		user: Cnf.SQLUser,
-		pass: Cnf.SQLPass,
-		port: Cnf.SQLPort,
-		db:   Cnf.SQLDBName,
-	}
 }
 
 func HomeHandler(w http.ResponseWriter, r *http.Request) {
@@ -136,21 +159,15 @@ func LogoutHandler(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/", 302)
 }
 
-func MySQLGetUserData(conf MySQLConf) []models.SQLUserData {
-	sqloption := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s", conf.user, conf.pass, conf.host, conf.port, conf.db)
-	fmt.Println(sqloption)
-
-	s, err := sql.Open("mysql", sqloption)
-	log.Println("Connected to mysql.")
-
-	//接続でエラーが発生した場合の処理
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer s.Close()
-
+func (s *DBdatas) GetUserData(limit int, where string) []models.SQLUserData {
 	//データベースへクエリを送信。引っ張ってきたデータがrowsに入る。
-	rows, err := s.Query("SELECT * FROM user")
+	err := s.sql.Ping()
+	if err != nil {
+		panic(err.Error())
+	}
+	q := fmt.Sprintf("SELECT * FROM user LIMIT %d WHERE %s", limit, where)
+	fmt.Println(q)
+	rows, err := s.sql.Query(q)
 	defer rows.Close()
 	if err != nil {
 		panic(err.Error())
@@ -171,28 +188,28 @@ func MySQLGetUserData(conf MySQLConf) []models.SQLUserData {
 	return Users
 }
 
-func MySQLGetTeamData(conf MySQLConf, query string) ([]models.SQLTeamData, error) {
-	sqloption := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s", conf.user, conf.pass, conf.host, conf.port, conf.db)
-	fmt.Println(sqloption)
-
-	s, err := sql.Open("mysql", sqloption)
-	log.Println("Connected to mysql.")
-
+func (s *DBdatas) MySQLGetTeamData(limit int, where string) ([]models.SQLTeamData, error) {
+	if s == nil {
+		return nil, fmt.Errorf("sql is nil")
+	}
 	//接続でエラーが発生した場合の処理
+	err := s.sql.Ping()
 	if err != nil {
+		fmt.Println(s.sql)
 		log.Fatal(err)
 		return nil, err
 	}
-	defer s.Close()
+	//defer s.Close()
 
 	//データベースへクエリを送信。引っ張ってきたデータがrowsに入る。
-	q := "SELECT * FROM `team` " + query
+	q := fmt.Sprintf("SELECT * FROM `team` WHERE %s LIMIT %d ", where, limit)
 	fmt.Println(q)
-	rows, err := s.Query(q)
-	defer rows.Close()
+	rows, err := s.sql.Query(q)
 	if err != nil {
 		return nil, err
 	}
+	fmt.Println(q)
+	defer rows.Close()
 
 	Teams := make([]models.SQLTeamData, 0)
 	//レコード一件一件をあらかじめ用意しておいた構造体に当てはめていく。
@@ -209,25 +226,20 @@ func MySQLGetTeamData(conf MySQLConf, query string) ([]models.SQLTeamData, error
 	return Teams, nil
 }
 
-func MySQLGetMatchData(conf MySQLConf) []models.SQLMatchData {
-	sqloption := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s", conf.user, conf.pass, conf.host, conf.port, conf.db)
-	fmt.Println(sqloption)
-
-	s, err := sql.Open("mysql", sqloption)
-	log.Println("Connected to mysql.")
-
-	//接続でエラーが発生した場合の処理
+func (s *DBdatas) MySQLGetMatchData(limit int, where string) []models.SQLMatchData {
+	err := s.sql.Ping()
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer s.Close()
 
 	//データベースへクエリを送信。引っ張ってきたデータがrowsに入る。
-	rows, err := s.Query("SELECT * FROM `match`")
-	defer rows.Close()
+	q := fmt.Sprintf("SELECT * FROM `match` LIMIT %d WHERE %s", limit, where)
+	fmt.Println(q)
+	rows, err := s.sql.Query(q)
 	if err != nil {
 		panic(err.Error())
 	}
+	defer rows.Close()
 
 	Matches := make([]models.SQLMatchData, 0)
 	//レコード一件一件をあらかじめ用意しておいた構造体に当てはめていく。
@@ -243,25 +255,21 @@ func MySQLGetMatchData(conf MySQLConf) []models.SQLMatchData {
 	return Matches
 }
 
-func MySQLGetPlayerStatsData(conf MySQLConf) []models.SQLPlayerStatsData {
-	sqloption := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s", conf.user, conf.pass, conf.host, conf.port, conf.db)
-	fmt.Println(sqloption)
-
-	s, err := sql.Open("mysql", sqloption)
-	log.Println("Connected to mysql.")
-
+func (s *DBdatas) MySQLGetPlayerStatsData(limit int, where string) []models.SQLPlayerStatsData {
 	//接続でエラーが発生した場合の処理
+	err := s.sql.Ping()
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer s.Close()
 
 	//データベースへクエリを送信。引っ張ってきたデータがrowsに入る。
-	rows, err := s.Query("SELECT * FROM `player_stats`")
-	defer rows.Close()
+	q := fmt.Sprintf("SELECT * FROM `player_stats` LIMIT %d WHERE %s", limit, where)
+	fmt.Println(q)
+	rows, err := s.sql.Query(q)
 	if err != nil {
 		panic(err.Error())
 	}
+	defer rows.Close()
 
 	StatsDatas := make([]models.SQLPlayerStatsData, 0)
 	//レコード一件一件をあらかじめ用意しておいた構造体に当てはめていく。
@@ -277,25 +285,21 @@ func MySQLGetPlayerStatsData(conf MySQLConf) []models.SQLPlayerStatsData {
 	return StatsDatas
 }
 
-func MySQLGetMapStatsData(conf MySQLConf) []models.SQLMapStatsData {
-	sqloption := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s", conf.user, conf.pass, conf.host, conf.port, conf.db)
-	fmt.Println(sqloption)
-
-	s, err := sql.Open("mysql", sqloption)
-	log.Println("Connected to mysql.")
-
+func (s *DBdatas) MySQLGetMapStatsData(limit int, where string) []models.SQLMapStatsData {
 	//接続でエラーが発生した場合の処理
+	err := s.sql.Ping()
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer s.Close()
 
 	//データベースへクエリを送信。引っ張ってきたデータがrowsに入る。
-	rows, err := s.Query("SELECT * FROM `map_stats`")
-	defer rows.Close()
+	q := fmt.Sprintf("SELECT * FROM `map_stats` LIMIT %d WHERE %s", limit, where)
+	fmt.Println(q)
+	rows, err := s.sql.Query(q)
 	if err != nil {
 		panic(err.Error())
 	}
+	defer rows.Close()
 
 	MapStatsDatas := make([]models.SQLMapStatsData, 0)
 	//レコード一件一件をあらかじめ用意しておいた構造体に当てはめていく。
@@ -311,25 +315,21 @@ func MySQLGetMapStatsData(conf MySQLConf) []models.SQLMapStatsData {
 	return MapStatsDatas
 }
 
-func MySQLGetGameServerData(conf MySQLConf) []models.GameServerData {
-	sqloption := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s", conf.user, conf.pass, conf.host, conf.port, conf.db)
-	fmt.Println(sqloption)
-
-	s, err := sql.Open("mysql", sqloption)
-	log.Println("Connected to mysql.")
-
+func (s *DBdatas) MySQLGetGameServerData(limit int, where string) []models.GameServerData {
 	//接続でエラーが発生した場合の処理
+	err := s.sql.Ping()
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer s.Close()
 
 	//データベースへクエリを送信。引っ張ってきたデータがrowsに入る。
-	rows, err := s.Query("SELECT * FROM `game_server`")
-	defer rows.Close()
+	q := fmt.Sprintf("SELECT * FROM `game_server` LIMIT %d WHERE %s", limit, where)
+	fmt.Println(q)
+	rows, err := s.sql.Query(q)
 	if err != nil {
 		panic(err.Error())
 	}
+	defer rows.Close()
 
 	GameServerDatas := make([]models.GameServerData, 0)
 	//レコード一件一件をあらかじめ用意しておいた構造体に当てはめていく。

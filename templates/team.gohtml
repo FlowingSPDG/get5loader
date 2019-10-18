@@ -1,0 +1,29 @@
+@{
+	import (
+		"github.com/FlowingSPDG/get5-web-go/templates/layout"
+		"github.com/FlowingSPDG/get5-web-go/src/models"
+	)
+	var u *models.TeamPageData
+	layout := layout.Base
+}
+
+@section menu {
+	if u.LoggedIn == true {
+		<li><a id="mymatches" href="/mymatches">My Matches</a></li>
+            <li><a id="match_create" href="/match/create">Create a Match</a></li>
+            <li><a id="myteams" href="/myteams">My Teams</a></li>
+            <li><a id="team_create" href="/team/create">Create a Team</a></li>
+            <li><a id="myservers" href="/myservers">My Servers</a></li>
+            <li><a id="server_create" href="/server/create">Add a Server</a></li>
+            <li><a href="/logout">Logout</a></li>
+	} else {
+		<li><a href="/login"><img src="/static/img/login_small.png" height="18"/></a></li>
+	}
+}
+
+@section content {
+	for i:=0; i < len(u.Teams); i++ {
+		n:=u.Teams[i]
+		<p> @n.Name </p>
+	}
+}

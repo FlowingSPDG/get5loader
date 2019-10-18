@@ -25,11 +25,7 @@ var (
 	STATIC_DIR = "./static"
 	HOST       = "localhost:8081"
 	Cnf        Config
-	SQLHost    string
-	SQLUser    string
-	SQLPass    string
-	SQLPort    int
-	SQLDBName  string
+	SQLAccess  get5.DBdatas
 )
 
 func init() {
@@ -43,11 +39,25 @@ func init() {
 		SQLDBName: c.Section("sql").Key("database").MustString(""),
 	}
 	HOST = Cnf.HOST
-	SQLHost = Cnf.SQLHost
-	SQLUser = Cnf.SQLUser
-	SQLPass = Cnf.SQLPass
-	SQLPort = Cnf.SQLPort
-	SQLDBName = Cnf.SQLDBName
+	get5.SQLAccess = get5.DBdatas{
+		Host: Cnf.SQLHost,
+		User: Cnf.SQLUser,
+		Pass: Cnf.SQLPass,
+		Db:   Cnf.SQLDBName,
+		Port: Cnf.SQLPort,
+	}
+
+	err := get5.SQLAccess.InitOrReconnect()
+	if err != nil {
+		fmt.Println(err)
+		panic(err)
+	}
+	err = get5.SQLAccess.Ping()
+	if err != nil {
+		fmt.Println(err)
+		panic(err)
+	}
+	fmt.Println(get5.SQLAccess)
 }
 
 func main() {
@@ -98,5 +108,4 @@ func main() {
 	http.Handle("/", r)
 	fmt.Println("RUNNING")
 	log.Fatal(http.ListenAndServe(HOST, nil))
-
 }

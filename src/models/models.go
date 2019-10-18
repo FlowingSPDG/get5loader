@@ -1,7 +1,7 @@
 package models
 
 import (
-	_ "fmt"
+	"fmt"
 	_ "github.com/gorilla/mux"
 	_ "github.com/gorilla/sessions"
 	_ "github.com/solovev/steam_go"
@@ -176,4 +176,16 @@ type MatchesPageData struct {
 	Content  interface{} // should be template
 	UserName string
 	UserID   string
+}
+
+type TeamPageData struct {
+	LoggedIn bool
+	Teams    []SQLTeamData
+}
+
+func get_flag_html(country string,scale int)string{
+    width := 32 * scale
+    height := 21 * scale
+    html := fmt.Sprintf(`<img src="%s%s"  width="%d" height="%d">`,"/static/img/valve_flags/",country,width,height)
+    return html
 }

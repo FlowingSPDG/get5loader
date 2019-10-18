@@ -3,10 +3,11 @@ package get5
 import (
 	"fmt"
 	"github.com/FlowingSPDG/get5-web-go/src/models"
+	"github.com/FlowingSPDG/get5-web-go/templates"
 	"github.com/gorilla/mux"
 	_ "github.com/gorilla/sessions"
 	_ "github.com/solovev/steam_go"
-	"github.com/valyala/quicktemplate/examples/basicserver/templates"
+
 	//"html/template"
 	"net/http"
 	_ "strconv"
@@ -34,8 +35,8 @@ func TeamCreateHandler(w http.ResponseWriter, r *http.Request) {
 
 	// テンプレートを描画
 	//tpl.Execute(w, m)
-	p := &templates.MainPage{}
-	templates.WritePageTemplate(w, p)
+	//p := &templates.MainPage{}
+	//templates.WritePageTemplate(w, p)
 }
 
 type TeamPageData struct {
@@ -51,26 +52,25 @@ func TeamHandler(w http.ResponseWriter, r *http.Request) {
 	t := vars["teamID"]
 	//tpl := template.Must(template.ParseFiles("get5/templates/layout.html", "get5/templates/team.html")) // template
 	session, _ := SessionStore.Get(r, SessionData)
-	team, err := MySQLGetTeamData(sqlconf, "WHERE id="+t)
-	if err != nil {
+	team, err := SQLAccess.MySQLGetTeamData(1, "id = "+t)
+	if(err != nil){
 		panic(err)
 	}
-	m := &TeamPageData{
-		//Content: tpl,
-		team: team[0],
-		test: "hogehoge",
-		tp:   "get5/templates/team.html",
-	}
+	fmt.Printf("TeamHandler\nvars : %v", vars)
+
+	loggedin := false
+
 	if _, ok := session.Values["Loggedin"]; ok {
-		m.LoggedIn = true
-	} else {
-		http.Redirect(w, r, "/login", 302)
+		loggedin = session.Values["Loggedin"].(bool)
 	}
 
-	p := &templates.MainPage{}
-	templates.WritePageTemplate(w, p)
-	// テンプレートを描画
-	//tpl.Execute(w, m)
+	PageData := &models.TeamPageData{
+		LoggedIn: loggedin,
+		Teams:team,
+	}
+	fmt.Println(team[0].Name)
+
+	fmt.Fprintf(w, templates.Team(PageData)) // TODO
 }
 
 func TeamEditHandler(w http.ResponseWriter, r *http.Request) {
