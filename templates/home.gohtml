@@ -1,29 +1,25 @@
 @{
 	import (
-		"github.com/FlowingSPDG/get5-web-go/templates/models"
 		"github.com/FlowingSPDG/get5-web-go/templates/helper"
 		"github.com/FlowingSPDG/get5-web-go/templates/layout"
 	)
 	layout := layout.Base
-	var totalMessage int
-	var u *models.User
+	totalMessage := 0
 }
 
 
 @helper.Header()
-@helper.Msg(u)
 
 @section title {
 	<title>@u.Name's homepage</title>
 }
 
 @section side {
-	switch totalMessage {
-	case 0:
-	      <p>@u.Name has no message</p>
-	case 1:
-	      <p>@u.Name has 1 messages</p>
-	default:
-	      <p>@u.Name has @totalMessage messages</p>
-	}
+	<p>@u.Name has no message</p>
 }
+
+@section body {
+	<h1>HELLO!</h1>
+}
+
+@helper.Footer()
