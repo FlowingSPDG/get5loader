@@ -14,14 +14,14 @@ import (
 )
 
 // Home generates templates/home.gohtml
-func Home(totalMessage int) string {
+func Home(totalMessage int, u *models.User) string {
 	var _b strings.Builder
-	RenderHome(&_b, totalMessage)
+	RenderHome(&_b, totalMessage, u)
 	return _b.String()
 }
 
 // RenderHome render templates/home.gohtml
-func RenderHome(_buffer io.StringWriter, totalMessage int) {
+func RenderHome(_buffer io.StringWriter, totalMessage int, u *models.User) {
 
 	_body := func(_buffer io.StringWriter) {
 		_buffer.WriteString((helper.Header()))
