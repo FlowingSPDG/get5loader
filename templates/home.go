@@ -5,27 +5,26 @@
 package templates
 
 import (
+	"github.com/FlowingSPDG/get5-web-go/src/models"
 	"github.com/FlowingSPDG/get5-web-go/templates/helper"
 	"github.com/FlowingSPDG/get5-web-go/templates/layout"
-	"github.com/FlowingSPDG/get5-web-go/templates/models"
 	"github.com/sipin/gorazor/gorazor"
 	"io"
 	"strings"
 )
 
 // Home generates templates/home.gohtml
-func Home(totalMessage int, u *models.User) string {
+func Home(u *models.UserData) string {
 	var _b strings.Builder
-	RenderHome(&_b, totalMessage, u)
+	RenderHome(&_b, u)
 	return _b.String()
 }
 
 // RenderHome render templates/home.gohtml
-func RenderHome(_buffer io.StringWriter, totalMessage int, u *models.User) {
+func RenderHome(_buffer io.StringWriter, u *models.UserData) {
 
 	_body := func(_buffer io.StringWriter) {
 		_buffer.WriteString((helper.Header()))
-		_buffer.WriteString((helper.Msg(u)))
 
 	}
 
@@ -38,30 +37,19 @@ func RenderHome(_buffer io.StringWriter, totalMessage int, u *models.User) {
 	}
 
 	_side := func(_buffer io.StringWriter) {
-		switch totalMessage {
-		case 0:
 
-			_buffer.WriteString("<p>")
-			_buffer.WriteString(gorazor.HTMLEscape(u.Name))
-			_buffer.WriteString(" has no message</p>")
-
-		case 1:
-
-			_buffer.WriteString("<p>")
-			_buffer.WriteString(gorazor.HTMLEscape(u.Name))
-			_buffer.WriteString(" has 1 messages</p>")
-
-		default:
-
-			_buffer.WriteString("<p>")
-			_buffer.WriteString(gorazor.HTMLEscape(u.Name))
-			_buffer.WriteString(" has ")
-			_buffer.WriteString(gorazor.HTMLEscape(totalMessage))
-			_buffer.WriteString(" messages</p>")
-
-		}
+		_buffer.WriteString("<p>")
+		_buffer.WriteString(gorazor.HTMLEscape(u.Name))
+		_buffer.WriteString(" has no message</p>")
 
 	}
+
+	_body := func(_buffer io.StringWriter) {
+
+		_buffer.WriteString("<h1>HELLO!</h1>")
+
+	}
+	_buffer.WriteString((helper.Footer()))
 
 	layout.RenderBase(_buffer, _body, _title, _side)
 }

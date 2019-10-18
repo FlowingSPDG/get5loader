@@ -1,4 +1,4 @@
-package get5
+package models
 
 import (
 	_ "fmt"
