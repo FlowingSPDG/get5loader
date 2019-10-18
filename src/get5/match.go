@@ -6,7 +6,7 @@ import (
 	_ "github.com/gorilla/sessions"
 	_ "github.com/solovev/steam_go"
 	//_ "html/template"
-	"github.com/FlowingSPDG/get5-web-go/templates"
+	"github.com/FlowingSPDG/get5-web-go/src/templates"
 	"net/http"
 	_ "strconv"
 	_ "time"
