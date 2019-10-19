@@ -23,21 +23,20 @@
 
 @section content {
 	<div id="content">
-		<h1>
-			if u.IsYourTeam == true {
-  				Your teams
+		
+			@if u.IsYourTeam == true {
+  				<h1> Your teams </h1>
   			} else {
-  				Teams for <a href="/user/{{ owner.id }}"> {{ owner.name }}</a>
+  				<h1> Teams for <a href="/user/{{ owner.id }}"> {{ owner.name }}</a> </h1>
 			}
-  		</h1>
   	<ul class="list-group">
 
-	if len(u.Teams) == 0 {
+	@if len(u.Teams) == 0 {
     	<li class="list-group-item">No teams found.</li>
     }
 
 	@for i:=0; i < len(u.Teams); i++ {
-		var n = u.Teams[i];
+		n:=u.Teams[i];
 
 		<li class="list-group-item">
 			<a href="{{/* team.get_url() */}}" class="col-sm-offset-1"> @n.Name </a>
