@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/FlowingSPDG/get5-web-go/src/db"
 	"github.com/FlowingSPDG/get5-web-go/src/get5"
 	"github.com/go-ini/ini"
 	"github.com/gorilla/mux"
@@ -25,7 +26,7 @@ var (
 	STATIC_DIR = "./static"
 	HOST       = "localhost:8081"
 	Cnf        Config
-	SQLAccess  get5.DBdatas
+	SQLAccess  db.DBdatas
 )
 
 func init() {
@@ -39,7 +40,7 @@ func init() {
 		SQLDBName: c.Section("sql").Key("database").MustString(""),
 	}
 	HOST = Cnf.HOST
-	get5.SQLAccess = get5.DBdatas{
+	db.SQLAccess = db.DBdatas{
 		Host: Cnf.SQLHost,
 		User: Cnf.SQLUser,
 		Pass: Cnf.SQLPass,
@@ -47,17 +48,17 @@ func init() {
 		Port: Cnf.SQLPort,
 	}
 
-	err := get5.SQLAccess.InitOrReconnect()
+	err := db.SQLAccess.InitOrReconnect()
 	if err != nil {
 		fmt.Println(err)
 		panic(err)
 	}
-	err = get5.SQLAccess.Ping()
+	err = db.SQLAccess.Ping()
 	if err != nil {
 		fmt.Println(err)
 		panic(err)
 	}
-	fmt.Println(get5.SQLAccess)
+	fmt.Println(db.SQLAccess)
 }
 
 func main() {
@@ -66,9 +67,9 @@ func main() {
 	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
 
 	//s := r.Host("get5.flowing.tokyo").Subrouter()
-	r.HandleFunc("/", get5.HomeHandler).Methods("GET")
-	r.HandleFunc("/login", get5.LoginHandler).Methods("GET")
-	r.HandleFunc("/logout", get5.LogoutHandler).Methods("GET")
+	r.HandleFunc("/", db.HomeHandler).Methods("GET")
+	r.HandleFunc("/login", db.LoginHandler).Methods("GET")
+	r.HandleFunc("/logout", db.LogoutHandler).Methods("GET")
 
 	r.HandleFunc("/match/create", get5.MatchCreateHandler)             // GET/POST
 	r.HandleFunc("/match/{matchID}", get5.MatchHandler)                // ?

@@ -2,6 +2,7 @@ package get5
 
 import (
 	"fmt"
+	"github.com/FlowingSPDG/get5-web-go/src/db"
 	"github.com/FlowingSPDG/get5-web-go/src/models"
 	"github.com/FlowingSPDG/get5-web-go/templates"
 	"github.com/gorilla/mux"
@@ -22,7 +23,7 @@ type TeamCreatePageData struct {
 
 func TeamCreateHandler(w http.ResponseWriter, r *http.Request) {
 	//tpl := template.Must(template.ParseFiles("get5/templates/layout.html", "get5/templates/team_create.html")) // template
-	session, _ := SessionStore.Get(r, SessionData)
+	session, _ := db.SessionStore.Get(r, db.SessionData)
 	m := &TeamCreatePageData{
 		Edit: false,
 		//Content: tpl,
@@ -52,8 +53,8 @@ func TeamHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	t := vars["teamID"]
 	//tpl := template.Must(template.ParseFiles("get5/templates/layout.html", "get5/templates/team.html")) // template
-	session, _ := SessionStore.Get(r, SessionData)
-	team, err := SQLAccess.MySQLGetTeamData(1, "id = "+t)
+	session, _ := db.SessionStore.Get(r, db.SessionData)
+	team, err := db.SQLAccess.MySQLGetTeamData(1, "id = "+t)
 	if err != nil {
 		panic(err)
 	}
@@ -94,7 +95,7 @@ func TeamsHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func MyTeamsHandler(w http.ResponseWriter, r *http.Request) {
-	session, _ := SessionStore.Get(r, SessionData)
+	session, _ := db.SessionStore.Get(r, db.SessionData)
 	if _, ok := session.Values["Loggedin"]; ok {
 		if session.Values["Loggedin"] == true {
 

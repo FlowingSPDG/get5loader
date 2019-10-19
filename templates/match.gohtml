@@ -2,6 +2,8 @@
 	import (
 		"github.com/FlowingSPDG/get5-web-go/templates/layout"
 		"github.com/FlowingSPDG/get5-web-go/src/models"
+		db "github.com/FlowingSPDG/get5-web-go/src/db"
+		"strconv"
 	)
 	var u *models.MatchesPageData
 	layout := layout.Base
@@ -22,5 +24,52 @@
 }
 
 @section content{
-	<p>Not impalamented yet!</p>
+<div id="content">
+
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>Match ID</th>
+        <th>Team 1</th>
+        <th>Team 2</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+	@{n:=u.Matches}
+	@for i:=0; i < len(n); i++ {
+		id:=n[i].Id
+		team1id:=n[i].Team1_id
+		team2id:=n[i].Team2_id
+		team1name,_:=db.SQLAccess.MySQLGetTeamData(1,"id="+strconv.Itoa(team1id))
+		team2name,_:=db.SQLAccess.MySQLGetTeamData(1,"id="+strconv.Itoa(team2id))
+		team1score:=strconv.Itoa(n[i].Team1_score)
+		team2score:=strconv.Itoa(n[i].Team2_score)
+		w,_:=db.SQLAccess.MySQLGetTeamData(1,"id="+strconv.Itoa(int(n[i].Winner.Int64)))
+		var winner models.SQLTeamData
+		if len(w) > 0 {
+			winner.Name = w[0].Name
+		}
+
+	<tr>
+        <td><a href="/match/@id"> @id </a></td>
+
+        <td>
+          <a href="/team/@team1id">@team1name[0].Name</a>
+        </td>
+
+        <td>
+          <a href="/team/@team2id">@team2name[0].Name</a>
+        </td>
+
+        <td>
+          <p>Won @winner.Name @team1score : @team2score by @winner.Name</p>
+        </td>
+      </tr>
+    }
+
+    </tbody>
+  </table>
+
+</div>
 }

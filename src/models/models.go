@@ -1,6 +1,7 @@
 package models
 
 import (
+	"database/sql"
 	"fmt"
 	_ "github.com/gorilla/mux"
 	_ "github.com/gorilla/sessions"
@@ -93,7 +94,7 @@ type SQLMatchData struct {
 	Server_id      interface{}
 	Team1_id       int
 	Team2_id       int
-	Winner         interface{}
+	Winner         sql.NullInt64
 	Cancelled      bool
 	Start_time     interface{}
 	End_time       interface{}
@@ -175,6 +176,7 @@ type MatchesPageData struct {
 	LoggedIn bool
 	UserName string
 	UserID   string
+	Matches  []SQLMatchData
 }
 
 type TeamPageData struct {

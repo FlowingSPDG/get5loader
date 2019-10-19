@@ -6,6 +6,7 @@ import (
 	_ "github.com/gorilla/sessions"
 	_ "github.com/solovev/steam_go"
 	//_ "html/template"
+	"github.com/FlowingSPDG/get5-web-go/src/db"
 	"github.com/FlowingSPDG/get5-web-go/src/models"
 	"github.com/FlowingSPDG/get5-web-go/templates"
 	"net/http"
@@ -79,18 +80,24 @@ func MatchesHandler(w http.ResponseWriter, r *http.Request) {
 	//vars := mux.Vars(r) //パスパラメータ取得
 	fmt.Printf("MatchesHandler\n")
 
-	var name string = ""
-	var userid string = ""
+	name := ""
+	userid := ""
 	loggedin := false
-	session, _ := SessionStore.Get(r, SessionData)
+	session, _ := db.SessionStore.Get(r, db.SessionData)
 
-	u := models.MatchesPageData{
+	matches, err := db.SQLAccess.MySQLGetMatchData(20, "")
+	if err != nil {
+		panic(err)
+	}
+
+	u := &models.MatchesPageData{
 		LoggedIn: loggedin,
 		UserName: name,
 		UserID:   userid,
+		Matches:  matches,
 	}
 
-	fmt.Println(u)
+	fmt.Println(matches[0].Team1_id)
 
 	if _, ok := session.Values["Loggedin"]; ok {
 		if session.Values["Loggedin"].(bool) == true {
@@ -100,8 +107,7 @@ func MatchesHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	fmt.Println(u)
-	fmt.Fprintf(w, templates.Match(&u)) // TODO
+	fmt.Fprintf(w, templates.Match(u)) // TODO
 }
 
 func MatchesWithIDHandler(w http.ResponseWriter, r *http.Request) {

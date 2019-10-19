@@ -1,4 +1,4 @@
-package get5
+package db
 
 import (
 	"database/sql" //ここでパッケージをimport
@@ -200,10 +200,14 @@ func (s *DBdatas) MySQLGetTeamData(limit int, where string) ([]models.SQLTeamDat
 		return nil, err
 	}
 	//defer s.Close()
+	var whr string = ""
+	if len(where) > 0 {
+		whr = "WHERE " + where
+	}
 
 	//データベースへクエリを送信。引っ張ってきたデータがrowsに入る。
-	q := fmt.Sprintf("SELECT * FROM `team` WHERE %s LIMIT %d ", where, limit)
-	fmt.Println(q)
+	q := fmt.Sprintf("SELECT * FROM `team` %s LIMIT %d ", whr, limit)
+	//fmt.Println(q)
 	rows, err := s.sql.Query(q)
 	if err != nil {
 		return nil, err
@@ -220,23 +224,29 @@ func (s *DBdatas) MySQLGetTeamData(limit int, where string) ([]models.SQLTeamDat
 		if err != nil {
 			panic(err.Error())
 		}
-		//fmt.Println(Team.id, Team.user_id, Team.name, Team.flag, Team.logo, Team.auth, Team.tag, Team.public_team) //結果　1 yamada 2 suzuki
+		fmt.Println(Team.Id, Team.User_id, Team.Name, Team.Flag, Team.Logo, Team.Auth, Team.Tag, Team.Public_team) //結果　1 yamada 2 suzuki
 		Teams = append(Teams, Team)
 	}
 	return Teams, nil
 }
 
-func (s *DBdatas) MySQLGetMatchData(limit int, where string) []models.SQLMatchData {
+func (s *DBdatas) MySQLGetMatchData(limit int, where string) ([]models.SQLMatchData, error) {
 	err := s.sql.Ping()
 	if err != nil {
 		log.Fatal(err)
+		return nil, err
+	}
+	var whr string = ""
+	if len(where) > 0 {
+		whr = "WHERE " + where
 	}
 
 	//データベースへクエリを送信。引っ張ってきたデータがrowsに入る。
-	q := fmt.Sprintf("SELECT * FROM `match` LIMIT %d WHERE %s", limit, where)
+	q := fmt.Sprintf("SELECT * FROM `match` LIMIT %d %s", limit, whr)
 	fmt.Println(q)
 	rows, err := s.sql.Query(q)
 	if err != nil {
+		return nil, err
 		panic(err.Error())
 	}
 	defer rows.Close()
@@ -248,18 +258,20 @@ func (s *DBdatas) MySQLGetMatchData(limit int, where string) []models.SQLMatchDa
 		err := rows.Scan(&Match.Id, &Match.User_id, &Match.Server_id, &Match.Team1_id, &Match.Team2_id, &Match.Winner, &Match.Cancelled, &Match.Start_time, &Match.End_time, &Match.Max_maps, &Match.Title, &Match.Skip_veto, &Match.Api_key, &Match.Veto_mappool, &Match.Team1_score, &Match.Team2_score, &Match.Team1_string, &Match.Team2_string, &Match.Forfeit, &Match.Plugin_version)
 		if err != nil {
 			panic(err)
+			return nil, err
 		}
 		//fmt.Println(Match.id, Match.user_id, Match.server_id, Match.team1_id, Match.team2_id, Match.winner, Match.cancelled, Match.start_time, Match.end_time, Match.max_maps, Match.title, Match.skip_veto, Match.api_key, Match.veto_mappool, Match.team1_score, Match.team2_score, Match.team1_string, Match.team2_string, Match.forfeit, Match.plugin_version)
 		Matches = append(Matches, Match)
 	}
-	return Matches
+	return Matches, nil
 }
 
-func (s *DBdatas) MySQLGetPlayerStatsData(limit int, where string) []models.SQLPlayerStatsData {
+func (s *DBdatas) MySQLGetPlayerStatsData(limit int, where string) ([]models.SQLPlayerStatsData, error) {
 	//接続でエラーが発生した場合の処理
 	err := s.sql.Ping()
 	if err != nil {
 		log.Fatal(err)
+		return nil, err
 	}
 
 	//データベースへクエリを送信。引っ張ってきたデータがrowsに入る。
@@ -268,6 +280,7 @@ func (s *DBdatas) MySQLGetPlayerStatsData(limit int, where string) []models.SQLP
 	rows, err := s.sql.Query(q)
 	if err != nil {
 		panic(err.Error())
+		return nil, err
 	}
 	defer rows.Close()
 
@@ -277,19 +290,21 @@ func (s *DBdatas) MySQLGetPlayerStatsData(limit int, where string) []models.SQLP
 		var StatsData models.SQLPlayerStatsData
 		err := rows.Scan(&StatsData.Id, &StatsData.Match_id, &StatsData.Map_id, &StatsData.Team_id, &StatsData.Steam_id, &StatsData.Name, &StatsData.Kills, &StatsData.Deaths, &StatsData.Roundsplayed, &StatsData.Assists, &StatsData.Flashbang_assists, &StatsData.Teamkills, &StatsData.Suicides, &StatsData.Headshot_kills, &StatsData.Damage, &StatsData.Bomb_plants, &StatsData.Bomb_defuses, &StatsData.V1, &StatsData.V2, &StatsData.V3, &StatsData.V4, &StatsData.V5, &StatsData.K1, &StatsData.K2, &StatsData.K3, &StatsData.K4, &StatsData.K5, &StatsData.Firstdeath_Ct, &StatsData.Firstdeath_t, &StatsData.Firstkill_ct, &StatsData.Firstkill_t)
 		if err != nil {
+			return nil, err
 			panic(err)
 		}
 		//fmt.Println(StatsData.id, StatsData.match_id, StatsData.map_id, StatsData.team_id, StatsData.steam_id, StatsData.name, StatsData.kills, StatsData.deaths, StatsData.roundsplayed, StatsData.assists, StatsData.flashbang_assists, StatsData.teamkills, StatsData.suicides, StatsData.headshot_kills, StatsData.damage, StatsData.bomb_plants, StatsData.bomb_defuses, StatsData.v1, StatsData.v2, StatsData.v3, StatsData.v4, StatsData.v5, StatsData.k1, StatsData.k2, StatsData.k3, StatsData.k4, StatsData.k5, StatsData.firstdeath_Ct, StatsData.firstdeath_t, StatsData.firstkill_ct, StatsData.firstkill_t)
 		StatsDatas = append(StatsDatas, StatsData)
 	}
-	return StatsDatas
+	return StatsDatas, nil
 }
 
-func (s *DBdatas) MySQLGetMapStatsData(limit int, where string) []models.SQLMapStatsData {
+func (s *DBdatas) MySQLGetMapStatsData(limit int, where string) ([]models.SQLMapStatsData, error) {
 	//接続でエラーが発生した場合の処理
 	err := s.sql.Ping()
 	if err != nil {
 		log.Fatal(err)
+		return nil, err
 	}
 
 	//データベースへクエリを送信。引っ張ってきたデータがrowsに入る。
@@ -298,6 +313,7 @@ func (s *DBdatas) MySQLGetMapStatsData(limit int, where string) []models.SQLMapS
 	rows, err := s.sql.Query(q)
 	if err != nil {
 		panic(err.Error())
+		return nil, err
 	}
 	defer rows.Close()
 
@@ -308,18 +324,20 @@ func (s *DBdatas) MySQLGetMapStatsData(limit int, where string) []models.SQLMapS
 		err := rows.Scan(&MapStatsData.Id, &MapStatsData.Match_id, &MapStatsData.Map_number, &MapStatsData.Map_name, &MapStatsData.Start_time, &MapStatsData.End_time, &MapStatsData.Winner, &MapStatsData.Team1_score, &MapStatsData.Team2_score)
 		if err != nil {
 			panic(err)
+			return nil, err
 		}
 		//fmt.Println(MapStatsData.id, MapStatsData.match_id, MapStatsData.map_number, MapStatsData.map_name, MapStatsData.start_time, MapStatsData.end_time, MapStatsData.winner, MapStatsData.team1_score, MapStatsData.team2_score)
 		MapStatsDatas = append(MapStatsDatas, MapStatsData)
 	}
-	return MapStatsDatas
+	return MapStatsDatas, nil
 }
 
-func (s *DBdatas) MySQLGetGameServerData(limit int, where string) []models.GameServerData {
+func (s *DBdatas) MySQLGetGameServerData(limit int, where string) ([]models.GameServerData, error) {
 	//接続でエラーが発生した場合の処理
 	err := s.sql.Ping()
 	if err != nil {
 		log.Fatal(err)
+		return nil, err
 	}
 
 	//データベースへクエリを送信。引っ張ってきたデータがrowsに入る。
@@ -328,6 +346,7 @@ func (s *DBdatas) MySQLGetGameServerData(limit int, where string) []models.GameS
 	rows, err := s.sql.Query(q)
 	if err != nil {
 		panic(err.Error())
+		return nil, err
 	}
 	defer rows.Close()
 
@@ -338,9 +357,10 @@ func (s *DBdatas) MySQLGetGameServerData(limit int, where string) []models.GameS
 		err := rows.Scan(&serverdata.Id, &serverdata.User_id, &serverdata.In_use, &serverdata.Ip_string, &serverdata.Port, &serverdata.Rcon_password, &serverdata.Display_name, &serverdata.Public_server)
 		if err != nil {
 			panic(err)
+			return nil, err
 		}
 		//fmt.Println(serverdata.id, serverdata.user_id, serverdata.in_use, serverdata.ip_string, serverdata.port, serverdata.rcon_password, serverdata.display_name, serverdata.public_server)
 		GameServerDatas = append(GameServerDatas, serverdata)
 	}
-	return GameServerDatas
+	return GameServerDatas, nil
 }

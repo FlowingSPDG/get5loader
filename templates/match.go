@@ -5,9 +5,12 @@
 package templates
 
 import (
+	db "github.com/FlowingSPDG/get5-web-go/src/db"
 	"github.com/FlowingSPDG/get5-web-go/src/models"
 	"github.com/FlowingSPDG/get5-web-go/templates/layout"
+	"github.com/sipin/gorazor/gorazor"
 	"io"
+	"strconv"
 	"strings"
 )
 
@@ -51,7 +54,47 @@ func RenderMatch(_buffer io.StringWriter, u *models.MatchesPageData) {
 
 	_content := func(_buffer io.StringWriter) {
 
-		_buffer.WriteString("<p>Not impalamented yet!</p>")
+		_buffer.WriteString("<div id=\"content\">\n\n  <table class=\"table table-striped\">\n    <thead>\n      <tr>\n        <th>Match ID</th>\n        <th>Team 1</th>\n        <th>Team 2</th>\n        <th>Status</th>\n      </tr>\n    </thead>\n    <tbody>\n\t")
+		n := u.Matches
+		_buffer.WriteString("\n\t")
+		for i := 0; i < len(n); i++ {
+			id := n[i].Id
+			team1id := n[i].Team1_id
+			team2id := n[i].Team2_id
+			team1name, _ := db.SQLAccess.MySQLGetTeamData(1, "id="+strconv.Itoa(team1id))
+			team2name, _ := db.SQLAccess.MySQLGetTeamData(1, "id="+strconv.Itoa(team2id))
+			team1score := strconv.Itoa(n[i].Team1_score)
+			team2score := strconv.Itoa(n[i].Team2_score)
+			w, _ := db.SQLAccess.MySQLGetTeamData(1, "id="+strconv.Itoa(int(n[i].Winner.Int64)))
+			var winner models.SQLTeamData
+			if len(w) > 0 {
+				winner.Name = w[0].Name
+			}
+
+			_buffer.WriteString("<tr>\n        <td><a href=\"/match/")
+			_buffer.WriteString(gorazor.HTMLEscape(id))
+			_buffer.WriteString("\"> ")
+			_buffer.WriteString(gorazor.HTMLEscape(id))
+			_buffer.WriteString(" </a></td>\n\n        <td>\n          <a href=\"/team/")
+			_buffer.WriteString(gorazor.HTMLEscape(team1id))
+			_buffer.WriteString("\">")
+			_buffer.WriteString(gorazor.HTMLEscape(team1name[0].Name))
+			_buffer.WriteString("</a>\n        </td>\n\n        <td>\n          <a href=\"/team/")
+			_buffer.WriteString(gorazor.HTMLEscape(team2id))
+			_buffer.WriteString("\">")
+			_buffer.WriteString(gorazor.HTMLEscape(team2name[0].Name))
+			_buffer.WriteString("</a>\n        </td>\n\n        <td>\n          <p>Won ")
+			_buffer.WriteString(gorazor.HTMLEscape(winner.Name))
+			_buffer.WriteString(" ")
+			_buffer.WriteString(gorazor.HTMLEscape(team1score))
+			_buffer.WriteString(" : ")
+			_buffer.WriteString(gorazor.HTMLEscape(team2score))
+			_buffer.WriteString(" by ")
+			_buffer.WriteString(gorazor.HTMLEscape(winner.Name))
+			_buffer.WriteString("</p>\n        </td>\n      </tr>")
+
+		}
+		_buffer.WriteString("\n\n    </tbody>\n  </table>\n\n</div>")
 
 	}
 
