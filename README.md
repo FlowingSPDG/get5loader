@@ -1,11 +1,11 @@
-get5-web-go WIP!
+get5-web-go
 ===========================
-**Status: WIP**
+**Status: Work-In-Progress!!!**
 
-**experimental** This is recreation of [get5 web panel](https://github.com/splewis/get5-web) with GOLANG.
+This is recreation of [get5 web panel](https://github.com/splewis/get5-web) with GOLANG.
 
-**WHY?**:
-1. Python2.7 will be no longer supported after Jun.2020. very soon!!
+## WHY?:
+1. Python2.7 will be no longer supported after Jan.2020. very soon!!
 2. Current get5-web needs so many steps to launch(DB migration,python install,venv,etc...)
 3. GOLANG has better performance than Python(I guess...??)
 4. To support local file-DB insted of MySQL DB for better performance and easy to manage(this would be optical).
