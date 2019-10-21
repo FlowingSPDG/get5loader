@@ -334,24 +334,24 @@ func (m *MatchData) Create(userid int64, team1_id int64, team2_id int64, team1_s
 }
 
 func (m *MatchData) GetStatusString(ShowWinner bool) string {
-	if m.pending() {
+	if m.Pending() {
 		return "Pending"
-	} else if m.live() {
-		teams1core, team2score, err := m.GetCurrentScore()
-		return fmt.Sprintf("LIve, %d:%d", teams1core, team2score)
+	} else if m.Live() {
+		teams1core, team2score := m.GetCurrentScore()
+		return fmt.Sprintf("Live, %d:%d", teams1core, team2score)
 	} else if m.Finished() {
-		teams1core, team2score, err := m.GetCurrentScore()
-		minscore := math.Min(teams1core, team2score)
-		maxscore := math.Max(teams1core, team2score)
-		score_string := fmt.Sprintf("%f:%d", maxscore, minscore)
+		teams1core, team2score := m.GetCurrentScore()
+		minscore := math.Min(float64(teams1core), float64(team2score))
+		maxscore := math.Max(float64(teams1core), float64(team2score))
+		ScoreString := fmt.Sprintf("%f:%f", maxscore, minscore)
 		if !ShowWinner {
 			return "Finished"
-		} else if m.winner == m.Team1ID {
-			return fmt.Sprintf("Won %s by %f", score_string, m.GetTeam1().Name)
-		} else if m.winner == m.Team2ID {
-			return fmt.Sprintf("Won %s by %f", score_string, m.GetTeam2().Name)
+		} else if m.Winner == m.Team1ID {
+			return fmt.Sprintf("Won %s by %f", ScoreString, m.GetTeam1().Name)
+		} else if m.Winner == m.Team2ID {
+			return fmt.Sprintf("Won %s by %f", ScoreString, m.GetTeam2().Name)
 		} else {
-			return fmt.Sprintf("Tied %s", score_string)
+			return fmt.Sprintf("Tied %s", ScoreString)
 		}
 	} else {
 		return "Cancelled"
@@ -360,7 +360,7 @@ func (m *MatchData) GetStatusString(ShowWinner bool) string {
 
 func (m *MatchData) GetVSString() string {
 	team1 := m.GetTeam1()
-	team2 := m.GEtTeam2()
+	team2 := m.GetTeam2()
 	scores := m.GetCurrentScore()
 	str := fmt.Sprintf("%s VS %s (%d:%d)", team1.GetNameURLHtml(), team2.GetNameURLHtml(), scores[0], scores[1])
 	return str
@@ -371,15 +371,15 @@ func (m *MatchData) Finalized() bool {
 }
 
 func (m *MatchData) Pending() bool {
-	return m.StartTime == nil && !m.cancelled
+	return m.StartTime == nil && !m.Cancelled
 }
 
 func (m *MatchData) Finished() bool {
-	return m.EndTime == nil && !m.cancelled
+	return m.EndTime == nil && !m.Cancelled
 }
 
 func (m *MatchData) Live() bool {
-	return m.StartTime != nil && m.EndTime == nil && !m.cancelled()
+	return m.StartTime != nil && m.EndTime == nil && !m.Cancelled()
 }
 
 func (m *MatchData) GetServer() int {
