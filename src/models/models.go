@@ -11,7 +11,6 @@ import (
 	//_ "html/template"
 	_ "net/http"
 	_ "strconv"
-	"time"
 )
 
 type UserData struct {
@@ -78,8 +77,8 @@ type MatchData struct {
 	PluginVersion string
 	forfeit       bool
 	cancelled     bool
-	StartTime     time.Time
-	EndTime       time.Time
+	StartTime     sql.NullTime
+	EndTime       sql.NullTime
 	MaxMaps       int
 	title         string
 	SkipVeto      bool
@@ -92,13 +91,13 @@ type MatchData struct {
 type SQLMatchData struct {
 	Id             int
 	User_id        int
-	Server_id      interface{}
+	Server_id      sql.NullInt64
 	Team1_id       int
 	Team2_id       int
 	Winner         sql.NullInt64
 	Cancelled      bool
-	Start_time     interface{}
-	End_time       interface{}
+	Start_time     sql.NullTime
+	End_time       sql.NullTime
 	Max_maps       int
 	Title          string
 	Skip_veto      bool
@@ -120,8 +119,8 @@ type MapStatsData struct {
 	MatchID    int
 	MapNumber  int
 	MapName    string
-	StartTime  time.Time
-	EndTIme    time.Time
+	StartTime  sql.NullTime
+	EndTIme    sql.NullTime
 	Winner     int
 	Team1Score int
 	Team2Score int
@@ -132,9 +131,9 @@ type SQLMapStatsData struct {
 	Match_id    int
 	Map_number  int
 	Map_name    string
-	Start_time  interface{}
-	End_time    interface{}
-	Winner      interface{}
+	Start_time  sql.NullTime
+	End_time    sql.NullTime
+	Winner      sql.NullInt64
 	Team1_score int
 	Team2_score int
 }

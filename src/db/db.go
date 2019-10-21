@@ -49,7 +49,7 @@ func (s *DBdatas) Ping() error {
 }
 
 func (s *DBdatas) InitOrReconnect() error {
-	sqloption := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s", s.User, s.Pass, s.Host, s.Port, s.Db)
+	sqloption := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?parseTime=true", s.User, s.Pass, s.Host, s.Port, s.Db)
 	//fmt.Println(sqloption)
 	if s.sql == nil {
 		s.sql, _ = sql.Open("mysql", sqloption)
