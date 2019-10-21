@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/FlowingSPDG/get5-web-go/src/db"
 
-	"github.com/FlowingSPDG/get5-web-go/src/models"
 	"github.com/FlowingSPDG/get5-web-go/templates"
 	"github.com/gorilla/mux"
 	_ "github.com/gorilla/sessions"
@@ -36,7 +35,7 @@ func ServerDeleteHandler(w http.ResponseWriter, r *http.Request) {
 
 func MyServersHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r) //パスパラメータ取得
-	var servers []models.GameServerData
+	var servers []db.GameServerData
 
 	session, _ := db.SessionStore.Get(r, db.SessionData)
 	fmt.Printf("TeamsHandler\nvars : %v", vars)
@@ -56,9 +55,9 @@ func MyServersHandler(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/login", 302)
 	}
 
-	servers, _ = db.SQLAccess.MySQLGetGameServerData(20, "user_id = "+userid)
+	servers, _ = db.SQLAccess.MySQLGetGameServerData(20, "user_id", userid)
 
-	PageData := &models.MyserversPageData{
+	PageData := &db.MyserversPageData{
 		Servers:  servers,
 		LoggedIn: loggedin,
 	}

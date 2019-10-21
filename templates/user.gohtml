@@ -1,9 +1,9 @@
 @{
 	import (
 		"github.com/FlowingSPDG/get5-web-go/templates/layout"
-		"github.com/FlowingSPDG/get5-web-go/src/models"
+		db "github.com/FlowingSPDG/get5-web-go/src/db"
 	)
-	var u *models.UserPageData
+	var u *db.UserPageData
 	layout := layout.Base
 }
 
@@ -28,8 +28,8 @@
     <div class="panel-heading">User information</div>
     <div class="panel-body">
       Name: @u.User.Name}<br>
-      Steam account: <a href="https://steamcommunity.com/profiles/@u.User.Steam_id"> {u.User.Steam_id}}</a> <br>
-      Teams saved: <a href="/teams/@u.User.Steam_id"> {{displaying_user.teams.count()}}</a> <br>
+      Steam account: <a href="https://steamcommunity.com/profiles/@u.User.SteamID"> {u.User.SteamID}}</a> <br>
+      Teams saved: <a href="/teams/@u.User.SteamID"> {{displaying_user.teams.count()}}</a> <br>
       Matches created: <a href="/matches/{{displaying_user.id}}"> {{displaying_user.matches.count()}}</a> <br>
     </div>
   </div>

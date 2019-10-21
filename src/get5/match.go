@@ -14,7 +14,6 @@ import (
 	_ "time"
 
 	"github.com/FlowingSPDG/get5-web-go/src/db"
-	"github.com/FlowingSPDG/get5-web-go/src/models"
 	"github.com/FlowingSPDG/get5-web-go/templates"
 )
 
@@ -89,19 +88,17 @@ func MatchesHandler(w http.ResponseWriter, r *http.Request) {
 	loggedin := false
 	session, _ := db.SessionStore.Get(r, db.SessionData)
 
-	matches, err := db.SQLAccess.MySQLGetMatchData(20, "")
+	matches, err := db.SQLAccess.MySQLGetMatchData(20, "", "")
 	if err != nil {
 		panic(err)
 	}
 
-	u := &models.MatchesPageData{
+	u := &db.MatchesPageData{
 		LoggedIn: loggedin,
 		UserName: name,
 		UserID:   userid,
 		Matches:  matches,
 	}
-
-	fmt.Println(matches[0].Team1_id)
 
 	if _, ok := session.Values["Loggedin"]; ok { // FUCK.
 		if _, ok := session.Values["Name"]; ok {
@@ -126,7 +123,7 @@ func MatchesWithIDHandler(w http.ResponseWriter, r *http.Request) {
 	userid := 0
 	session, _ := db.SessionStore.Get(r, db.SessionData)
 
-	u := &models.MatchesPageData{
+	u := &db.MatchesPageData{
 		LoggedIn: false,
 		UserName: name,
 		UserID:   userid,
@@ -145,7 +142,7 @@ func MatchesWithIDHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	matches, err := db.SQLAccess.MySQLGetMatchData(20, "user_id="+vars["userID"])
+	matches, err := db.SQLAccess.MySQLGetMatchData(20, "user_id", vars["userID"])
 
 	u.Matches = matches
 
@@ -166,7 +163,7 @@ func MyMatchesHandler(w http.ResponseWriter, r *http.Request) {
 	loggedin := false
 	session, _ := db.SessionStore.Get(r, db.SessionData)
 
-	u := &models.MatchesPageData{
+	u := &db.MatchesPageData{
 		LoggedIn: loggedin,
 		UserName: name,
 		UserID:   userid,
@@ -190,7 +187,7 @@ func MyMatchesHandler(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/login", 302)
 	}
 
-	matches, err := db.SQLAccess.MySQLGetMatchData(20, "user_id="+strconv.Itoa(userid))
+	matches, err := db.SQLAccess.MySQLGetMatchData(20, "user_id", strconv.Itoa(userid))
 
 	u.Matches = matches
 

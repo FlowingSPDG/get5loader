@@ -5,7 +5,7 @@
 package templates
 
 import (
-	"github.com/FlowingSPDG/get5-web-go/src/models"
+	db "github.com/FlowingSPDG/get5-web-go/src/db"
 	"github.com/FlowingSPDG/get5-web-go/templates/layout"
 	"github.com/sipin/gorazor/gorazor"
 	"io"
@@ -13,14 +13,14 @@ import (
 )
 
 // Team generates templates/team.gohtml
-func Team(u *models.TeamPageData) string {
+func Team(u *db.TeamPageData) string {
 	var _b strings.Builder
 	RenderTeam(&_b, u)
 	return _b.String()
 }
 
 // RenderTeam render templates/team.gohtml
-func RenderTeam(_buffer io.StringWriter, u *models.TeamPageData) {
+func RenderTeam(_buffer io.StringWriter, u *db.TeamPageData) {
 
 	_body := func(_buffer io.StringWriter) {
 
@@ -55,14 +55,14 @@ func RenderTeam(_buffer io.StringWriter, u *models.TeamPageData) {
 		_buffer.WriteString("<div id=\"content\">\n\n  <div class=\"container\">\n    <h1>\n      {{ team.get_flag_html(1.0) }} ")
 		_buffer.WriteString(gorazor.HTMLEscape(u.Team.Name))
 		_buffer.WriteString(" {{ team.get_logo_html(1.0) }}\n      {% if team.can_edit(user) %}\n      <div class=\"pull-right\">\n        <a href=\"/team/")
-		_buffer.WriteString(gorazor.HTMLEscape(u.Team.Id))
+		_buffer.WriteString(gorazor.HTMLEscape(u.Team.ID))
 		_buffer.WriteString("/edit\" class=\"btn btn-primary btn-xs\">Edit</a>\n      </div>\n      {% endif %}\n    </h1>\n\n    <br>\n\n    <div class=\"panel panel-default\">\n      <div class=\"panel-heading\">Players</div>\n      <div class=\"panel-body\">\n          ")
-		for i := 0; i < len(u.Team.Auth); i++ {
+		for i := 0; i < len(u.Team.Auths); i++ {
 
 			_buffer.WriteString("<a href=\"http://steamcommunity.com/profiles/")
-			_buffer.WriteString(gorazor.HTMLEscape(u.Team.Auth[i]))
+			_buffer.WriteString(gorazor.HTMLEscape(u.Team.Auths[i]))
 			_buffer.WriteString("\" class=\"col-sm-offset-0\"> ")
-			_buffer.WriteString(gorazor.HTMLEscape(u.Team.Auth[i]))
+			_buffer.WriteString(gorazor.HTMLEscape(u.Team.Auths[i]))
 			_buffer.WriteString(" </a>")
 
 			_buffer.WriteString("<p>if name\n            {{name}}\n            endif</p>")

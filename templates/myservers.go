@@ -5,7 +5,7 @@
 package templates
 
 import (
-	"github.com/FlowingSPDG/get5-web-go/src/models"
+	db "github.com/FlowingSPDG/get5-web-go/src/db"
 	"github.com/FlowingSPDG/get5-web-go/templates/layout"
 	"github.com/sipin/gorazor/gorazor"
 	"io"
@@ -13,14 +13,14 @@ import (
 )
 
 // Myservers generates templates/myservers.gohtml
-func Myservers(u *models.MyserversPageData) string {
+func Myservers(u *db.MyserversPageData) string {
 	var _b strings.Builder
 	RenderMyservers(&_b, u)
 	return _b.String()
 }
 
 // RenderMyservers render templates/myservers.gohtml
-func RenderMyservers(_buffer io.StringWriter, u *models.MyserversPageData) {
+func RenderMyservers(_buffer io.StringWriter, u *db.MyserversPageData) {
 
 	_body := func(_buffer io.StringWriter) {
 

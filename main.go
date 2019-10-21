@@ -43,24 +43,6 @@ func init() {
 		SQLDBName: c.Section("sql").Key("database").MustString(""),
 	}
 	HOST = Cnf.HOST
-	db.SQLAccess = db.DBdatas{
-		Host: Cnf.SQLHost,
-		User: Cnf.SQLUser,
-		Pass: Cnf.SQLPass,
-		Db:   Cnf.SQLDBName,
-		Port: Cnf.SQLPort,
-	}
-
-	err := db.SQLAccess.InitOrReconnect()
-	if err != nil {
-		fmt.Println(err)
-		panic(err)
-	}
-	err = db.SQLAccess.Ping()
-	if err != nil {
-		fmt.Println(err)
-		panic(err)
-	}
 	fmt.Println(db.SQLAccess)
 }
 
