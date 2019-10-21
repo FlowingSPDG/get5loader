@@ -3,12 +3,15 @@ package db
 import (
 	"database/sql"
 	"fmt"
-	"strings"
+	// "strings"
 	//"github.com/Philipp15b/go-steam"
-	"github.com/FlowingSPDG/go-steamapi"
+	_ "github.com/FlowingSPDG/go-steamapi"
 	"github.com/go-ini/ini"
 	_ "github.com/gorilla/mux"
 	_ "github.com/gorilla/sessions"
+	"github.com/jinzhu/gorm"
+	//"github.com/jinzhu/gorm"
+	_ "github.com/jinzhu/gorm/dialects/mysql"
 	steam "github.com/kidoman/go-steam"
 	//"github.com/solovev/steam_go"
 	//_ "html/template"
@@ -23,67 +26,40 @@ func init() {
 }
 
 type UserData struct {
-	ID      int
-	SteamID string
-	Name    string
-	Admin   bool
+	ID      int    `gorm:"primary_key"column:id`
+	SteamID string `gorm:"column:steam_id"`
+	Name    string `gorm:"column:name"`
+	Admin   bool   `gorm:"column:admin"`
 	Servers []GameServerData
 	Teams   []TeamData
 	Matches []MatchData
 }
 
-func (u *UserData) GetOrCreate(s *sql.DB, steamid string) (*UserData, error) {
-	var EmptyUser *UserData
-	var SQLUserData SQLUserData
-	err := s.Ping()
-	if err != nil {
-		return EmptyUser, err
-	}
+func (u *UserData) TableName() string {
+	return "user"
+}
 
-	//データベースへクエリを送信。引っ張ってきたデータがrowsに入る。
-	q := fmt.Sprintf("SELECT * FROM `user` WHERE steam_id=%s LIMIT 1 ", steamid)
-	fmt.Println(q)
-	rows, err := s.Query(q)
-	if err != nil {
+func (u *UserData) GetOrCreate(g *gorm.DB, steamid string) (*UserData, error) {
+	var User *UserData
+	SQLUserData := UserData{}
+	SQLUserData.SteamID = steamid
+
+	if g.Find(&SQLUserData).RecordNotFound() {
 		fmt.Println("USER NOT EXIST")
-		return EmptyUser, err
 	}
-	defer rows.Close()
-	if rows.Next() {
-		err := rows.Scan(&SQLUserData.Id, &SQLUserData.Steam_id, &SQLUserData.Name, &SQLUserData.Admin)
-		if err != nil {
-			return EmptyUser, err
-		}
-		fmt.Printf("UserData : %v", SQLUserData)
-		u.ID = SQLUserData.Id
-		u.Name = SQLUserData.Name
-		u.SteamID = SQLUserData.Steam_id
-		u.Admin = SQLUserData.Admin
-		return u, nil
-	} else {
-		fmt.Println("USER NOT EXIST. REGISTER!")
-		//playerinfo, err := steam_go.GetPlayerSummaries(steamid, SteamAPIKey)
-		steamid64, _ := strconv.Atoi(steamid)
-		steamid64arr := []uint64{uint64(steamid64)}
-		playersumamry, err := steamapi.GetPlayerSummaries(steamid64arr, SteamAPIKey)
-		fmt.Printf("\nsteamid : %s / SteamAPIKey : %s\n", steamid, SteamAPIKey)
-		fmt.Println(playersumamry)
-
-		if err != nil { // fix here
-			fmt.Println(err)
-			return EmptyUser, err
-		}
-
-		q := fmt.Sprintf("INSERT INTO `user` (steam_id,name,admin) values (%s,'%s',0);", steamid, playersumamry[0].PersonaName)
+	fmt.Println("USER EXIST?")
+	User.Name = SQLUserData.Name
+	User.ID = SQLUserData.ID
+	User.Admin = SQLUserData.Admin
+	User.SteamID = SQLUserData.SteamID
+	return User, nil
+	/*
+		//データベースへクエリを送信。引っ張ってきたデータがrowsに入る。
+		q := fmt.Sprintf("SELECT * FROM `user` WHERE steam_id=%s LIMIT 1 ", steamid)
 		fmt.Println(q)
-		res, err := s.Exec(q)
-		if err != nil {
-			return EmptyUser, err
-		}
-		fmt.Println(res)
 		rows, err := s.Query(q)
 		if err != nil {
-			fmt.Println("UNKNOWN FAIL")
+			fmt.Println("USER NOT EXIST")
 			return EmptyUser, err
 		}
 		defer rows.Close()
@@ -98,9 +74,48 @@ func (u *UserData) GetOrCreate(s *sql.DB, steamid string) (*UserData, error) {
 			u.SteamID = SQLUserData.Steam_id
 			u.Admin = SQLUserData.Admin
 			return u, nil
+		} else {
+			fmt.Println("USER NOT EXIST. REGISTER!")
+			//playerinfo, err := steam_go.GetPlayerSummaries(steamid, SteamAPIKey)
+			steamid64, _ := strconv.Atoi(steamid)
+			steamid64arr := []uint64{uint64(steamid64)}
+			playersumamry, err := steamapi.GetPlayerSummaries(steamid64arr, SteamAPIKey)
+			fmt.Printf("\nsteamid : %s / SteamAPIKey : %s\n", steamid, SteamAPIKey)
+			fmt.Println(playersumamry)
+
+			if err != nil { // fix here
+				fmt.Println(err)
+				return EmptyUser, err
+			}
+
+			q := fmt.Sprintf("INSERT INTO `user` (steam_id,name,admin) values (%s,'%s',0);", steamid, playersumamry[0].PersonaName)
+			fmt.Println(q)
+			res, err := s.Exec(q)
+			if err != nil {
+				return EmptyUser, err
+			}
+			fmt.Println(res)
+			rows, err := s.Query(q)
+			if err != nil {
+				fmt.Println("UNKNOWN FAIL")
+				return EmptyUser, err
+			}
+			defer rows.Close()
+			if rows.Next() {
+				err := rows.Scan(&SQLUserData.Id, &SQLUserData.Steam_id, &SQLUserData.Name, &SQLUserData.Admin)
+				if err != nil {
+					return EmptyUser, err
+				}
+				fmt.Printf("UserData : %v", SQLUserData)
+				u.ID = SQLUserData.Id
+				u.Name = SQLUserData.Name
+				u.SteamID = SQLUserData.Steam_id
+				u.Admin = SQLUserData.Admin
+				return u, nil
+			}
+			return EmptyUser, err
 		}
-		return EmptyUser, err
-	}
+	*/
 }
 
 func (u *UserData) GetURL() string {
@@ -115,22 +130,15 @@ func (u *UserData) get_recent_matches(limit int) string {
 	return "http://steamcommunity.com/profiles/" + u.SteamID
 }
 
-type SQLUserData struct {
-	Id       int
-	Steam_id string
-	Name     string
-	Admin    bool
-}
-
 type GameServerData struct {
-	Id            int
-	User_id       int
-	In_use        bool
-	Ip_string     string
-	Port          int
-	Rcon_password string
-	Display_name  string
-	Public_server bool
+	Id            int    `gorm:"primary_key"column:id`
+	User_id       int    `gorm:"column:user_id"`
+	In_use        bool   `gorm:"column:in_use"`
+	Ip_string     string `gorm:"column:ip_string"`
+	Port          int    `gorm:"column:port"`
+	Rcon_password string `gorm:"column:rcon_password"`
+	Display_name  string `gorm:"column:display_name"`
+	Public_server bool   `gorm:"column:public_server"`
 }
 
 func (g *GameServerData) Create(userid int, display_name string, ip_string string, port int, rcon_password string, public_server bool) *GameServerData {
@@ -171,15 +179,15 @@ func (g *GameServerData) GetDisplay() string {
 }*/
 
 type TeamData struct {
-	ID     int
-	UserID int
-	Name   string
-	Tag    string
-	Flag   string
-	Logo   string
+	ID     int    `gorm:"primary_key"column:id`
+	UserID int    `gorm:"column:user_id"`
+	Name   string `gorm:"column:name"`
+	Tag    string `gorm:"column:tag"`
+	Flag   string `gorm:"column:flag"`
+	Logo   string `gorm:"column:logo"`
 	//Auths      []string
-	Auths      []byte
-	PublicTeam bool
+	Auths      []byte `gorm:"column:auth"`
+	PublicTeam bool   `gorm:"column:public_team"`
 }
 
 func (t *TeamData) Create(userid int, name string, tag string, flag string, logo string, auths []byte, public_team bool) *TeamData {
@@ -228,12 +236,14 @@ func (t *TeamData) GetPlayers(userid int) bool {
 }
 */
 
+/*
 func (t *TeamData) CanDelete(userid int) bool {
 	if t.CanEdit(userid) == false {
 		return false
 	}
 	return len(t.GetRecentMatches()) == 0
 }
+*/
 
 /*
 func (t *TeamData) GetRecentMatches(limit int) []SQLMatchData {
@@ -254,63 +264,63 @@ func (t *TeamData) GetFlagHTML(scale float32) string {
 	return html
 }
 
-/*
 func (t *TeamData) GetLogoHtml(scale float32) string {
-
+	if t.Logo == "" {
+		return ""
+	}
+	width := 32 * scale
+	height := 32 * scale
+	html := fmt.Sprintf(`<img src="%s"  width="%f" height="%f">`, t.Logo, width, height)
+	return html
 }
-*/
 
 func (t *TeamData) GetURL() string {
 	return fmt.Sprintf("http://%s/team/%d", Cnf.HOST, t.ID)
 }
 
-/*
 func (t *TeamData) GetNameURLHtml() string {
-	return `<a href="%s">%s</a>`.format(self.get_url(), self.name)
-}*/
-
-/*
-func (t *TeamData) GetLogoOrFlagHtml(scale float32) string {
-
+	return fmt.Sprintf(`<a href="%s">%s</a>`, t.GetURL(), t.Name)
 }
-*/
 
-type SQLTeamData struct {
-	Id          int
-	User_id     int
-	Name        string
-	Flag        string
-	Logo        string
-	Auth        []byte // not []byte...?
-	Tag         string
-	Public_team bool
+func (t *TeamData) GetLogoOrFlagHtml(scale float32, otherteam TeamData) string {
+	if t.Logo == "" && otherteam.Logo != "" { // or otherteam is empty...
+		return t.GetLogoHtml(scale)
+	}
+	return t.GetFlagHTML(scale)
+}
+
+func (m *TeamData) TableName() string {
+	return "team"
 }
 
 type MatchData struct {
-	ID            int64
-	UserID        int64
-	ServerID      int64
-	Team1ID       int64
-	Team1Score    int
-	Team1String   string
-	Team2ID       int64
-	Team2Score    int
-	Team2String   string
-	Winner        int64
-	PluginVersion string
-	Forfeit       bool
-	Cancelled     bool
-	StartTime     sql.NullTime
-	EndTime       sql.NullTime
-	MaxMaps       int
-	Title         string
-	SkipVeto      bool
-	APIKey        string
+	ID            int64         `gorm:"primary_key"column:id`
+	UserID        int64         `gorm:"column:user_id"`
+	ServerID      int64         `gorm:"column:server_id"`
+	Team1ID       int64         `gorm:"column:team1_id"`
+	Team2ID       int64         `gorm:"column:team2_id"`
+	Winner        sql.NullInt64 `gorm:"column:winner"`
+	Cancelled     bool          `gorm:"column:cancelled"`
+	StartTime     sql.NullTime  `gorm:"column:start_time"`
+	EndTime       sql.NullTime  `gorm:"column:end_time"`
+	MaxMaps       int           `gorm:"column:max_maps"`
+	Title         string        `gorm:"column:title"`
+	SkipVeto      bool          `gorm:"column:skip_veto"`
+	APIKey        string        `gorm:"column:api_key"`
+	VetoMapPool   string        `gorm:"column:veto_mappool"`
+	Team1Score    int           `gorm:"column:team1_score"`
+	Team2Score    int           `gorm:"column:team2_score"`
+	Team1String   string        `gorm:"column:team1_string"`
+	Team2String   string        `gorm:"column:team2_string"`
+	Forfeit       bool          `gorm:"column:forfeit"`
+	PluginVersion string        `gorm:"column:plugin_version"`
 
-	VetoMapPool []string
-	MapStats    []MapStatsData
+	MapStats []MapStatsData
+	Server   GameServerData
+}
 
-	Server GameServerData
+func (u *MatchData) TableName() string {
+	return "match"
 }
 
 func (m *MatchData) Create(userid int64, team1_id int64, team2_id int64, team1_string string, team2_string string, max_maps int, skip_veto bool, title string, veto_mappool string, server_id int64) *MatchData {
@@ -319,37 +329,44 @@ func (m *MatchData) Create(userid int64, team1_id int64, team2_id int64, team1_s
 	m.Team2ID = team2_id
 	m.SkipVeto = skip_veto
 	m.Title = title
-	m.VetoMapPool = strings.Split(veto_mappool, ",") // should work
+	m.VetoMapPool = veto_mappool // array...?
 	m.ServerID = server_id
 	m.MaxMaps = max_maps
 	m.APIKey = "" //random?
 	return m
 }
 
-func (m *MatchData) GetStatusString(ShowWinner bool) string {
+func (m *MatchData) GetStatusString(ShowWinner bool) (string, error) {
 	if m.Pending() {
-		return "Pending"
+		return "Pending", nil
 	} else if m.Live() {
 		teams1core, team2score := m.GetCurrentScore()
-		return fmt.Sprintf("Live, %d:%d", teams1core, team2score)
+		return fmt.Sprintf("Live, %d:%d", teams1core, team2score), nil
 	} else if m.Finished() {
 		teams1core, team2score := m.GetCurrentScore()
 		minscore := math.Min(float64(teams1core), float64(team2score))
 		maxscore := math.Max(float64(teams1core), float64(team2score))
 		ScoreString := fmt.Sprintf("%f:%f", maxscore, minscore)
+		winner, _ := m.Winner.Value()
 		if !ShowWinner {
-			return "Finished"
-		} else if m.Winner == m.Team1ID {
+			return "Finished", nil
+		} else if winner == m.Team1ID {
 			team1, err := m.GetTeam1()
-			return fmt.Sprintf("Won %s by %f", ScoreString, team1.Name)
-		} else if m.Winner == m.Team2ID {
+			if err != nil {
+				return "", err
+			}
+			return fmt.Sprintf("Won %s by %f", ScoreString, team1.Name), nil
+		} else if winner == m.Team2ID {
 			team2, err := m.GetTeam2()
-			return fmt.Sprintf("Won %s by %f", ScoreString, team2.Name)
+			if err != nil {
+				return "", err
+			}
+			return fmt.Sprintf("Won %s by %f", ScoreString, team2.Name), nil
 		} else {
-			return fmt.Sprintf("Tied %s", ScoreString)
+			return fmt.Sprintf("Tied %s", ScoreString), nil
 		}
 	} else {
-		return "Cancelled"
+		return "Cancelled", nil
 	}
 }
 
@@ -401,15 +418,14 @@ func (m *MatchData) GetCurrentScore() (int, int) {
 
 func (m *MatchData) GetTeam1() (TeamData, error) {
 	var Team = TeamData{}
-	q := fmt.Sprintf("id=%f", m.Team1ID)
-	STeam, err := SQLAccess.MySQLGetTeamData(1, q)
-	Team.ID = STeam[0].Id
+	STeam, err := SQLAccess.MySQLGetTeamData(1, "id", strconv.Itoa(int(m.Team1ID)))
+	Team.ID = STeam[0].ID
 	Team.Name = STeam[0].Name
 	Team.Tag = STeam[0].Tag
 	Team.Flag = STeam[0].Flag
 	Team.Logo = STeam[0].Logo
-	Team.Auths = STeam[0].Auth
-	Team.PublicTeam = STeam[0].Public_team
+	Team.Auths = STeam[0].Auths
+	Team.PublicTeam = STeam[0].PublicTeam
 	if err != nil {
 		return Team, err
 	}
@@ -418,15 +434,14 @@ func (m *MatchData) GetTeam1() (TeamData, error) {
 
 func (m *MatchData) GetTeam2() (TeamData, error) {
 	var Team = TeamData{}
-	q := fmt.Sprintf("id=%f", m.Team2ID)
-	STeam, err := SQLAccess.MySQLGetTeamData(1, q)
-	Team.ID = STeam[0].Id
+	STeam, err := SQLAccess.MySQLGetTeamData(1, "id", strconv.Itoa(int(m.Team2ID)))
+	Team.ID = STeam[0].ID
 	Team.Name = STeam[0].Name
 	Team.Tag = STeam[0].Tag
 	Team.Flag = STeam[0].Flag
 	Team.Logo = STeam[0].Logo
-	Team.Auths = STeam[0].Auth
-	Team.PublicTeam = STeam[0].Public_team
+	Team.Auths = STeam[0].Auths
+	Team.PublicTeam = STeam[0].PublicTeam
 	if err != nil {
 		return Team, err
 	}
@@ -449,42 +464,16 @@ func (m *MatchData) GetTeam2() (TeamData, error) {
 	//return m.UserID //get5 thing??
 }*/
 
-type SQLMatchData struct {
-	Id             int
-	User_id        int
-	Server_id      sql.NullInt64
-	Team1_id       int
-	Team2_id       int
-	Winner         sql.NullInt64
-	Cancelled      bool
-	Start_time     sql.NullTime
-	End_time       sql.NullTime
-	Max_maps       int
-	Title          string
-	Skip_veto      bool
-	Api_key        string
-	Veto_mappool   string
-	Team1_score    int
-	Team2_score    int
-	Team1_string   string
-	Team2_string   string
-	Forfeit        bool
-	Plugin_version string
-
-	//VetoMapPool []string
-	//MapStats    []MapStatsData
-}
-
 type MapStatsData struct {
-	ID         int
-	MatchID    int
-	MapNumber  int
-	MapName    string
-	StartTime  sql.NullTime
-	EndTIme    sql.NullTime
-	Winner     int
-	Team1Score int
-	Team2Score int
+	ID         int          `gorm:"primary_key"column:id`
+	MatchID    int          `gorm:"column:match_id"`
+	MapNumber  int          `gorm:"column:map_number"`
+	MapName    string       `gorm:"column:map_name"`
+	StartTime  sql.NullTime `gorm:"column:start_time"`
+	EndTIme    sql.NullTime `gorm:"column:end_time"`
+	Winner     int          `gorm:"column:winner"`
+	Team1Score int          `gorm:"column:team1_score"`
+	Team2Score int          `gorm:"column:team2_score"`
 }
 
 /*func (m *MapStatsData) GetOrCreate(matchID int,MapNumber int,mapname string){
@@ -492,7 +481,7 @@ type MapStatsData struct {
 }*/
 
 type SQLMapStatsData struct {
-	Id          int
+	Id          int `gorm:"primary_key"`
 	Match_id    int
 	Map_number  int
 	Map_name    string
@@ -504,7 +493,7 @@ type SQLMapStatsData struct {
 }
 
 type SQLPlayerStatsData struct {
-	Id                int
+	Id                int `gorm:"primary_key"`
 	Match_id          int
 	Map_id            int
 	Team_id           int
@@ -541,25 +530,22 @@ func (p *SQLPlayerStatsData) GetOrCreate() {
 
 }
 
-func (p *SQLPlayerStatsData) GetSteamURL() {
+func (p *SQLPlayerStatsData) GetSteamURL() string {
 	return fmt.Sprintf("http://steamcommunity.com/profiles/%s", p.Steam_id)
 }
 
-/*func (p *SQLPlayerStatsData) GetRating() {
-	AverageKPR = 0.679
-	AverageSPR = 0.317
-	AverageRMK = 1.277
-	KillRating = float(self.kills) / float(self.roundsplayed) / AverageKPR
-	SurvivalRating = float(self.roundsplayed -
-						   self.deaths) / self.roundsplayed / AverageSPR
-	killcount = float(self.k1 + 4 * self.k2 + 9 *
-					  self.k3 + 16 * self.k4 + 25 * self.k5)
-	RoundsWithMultipleKillsRating = killcount / \
-		self.roundsplayed / AverageRMK
-	rating = (KillRating + 0.7 * SurvivalRating +
-			  RoundsWithMultipleKillsRating) / 2.7
+func (p *SQLPlayerStatsData) GetRating() float32 { // Rating value can be more accurate??
+	var AverageKPR float32 = 0.679
+	var AverageSPR float32 = 0.317
+	var AverageRMK float32 = 1.277
+	var KillRating float32 = float32(p.Kills) / float32(p.Roundsplayed) / AverageKPR
+	var SurvivalRating float32 = float32(p.Roundsplayed-p.Deaths) / float32(p.Roundsplayed) / float32(AverageSPR)
+	var killcount float32 = float32(p.K1 + 4*p.K2 + 9*p.K3 + 16*p.K4 + 25*p.K5)
+	var RoundsWithMultipleKillsRating float32 = killcount / float32(p.Roundsplayed) / float32(AverageRMK)
+	var rating float32 = (KillRating + 0.7*SurvivalRating + RoundsWithMultipleKillsRating) / 2.7
 	return rating
-}*/
+}
+
 func (p *SQLPlayerStatsData) GetKDR() int {
 	if p.Deaths == 0 {
 		return p.Kills
@@ -569,7 +555,7 @@ func (p *SQLPlayerStatsData) GetKDR() int {
 
 func (p *SQLPlayerStatsData) GetHSP() float32 {
 	if p.Deaths == 0 {
-		return p.Kills
+		return float32(p.Kills)
 	}
 	return float32(p.Headshot_kills / p.Kills)
 }
@@ -578,26 +564,26 @@ type MatchesPageData struct {
 	LoggedIn bool
 	UserName string
 	UserID   int
-	Matches  []SQLMatchData
+	Matches  []MatchData
 }
 
 type TeamsPageData struct {
 	LoggedIn   bool
-	User       SQLUserData
+	User       UserData
 	IsYourTeam bool
-	Teams      []SQLTeamData
+	Teams      []TeamData
 }
 
 type TeamPageData struct {
 	LoggedIn   bool
 	IsYourTeam bool
-	Team       SQLTeamData
+	Team       TeamData
 }
 
 type UserPageData struct {
 	LoggedIn bool
-	User     SQLUserData
-	Teams    []SQLTeamData
+	User     UserData
+	Teams    []TeamData
 }
 
 type MyserversPageData struct {

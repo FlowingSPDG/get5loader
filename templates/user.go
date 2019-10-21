@@ -5,7 +5,7 @@
 package templates
 
 import (
-	"github.com/FlowingSPDG/get5-web-go/src/models"
+	db "github.com/FlowingSPDG/get5-web-go/src/db"
 	"github.com/FlowingSPDG/get5-web-go/templates/layout"
 	"github.com/sipin/gorazor/gorazor"
 	"io"
@@ -13,14 +13,14 @@ import (
 )
 
 // User generates templates/user.gohtml
-func User(u *models.UserPageData) string {
+func User(u *db.UserPageData) string {
 	var _b strings.Builder
 	RenderUser(&_b, u)
 	return _b.String()
 }
 
 // RenderUser render templates/user.gohtml
-func RenderUser(_buffer io.StringWriter, u *models.UserPageData) {
+func RenderUser(_buffer io.StringWriter, u *db.UserPageData) {
 
 	_body := func(_buffer io.StringWriter) {
 
@@ -57,9 +57,9 @@ func RenderUser(_buffer io.StringWriter, u *models.UserPageData) {
 
 	}
 	_buffer.WriteString("<br>\n      Steam account: <a href=\"https://steamcommunity.com/profiles/")
-	_buffer.WriteString(gorazor.HTMLEscape(u.User.Steam_id))
-	_buffer.WriteString("\"> {u.User.Steam_id}}</a> <br>\n      Teams saved: <a href=\"/teams/")
-	_buffer.WriteString(gorazor.HTMLEscape(u.User.Steam_id))
+	_buffer.WriteString(gorazor.HTMLEscape(u.User.SteamID))
+	_buffer.WriteString("\"> {u.User.SteamID}}</a> <br>\n      Teams saved: <a href=\"/teams/")
+	_buffer.WriteString(gorazor.HTMLEscape(u.User.SteamID))
 	_buffer.WriteString("\"> {{displaying_user.teams.count()}}</a> <br>\n      Matches created: <a href=\"/matches/{{displaying_user.id}}\"> {{displaying_user.matches.count()}}</a> <br>\n    </div>\n  </div>\n\n  <div class=\"panel panel-default\">\n    <div class=\"panel-heading\">Recent Matches</div>\n    <div class=\"panel-body\">\n      {% for match in displaying_user.get_recent_matches() %}\n        <a href=\"/match/{{match.id}}\">#{{match.id}}</a>: {{ match.get_vs_string() }}\n        <br>\n      {% endfor %}\n    </div>\n  </div>\n\n</div>\n\n}")
 
 	layout.RenderBase(_buffer, _body, _menu, _content)

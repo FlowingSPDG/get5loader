@@ -1,9 +1,9 @@
 @{
 	import (
 		"github.com/FlowingSPDG/get5-web-go/templates/layout"
-		"github.com/FlowingSPDG/get5-web-go/src/models"
+		db "github.com/FlowingSPDG/get5-web-go/src/db"
 	)
-	var u *models.TeamsPageData
+	var u *db.TeamsPageData
 	layout := layout.Base
 }
 
@@ -26,7 +26,7 @@
 			@if u.IsYourTeam == true {
   				<h1> Your teams </h1>
   			} else {
-  				<h1> Teams for <a href="/user/@u.User.Id"> @u.User.Name </a> </h1>
+  				<h1> Teams for <a href="/user/@u.User.ID"> @u.User.Name </a> </h1>
 			}
   	<ul class="list-group">
 
@@ -38,7 +38,7 @@
 		n:=u.Teams[i];
 
 		<li class="list-group-item">
-			<a href="/team/@n.Id" class="col-sm-offset-1"> @n.Name </a>
+			<a href="/team/@n.ID" class="col-sm-offset-1"> @n.Name </a>
 	  	</li>
 	}
   </ul>

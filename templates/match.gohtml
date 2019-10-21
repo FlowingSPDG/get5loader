@@ -1,11 +1,10 @@
 @{
 	import (
 		"github.com/FlowingSPDG/get5-web-go/templates/layout"
-		"github.com/FlowingSPDG/get5-web-go/src/models"
 		db "github.com/FlowingSPDG/get5-web-go/src/db"
 		"strconv"
 	)
-	var u *models.MatchesPageData
+	var u *db.MatchesPageData
 	layout := layout.Base
 }
 
@@ -38,15 +37,15 @@
     <tbody>
 	@{n:=u.Matches}
 	@for i:=0; i < len(n); i++ {
-		id:=n[i].Id
-		team1id:=n[i].Team1_id
-		team2id:=n[i].Team2_id
-		team1name,_:=db.SQLAccess.MySQLGetTeamData(1,"id="+strconv.Itoa(team1id))
-		team2name,_:=db.SQLAccess.MySQLGetTeamData(1,"id="+strconv.Itoa(team2id))
-		team1score:=strconv.Itoa(n[i].Team1_score)
-		team2score:=strconv.Itoa(n[i].Team2_score)
-		w,_:=db.SQLAccess.MySQLGetTeamData(1,"id="+strconv.Itoa(int(n[i].Winner.Int64)))
-		var winner models.SQLTeamData
+		id:=n[i].ID
+		team1id:=n[i].Team1ID
+		team2id:=n[i].Team2ID
+		team1name,_:=db.SQLAccess.MySQLGetTeamData(1,"id",strconv.Itoa(int(team1id)))
+		team2name,_:=db.SQLAccess.MySQLGetTeamData(1,"id",strconv.Itoa(int(team2id)))
+		team1score:=strconv.Itoa(n[i].Team1Score)
+		team2score:=strconv.Itoa(n[i].Team2Score)
+		w,_:=db.SQLAccess.MySQLGetTeamData(1,"id",strconv.Itoa(int(n[i].Winner.Int64)))
+		var winner db.TeamData
 		if len(w) > 0 {
 			winner.Name = w[0].Name
 		}

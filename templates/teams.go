@@ -5,7 +5,7 @@
 package templates
 
 import (
-	"github.com/FlowingSPDG/get5-web-go/src/models"
+	db "github.com/FlowingSPDG/get5-web-go/src/db"
 	"github.com/FlowingSPDG/get5-web-go/templates/layout"
 	"github.com/sipin/gorazor/gorazor"
 	"io"
@@ -13,14 +13,14 @@ import (
 )
 
 // Teams generates templates/teams.gohtml
-func Teams(u *models.TeamsPageData) string {
+func Teams(u *db.TeamsPageData) string {
 	var _b strings.Builder
 	RenderTeams(&_b, u)
 	return _b.String()
 }
 
 // RenderTeams render templates/teams.gohtml
-func RenderTeams(_buffer io.StringWriter, u *models.TeamsPageData) {
+func RenderTeams(_buffer io.StringWriter, u *db.TeamsPageData) {
 
 	_body := func(_buffer io.StringWriter) {
 
@@ -60,7 +60,7 @@ func RenderTeams(_buffer io.StringWriter, u *models.TeamsPageData) {
 		} else {
 
 			_buffer.WriteString("<h1> Teams for <a href=\"/user/")
-			_buffer.WriteString(gorazor.HTMLEscape(u.User.Id))
+			_buffer.WriteString(gorazor.HTMLEscape(u.User.ID))
 			_buffer.WriteString("\"> ")
 			_buffer.WriteString(gorazor.HTMLEscape(u.User.Name))
 			_buffer.WriteString(" </a> </h1>")
@@ -77,7 +77,7 @@ func RenderTeams(_buffer io.StringWriter, u *models.TeamsPageData) {
 			n := u.Teams[i]
 
 			_buffer.WriteString("<li class=\"list-group-item\">\n\t\t\t<a href=\"/team/")
-			_buffer.WriteString(gorazor.HTMLEscape(n.Id))
+			_buffer.WriteString(gorazor.HTMLEscape(n.ID))
 			_buffer.WriteString("\" class=\"col-sm-offset-1\"> ")
 			_buffer.WriteString(gorazor.HTMLEscape(n.Name))
 			_buffer.WriteString(" </a>\n\t  \t</li>")

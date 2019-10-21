@@ -3,7 +3,6 @@ package get5
 import (
 	"fmt"
 	"github.com/FlowingSPDG/get5-web-go/src/db"
-	"github.com/FlowingSPDG/get5-web-go/src/models"
 	"github.com/FlowingSPDG/get5-web-go/templates"
 	"github.com/gorilla/mux"
 	_ "github.com/gorilla/sessions"
@@ -38,8 +37,8 @@ func TeamHandler(w http.ResponseWriter, r *http.Request) { // NEED Team player's
 	vars := mux.Vars(r)
 	teamID := vars["teamID"]
 
-	var team []models.SQLTeamData
-	team, _ = db.SQLAccess.MySQLGetTeamData(1, "id = "+teamID)
+	var team []db.TeamData
+	team, _ = db.SQLAccess.MySQLGetTeamData(1, "id", teamID)
 
 	session, _ := db.SessionStore.Get(r, db.SessionData)
 	fmt.Printf("TeamHandler\nvars : %v", vars)
@@ -51,11 +50,11 @@ func TeamHandler(w http.ResponseWriter, r *http.Request) { // NEED Team player's
 		loggedin = session.Values["Loggedin"].(bool)
 		if _, ok := session.Values["UserID"]; ok {
 			fmt.Println("session.Values[UserID] : " + strconv.Itoa(session.Values["UserID"].(int)))
-			IsYourTeam = session.Values["UserID"].(int) == team[0].User_id
+			IsYourTeam = session.Values["UserID"].(int) == team[0].UserID
 		}
 	}
 
-	PageData := &models.TeamPageData{
+	PageData := &db.TeamPageData{
 		LoggedIn:   loggedin,
 		Team:       team[0],
 		IsYourTeam: IsYourTeam,
@@ -83,10 +82,10 @@ func TeamsHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		panic(err)
 	}
-	var user models.SQLUserData
-	var team []models.SQLTeamData
-	user, _ = db.SQLAccess.MySQLGetUserData(1, "id = "+vars["userID"])
-	team, _ = db.SQLAccess.MySQLGetTeamData(20, "user_id = "+vars["userID"])
+	var user db.UserData
+	var team []db.TeamData
+	user, _ = db.SQLAccess.MySQLGetUserData(1, "id", vars["userID"])
+	team, _ = db.SQLAccess.MySQLGetTeamData(20, "user_id", vars["userID"])
 
 	session, _ := db.SessionStore.Get(r, db.SessionData)
 	fmt.Printf("TeamsHandler\nvars : %v", vars)
@@ -102,13 +101,12 @@ func TeamsHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	PageData := &models.TeamsPageData{
+	PageData := &db.TeamsPageData{
 		LoggedIn:   loggedin,
 		User:       user,
 		Teams:      team,
 		IsYourTeam: IsYourTeam,
 	}
-	fmt.Println(team[0].Name)
 
 	fmt.Fprintf(w, templates.Teams(PageData)) // TODO
 }

@@ -6,7 +6,6 @@ package templates
 
 import (
 	db "github.com/FlowingSPDG/get5-web-go/src/db"
-	"github.com/FlowingSPDG/get5-web-go/src/models"
 	"github.com/FlowingSPDG/get5-web-go/templates/layout"
 	"github.com/sipin/gorazor/gorazor"
 	"io"
@@ -15,14 +14,14 @@ import (
 )
 
 // Match generates templates/match.gohtml
-func Match(u *models.MatchesPageData) string {
+func Match(u *db.MatchesPageData) string {
 	var _b strings.Builder
 	RenderMatch(&_b, u)
 	return _b.String()
 }
 
 // RenderMatch render templates/match.gohtml
-func RenderMatch(_buffer io.StringWriter, u *models.MatchesPageData) {
+func RenderMatch(_buffer io.StringWriter, u *db.MatchesPageData) {
 
 	_body := func(_buffer io.StringWriter) {
 
@@ -58,15 +57,15 @@ func RenderMatch(_buffer io.StringWriter, u *models.MatchesPageData) {
 		n := u.Matches
 		_buffer.WriteString("\n\t")
 		for i := 0; i < len(n); i++ {
-			id := n[i].Id
-			team1id := n[i].Team1_id
-			team2id := n[i].Team2_id
-			team1name, _ := db.SQLAccess.MySQLGetTeamData(1, "id="+strconv.Itoa(team1id))
-			team2name, _ := db.SQLAccess.MySQLGetTeamData(1, "id="+strconv.Itoa(team2id))
-			team1score := strconv.Itoa(n[i].Team1_score)
-			team2score := strconv.Itoa(n[i].Team2_score)
-			w, _ := db.SQLAccess.MySQLGetTeamData(1, "id="+strconv.Itoa(int(n[i].Winner.Int64)))
-			var winner models.SQLTeamData
+			id := n[i].ID
+			team1id := n[i].Team1ID
+			team2id := n[i].Team2ID
+			team1name, _ := db.SQLAccess.MySQLGetTeamData(1, "id", strconv.Itoa(int(team1id)))
+			team2name, _ := db.SQLAccess.MySQLGetTeamData(1, "id", strconv.Itoa(int(team2id)))
+			team1score := strconv.Itoa(n[i].Team1Score)
+			team2score := strconv.Itoa(n[i].Team2Score)
+			w, _ := db.SQLAccess.MySQLGetTeamData(1, "id", strconv.Itoa(int(n[i].Winner.Int64)))
+			var winner db.TeamData
 			if len(w) > 0 {
 				winner.Name = w[0].Name
 			}

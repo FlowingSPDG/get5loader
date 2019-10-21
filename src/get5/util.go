@@ -3,9 +3,9 @@ package get5
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/FlowingSPDG/get5-web-go/src/db"
 	"strings"
 
-	"github.com/FlowingSPDG/get5-web-go/src/models"
 	_ "github.com/gorilla/mux"
 	_ "github.com/gorilla/sessions"
 	steam "github.com/kidoman/go-steam"
@@ -48,7 +48,7 @@ func SendRCON(host string, pass string, cmd string) (string, error) {
 	return resp, nil
 }
 
-func CheckServerConnection(srv models.GameServerData) bool {
+func CheckServerConnection(srv db.GameServerData) bool {
 	_, err := SendRCON(srv.Ip_string, srv.Rcon_password, "status")
 	if err != nil {
 		return false
@@ -62,7 +62,7 @@ type GET5AvailableDatas struct {
 	PluginVersion string `json:"plugin_version"`
 }
 
-func CheckServerAvailability(srv models.GameServerData) (bool, string) { // available or error string
+func CheckServerAvailability(srv db.GameServerData) (bool, string) { // available or error string
 	resp, err := SendRCON(srv.Ip_string, srv.Rcon_password, "get5_web_avaliable")
 	if err != nil {
 		return false, "Connect fails"
