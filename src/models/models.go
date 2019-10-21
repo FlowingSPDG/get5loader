@@ -186,10 +186,21 @@ type TeamsPageData struct {
 	Teams      []SQLTeamData
 }
 
+type TeamPageData struct {
+	LoggedIn   bool
+	IsYourTeam bool
+	Team       SQLTeamData
+}
+
 type UserPageData struct {
 	LoggedIn bool
 	User     SQLUserData
 	Teams    []SQLTeamData
+}
+
+type MyserversPageData struct {
+	Servers  []GameServerData
+	LoggedIn bool
 }
 
 func get_flag_html(country string, scale int) string {

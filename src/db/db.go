@@ -328,9 +328,13 @@ func (s *DBdatas) MySQLGetGameServerData(limit int, where string) ([]models.Game
 		log.Fatal(err)
 		return nil, err
 	}
+	var whr string = ""
+	if len(where) > 0 {
+		whr = "WHERE " + where
+	}
 
 	//データベースへクエリを送信。引っ張ってきたデータがrowsに入る。
-	q := fmt.Sprintf("SELECT * FROM `game_server` LIMIT %d WHERE %s", limit, where)
+	q := fmt.Sprintf("SELECT * FROM `game_server` %s LIMIT %d ", whr, limit)
 	fmt.Println(q)
 	rows, err := s.sql.Query(q)
 	if err != nil {

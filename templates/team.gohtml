@@ -1,0 +1,67 @@
+@{
+	import (
+		"github.com/FlowingSPDG/get5-web-go/templates/layout"
+		"github.com/FlowingSPDG/get5-web-go/src/models"
+	)
+	var u *models.TeamPageData
+	layout := layout.Base
+}
+
+@section menu {
+	if u.LoggedIn == true {
+		<li><a id="mymatches" href="/mymatches">My Matches</a></li>
+        <li><a id="match_create" href="/match/create">Create a Match</a></li>
+        <li><a id="myteams" href="/myteams">My Teams</a></li>
+        <li><a id="team_create" href="/team/create">Create a Team</a></li>
+        <li><a id="myservers" href="/myservers">My Servers</a></li>
+        <li><a id="server_create" href="/server/create">Add a Server</a></li>
+        <li><a href="/logout">Logout</a></li>
+	} else {
+		<li><a href="/login"><img src="/static/img/login_small.png" height="18"/></a></li>
+	}
+}
+
+@section content {
+<div id="content">
+
+  <div class="container">
+    <h1>
+      {{ team.get_flag_html(1.0) }} @u.Team.Name {{ team.get_logo_html(1.0) }}
+      {% if team.can_edit(user) %}
+      <div class="pull-right">
+        <a href="/team/{{team.id}}/edit" class="btn btn-primary btn-xs">Edit</a>
+      </div>
+      {% endif %}
+    </h1>
+
+    <br>
+
+    <div class="panel panel-default">
+      <div class="panel-heading">Players</div>
+      <div class="panel-body">
+          {% for auth,name in team.get_players() %}
+          <a href="http://steamcommunity.com/profiles/{{auth}}" class="col-sm-offset-0"> {{auth}}</a>
+          {% if name %}
+          {{name}}
+          {% endif %}
+          <br>
+          {% endfor %}
+      </div>
+    </div>
+
+
+    <div class="panel panel-default">
+      <div class="panel-heading">Recent Matches</div>
+        <div class="panel-body">
+          {% for match in team.get_recent_matches() %}
+            <a href="/match/{{match.id}}">#{{match.id}}</a>: {{ team.get_vs_match_result(match.id) }}
+            <br>
+          {% endfor %}
+      </div>
+    </div>
+
+  </div>
+  <br>
+
+</div>
+}

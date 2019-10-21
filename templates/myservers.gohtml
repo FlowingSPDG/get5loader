@@ -1,0 +1,76 @@
+@{
+	import (
+		"github.com/FlowingSPDG/get5-web-go/templates/layout"
+		"github.com/FlowingSPDG/get5-web-go/src/models"
+	)
+	var u *models.MyserversPageData
+	layout := layout.Base
+}
+
+@section menu {
+	if u.LoggedIn == true {
+		<li><a id="mymatches" href="/mymatches">My Matches</a></li>
+        <li><a id="match_create" href="/match/create">Create a Match</a></li>
+        <li><a id="myteams" href="/myteams">My Teams</a></li>
+        <li><a id="team_create" href="/team/create">Create a Team</a></li>
+        <li><a id="myservers" href="/myservers">My Servers</a></li>
+        <li><a id="server_create" href="/server/create">Add a Server</a></li>
+        <li><a href="/logout">Logout</a></li>
+	} else {
+		<li><a href="/login"><img src="/static/img/login_small.png" height="18"/></a></li>
+	}
+}
+
+
+@section content {
+<div id="content">
+
+<ul class="list-group">
+
+    @if len(u.Servers) == 0 {
+    	 <li class="list-group-item">No servers found.</li>
+    } else {
+        <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>Server ID</th>
+        <th>Display Name</th>
+        <th>IP Address</th>
+        <th>Port</th>
+        <th>Status</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+
+    @for i:=0; i < len(u.Servers); i++ {
+        s:=u.Servers[i];
+      <tr>
+        <td>@s.Id</td>
+        <td>@s.Display_name</td>
+        <td>@s.Ip_string</td>
+        <td>@s.Port</td>
+            @if s.In_use == true {
+                <td>In use</td>
+            } else {
+                <td>Free</td>
+            }
+        <td>
+          <a href="/server/@s.Id/edit" class="btn btn-primary btn-xs">Edit</a>
+          @if s.In_use == false {
+          <a href="/server/@s.Id/delete" class="btn btn-danger btn-xs">Delete</a>
+          }
+        </td>
+      </tr>
+    }
+
+    </tbody>
+  </table>
+    }
+</div>
+
+<script>
+    $(document).ready(function () {
+    $("#myservers").parent().addClass("active"); })
+</script>
+}

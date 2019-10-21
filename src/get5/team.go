@@ -22,7 +22,6 @@ type TeamCreatePageData struct {
 }
 
 func TeamCreateHandler(w http.ResponseWriter, r *http.Request) {
-	//tpl := template.Must(template.ParseFiles("get5/templates/layout.html", "get5/templates/team_create.html")) // template
 	session, _ := db.SessionStore.Get(r, db.SessionData)
 	m := &TeamCreatePageData{
 		Edit: false,
@@ -33,17 +32,37 @@ func TeamCreateHandler(w http.ResponseWriter, r *http.Request) {
 	} else {
 		http.Redirect(w, r, "/login", 302)
 	}
-
-	// テンプレートを描画
-	//tpl.Execute(w, m)
-	//p := &templates.MainPage{}
-	//templates.WritePageTemplate(w, p)
 }
 
-func TeamHandler(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r) //パスパラメータ取得
+func TeamHandler(w http.ResponseWriter, r *http.Request) { // NEED Team player's info and recent matches info
+	vars := mux.Vars(r)
+	teamID := vars["teamID"]
+
+	var team []models.SQLTeamData
+	team, _ = db.SQLAccess.MySQLGetTeamData(1, "id = "+teamID)
+
+	session, _ := db.SessionStore.Get(r, db.SessionData)
 	fmt.Printf("TeamHandler\nvars : %v", vars)
-	w.WriteHeader(http.StatusOK)
+
+	loggedin := false
+	IsYourTeam := false
+
+	if _, ok := session.Values["Loggedin"]; ok {
+		loggedin = session.Values["Loggedin"].(bool)
+		if _, ok := session.Values["UserID"]; ok {
+			fmt.Println("session.Values[UserID] : " + strconv.Itoa(session.Values["UserID"].(int)))
+			IsYourTeam = session.Values["UserID"].(int) == team[0].User_id
+		}
+	}
+
+	PageData := &models.TeamPageData{
+		LoggedIn:   loggedin,
+		Team:       team[0],
+		IsYourTeam: IsYourTeam,
+	}
+	fmt.Println(team[0].Name)
+
+	fmt.Fprintf(w, templates.Team(PageData)) // TODO
 }
 
 func TeamEditHandler(w http.ResponseWriter, r *http.Request) {
