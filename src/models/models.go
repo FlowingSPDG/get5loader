@@ -3,13 +3,16 @@ package models
 import (
 	"database/sql"
 	"fmt"
+	"strings"
 	//"github.com/Philipp15b/go-steam"
 	"github.com/FlowingSPDG/go-steamapi"
 	"github.com/go-ini/ini"
 	_ "github.com/gorilla/mux"
 	_ "github.com/gorilla/sessions"
+	steam "github.com/kidoman/go-steam"
 	//"github.com/solovev/steam_go"
 	//_ "html/template"
+	"math"
 	_ "net/http"
 	"strconv"
 )
@@ -136,16 +139,150 @@ type GameServerData struct {
 	Public_server bool
 }
 
+func (g *GameServerData) Create(userid int, display_name string, ip_string string, port int, rcon_password string, public_server bool) *GameServerData {
+	g.User_id = userid
+	g.Display_name = display_name
+	g.Ip_string = ip_string
+	g.Port = port
+	g.Rcon_password = rcon_password
+	g.Public_server = public_server
+	// ADD TO DB
+	return g
+}
+
+func (g *GameServerData) SendRcon(cmd string) (string, error) {
+	o := &steam.ConnectOptions{RCONPassword: g.Rcon_password}
+	rcon, err := steam.Connect(g.Ip_string, o)
+	if err != nil {
+		fmt.Println(err)
+		return "", err
+	}
+	defer rcon.Close()
+
+	resp, err := rcon.Send(cmd)
+	if err != nil {
+		fmt.Println(err)
+		return "", err
+	}
+	return resp, nil
+}
+
+func (g *GameServerData) GetHostPort() string {
+	return fmt.Sprintf("%s:%d", g.Ip_string, g.Port)
+}
+
+/*
+func (g *GameServerData) GetDisplay() string {
+
+}*/
+
 type TeamData struct {
-	ID         int
-	UserID     int
-	Name       string
-	Tag        string
-	Flag       string
-	Logo       string
-	Auths      []string
+	ID     int
+	UserID int
+	Name   string
+	Tag    string
+	Flag   string
+	Logo   string
+	//Auths      []string
+	Auths      []byte
 	PublicTeam bool
 }
+
+func (t *TeamData) Create(userid int, name string, tag string, flag string, logo string, auths []byte, public_team bool) *TeamData {
+	t.UserID = userid
+	t.Name = name
+	t.Tag = tag
+	t.Flag = flag
+	t.Logo = logo
+	t.Auths = auths
+	t.PublicTeam = public_team
+	return t
+}
+
+func (t *TeamData) SetData(name string, tag string, flag string, logo string, auths []byte, public_team bool) *TeamData {
+	t.Name = name
+	t.Tag = tag
+	t.Flag = flag
+	t.Logo = logo
+	t.Auths = auths
+	t.PublicTeam = public_team
+	return t
+}
+
+func (t *TeamData) CanEdit(userid int) bool {
+	if userid == 0 {
+		return false
+	} else if t.UserID == userid {
+		return true
+	}
+	return false
+}
+
+/*
+func (t *TeamData) GetPlayers(userid int) bool {
+	var results []string
+	//Py
+	for steam64 in self.auths:
+            if steam64:
+                name = get_steam_name(steam64)
+                if not name:
+                    name = ''
+
+                results.append((steam64, name))
+		return results
+	//?? TODO
+}
+*/
+
+func (t *TeamData) CanDelete(userid int) bool {
+	if t.CanEdit(userid) == false {
+		return false
+	}
+	return len(t.GetRecentMatches()) == 0
+}
+
+/*
+func (t *TeamData) GetRecentMatches(limit int) []SQLMatchData {
+
+}
+*/
+
+/*
+func (t *TeamData) GetVSMatchResult(matchid int) []SQLMatchData {
+
+}
+*/
+
+func (t *TeamData) GetFlagHTML(scale float32) string {
+	width := 32.0 * scale
+	height := 21.0 * scale
+	html := fmt.Sprintf(`<img src="%s%s"  width="%f" height="%d">`, "../static/img/valve_flags", t.Flag, width, height)
+	return html
+}
+
+/*
+func (t *TeamData) GetLogoHtml(scale float32) string {
+
+}
+*/
+
+/*
+func (t *TeamData) GetURL(scale float32) string {
+
+}
+*/
+
+/*
+func (t *TeamData) GetNameURLHtml(scale float32) string {
+
+}
+*/
+
+/*
+func (t *TeamData) GetLogoOrFlagHtml(scale float32) string {
+
+}
+*/
 
 type SQLTeamData struct {
 	Id          int
@@ -168,20 +305,126 @@ type MatchData struct {
 	Team2ID       int64
 	Team2Score    int
 	Team2String   string
-	winner        int64
+	Winner        int64
 	PluginVersion string
-	forfeit       bool
-	cancelled     bool
+	Forfeit       bool
+	Cancelled     bool
 	StartTime     sql.NullTime
 	EndTime       sql.NullTime
 	MaxMaps       int
-	title         string
+	Title         string
 	SkipVeto      bool
 	APIKey        string
 
 	VetoMapPool []string
 	MapStats    []MapStatsData
 }
+
+func (m *MatchData) Create(userid int64, team1_id int64, team2_id int64, team1_string string, team2_string string, max_maps int, skip_veto bool, title string, veto_mappool string, server_id int64) *MatchData {
+	m.UserID = userid
+	m.Team1ID = team1_id
+	m.Team2ID = team2_id
+	m.SkipVeto = skip_veto
+	m.Title = title
+	m.VetoMapPool = strings.Split(veto_mappool, ",") // should work
+	m.ServerID = server_id
+	m.MaxMaps = max_maps
+	m.APIKey = "" //random?
+	return m
+}
+
+func (m *MatchData) GetStatusString(ShowWinner bool) string {
+	if m.pending() {
+		return "Pending"
+	} else if m.live() {
+		teams1core, team2score, err := m.GetCurrentScore()
+		return fmt.Sprintf("LIve, %d:%d", teams1core, team2score)
+	} else if m.Finished() {
+		teams1core, team2score, err := m.GetCurrentScore()
+		minscore := math.Min(teams1core, team2score)
+		maxscore := math.Max(teams1core, team2score)
+		score_string := fmt.Sprintf("%f:%d", maxscore, minscore)
+		if !ShowWinner {
+			return "Finished"
+		} else if m.winner == m.Team1ID {
+			return fmt.Sprintf("Won %s by %f", score_string, m.GetTeam1().Name)
+		} else if m.winner == m.Team2ID {
+			return fmt.Sprintf("Won %s by %f", score_string, m.GetTeam2().Name)
+		} else {
+			return fmt.Sprintf("Tied %s", score_string)
+		}
+	} else {
+		return "Cancelled"
+	}
+}
+
+func (m *MatchData) GetVSString() string {
+	team1 := m.GetTeam1()
+	team2 := m.GEtTeam2()
+	scores := m.GetCurrentScore()
+	str := fmt.Sprintf("%s VS %s (%d:%d)", team1.GetNameURLHtml(), team2.GetNameURLHtml(), scores[0], scores[1])
+	return str
+}
+
+func (m *MatchData) Finalized() bool {
+	return m.Cancelled || m.Finished()
+}
+
+func (m *MatchData) Pending() bool {
+	return m.StartTime == nil && !m.cancelled
+}
+
+func (m *MatchData) Finished() bool {
+	return m.EndTime == nil && !m.cancelled
+}
+
+func (m *MatchData) Live() bool {
+	return m.StartTime != nil && m.EndTime == nil && !m.cancelled()
+}
+
+func (m *MatchData) GetServer() int {
+	return m.ServerID
+}
+
+func (m *MatchData) GetCurrentScore() (int, int) {
+	if m.MaxMaps == 1 {
+		if m.MapStats[0] == nil { // check ok?
+			return 0, 0
+		} else {
+			return m.MapStats[0].Team1_score, m.MapStats[0].Team1_score
+		}
+	} else {
+		return m.Team1Score, m.Team2Score
+	}
+}
+
+/*func (m *MatchData) SendToServer() {
+	// get5_loadmatch_url things
+}*/
+
+/*func (m *MatchData) GetTeam1() TeamData {
+	return Teamdata by using mysql
+}*/
+
+/*func (m *MatchData) GetTeam2() TeamData {
+	return Teamdata by using mysql
+}*/
+
+/*func (m *MatchData) GetUser() UserData {
+	//return m.UserID
+}*/
+
+/*func (m *MatchData) GetWinner() TeamData {
+	//return m.UserID
+}*/
+
+/*func (m *MatchData) GetLoser() TeamData {
+	//return m.UserID
+}*/
+
+/*func (m *MatchData) BuildMatchDict() TeamData {
+	//return m.UserID //get5 thing??
+}*/
 
 type SQLMatchData struct {
 	Id             int
@@ -220,6 +463,10 @@ type MapStatsData struct {
 	Team1Score int
 	Team2Score int
 }
+
+/*func (m *MapStatsData) GetOrCreate(matchID int,MapNumber int,mapname string){
+
+}*/
 
 type SQLMapStatsData struct {
 	Id          int
@@ -267,6 +514,43 @@ type SQLPlayerStatsData struct {
 	Firstkill_t       int
 }
 
+func (p *SQLPlayerStatsData) GetOrCreate() {
+
+}
+
+func (p *SQLPlayerStatsData) GetSteamURL() {
+	return fmt.Sprintf("http://steamcommunity.com/profiles/%s", p.Steam_id)
+}
+
+/*func (p *SQLPlayerStatsData) GetRating() {
+	AverageKPR = 0.679
+	AverageSPR = 0.317
+	AverageRMK = 1.277
+	KillRating = float(self.kills) / float(self.roundsplayed) / AverageKPR
+	SurvivalRating = float(self.roundsplayed -
+						   self.deaths) / self.roundsplayed / AverageSPR
+	killcount = float(self.k1 + 4 * self.k2 + 9 *
+					  self.k3 + 16 * self.k4 + 25 * self.k5)
+	RoundsWithMultipleKillsRating = killcount / \
+		self.roundsplayed / AverageRMK
+	rating = (KillRating + 0.7 * SurvivalRating +
+			  RoundsWithMultipleKillsRating) / 2.7
+	return rating
+}*/
+func (p *SQLPlayerStatsData) GetKDR() int {
+	if p.Deaths == 0 {
+		return p.Kills
+	}
+	return p.Kills / p.Deaths
+}
+
+func (p *SQLPlayerStatsData) GetHSP() float32 {
+	if p.Deaths == 0 {
+		return p.Kills
+	}
+	return float32(p.Headshot_kills / p.Kills)
+}
+
 type MatchesPageData struct {
 	LoggedIn bool
 	UserName string
@@ -298,9 +582,8 @@ type MyserversPageData struct {
 	LoggedIn bool
 }
 
-func get_flag_html(country string, scale int) string {
-	width := 32 * scale
-	height := 21 * scale
-	html := fmt.Sprintf(`<img src="%s%s"  width="%d" height="%d">`, "/static/img/valve_flags/", country, width, height)
-	return html
+/*
+func GetSteamName(){
+
 }
+*/
