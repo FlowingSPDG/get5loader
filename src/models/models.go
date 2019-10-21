@@ -23,7 +23,7 @@ type UserData struct {
 	Matches []MatchData
 }
 
-type SQLUserData struct {
+type SQLUserDataSQLUserData struct {
 	Id       int
 	Steam_id string
 	Name     string
@@ -185,6 +185,12 @@ type TeamPageData struct {
 	Teams      []SQLTeamData
 	tp         string
 	test       string
+}
+
+type UserPageData struct {
+	LoggedIn bool
+	User     SQLUserData
+	Teams    []SQLTeamData
 }
 
 func get_flag_html(country string, scale int) string {
