@@ -54,7 +54,22 @@ func RenderTeam(_buffer io.StringWriter, u *models.TeamPageData) {
 
 		_buffer.WriteString("<div id=\"content\">\n\n  <div class=\"container\">\n    <h1>\n      {{ team.get_flag_html(1.0) }} ")
 		_buffer.WriteString(gorazor.HTMLEscape(u.Team.Name))
-		_buffer.WriteString(" {{ team.get_logo_html(1.0) }}\n      {% if team.can_edit(user) %}\n      <div class=\"pull-right\">\n        <a href=\"/team/{{team.id}}/edit\" class=\"btn btn-primary btn-xs\">Edit</a>\n      </div>\n      {% endif %}\n    </h1>\n\n    <br>\n\n    <div class=\"panel panel-default\">\n      <div class=\"panel-heading\">Players</div>\n      <div class=\"panel-body\">\n          {% for auth,name in team.get_players() %}\n          <a href=\"http://steamcommunity.com/profiles/{{auth}}\" class=\"col-sm-offset-0\"> {{auth}}</a>\n          {% if name %}\n          {{name}}\n          {% endif %}\n          <br>\n          {% endfor %}\n      </div>\n    </div>\n\n\n    <div class=\"panel panel-default\">\n      <div class=\"panel-heading\">Recent Matches</div>\n        <div class=\"panel-body\">\n          {% for match in team.get_recent_matches() %}\n            <a href=\"/match/{{match.id}}\">#{{match.id}}</a>: {{ team.get_vs_match_result(match.id) }}\n            <br>\n          {% endfor %}\n      </div>\n    </div>\n\n  </div>\n  <br>\n\n</div>")
+		_buffer.WriteString(" {{ team.get_logo_html(1.0) }}\n      {% if team.can_edit(user) %}\n      <div class=\"pull-right\">\n        <a href=\"/team/")
+		_buffer.WriteString(gorazor.HTMLEscape(u.Team.Id))
+		_buffer.WriteString("/edit\" class=\"btn btn-primary btn-xs\">Edit</a>\n      </div>\n      {% endif %}\n    </h1>\n\n    <br>\n\n    <div class=\"panel panel-default\">\n      <div class=\"panel-heading\">Players</div>\n      <div class=\"panel-body\">\n          ")
+		for i := 0; i < len(u.Team.Auth); i++ {
+
+			_buffer.WriteString("<a href=\"http://steamcommunity.com/profiles/")
+			_buffer.WriteString(gorazor.HTMLEscape(u.Team.Auth[i]))
+			_buffer.WriteString("\" class=\"col-sm-offset-0\"> ")
+			_buffer.WriteString(gorazor.HTMLEscape(u.Team.Auth[i]))
+			_buffer.WriteString(" </a>")
+
+			_buffer.WriteString("<p>if name\n            {{name}}\n            endif</p>")
+
+			_buffer.WriteString("<br>\n          ")
+		}
+		_buffer.WriteString("\n      </div>\n    </div>\n\n\n    <div class=\"panel panel-default\">\n      <div class=\"panel-heading\">Recent Matches</div>\n        <div class=\"panel-body\">\n          {% for match in team.get_recent_matches() %}\n            <a href=\"/match/{{match.id}}\">#{{match.id}}</a>: {{ team.get_vs_match_result(match.id) }}\n            <br>\n          {% endfor %}\n      </div>\n    </div>\n\n  </div>\n  <br>\n\n</div>")
 
 	}
 

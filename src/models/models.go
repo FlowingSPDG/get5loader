@@ -58,7 +58,7 @@ type SQLTeamData struct {
 	Name        string
 	Flag        string
 	Logo        string
-	Auth        []byte
+	Auth        []byte // not []byte...?
 	Tag         string
 	Public_team bool
 }

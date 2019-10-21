@@ -29,7 +29,7 @@
       {{ team.get_flag_html(1.0) }} @u.Team.Name {{ team.get_logo_html(1.0) }}
       {% if team.can_edit(user) %}
       <div class="pull-right">
-        <a href="/team/{{team.id}}/edit" class="btn btn-primary btn-xs">Edit</a>
+        <a href="/team/@u.Team.Id/edit" class="btn btn-primary btn-xs">Edit</a>
       </div>
       {% endif %}
     </h1>
@@ -39,13 +39,13 @@
     <div class="panel panel-default">
       <div class="panel-heading">Players</div>
       <div class="panel-body">
-          {% for auth,name in team.get_players() %}
-          <a href="http://steamcommunity.com/profiles/{{auth}}" class="col-sm-offset-0"> {{auth}}</a>
-          {% if name %}
-          {{name}}
-          {% endif %}
-          <br>
-          {% endfor %}
+          @for i:=0; i < len(u.Team.Auth); i++ {
+            <a href="http://steamcommunity.com/profiles/@u.Team.Auth[i]" class="col-sm-offset-0"> @u.Team.Auth[i] </a>
+            <p>if name
+            {{name}}
+            endif</p>
+            <br>
+          }
       </div>
     </div>
 
