@@ -3,15 +3,25 @@ package models
 import (
 	"database/sql"
 	"fmt"
-
+	//"github.com/Philipp15b/go-steam"
+	"github.com/FlowingSPDG/go-steamapi"
+	"github.com/go-ini/ini"
 	_ "github.com/gorilla/mux"
 	_ "github.com/gorilla/sessions"
-	_ "github.com/solovev/steam_go"
-
+	//"github.com/solovev/steam_go"
 	//_ "html/template"
 	_ "net/http"
-	_ "strconv"
+	"strconv"
 )
+
+var (
+	SteamAPIKey = ""
+)
+
+func init() {
+	c, _ := ini.Load("config.ini")
+	SteamAPIKey = c.Section("Steam").Key("APIKey").MustString("")
+}
 
 type UserData struct {
 	ID      int
@@ -21,6 +31,91 @@ type UserData struct {
 	Servers []GameServerData
 	Teams   []TeamData
 	Matches []MatchData
+}
+
+func (u *UserData) GetOrCreate(s *sql.DB, steamid string) (*UserData, error) {
+	var EmptyUser *UserData
+	var SQLUserData SQLUserData
+	err := s.Ping()
+	if err != nil {
+		return EmptyUser, err
+	}
+
+	//データベースへクエリを送信。引っ張ってきたデータがrowsに入る。
+	q := fmt.Sprintf("SELECT * FROM `user` WHERE steam_id=%s LIMIT 1 ", steamid)
+	fmt.Println(q)
+	rows, err := s.Query(q)
+	if err != nil {
+		fmt.Println("USER NOT EXIST")
+		return EmptyUser, err
+	}
+	defer rows.Close()
+	if rows.Next() {
+		err := rows.Scan(&SQLUserData.Id, &SQLUserData.Steam_id, &SQLUserData.Name, &SQLUserData.Admin)
+		if err != nil {
+			return EmptyUser, err
+		}
+		fmt.Printf("UserData : %v", SQLUserData)
+		u.ID = SQLUserData.Id
+		u.Name = SQLUserData.Name
+		u.SteamID = SQLUserData.Steam_id
+		u.Admin = SQLUserData.Admin
+		return u, nil
+	} else {
+		fmt.Println("USER NOT EXIST. REGISTER!")
+		//playerinfo, err := steam_go.GetPlayerSummaries(steamid, SteamAPIKey)
+		steamid64, _ := strconv.Atoi(steamid)
+		steamid64arr := []uint64{uint64(steamid64)}
+		playersumamry, err := steamapi.GetPlayerSummaries(steamid64arr, SteamAPIKey)
+		fmt.Printf("\nsteamid : %s / SteamAPIKey : %s\n", steamid, SteamAPIKey)
+		fmt.Println(playersumamry)
+
+		if err != nil { // fix here
+			fmt.Println(err)
+			return EmptyUser, err
+		}
+
+		q := fmt.Sprintf("INSERT INTO `user` (steam_id,name,admin) values (%s,'%s',0);", steamid, playersumamry[0].PersonaName)
+		fmt.Println(q)
+		res, err := s.Exec(q)
+		if err != nil {
+			return EmptyUser, err
+		}
+		fmt.Println(res)
+		rows, err := s.Query(q)
+		if err != nil {
+			fmt.Println("UNKNOWN FAIL")
+			return EmptyUser, err
+		}
+		defer rows.Close()
+		if rows.Next() {
+			err := rows.Scan(&SQLUserData.Id, &SQLUserData.Steam_id, &SQLUserData.Name, &SQLUserData.Admin)
+			if err != nil {
+				return EmptyUser, err
+			}
+			fmt.Printf("UserData : %v", SQLUserData)
+			u.ID = SQLUserData.Id
+			u.Name = SQLUserData.Name
+			u.SteamID = SQLUserData.Steam_id
+			u.Admin = SQLUserData.Admin
+			return u, nil
+		}
+		return EmptyUser, err
+	}
+}
+
+/*
+func (u *UserData) GetURL() {
+
+}
+*/
+
+func (u *UserData) GetSteamURL() string {
+	return "http://steamcommunity.com/profiles/" + u.SteamID
+}
+
+func (u *UserData) get_recent_matches(limit int) string {
+	return "http://steamcommunity.com/profiles/" + u.SteamID
 }
 
 type SQLUserData struct {

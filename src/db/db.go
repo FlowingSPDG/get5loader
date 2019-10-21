@@ -113,12 +113,14 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 			panic(err)
 		}
 		fmt.Println("SteamID : " + steamid)
-		user, err := SQLAccess.MySQLGetUserData(1, "steam_id="+steamid)
+
+		user := models.UserData{}
+		user.GetOrCreate(SQLAccess.sql, steamid)
 		session, _ := SessionStore.Get(r, SessionData)
 		session.Options = &sessions.Options{MaxAge: 0}
 		// Set some session values.
 		session.Values["Loggedin"] = true
-		session.Values["UserID"] = user.Id // should be get5 id
+		session.Values["UserID"] = user.ID // should be get5 id
 		session.Values["Name"] = user.Name
 		// Save it before we write to the response/return from the handler.
 		err = session.Save(r, w)
