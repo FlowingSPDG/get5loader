@@ -1,4 +1,4 @@
-package models
+package db
 
 import (
 	"database/sql"
@@ -15,10 +15,6 @@ import (
 	"math"
 	_ "net/http"
 	"strconv"
-)
-
-var (
-	SteamAPIKey = ""
 )
 
 func init() {
@@ -267,16 +263,13 @@ func (t *TeamData) GetLogoHtml(scale float32) string {
 */
 
 /*
-func (t *TeamData) GetURL(scale float32) string {
-
-}
-*/
-
+func (t *TeamData) GetURL() string {
+	return
+}*/
 /*
-func (t *TeamData) GetNameURLHtml(scale float32) string {
-
-}
-*/
+func (t *TeamData) GetNameURLHtml() string {
+	return `<a href="%s">%s</a>`.format(self.get_url(), self.name)
+}*/
 
 /*
 func (t *TeamData) GetLogoOrFlagHtml(scale float32) string {
@@ -318,6 +311,8 @@ type MatchData struct {
 
 	VetoMapPool []string
 	MapStats    []MapStatsData
+
+	Server GameServerData
 }
 
 func (m *MatchData) Create(userid int64, team1_id int64, team2_id int64, team1_string string, team2_string string, max_maps int, skip_veto bool, title string, veto_mappool string, server_id int64) *MatchData {
@@ -347,9 +342,11 @@ func (m *MatchData) GetStatusString(ShowWinner bool) string {
 		if !ShowWinner {
 			return "Finished"
 		} else if m.Winner == m.Team1ID {
-			return fmt.Sprintf("Won %s by %f", ScoreString, m.GetTeam1().Name)
+			team1, err := m.GetTeam1()
+			return fmt.Sprintf("Won %s by %f", ScoreString, team1.Name)
 		} else if m.Winner == m.Team2ID {
-			return fmt.Sprintf("Won %s by %f", ScoreString, m.GetTeam2().Name)
+			team2, err := m.GetTeam2()
+			return fmt.Sprintf("Won %s by %f", ScoreString, team2.Name)
 		} else {
 			return fmt.Sprintf("Tied %s", ScoreString)
 		}
@@ -358,12 +355,15 @@ func (m *MatchData) GetStatusString(ShowWinner bool) string {
 	}
 }
 
-func (m *MatchData) GetVSString() string {
-	team1 := m.GetTeam1()
-	team2 := m.GetTeam2()
-	scores := m.GetCurrentScore()
-	str := fmt.Sprintf("%s VS %s (%d:%d)", team1.GetNameURLHtml(), team2.GetNameURLHtml(), scores[0], scores[1])
-	return str
+func (m *MatchData) GetVSString() (string, error) {
+	team1, err := m.GetTeam1()
+	team2, err := m.GetTeam2()
+	if err != nil {
+		return "", err
+	}
+	team1score, team2score := m.GetCurrentScore()
+	str := fmt.Sprintf("%s VS %s (%d:%d)", team1.GetNameURLHtml(), team2.GetNameURLHtml(), team1score, team2score)
+	return str, nil
 }
 
 func (m *MatchData) Finalized() bool {
@@ -371,28 +371,27 @@ func (m *MatchData) Finalized() bool {
 }
 
 func (m *MatchData) Pending() bool {
-	return m.StartTime == nil && !m.Cancelled
+	return !m.StartTime.Valid && !m.Cancelled
 }
 
 func (m *MatchData) Finished() bool {
-	return m.EndTime == nil && !m.Cancelled
+	return !m.EndTime.Valid && !m.Cancelled
 }
 
 func (m *MatchData) Live() bool {
-	return m.StartTime != nil && m.EndTime == nil && !m.Cancelled()
+	return m.StartTime.Valid && !m.EndTime.Valid && !m.Cancelled
 }
 
-func (m *MatchData) GetServer() int {
-	return m.ServerID
+func (m *MatchData) GetServer() int64 {
+	return m.ServerID // TODO
 }
 
 func (m *MatchData) GetCurrentScore() (int, int) {
 	if m.MaxMaps == 1 {
-		if m.MapStats[0] == nil { // check ok?
+		if len(m.MapStats) == 0 { // check ok?
 			return 0, 0
-		} else {
-			return m.MapStats[0].Team1_score, m.MapStats[0].Team1_score
 		}
+		return m.MapStats[0].Team1Score, m.MapStats[0].Team2Score
 	} else {
 		return m.Team1Score, m.Team2Score
 	}
@@ -402,13 +401,39 @@ func (m *MatchData) GetCurrentScore() (int, int) {
 	// get5_loadmatch_url things
 }*/
 
-/*func (m *MatchData) GetTeam1() TeamData {
-	return Teamdata by using mysql
-}*/
+func (m *MatchData) GetTeam1() (TeamData, error) {
+	var Team = TeamData{}
+	q := fmt.Sprintf("id=%f", m.Team1ID)
+	STeam, err := SQLAccess.MySQLGetTeamData(1, q)
+	Team.ID = STeam[0].Id
+	Team.Name = STeam[0].Name
+	Team.Tag = STeam[0].Tag
+	Team.Flag = STeam[0].Flag
+	Team.Logo = STeam[0].Logo
+	Team.Auths = STeam[0].Auth
+	Team.PublicTeam = STeam[0].Public_team
+	if err != nil {
+		return Team, err
+	}
+	return Team, nil
+}
 
-/*func (m *MatchData) GetTeam2() TeamData {
-	return Teamdata by using mysql
-}*/
+func (m *MatchData) GetTeam2() (TeamData, error) {
+	var Team = TeamData{}
+	q := fmt.Sprintf("id=%f", m.Team2ID)
+	STeam, err := SQLAccess.MySQLGetTeamData(1, q)
+	Team.ID = STeam[0].Id
+	Team.Name = STeam[0].Name
+	Team.Tag = STeam[0].Tag
+	Team.Flag = STeam[0].Flag
+	Team.Logo = STeam[0].Logo
+	Team.Auths = STeam[0].Auth
+	Team.PublicTeam = STeam[0].Public_team
+	if err != nil {
+		return Team, err
+	}
+	return Team, nil
+}
 
 /*func (m *MatchData) GetUser() UserData {
 	//return m.UserID

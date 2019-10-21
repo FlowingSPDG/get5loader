@@ -15,8 +15,6 @@ import (
 	"net/http"
 	_ "strconv"
 	"time"
-
-	"github.com/FlowingSPDG/get5-web-go/src/models"
 )
 
 type Config struct {
@@ -70,7 +68,7 @@ func (s *DBdatas) close() error {
 }
 
 var (
-	UserDatas    = map[string]*models.UserData{}
+	UserDatas    = map[string]*UserData{}
 	SteamAPIKey  = ""
 	SessionStore = sessions.NewCookieStore([]byte("GET5_GO_SESSIONKEY"))
 	SessionData  = "SessionData"
@@ -114,7 +112,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		fmt.Println("SteamID : " + steamid)
 
-		user := models.UserData{}
+		user := UserData{}
 		user.GetOrCreate(SQLAccess.sql, steamid)
 		session, _ := SessionStore.Get(r, SessionData)
 		session.Options = &sessions.Options{MaxAge: 0}
@@ -150,7 +148,7 @@ func LogoutHandler(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/", 302)
 }
 
-func (s *DBdatas) GetUserData(limit int, where string) []models.SQLUserData {
+func (s *DBdatas) GetUserData(limit int, where string) []SQLUserData {
 	//データベースへクエリを送信。引っ張ってきたデータがrowsに入る。
 	err := s.sql.Ping()
 	if err != nil {
@@ -164,10 +162,10 @@ func (s *DBdatas) GetUserData(limit int, where string) []models.SQLUserData {
 		panic(err.Error())
 	}
 
-	Users := make([]models.SQLUserData, 0)
+	Users := make([]SQLUserData, 0)
 	//レコード一件一件をあらかじめ用意しておいた構造体に当てはめていく。
 	for rows.Next() {
-		var User models.SQLUserData
+		var User SQLUserData
 		err := rows.Scan(&User.Id, &User.Steam_id, &User.Name, &User.Steam_id)
 
 		if err != nil {
@@ -179,7 +177,7 @@ func (s *DBdatas) GetUserData(limit int, where string) []models.SQLUserData {
 	return Users
 }
 
-func (s *DBdatas) MySQLGetTeamData(limit int, where string) ([]models.SQLTeamData, error) {
+func (s *DBdatas) MySQLGetTeamData(limit int, where string) ([]SQLTeamData, error) {
 	if s == nil {
 		return nil, fmt.Errorf("sql is nil")
 	}
@@ -206,10 +204,10 @@ func (s *DBdatas) MySQLGetTeamData(limit int, where string) ([]models.SQLTeamDat
 	fmt.Println(q)
 	defer rows.Close()
 
-	Teams := make([]models.SQLTeamData, 0)
+	Teams := make([]SQLTeamData, 0)
 	//レコード一件一件をあらかじめ用意しておいた構造体に当てはめていく。
 	for rows.Next() {
-		var Team models.SQLTeamData
+		var Team SQLTeamData
 		err := rows.Scan(&Team.Id, &Team.User_id, &Team.Name, &Team.Flag, &Team.Logo, &Team.Auth, &Team.Tag, &Team.Public_team)
 
 		if err != nil {
@@ -221,7 +219,7 @@ func (s *DBdatas) MySQLGetTeamData(limit int, where string) ([]models.SQLTeamDat
 	return Teams, nil
 }
 
-func (s *DBdatas) MySQLGetMatchData(limit int, where string) ([]models.SQLMatchData, error) {
+func (s *DBdatas) MySQLGetMatchData(limit int, where string) ([]SQLMatchData, error) {
 	err := s.sql.Ping()
 	if err != nil {
 		log.Fatal(err)
@@ -242,10 +240,10 @@ func (s *DBdatas) MySQLGetMatchData(limit int, where string) ([]models.SQLMatchD
 	}
 	defer rows.Close()
 
-	Matches := make([]models.SQLMatchData, 0)
+	Matches := make([]SQLMatchData, 0)
 	//レコード一件一件をあらかじめ用意しておいた構造体に当てはめていく。
 	for rows.Next() {
-		var Match models.SQLMatchData
+		var Match SQLMatchData
 		err := rows.Scan(&Match.Id, &Match.User_id, &Match.Server_id, &Match.Team1_id, &Match.Team2_id, &Match.Winner, &Match.Cancelled, &Match.Start_time, &Match.End_time, &Match.Max_maps, &Match.Title, &Match.Skip_veto, &Match.Api_key, &Match.Veto_mappool, &Match.Team1_score, &Match.Team2_score, &Match.Team1_string, &Match.Team2_string, &Match.Forfeit, &Match.Plugin_version)
 		if err != nil {
 			panic(err)
@@ -257,7 +255,7 @@ func (s *DBdatas) MySQLGetMatchData(limit int, where string) ([]models.SQLMatchD
 	return Matches, nil
 }
 
-func (s *DBdatas) MySQLGetPlayerStatsData(limit int, where string) ([]models.SQLPlayerStatsData, error) {
+func (s *DBdatas) MySQLGetPlayerStatsData(limit int, where string) ([]SQLPlayerStatsData, error) {
 	//接続でエラーが発生した場合の処理
 	err := s.sql.Ping()
 	if err != nil {
@@ -275,10 +273,10 @@ func (s *DBdatas) MySQLGetPlayerStatsData(limit int, where string) ([]models.SQL
 	}
 	defer rows.Close()
 
-	StatsDatas := make([]models.SQLPlayerStatsData, 0)
+	StatsDatas := make([]SQLPlayerStatsData, 0)
 	//レコード一件一件をあらかじめ用意しておいた構造体に当てはめていく。
 	for rows.Next() {
-		var StatsData models.SQLPlayerStatsData
+		var StatsData SQLPlayerStatsData
 		err := rows.Scan(&StatsData.Id, &StatsData.Match_id, &StatsData.Map_id, &StatsData.Team_id, &StatsData.Steam_id, &StatsData.Name, &StatsData.Kills, &StatsData.Deaths, &StatsData.Roundsplayed, &StatsData.Assists, &StatsData.Flashbang_assists, &StatsData.Teamkills, &StatsData.Suicides, &StatsData.Headshot_kills, &StatsData.Damage, &StatsData.Bomb_plants, &StatsData.Bomb_defuses, &StatsData.V1, &StatsData.V2, &StatsData.V3, &StatsData.V4, &StatsData.V5, &StatsData.K1, &StatsData.K2, &StatsData.K3, &StatsData.K4, &StatsData.K5, &StatsData.Firstdeath_Ct, &StatsData.Firstdeath_t, &StatsData.Firstkill_ct, &StatsData.Firstkill_t)
 		if err != nil {
 			return nil, err
@@ -290,7 +288,7 @@ func (s *DBdatas) MySQLGetPlayerStatsData(limit int, where string) ([]models.SQL
 	return StatsDatas, nil
 }
 
-func (s *DBdatas) MySQLGetMapStatsData(limit int, where string) ([]models.SQLMapStatsData, error) {
+func (s *DBdatas) MySQLGetMapStatsData(limit int, where string) ([]SQLMapStatsData, error) {
 	//接続でエラーが発生した場合の処理
 	err := s.sql.Ping()
 	if err != nil {
@@ -308,10 +306,10 @@ func (s *DBdatas) MySQLGetMapStatsData(limit int, where string) ([]models.SQLMap
 	}
 	defer rows.Close()
 
-	MapStatsDatas := make([]models.SQLMapStatsData, 0)
+	MapStatsDatas := make([]SQLMapStatsData, 0)
 	//レコード一件一件をあらかじめ用意しておいた構造体に当てはめていく。
 	for rows.Next() {
-		var MapStatsData models.SQLMapStatsData
+		var MapStatsData SQLMapStatsData
 		err := rows.Scan(&MapStatsData.Id, &MapStatsData.Match_id, &MapStatsData.Map_number, &MapStatsData.Map_name, &MapStatsData.Start_time, &MapStatsData.End_time, &MapStatsData.Winner, &MapStatsData.Team1_score, &MapStatsData.Team2_score)
 		if err != nil {
 			panic(err)
@@ -323,7 +321,7 @@ func (s *DBdatas) MySQLGetMapStatsData(limit int, where string) ([]models.SQLMap
 	return MapStatsDatas, nil
 }
 
-func (s *DBdatas) MySQLGetGameServerData(limit int, where string) ([]models.GameServerData, error) {
+func (s *DBdatas) MySQLGetGameServerData(limit int, where string) ([]GameServerData, error) {
 	//接続でエラーが発生した場合の処理
 	err := s.sql.Ping()
 	if err != nil {
@@ -345,10 +343,10 @@ func (s *DBdatas) MySQLGetGameServerData(limit int, where string) ([]models.Game
 	}
 	defer rows.Close()
 
-	GameServerDatas := make([]models.GameServerData, 0)
+	GameServerDatas := make([]GameServerData, 0)
 	//レコード一件一件をあらかじめ用意しておいた構造体に当てはめていく。
 	for rows.Next() {
-		var serverdata models.GameServerData
+		var serverdata GameServerData
 		err := rows.Scan(&serverdata.Id, &serverdata.User_id, &serverdata.In_use, &serverdata.Ip_string, &serverdata.Port, &serverdata.Rcon_password, &serverdata.Display_name, &serverdata.Public_server)
 		if err != nil {
 			panic(err)
@@ -360,9 +358,9 @@ func (s *DBdatas) MySQLGetGameServerData(limit int, where string) ([]models.Game
 	return GameServerDatas, nil
 }
 
-func (s *DBdatas) MySQLGetUserData(limit int, where string) (models.SQLUserData, error) {
+func (s *DBdatas) MySQLGetUserData(limit int, where string) (SQLUserData, error) {
 	//接続でエラーが発生した場合の処理
-	var User = models.SQLUserData{}
+	var User = SQLUserData{}
 
 	err := s.sql.Ping()
 	if err != nil {
