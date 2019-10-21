@@ -2,11 +2,12 @@ package get5
 
 import (
 	"fmt"
+
 	"github.com/gorilla/mux"
 	_ "github.com/gorilla/sessions"
 	_ "github.com/solovev/steam_go"
+
 	//_ "html/template"
-	_ "github.com/valyala/quicktemplate/examples/basicserver/templates"
 	"net/http"
 	_ "strconv"
 	_ "time"

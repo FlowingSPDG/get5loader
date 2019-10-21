@@ -8,7 +8,10 @@ import (
 	"github.com/FlowingSPDG/get5-web-go/src/db"
 	"github.com/FlowingSPDG/get5-web-go/src/get5"
 	"github.com/go-ini/ini"
+	_ "github.com/go-sql-driver/mysql"
 	"github.com/gorilla/mux"
+	_ "github.com/sipin/gorazor/gorazor"
+	_ "github.com/solovev/steam_go"
 )
 
 type Config struct {
@@ -105,6 +108,7 @@ func main() {
 	r.HandleFunc("/myservers", get5.MyServersHandler)                                  // ?
 
 	r.HandleFunc("/user/{userID}", get5.UserHandler)
+
 	r.Methods("GET", "POST")
 	http.Handle("/", r)
 	fmt.Println("RUNNING")

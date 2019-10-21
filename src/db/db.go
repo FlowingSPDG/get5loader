@@ -3,18 +3,20 @@ package db
 import (
 	"database/sql" //ここでパッケージをimport
 	"fmt"
+
 	"github.com/go-ini/ini"
-	_ "github.com/go-sql-driver/mysql" //コード内で直接参照するわけではないが、依存関係のあるパッケージには最初にアンダースコア_をつける
+	_ "github.com/go-sql-driver/mysql"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/sessions"
 	"github.com/solovev/steam_go"
+
 	//_ "html/template"
-	// _ "github.com/valyala/quicktemplate/examples/basicserver/templates"
-	"github.com/FlowingSPDG/get5-web-go/src/models"
 	"log"
 	"net/http"
 	_ "strconv"
 	"time"
+
+	"github.com/FlowingSPDG/get5-web-go/src/models"
 )
 
 type Config struct {
@@ -106,31 +108,19 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		//w.Write([]byte("Authorization cancelled"))
 		http.Redirect(w, r, "/", 302)
 	default:
-		user, err := opID.ValidateAndGetUser(SteamAPIKey)
+		steamid, err := opID.ValidateAndGetId()
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
-		}
-		fmt.Printf("user : %v", *user)
-		//steam_go.GetPlayerSummaries
-		if err != nil {
 			panic(err)
-			http.Error(w, err.Error(), http.StatusInternalServerError)
 		}
-		if user == nil {
-			panic(err)
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-		}
-		fmt.Printf("\nUserName : %s\n", user.PersonaName)
-		UserDatas[user.SteamId] = &models.UserData{
-			SteamID: user.SteamId,
-			Name:    user.PersonaName,
-		}
+		fmt.Println("SteamID : " + steamid)
+		user, err := SQLAccess.MySQLGetUserData(1, "steam_id="+steamid)
 		session, _ := SessionStore.Get(r, SessionData)
 		session.Options = &sessions.Options{MaxAge: 0}
 		// Set some session values.
 		session.Values["Loggedin"] = true
-		session.Values["UserID"] = user.SteamId // should be get5 id
-		session.Values["Name"] = user.PersonaName
+		session.Values["UserID"] = user.Id // should be get5 id
+		session.Values["Name"] = user.Name
 		// Save it before we write to the response/return from the handler.
 		err = session.Save(r, w)
 		if err != nil {
@@ -363,4 +353,41 @@ func (s *DBdatas) MySQLGetGameServerData(limit int, where string) ([]models.Game
 		GameServerDatas = append(GameServerDatas, serverdata)
 	}
 	return GameServerDatas, nil
+}
+
+func (s *DBdatas) MySQLGetUserData(limit int, where string) (models.SQLUserData, error) {
+	//接続でエラーが発生した場合の処理
+	var User = models.SQLUserData{}
+
+	err := s.sql.Ping()
+	if err != nil {
+		log.Fatal(err)
+		return User, err
+	}
+
+	var whr string = ""
+	if len(where) > 0 {
+		whr = "WHERE " + where
+	}
+
+	//データベースへクエリを送信。引っ張ってきたデータがrowsに入る。
+	q := fmt.Sprintf("SELECT * FROM `user` %s LIMIT %d ", whr, limit)
+	fmt.Println(q)
+	rows, err := s.sql.Query(q)
+	if err != nil {
+		panic(err.Error())
+		return User, err
+	}
+	defer rows.Close()
+
+	//レコード一件一件をあらかじめ用意しておいた構造体に当てはめていく。
+	for rows.Next() {
+		err := rows.Scan(&User.Id, &User.Steam_id, &User.Name, &User.Admin)
+		if err != nil {
+			panic(err)
+			return User, err
+		}
+	}
+	fmt.Println(User)
+	return User, nil
 }

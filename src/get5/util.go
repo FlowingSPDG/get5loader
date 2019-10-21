@@ -3,15 +3,16 @@ package get5
 import (
 	"encoding/json"
 	"fmt"
+	"strings"
+
 	"github.com/FlowingSPDG/get5-web-go/src/models"
 	_ "github.com/gorilla/mux"
 	_ "github.com/gorilla/sessions"
-	"github.com/kidoman/go-steam"
-	"strings"
+	steam "github.com/kidoman/go-steam"
+
 	// a2s "github.com/rumblefrog/go-a2s"
 	_ "github.com/solovev/steam_go"
 	//_ "html/template"
-	// "github.com/valyala/quicktemplate/examples/basicserver/templates"
 	_ "net/http"
 	_ "strconv"
 	_ "time"

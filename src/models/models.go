@@ -3,11 +3,12 @@ package models
 import (
 	"database/sql"
 	"fmt"
+
 	_ "github.com/gorilla/mux"
 	_ "github.com/gorilla/sessions"
 	_ "github.com/solovev/steam_go"
+
 	//_ "html/template"
-	// "github.com/valyala/quicktemplate/examples/basicserver/templates"
 	_ "net/http"
 	_ "strconv"
 	"time"
@@ -175,7 +176,7 @@ type SQLPlayerStatsData struct {
 type MatchesPageData struct {
 	LoggedIn bool
 	UserName string
-	UserID   string
+	UserID   int
 	Matches  []SQLMatchData
 }
 

@@ -2,16 +2,19 @@ package get5
 
 import (
 	"fmt"
+
 	"github.com/gorilla/mux"
 	_ "github.com/gorilla/sessions"
 	_ "github.com/solovev/steam_go"
+
 	//_ "html/template"
-	"github.com/FlowingSPDG/get5-web-go/src/db"
-	"github.com/FlowingSPDG/get5-web-go/src/models"
-	"github.com/FlowingSPDG/get5-web-go/templates"
 	"net/http"
 	_ "strconv"
 	_ "time"
+
+	"github.com/FlowingSPDG/get5-web-go/src/db"
+	"github.com/FlowingSPDG/get5-web-go/src/models"
+	"github.com/FlowingSPDG/get5-web-go/templates"
 )
 
 func MatchCreateHandler(w http.ResponseWriter, r *http.Request) {
@@ -81,7 +84,7 @@ func MatchesHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Printf("MatchesHandler\n")
 
 	name := ""
-	userid := ""
+	userid := 0
 	loggedin := false
 	session, _ := db.SessionStore.Get(r, db.SessionData)
 
@@ -99,11 +102,15 @@ func MatchesHandler(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Println(matches[0].Team1_id)
 
-	if _, ok := session.Values["Loggedin"]; ok {
-		if session.Values["Loggedin"].(bool) == true {
-			u.LoggedIn = true
-			u.UserName = session.Values["Name"].(string)
-			u.UserID = session.Values["UserID"].(string)
+	if _, ok := session.Values["Loggedin"]; ok { // FUCK.
+		if _, ok := session.Values["Name"]; ok {
+			if _, ok := session.Values["UserID"]; ok {
+				if session.Values["Loggedin"].(bool) == true {
+					u.LoggedIn = true
+					u.UserName = session.Values["Name"].(string)
+					u.UserID = session.Values["UserID"].(int)
+				}
+			}
 		}
 	}
 
