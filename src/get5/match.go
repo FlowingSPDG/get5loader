@@ -120,8 +120,41 @@ func MatchesHandler(w http.ResponseWriter, r *http.Request) {
 
 func MatchesWithIDHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r) //パスパラメータ取得
-	fmt.Printf("MatchesWithIDHandler\nvars : %v", vars)
-	w.WriteHeader(http.StatusOK)
+	fmt.Printf("MatchesWithIDHandler\n")
+
+	name := ""
+	userid := 0
+	session, _ := db.SessionStore.Get(r, db.SessionData)
+
+	u := &models.MatchesPageData{
+		LoggedIn: false,
+		UserName: name,
+		UserID:   userid,
+	}
+
+	if _, ok := session.Values["Loggedin"]; ok { // FUCK.
+		if _, ok := session.Values["Name"]; ok {
+			if _, ok := session.Values["UserID"]; ok {
+				if session.Values["Loggedin"].(bool) == true {
+					u.LoggedIn = true
+					u.UserName = session.Values["Name"].(string)
+					u.UserID = session.Values["UserID"].(int)
+					userid = session.Values["UserID"].(int)
+				}
+			}
+		}
+	}
+
+	matches, err := db.SQLAccess.MySQLGetMatchData(20, "user_id="+vars["userID"])
+
+	u.Matches = matches
+
+	fmt.Println(matches)
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Fprintf(w, templates.Match(u)) // TODO
 }
 
 func MyMatchesHandler(w http.ResponseWriter, r *http.Request) {
