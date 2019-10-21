@@ -76,7 +76,9 @@ func RenderTeams(_buffer io.StringWriter, u *models.TeamsPageData) {
 		for i := 0; i < len(u.Teams); i++ {
 			n := u.Teams[i]
 
-			_buffer.WriteString("<li class=\"list-group-item\">\n\t\t\t<a href=\"{{/* team.get_url() */}}\" class=\"col-sm-offset-1\"> ")
+			_buffer.WriteString("<li class=\"list-group-item\">\n\t\t\t<a href=\"/team/")
+			_buffer.WriteString(gorazor.HTMLEscape(n.Id))
+			_buffer.WriteString("\" class=\"col-sm-offset-1\"> ")
 			_buffer.WriteString(gorazor.HTMLEscape(n.Name))
 			_buffer.WriteString(" </a>\n\t  \t</li>")
 

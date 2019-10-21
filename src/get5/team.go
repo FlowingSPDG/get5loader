@@ -60,11 +60,14 @@ func TeamDeleteHandler(w http.ResponseWriter, r *http.Request) {
 
 func TeamsHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	userid := vars["userID"]
+	userid, err := strconv.Atoi(vars["userID"])
+	if err != nil {
+		panic(err)
+	}
 	var user models.SQLUserData
 	var team []models.SQLTeamData
-	user, _ = db.SQLAccess.MySQLGetUserData(1, "id = "+userid)
-	team, _ = db.SQLAccess.MySQLGetTeamData(20, "user_id = "+userid)
+	user, _ = db.SQLAccess.MySQLGetUserData(1, "id = "+vars["userID"])
+	team, _ = db.SQLAccess.MySQLGetTeamData(20, "user_id = "+vars["userID"])
 
 	session, _ := db.SessionStore.Get(r, db.SessionData)
 	fmt.Printf("TeamsHandler\nvars : %v", vars)
@@ -76,7 +79,7 @@ func TeamsHandler(w http.ResponseWriter, r *http.Request) {
 		loggedin = session.Values["Loggedin"].(bool)
 		if _, ok := session.Values["UserID"]; ok {
 			fmt.Println("session.Values[UserID] : " + strconv.Itoa(session.Values["UserID"].(int)))
-			IsYourTeam = userid == strconv.Itoa(session.Values["UserID"].(int))
+			IsYourTeam = userid == session.Values["UserID"].(int)
 		}
 	}
 
