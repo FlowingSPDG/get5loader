@@ -5,14 +5,15 @@ import (
 	"fmt"
 	// "strings"
 	//"github.com/Philipp15b/go-steam"
-	_ "github.com/FlowingSPDG/go-steamapi"
+	//"github.com/FlowingSPDG/go-steamapi"
+	"github.com/Acidic9/steam"
 	"github.com/go-ini/ini"
 	_ "github.com/gorilla/mux"
 	_ "github.com/gorilla/sessions"
 	"github.com/jinzhu/gorm"
 	//"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
-	steam "github.com/kidoman/go-steam"
+	gosteam "github.com/kidoman/go-steam"
 	//"github.com/solovev/steam_go"
 	//_ "html/template"
 	"math"
@@ -40,82 +41,31 @@ func (u *UserData) TableName() string {
 }
 
 func (u *UserData) GetOrCreate(g *gorm.DB, steamid string) (*UserData, error) {
-	var User *UserData
 	SQLUserData := UserData{}
 	SQLUserData.SteamID = steamid
 
-	if g.Find(&SQLUserData).RecordNotFound() {
-		fmt.Println("USER NOT EXIST")
-	}
-	fmt.Println("USER EXIST?")
-	User.Name = SQLUserData.Name
-	User.ID = SQLUserData.ID
-	User.Admin = SQLUserData.Admin
-	User.SteamID = SQLUserData.SteamID
-	return User, nil
-	/*
-		//データベースへクエリを送信。引っ張ってきたデータがrowsに入る。
-		q := fmt.Sprintf("SELECT * FROM `user` WHERE steam_id=%s LIMIT 1 ", steamid)
-		fmt.Println(q)
-		rows, err := s.Query(q)
+	record := g.Limit(1).Where("steam_id = ?", steamid).Find(&SQLUserData)
+	if record.RecordNotFound() {
+		fmt.Println("USER NOT EXIST!")
+		fmt.Println("CREATING USER")
+		steamid64, err := strconv.Atoi(steamid)
 		if err != nil {
-			fmt.Println("USER NOT EXIST")
-			return EmptyUser, err
+			return u, err
 		}
-		defer rows.Close()
-		if rows.Next() {
-			err := rows.Scan(&SQLUserData.Id, &SQLUserData.Steam_id, &SQLUserData.Name, &SQLUserData.Admin)
-			if err != nil {
-				return EmptyUser, err
-			}
-			fmt.Printf("UserData : %v", SQLUserData)
-			u.ID = SQLUserData.Id
-			u.Name = SQLUserData.Name
-			u.SteamID = SQLUserData.Steam_id
-			u.Admin = SQLUserData.Admin
-			return u, nil
-		} else {
-			fmt.Println("USER NOT EXIST. REGISTER!")
-			//playerinfo, err := steam_go.GetPlayerSummaries(steamid, SteamAPIKey)
-			steamid64, _ := strconv.Atoi(steamid)
-			steamid64arr := []uint64{uint64(steamid64)}
-			playersumamry, err := steamapi.GetPlayerSummaries(steamid64arr, SteamAPIKey)
-			fmt.Printf("\nsteamid : %s / SteamAPIKey : %s\n", steamid, SteamAPIKey)
-			fmt.Println(playersumamry)
-
-			if err != nil { // fix here
-				fmt.Println(err)
-				return EmptyUser, err
-			}
-
-			q := fmt.Sprintf("INSERT INTO `user` (steam_id,name,admin) values (%s,'%s',0);", steamid, playersumamry[0].PersonaName)
-			fmt.Println(q)
-			res, err := s.Exec(q)
-			if err != nil {
-				return EmptyUser, err
-			}
-			fmt.Println(res)
-			rows, err := s.Query(q)
-			if err != nil {
-				fmt.Println("UNKNOWN FAIL")
-				return EmptyUser, err
-			}
-			defer rows.Close()
-			if rows.Next() {
-				err := rows.Scan(&SQLUserData.Id, &SQLUserData.Steam_id, &SQLUserData.Name, &SQLUserData.Admin)
-				if err != nil {
-					return EmptyUser, err
-				}
-				fmt.Printf("UserData : %v", SQLUserData)
-				u.ID = SQLUserData.Id
-				u.Name = SQLUserData.Name
-				u.SteamID = SQLUserData.Steam_id
-				u.Admin = SQLUserData.Admin
-				return u, nil
-			}
-			return EmptyUser, err
+		SQLUserData.Name, err = GetSteamName(uint64(steamid64))
+		if err != nil {
+			return u, err
 		}
-	*/
+		g.Create(&SQLUserData)
+	} else {
+		fmt.Println("USER EXIST")
+		fmt.Println(SQLUserData)
+		u.Name = SQLUserData.Name
+		u.ID = SQLUserData.ID
+		u.Admin = SQLUserData.Admin
+		u.SteamID = SQLUserData.SteamID
+	}
+	return u, nil
 }
 
 func (u *UserData) GetURL() string {
@@ -141,6 +91,10 @@ type GameServerData struct {
 	Public_server bool   `gorm:"column:public_server"`
 }
 
+func (u *GameServerData) TableName() string {
+	return "game_server"
+}
+
 func (g *GameServerData) Create(userid int, display_name string, ip_string string, port int, rcon_password string, public_server bool) *GameServerData {
 	g.User_id = userid
 	g.Display_name = display_name
@@ -153,8 +107,8 @@ func (g *GameServerData) Create(userid int, display_name string, ip_string strin
 }
 
 func (g *GameServerData) SendRcon(cmd string) (string, error) {
-	o := &steam.ConnectOptions{RCONPassword: g.Rcon_password}
-	rcon, err := steam.Connect(g.Ip_string, o)
+	o := &gosteam.ConnectOptions{RCONPassword: g.Rcon_password}
+	rcon, err := gosteam.Connect(g.Ip_string, o)
 	if err != nil {
 		fmt.Println(err)
 		return "", err
@@ -591,8 +545,10 @@ type MyserversPageData struct {
 	LoggedIn bool
 }
 
-/*
-func GetSteamName(){
-
+func GetSteamName(steamid uint64) (string, error) {
+	summary, err := steam.GetPlayerSummaries(SteamAPIKey, steam.SteamID64(steamid))
+	if err != nil {
+		return "", err
+	}
+	return summary.DisplayName, nil
 }
-*/
