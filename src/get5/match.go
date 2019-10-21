@@ -2,6 +2,7 @@ package get5
 
 import (
 	"fmt"
+	"strconv"
 
 	"github.com/gorilla/mux"
 	_ "github.com/gorilla/sessions"
@@ -124,7 +125,46 @@ func MatchesWithIDHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func MyMatchesHandler(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r) //パスパラメータ取得
-	fmt.Printf("MyMatchesHandler\nvars : %v", vars)
-	w.WriteHeader(http.StatusOK)
+	//vars := mux.Vars(r) //パスパラメータ取得
+	fmt.Printf("MatchesHandler\n")
+
+	name := ""
+	userid := 0
+	loggedin := false
+	session, _ := db.SessionStore.Get(r, db.SessionData)
+
+	u := &models.MatchesPageData{
+		LoggedIn: loggedin,
+		UserName: name,
+		UserID:   userid,
+	}
+
+	if _, ok := session.Values["Loggedin"]; ok { // FUCK.
+		if _, ok := session.Values["Name"]; ok {
+			if _, ok := session.Values["UserID"]; ok {
+				if session.Values["Loggedin"].(bool) == true {
+					u.LoggedIn = true
+					loggedin = true
+					u.UserName = session.Values["Name"].(string)
+					u.UserID = session.Values["UserID"].(int)
+					userid = session.Values["UserID"].(int)
+				}
+			}
+		}
+	}
+
+	if !loggedin {
+		http.Redirect(w, r, "/login", 302)
+	}
+
+	matches, err := db.SQLAccess.MySQLGetMatchData(20, "user_id="+strconv.Itoa(userid))
+
+	u.Matches = matches
+
+	fmt.Println(matches)
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Fprintf(w, templates.Match(u)) // TODO
 }

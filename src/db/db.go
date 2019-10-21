@@ -50,7 +50,6 @@ func (s *DBdatas) Ping() error {
 
 func (s *DBdatas) InitOrReconnect() error {
 	sqloption := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?parseTime=true", s.User, s.Pass, s.Host, s.Port, s.Db)
-	//fmt.Println(sqloption)
 	if s.sql == nil {
 		s.sql, _ = sql.Open("mysql", sqloption)
 	}
@@ -232,7 +231,7 @@ func (s *DBdatas) MySQLGetMatchData(limit int, where string) ([]models.SQLMatchD
 	}
 
 	//データベースへクエリを送信。引っ張ってきたデータがrowsに入る。
-	q := fmt.Sprintf("SELECT * FROM `match` ORDER BY ID DESC LIMIT %d %s", limit, whr)
+	q := fmt.Sprintf("SELECT * FROM `match` %s ORDER BY ID DESC LIMIT %d ", whr, limit)
 	fmt.Println(q)
 	rows, err := s.sql.Query(q)
 	if err != nil {
