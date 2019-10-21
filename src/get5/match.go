@@ -105,7 +105,7 @@ func MatchesHandler(w http.ResponseWriter, r *http.Request) {
 
 	if _, ok := session.Values["Loggedin"]; ok { // FUCK.
 		if _, ok := session.Values["Name"]; ok {
-			if _, ok := session.Values["UserID"]; ok {
+			if _, ok := session.Values["UserID"].(int); ok {
 				if session.Values["Loggedin"].(bool) == true {
 					u.LoggedIn = true
 					u.UserName = session.Values["Name"].(string)
@@ -134,7 +134,7 @@ func MatchesWithIDHandler(w http.ResponseWriter, r *http.Request) {
 
 	if _, ok := session.Values["Loggedin"]; ok { // FUCK.
 		if _, ok := session.Values["Name"]; ok {
-			if _, ok := session.Values["UserID"]; ok {
+			if _, ok := session.Values["UserID"].(int); ok {
 				if session.Values["Loggedin"].(bool) == true {
 					u.LoggedIn = true
 					u.UserName = session.Values["Name"].(string)
@@ -174,7 +174,7 @@ func MyMatchesHandler(w http.ResponseWriter, r *http.Request) {
 
 	if _, ok := session.Values["Loggedin"]; ok { // FUCK.
 		if _, ok := session.Values["Name"]; ok {
-			if _, ok := session.Values["UserID"]; ok {
+			if _, ok := session.Values["UserID"].(int); ok {
 				if session.Values["Loggedin"].(bool) == true {
 					u.LoggedIn = true
 					loggedin = true

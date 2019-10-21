@@ -11,7 +11,7 @@ import (
 
 	//"html/template"
 	"net/http"
-	_ "strconv"
+	"strconv"
 	_ "time"
 )
 
@@ -40,40 +40,10 @@ func TeamCreateHandler(w http.ResponseWriter, r *http.Request) {
 	//templates.WritePageTemplate(w, p)
 }
 
-type TeamPageData struct {
-	LoggedIn   bool
-	IsYourTeam bool
-	team       models.SQLTeamData
-	tp         string
-	test       string
-	Content    interface{} // should be template
-}
-
 func TeamHandler(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	t := vars["teamID"]
-	//tpl := template.Must(template.ParseFiles("get5/templates/layout.html", "get5/templates/team.html")) // template
-	session, _ := db.SessionStore.Get(r, db.SessionData)
-	team, err := db.SQLAccess.MySQLGetTeamData(1, "id = "+t)
-	if err != nil {
-		panic(err)
-	}
+	vars := mux.Vars(r) //パスパラメータ取得
 	fmt.Printf("TeamHandler\nvars : %v", vars)
-
-	loggedin := false
-
-	if _, ok := session.Values["Loggedin"]; ok {
-		loggedin = session.Values["Loggedin"].(bool)
-	}
-
-	PageData := &models.TeamPageData{
-		LoggedIn:   loggedin,
-		Teams:      team,
-		IsYourTeam: false, // currently steamid
-	}
-	fmt.Println(team[0].Name)
-
-	fmt.Fprintf(w, templates.Team(PageData)) // TODO
+	w.WriteHeader(http.StatusOK)
 }
 
 func TeamEditHandler(w http.ResponseWriter, r *http.Request) {
@@ -89,16 +59,47 @@ func TeamDeleteHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func TeamsHandler(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r) //パスパラメータ取得
+	vars := mux.Vars(r)
+	userid := vars["userID"]
+	var user models.SQLUserData
+	var team []models.SQLTeamData
+	user, _ = db.SQLAccess.MySQLGetUserData(1, "id = "+userid)
+	team, _ = db.SQLAccess.MySQLGetTeamData(20, "user_id = "+userid)
+
+	session, _ := db.SessionStore.Get(r, db.SessionData)
 	fmt.Printf("TeamsHandler\nvars : %v", vars)
-	w.WriteHeader(http.StatusOK)
+
+	loggedin := false
+	IsYourTeam := false
+
+	if _, ok := session.Values["Loggedin"]; ok {
+		loggedin = session.Values["Loggedin"].(bool)
+		if _, ok := session.Values["UserID"]; ok {
+			fmt.Println("session.Values[UserID] : " + strconv.Itoa(session.Values["UserID"].(int)))
+			IsYourTeam = userid == strconv.Itoa(session.Values["UserID"].(int))
+		}
+	}
+
+	PageData := &models.TeamsPageData{
+		LoggedIn:   loggedin,
+		User:       user,
+		Teams:      team,
+		IsYourTeam: IsYourTeam,
+	}
+	fmt.Println(team[0].Name)
+
+	fmt.Fprintf(w, templates.Teams(PageData)) // TODO
 }
 
 func MyTeamsHandler(w http.ResponseWriter, r *http.Request) {
 	session, _ := db.SessionStore.Get(r, db.SessionData)
 	if _, ok := session.Values["Loggedin"]; ok {
 		if session.Values["Loggedin"] == true {
-
+			if _, ok := session.Values["UserID"]; ok {
+				http.Redirect(w, r, "/teams/"+strconv.Itoa(session.Values["UserID"].(int)), 302)
+			}
+		} else {
+			http.Redirect(w, r, "/login", 302)
 		}
 	}
 	w.WriteHeader(http.StatusOK)

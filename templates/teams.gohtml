@@ -3,7 +3,7 @@
 		"github.com/FlowingSPDG/get5-web-go/templates/layout"
 		"github.com/FlowingSPDG/get5-web-go/src/models"
 	)
-	var u *models.TeamPageData
+	var u *models.TeamsPageData
 	layout := layout.Base
 }
 
@@ -23,11 +23,10 @@
 
 @section content {
 	<div id="content">
-		
 			@if u.IsYourTeam == true {
   				<h1> Your teams </h1>
   			} else {
-  				<h1> Teams for <a href="/user/{{ owner.id }}"> {{ owner.name }}</a> </h1>
+  				<h1> Teams for <a href="/user/@u.UserID"> @u.User.Name </a> </h1>
 			}
   	<ul class="list-group">
 

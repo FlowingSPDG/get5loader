@@ -23,7 +23,7 @@ type UserData struct {
 	Matches []MatchData
 }
 
-type SQLUserDataSQLUserData struct {
+type SQLUserData struct {
 	Id       int
 	Steam_id string
 	Name     string
@@ -179,12 +179,11 @@ type MatchesPageData struct {
 	Matches  []SQLMatchData
 }
 
-type TeamPageData struct {
+type TeamsPageData struct {
 	LoggedIn   bool
+	User       SQLUserData
 	IsYourTeam bool
 	Teams      []SQLTeamData
-	tp         string
-	test       string
 }
 
 type UserPageData struct {
