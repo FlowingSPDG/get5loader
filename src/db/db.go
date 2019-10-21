@@ -232,7 +232,7 @@ func (s *DBdatas) MySQLGetMatchData(limit int, where string) ([]models.SQLMatchD
 	}
 
 	//データベースへクエリを送信。引っ張ってきたデータがrowsに入る。
-	q := fmt.Sprintf("SELECT * FROM `match` LIMIT %d %s", limit, whr)
+	q := fmt.Sprintf("SELECT * FROM `match` ORDER BY ID DESC LIMIT %d %s", limit, whr)
 	fmt.Println(q)
 	rows, err := s.sql.Query(q)
 	if err != nil {
