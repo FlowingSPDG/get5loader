@@ -103,11 +103,9 @@ func (u *UserData) GetOrCreate(s *sql.DB, steamid string) (*UserData, error) {
 	}
 }
 
-/*
-func (u *UserData) GetURL() {
-
+func (u *UserData) GetURL() string {
+	return fmt.Sprintf("http://%s/user/%d", Cnf.HOST, u.ID)
 }
-*/
 
 func (u *UserData) GetSteamURL() string {
 	return "http://steamcommunity.com/profiles/" + u.SteamID
@@ -262,10 +260,10 @@ func (t *TeamData) GetLogoHtml(scale float32) string {
 }
 */
 
-/*
 func (t *TeamData) GetURL() string {
-	return
-}*/
+	return fmt.Sprintf("http://%s/team/%d", Cnf.HOST, t.ID)
+}
+
 /*
 func (t *TeamData) GetNameURLHtml() string {
 	return `<a href="%s">%s</a>`.format(self.get_url(), self.name)

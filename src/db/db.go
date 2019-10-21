@@ -74,6 +74,7 @@ var (
 	SessionData  = "SessionData"
 	DefaultPage  string
 	SQLAccess    DBdatas
+	Cnf          Config
 )
 
 func init() {
