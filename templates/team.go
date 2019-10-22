@@ -52,11 +52,21 @@ func RenderTeam(_buffer io.StringWriter, u *db.TeamPageData) {
 
 	_content := func(_buffer io.StringWriter) {
 
-		_buffer.WriteString("<div id=\"content\">\n\n  <div class=\"container\">\n    <h1>\n      {{ team.get_flag_html(1.0) }} ")
-		_buffer.WriteString(gorazor.HTMLEscape(u.Team.Name))
-		_buffer.WriteString(" {{ team.get_logo_html(1.0) }}\n      {% if team.can_edit(user) %}\n      <div class=\"pull-right\">\n        <a href=\"/team/")
-		_buffer.WriteString(gorazor.HTMLEscape(u.Team.ID))
-		_buffer.WriteString("/edit\" class=\"btn btn-primary btn-xs\">Edit</a>\n      </div>\n      {% endif %}\n    </h1>\n\n    <br>\n\n    <div class=\"panel panel-default\">\n      <div class=\"panel-heading\">Players</div>\n      <div class=\"panel-body\">\n          ")
+		_buffer.WriteString("<div id=\"content\">\n\n  <div class=\"container\">\n    <h1>\n      ")
+		_buffer.WriteString((u.Team.GetFlagHTML(1.0)))
+		_buffer.WriteString(" ")
+		_buffer.WriteString((u.Team.Name))
+		_buffer.WriteString(" ")
+		_buffer.WriteString((u.Team.GetLogoHtml(1.0)))
+		_buffer.WriteString("\n      ")
+		if u.Team.CanEdit(u.User.ID) {
+
+			_buffer.WriteString("<div class=\"pull-right\">\n        <a href=\"/team/")
+			_buffer.WriteString(gorazor.HTMLEscape(u.Team.ID))
+			_buffer.WriteString("/edit\" class=\"btn btn-primary btn-xs\">Edit</a>\n      </div>")
+
+		}
+		_buffer.WriteString("\n    </h1>\n\n    <br>\n\n    <div class=\"panel panel-default\">\n      <div class=\"panel-heading\">Players</div>\n      <div class=\"panel-body\">\n          ")
 		for i := 0; i < len(u.Team.Auths); i++ {
 
 			_buffer.WriteString("<a href=\"http://steamcommunity.com/profiles/")

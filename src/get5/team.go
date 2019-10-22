@@ -54,10 +54,16 @@ func TeamHandler(w http.ResponseWriter, r *http.Request) { // NEED Team player's
 		}
 	}
 
+	user, err := db.SQLAccess.MySQLGetUserData(1, "id", vars["userID"])
+	if err != nil {
+		panic(err)
+	}
+
 	PageData := &db.TeamPageData{
 		LoggedIn:   loggedin,
 		Team:       team[0],
 		IsYourTeam: IsYourTeam,
+		User:       user,
 	}
 	fmt.Println(team[0].Name)
 

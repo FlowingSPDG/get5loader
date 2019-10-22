@@ -212,9 +212,12 @@ func (t *TeamData) GetVSMatchResult(matchid int) []SQLMatchData {
 */
 
 func (t *TeamData) GetFlagHTML(scale float32) string {
+	if t.Flag == "" {
+		return ""
+	}
 	width := 32.0 * scale
 	height := 21.0 * scale
-	html := fmt.Sprintf(`<img src="%s%s"  width="%f" height="%d">`, "../static/img/valve_flags", t.Flag, width, height)
+	html := fmt.Sprintf(`<img src="%s%s%s"  width="%f" height="%f">`, "../static/img/valve_flags/", t.Flag, ".png", width, height)
 	return html
 }
 
@@ -529,6 +532,7 @@ type TeamsPageData struct {
 type TeamPageData struct {
 	LoggedIn   bool
 	IsYourTeam bool
+	User       UserData
 	Team       TeamData
 }
 
