@@ -309,13 +309,13 @@ func (m *MatchData) GetStatusString(ShowWinner bool) (string, error) {
 			if err != nil {
 				return "", err
 			}
-			return fmt.Sprintf("Won %s by %f", ScoreString, team1.Name), nil
+			return fmt.Sprintf("Won %s by %s", ScoreString, team1.Name), nil
 		} else if winner == m.Team2ID {
 			team2, err := m.GetTeam2()
 			if err != nil {
 				return "", err
 			}
-			return fmt.Sprintf("Won %s by %f", ScoreString, team2.Name), nil
+			return fmt.Sprintf("Won %s by %s", ScoreString, team2.Name), nil
 		} else {
 			return fmt.Sprintf("Tied %s", ScoreString), nil
 		}
@@ -344,7 +344,7 @@ func (m *MatchData) Pending() bool {
 }
 
 func (m *MatchData) Finished() bool {
-	return !m.EndTime.Valid && !m.Cancelled
+	return m.EndTime.Valid && !m.Cancelled
 }
 
 func (m *MatchData) Live() bool {
@@ -358,12 +358,11 @@ func (m *MatchData) GetServer() int64 {
 func (m *MatchData) GetCurrentScore() (int, int) {
 	if m.MaxMaps == 1 {
 		if len(m.MapStats) == 0 { // check ok?
-			return 0, 0
+			return 0, 0 // TODO
 		}
 		return m.MapStats[0].Team1Score, m.MapStats[0].Team2Score
-	} else {
-		return m.Team1Score, m.Team2Score
 	}
+	return m.Team1Score, m.Team2Score
 }
 
 /*func (m *MatchData) SendToServer() {
@@ -419,7 +418,7 @@ func (m *MatchData) GetTeam2() (TeamData, error) {
 }*/
 
 type MapStatsData struct {
-	ID         int          `gorm:"primary_key"column:id`
+	ID         int          `gorm:"primary_key" gorm:"column:id"`
 	MatchID    int          `gorm:"column:match_id"`
 	MapNumber  int          `gorm:"column:map_number"`
 	MapName    string       `gorm:"column:map_name"`
