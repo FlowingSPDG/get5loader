@@ -78,9 +78,8 @@ func RenderTeam(_buffer io.StringWriter, u *db.TeamPageData) {
 			_buffer.WriteString(gorazor.HTMLEscape(u.Team.Auths[i]))
 			_buffer.WriteString("\" class=\"col-sm-offset-0\"> ")
 			_buffer.WriteString(gorazor.HTMLEscape(u.Team.Auths[i]))
-			_buffer.WriteString(" </a><p>")
+			_buffer.WriteString(" </a>")
 			_buffer.WriteString(gorazor.HTMLEscape(p.Name))
-			_buffer.WriteString("</p>")
 
 			_buffer.WriteString("<br>\n        ")
 		}
