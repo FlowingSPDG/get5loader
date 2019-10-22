@@ -1,6 +1,7 @@
 package db
 
 import (
+	"bytes"
 	"database/sql"
 	"fmt"
 
@@ -11,6 +12,7 @@ import (
 	"github.com/go-ini/ini"
 	_ "github.com/gorilla/mux"
 	_ "github.com/gorilla/sessions"
+	"github.com/hydrogen18/stalecucumber"
 	"github.com/jinzhu/gorm"
 
 	//"github.com/jinzhu/gorm"
@@ -136,15 +138,16 @@ func (g *GameServerData) GetDisplay() string {
 }*/
 
 type TeamData struct {
-	ID     int    `gorm:"primary_key"column:id`
-	UserID int    `gorm:"column:user_id"`
-	Name   string `gorm:"column:name"`
-	Tag    string `gorm:"column:tag"`
-	Flag   string `gorm:"column:flag"`
-	Logo   string `gorm:"column:logo"`
-	//Auths      []string
-	Auths      []byte `gorm:"column:auth"`
-	PublicTeam bool   `gorm:"column:public_team"`
+	ID          int      `gorm:"primary_key"column:id`
+	UserID      int      `gorm:"column:user_id"`
+	Name        string   `gorm:"column:name"`
+	Tag         string   `gorm:"column:tag"`
+	Flag        string   `gorm:"column:flag"`
+	Logo        string   `gorm:"column:logo"`
+	AuthsPickle []byte   `gorm:"column:auths"`
+	Auths       []string // converts pickle []byte to []string
+	Players     []PlayerStatsData
+	PublicTeam  bool `gorm:"column:public_team"`
 }
 
 func (t *TeamData) Create(userid int, name string, tag string, flag string, logo string, auths []byte, public_team bool) *TeamData {
@@ -153,7 +156,7 @@ func (t *TeamData) Create(userid int, name string, tag string, flag string, logo
 	t.Tag = tag
 	t.Flag = flag
 	t.Logo = logo
-	t.Auths = auths
+	t.AuthsPickle = auths // should convert into pickle
 	t.PublicTeam = public_team
 	return t
 }
@@ -163,7 +166,7 @@ func (t *TeamData) SetData(name string, tag string, flag string, logo string, au
 	t.Tag = tag
 	t.Flag = flag
 	t.Logo = logo
-	t.Auths = auths
+	t.AuthsPickle = auths // should convert into pickle
 	t.PublicTeam = public_team
 	return t
 }
@@ -387,9 +390,13 @@ func (m *MatchData) GetTeam1() (TeamData, error) {
 	Team.Tag = STeam[0].Tag
 	Team.Flag = STeam[0].Flag
 	Team.Logo = STeam[0].Logo
-	Team.Auths = STeam[0].Auths
+	Team.AuthsPickle = STeam[0].AuthsPickle
 	Team.PublicTeam = STeam[0].PublicTeam
+	reader := bytes.NewReader(STeam[0].AuthsPickle)
+	Team.Auths = make([]string, 0)
+	err = stalecucumber.UnpackInto(&Team.Auths).From(stalecucumber.Unpickle(reader))
 	if err != nil {
+		panic(err)
 		return Team, err
 	}
 	return Team, nil
@@ -403,9 +410,13 @@ func (m *MatchData) GetTeam2() (TeamData, error) {
 	Team.Tag = STeam[0].Tag
 	Team.Flag = STeam[0].Flag
 	Team.Logo = STeam[0].Logo
-	Team.Auths = STeam[0].Auths
+	Team.AuthsPickle = STeam[0].AuthsPickle
 	Team.PublicTeam = STeam[0].PublicTeam
+	reader := bytes.NewReader(STeam[0].AuthsPickle)
+	Team.Auths = make([]string, 0)
+	err = stalecucumber.UnpackInto(&Team.Auths).From(stalecucumber.Unpickle(reader))
 	if err != nil {
+		panic(err)
 		return Team, err
 	}
 	return Team, nil
@@ -447,49 +458,53 @@ func (m *MapStatsData) TableName() string {
 
 }*/
 
-type SQLPlayerStatsData struct {
-	Id                int `gorm:"primary_key"`
-	Match_id          int
-	Map_id            int
-	Team_id           int
-	Steam_id          string
-	Name              string
-	Kills             int
-	Deaths            int
-	Roundsplayed      int
-	Assists           int
-	Flashbang_assists int
-	Teamkills         int
-	Suicides          int
-	Headshot_kills    int
-	Damage            int64
-	Bomb_plants       int
-	Bomb_defuses      int
-	V1                int
-	V2                int
-	V3                int
-	V4                int
-	V5                int
-	K1                int
-	K2                int
-	K3                int
-	K4                int
-	K5                int
-	Firstdeath_Ct     int
-	Firstdeath_t      int
-	Firstkill_ct      int
-	Firstkill_t       int
+type PlayerStatsData struct {
+	Id                int    `gorm:"primary_key" gorm:"column:id"`
+	Match_id          int    `gorm:"column:match_id"`
+	Map_id            int    `gorm:"column:map_id"`
+	Team_id           int    `gorm:"column:team_id"`
+	Steam_id          string `gorm:"column:steam_id"`
+	Name              string `gorm:"column:name"`
+	Kills             int    `gorm:"column:kills"`
+	Deaths            int    `gorm:"column:deaths"`
+	Roundsplayed      int    `gorm:"column:roundsplayed"`
+	Assists           int    `gorm:"column:assists"`
+	Flashbang_assists int    `gorm:"column:map_numbeflashbang_assists"`
+	Teamkills         int    `gorm:"column:teamkills"`
+	Suicides          int    `gorm:"column:suicides"`
+	Headshot_kills    int    `gorm:"column:headshot_kills"`
+	Damage            int64  `gorm:"column:damage"`
+	Bomb_plants       int    `gorm:"column:bomb_plants"`
+	Bomb_defuses      int    `gorm:"column:bomb_defuses"`
+	V1                int    `gorm:"column:v1"`
+	V2                int    `gorm:"column:v2"`
+	V3                int    `gorm:"column:v3"`
+	V4                int    `gorm:"column:v4"`
+	V5                int    `gorm:"column:v5"`
+	K1                int    `gorm:"column:k1"`
+	K2                int    `gorm:"column:k2"`
+	K3                int    `gorm:"column:k3"`
+	K4                int    `gorm:"column:k4"`
+	K5                int    `gorm:"column:k5"`
+	Firstdeath_Ct     int    `gorm:"column:firstdeath_Ct"`
+	Firstdeath_t      int    `gorm:"column:firstdeath_t"`
+	Firstkill_ct      int    `gorm:"column:firstkill_ct"`
+	Firstkill_t       int    `gorm:"column:firstkill_t"`
 }
 
-func (p *SQLPlayerStatsData) GetOrCreate() {
-
+func (p *PlayerStatsData) TableName() string {
+	return "user"
 }
 
-func (p *SQLPlayerStatsData) GetSteamURL() string {
+func (p *PlayerStatsData) GetOrCreate() string {
+	return "player_stats"
+}
+
+func (p *PlayerStatsData) GetSteamURL() string {
 	return fmt.Sprintf("http://steamcommunity.com/profiles/%s", p.Steam_id)
 }
 
-func (p *SQLPlayerStatsData) GetRating() float32 { // Rating value can be more accurate??
+func (p *PlayerStatsData) GetRating() float32 { // Rating value can be more accurate??
 	var AverageKPR float32 = 0.679
 	var AverageSPR float32 = 0.317
 	var AverageRMK float32 = 1.277
@@ -501,14 +516,14 @@ func (p *SQLPlayerStatsData) GetRating() float32 { // Rating value can be more a
 	return rating
 }
 
-func (p *SQLPlayerStatsData) GetKDR() int {
+func (p *PlayerStatsData) GetKDR() int {
 	if p.Deaths == 0 {
 		return p.Kills
 	}
 	return p.Kills / p.Deaths
 }
 
-func (p *SQLPlayerStatsData) GetHSP() float32 {
+func (p *PlayerStatsData) GetHSP() float32 {
 	if p.Deaths == 0 {
 		return float32(p.Kills)
 	}

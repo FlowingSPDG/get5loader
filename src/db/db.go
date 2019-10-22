@@ -1,9 +1,15 @@
 package db
 
 import (
+	"bytes"
+
+	"github.com/hydrogen18/stalecucumber"
+
 	// "database/sql" //ここでパッケージをimport
 	"fmt"
+
 	"github.com/jinzhu/gorm"
+
 	// "github.com/jinzhu/gorm/dialects/mysql"
 
 	"github.com/go-ini/ini"
@@ -138,7 +144,6 @@ func LogoutHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *DBdatas) GetUserData(limit int, wherekey string, wherevalue string) ([]UserData, error) {
-	//データベースへクエリを送信。引っ張ってきたデータがrowsに入る。
 	UserData := []UserData{}
 	s.Gorm.Limit(limit).Where(wherekey+" = ?", wherevalue).Find(&UserData)
 	return UserData, nil
@@ -147,6 +152,14 @@ func (s *DBdatas) GetUserData(limit int, wherekey string, wherevalue string) ([]
 func (s *DBdatas) MySQLGetTeamData(limit int, wherekey string, wherevalue string) ([]TeamData, error) {
 	TeamData := []TeamData{}
 	s.Gorm.Limit(limit).Where(wherekey+" = ?", wherevalue).Find(&TeamData)
+	for i := 0; i < len(TeamData); i++ {
+		reader := bytes.NewReader(TeamData[i].AuthsPickle)
+		TeamData[i].Auths = make([]string, 0)
+		err := stalecucumber.UnpackInto(&TeamData[i].Auths).From(stalecucumber.Unpickle(reader))
+		if err != nil {
+			return TeamData, err
+		}
+	}
 	return TeamData, nil
 }
 
@@ -160,8 +173,8 @@ func (s *DBdatas) MySQLGetMatchData(limit int, wherekey string, wherevalue strin
 	return Matches, nil
 }
 
-func (s *DBdatas) MySQLGetPlayerStatsData(limit int, wherekey string, wherevalue string) ([]SQLPlayerStatsData, error) {
-	PlayerStatsData := []SQLPlayerStatsData{}
+func (s *DBdatas) MySQLGetPlayerStatsData(limit int, wherekey string, wherevalue string) ([]PlayerStatsData, error) {
+	PlayerStatsData := []PlayerStatsData{}
 	s.Gorm.Limit(limit).Where(wherekey+" = ?", wherevalue).Find(&PlayerStatsData)
 	return PlayerStatsData, nil
 }
