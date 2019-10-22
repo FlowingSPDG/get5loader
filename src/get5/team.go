@@ -2,6 +2,7 @@ package get5
 
 import (
 	"fmt"
+
 	"github.com/FlowingSPDG/get5-web-go/src/db"
 	"github.com/FlowingSPDG/get5-web-go/templates"
 	"github.com/gorilla/mux"
@@ -37,8 +38,10 @@ func TeamHandler(w http.ResponseWriter, r *http.Request) { // NEED Team player's
 	vars := mux.Vars(r)
 	teamID := vars["teamID"]
 
-	var team []db.TeamData
-	team, _ = db.SQLAccess.MySQLGetTeamData(1, "id", teamID)
+	team, err := db.SQLAccess.MySQLGetTeamData(1, "id", teamID)
+	if err != nil {
+		panic(err)
+	}
 
 	session, _ := db.SessionStore.Get(r, db.SessionData)
 	fmt.Printf("TeamHandler\nvars : %v", vars)

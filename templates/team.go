@@ -5,7 +5,7 @@
 package templates
 
 import (
-	db "github.com/FlowingSPDG/get5-web-go/src/db"
+	"github.com/FlowingSPDG/get5-web-go/src/db"
 	"github.com/FlowingSPDG/get5-web-go/templates/layout"
 	"github.com/sipin/gorazor/gorazor"
 	"io"
@@ -66,18 +66,23 @@ func RenderTeam(_buffer io.StringWriter, u *db.TeamPageData) {
 			_buffer.WriteString("/edit\" class=\"btn btn-primary btn-xs\">Edit</a>\n      </div>")
 
 		}
-		_buffer.WriteString("\n    </h1>\n\n    <br>\n\n    <div class=\"panel panel-default\">\n      <div class=\"panel-heading\">Players</div>\n      <div class=\"panel-body\">\n          ")
+		_buffer.WriteString("\n    </h1>\n\n    <br>\n\n    <div class=\"panel panel-default\">\n      <div class=\"panel-heading\">Players</div>\n      <div class=\"panel-body\">\n        ")
+
+		players, _ := u.Team.GetPlayers()
+
+		_buffer.WriteString("\n        ")
 		for i := 0; i < len(u.Team.Auths); i++ {
+			p := players[i]
 
 			_buffer.WriteString("<a href=\"http://steamcommunity.com/profiles/")
 			_buffer.WriteString(gorazor.HTMLEscape(u.Team.Auths[i]))
 			_buffer.WriteString("\" class=\"col-sm-offset-0\"> ")
 			_buffer.WriteString(gorazor.HTMLEscape(u.Team.Auths[i]))
-			_buffer.WriteString(" </a>")
+			_buffer.WriteString(" </a><p>")
+			_buffer.WriteString(gorazor.HTMLEscape(p.Name))
+			_buffer.WriteString("</p>")
 
-			_buffer.WriteString("<p>if name\n            {{name}}\n            endif</p>")
-
-			_buffer.WriteString("<br>\n          ")
+			_buffer.WriteString("<br>\n        ")
 		}
 		_buffer.WriteString("\n      </div>\n    </div>\n\n\n    <div class=\"panel panel-default\">\n      <div class=\"panel-heading\">Recent Matches</div>\n        <div class=\"panel-body\">\n          {% for match in team.get_recent_matches() %}\n            <a href=\"/match/{{match.id}}\">#{{match.id}}</a>: {{ team.get_vs_match_result(match.id) }}\n            <br>\n          {% endfor %}\n      </div>\n    </div>\n\n  </div>\n  <br>\n\n</div>")
 

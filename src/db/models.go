@@ -150,6 +150,10 @@ type TeamData struct {
 	PublicTeam  bool `gorm:"column:public_team"`
 }
 
+func (u *TeamData) TableName() string {
+	return "team"
+}
+
 func (t *TeamData) Create(userid int, name string, tag string, flag string, logo string, auths []byte, public_team bool) *TeamData {
 	t.UserID = userid
 	t.Name = name
@@ -180,21 +184,34 @@ func (t *TeamData) CanEdit(userid int) bool {
 	return false
 }
 
-/*
-func (t *TeamData) GetPlayers(userid int) bool {
-	var results []string
-	//Py
-	for steam64 in self.auths:
-            if steam64:
-                name = get_steam_name(steam64)
-                if not name:
-                    name = ''
-
-                results.append((steam64, name))
-		return results
-	//?? TODO
+type PlayerIDName struct {
+	Name string
+	ID   string
 }
-*/
+
+func (t *TeamData) GetPlayers() ([]PlayerIDName, error) {
+	reader := bytes.NewReader(t.AuthsPickle)
+	var results []string
+	var players = []PlayerIDName{}
+	err := stalecucumber.UnpackInto(&results).From(stalecucumber.Unpickle(reader))
+	if err != nil {
+		return players, err
+	}
+	for i := 0; i < len(results); i++ {
+		p := PlayerStatsData{}
+		SQLAccess.Gorm.Where("steam_id = ?", results[i]).First(&p)
+		fmt.Println(p)
+		if err != nil {
+			return players, err
+		}
+		player := PlayerIDName{
+			ID:   results[i],
+			Name: p.Name,
+		}
+		players = append(players, player)
+	}
+	return players, nil
+}
 
 /*
 func (t *TeamData) CanDelete(userid int) bool {
@@ -250,10 +267,6 @@ func (t *TeamData) GetLogoOrFlagHtml(scale float32, otherteam TeamData) string {
 		return t.GetLogoHtml(scale)
 	}
 	return t.GetFlagHTML(scale)
-}
-
-func (m *TeamData) TableName() string {
-	return "team"
 }
 
 type MatchData struct {
@@ -493,12 +506,14 @@ type PlayerStatsData struct {
 }
 
 func (p *PlayerStatsData) TableName() string {
-	return "user"
+	return "player_stats"
 }
 
+/*
 func (p *PlayerStatsData) GetOrCreate() string {
 	return "player_stats"
 }
+*/
 
 func (p *PlayerStatsData) GetSteamURL() string {
 	return fmt.Sprintf("http://steamcommunity.com/profiles/%s", p.Steam_id)
