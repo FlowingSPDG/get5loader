@@ -3,6 +3,7 @@ package db
 import (
 	"database/sql"
 	"fmt"
+
 	// "strings"
 	//"github.com/Philipp15b/go-steam"
 	//"github.com/FlowingSPDG/go-steamapi"
@@ -11,9 +12,11 @@ import (
 	_ "github.com/gorilla/mux"
 	_ "github.com/gorilla/sessions"
 	"github.com/jinzhu/gorm"
+
 	//"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 	gosteam "github.com/kidoman/go-steam"
+
 	//"github.com/solovev/steam_go"
 	//_ "html/template"
 	"math"
@@ -44,7 +47,7 @@ func (u *UserData) GetOrCreate(g *gorm.DB, steamid string) (*UserData, error) {
 	SQLUserData := UserData{}
 	SQLUserData.SteamID = steamid
 
-	record := g.Limit(1).Where("steam_id = ?", steamid).Find(&SQLUserData)
+	record := g.Where("steam_id = ?", steamid).First(&SQLUserData)
 	if record.RecordNotFound() {
 		fmt.Println("USER NOT EXIST!")
 		fmt.Println("CREATING USER")
@@ -361,7 +364,7 @@ func (m *MatchData) GetServer() int64 { // TODO : return server instance
 func (m *MatchData) GetCurrentScore(g *gorm.DB) (int, int) {
 	//g.First(&m).Association("MapStats").Find(&m)
 	m.MapStats = []MapStatsData{}
-	g.Limit(1).Find(&m.MapStats, "match_id = ?", m.ID)
+	g.First(&m.MapStats, "match_id = ?", m.ID)
 	fmt.Println(m.MapStats)
 	if m.MaxMaps == 1 {
 		if len(m.MapStats) == 0 { // check ok?
