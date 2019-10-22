@@ -33,7 +33,10 @@ var (
 )
 
 func init() {
-	c, _ := ini.Load("config.ini")
+	c, err := ini.Load("config.ini")
+	if err != nil {
+		panic(err)
+	}
 	Cnf = Config{
 		HOST:      c.Section("GET5").Key("HOST").MustString(""),
 		SQLHost:   c.Section("sql").Key("host").MustString(""),
@@ -51,7 +54,7 @@ func main() {
 	r := mux.NewRouter()
 	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
 
-	//s := r.Host("get5.flowing.tokyo").Subrouter()
+	//s := r.Host(HOST).Subrouter()
 	r.HandleFunc("/", db.HomeHandler).Methods("GET")
 	r.HandleFunc("/login", db.LoginHandler).Methods("GET")
 	r.HandleFunc("/logout", db.LogoutHandler).Methods("GET")

@@ -70,7 +70,7 @@ func init() {
 	}
 	sqloption := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8mb4&parseTime=True&loc=Local", SQLAccess.User, SQLAccess.Pass, SQLAccess.Host, SQLAccess.Port, SQLAccess.Db)
 	// gorm.Open("mysql", "gorm:password@/country?charset=utf8&parseTime=True&loc=Local")
-	fmt.Println(sqloption)
+	//fmt.Println(sqloption)
 	DB, err := gorm.Open("mysql", sqloption)
 	if err != nil {
 		panic(err)
@@ -79,7 +79,6 @@ func init() {
 	SQLAccess.Gorm = DB
 	SteamAPIKey = Cnf.SteamAPIKey
 	DefaultPage = Cnf.DefaultPage
-
 }
 
 func HomeHandler(w http.ResponseWriter, r *http.Request) {
