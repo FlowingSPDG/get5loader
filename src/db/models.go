@@ -510,10 +510,13 @@ func (p *SQLPlayerStatsData) GetHSP() float32 {
 }
 
 type MatchesPageData struct {
-	LoggedIn bool
-	UserName string
-	UserID   int
-	Matches  []MatchData
+	LoggedIn   bool
+	UserName   string
+	UserID     int
+	Matches    []MatchData
+	AllMatches bool
+	MyMatches  bool
+	Owner      UserData
 }
 
 type TeamsPageData struct {

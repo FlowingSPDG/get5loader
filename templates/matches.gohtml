@@ -23,6 +23,13 @@
 
 @section content{
 <div id="content">
+    @if u.MyMatches == true {
+      <h1>Your matches</h1>
+    } else if u.AllMatches == true {
+      <h1>All matches</h1>
+    } else {
+      <h1>Matches for <a href="/user/@u.Owner.ID"> @u.Owner.Name</a></h1>
+    }
 
   <table class="table table-striped">
     <thead>

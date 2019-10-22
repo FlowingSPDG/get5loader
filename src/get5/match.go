@@ -94,10 +94,11 @@ func MatchesHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	u := &db.MatchesPageData{
-		LoggedIn: loggedin,
-		UserName: name,
-		UserID:   userid,
-		Matches:  matches,
+		LoggedIn:   loggedin,
+		UserName:   name,
+		UserID:     userid,
+		Matches:    matches,
+		AllMatches: true,
 	}
 
 	if _, ok := session.Values["Loggedin"]; ok { // FUCK.
@@ -112,7 +113,7 @@ func MatchesHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	fmt.Fprintf(w, templates.Match(u)) // TODO
+	fmt.Fprintf(w, templates.Matches(u)) // TODO
 }
 
 func MatchesWithIDHandler(w http.ResponseWriter, r *http.Request) {
@@ -120,13 +121,24 @@ func MatchesWithIDHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Printf("MatchesWithIDHandler\n")
 
 	name := ""
-	userid := 0
+	userid, err := strconv.Atoi(vars["userID"])
+	if err != nil {
+		panic(err)
+	}
 	session, _ := db.SessionStore.Get(r, db.SessionData)
 
+	user, err := db.SQLAccess.MySQLGetUserData(1, "id", vars["userID"])
+	if err != nil {
+		panic(err)
+	}
+
 	u := &db.MatchesPageData{
-		LoggedIn: false,
-		UserName: name,
-		UserID:   userid,
+		LoggedIn:   false,
+		UserName:   name,
+		UserID:     userid,
+		MyMatches:  false,
+		AllMatches: false,
+		Owner:      user,
 	}
 
 	if _, ok := session.Values["Loggedin"]; ok { // FUCK.
@@ -135,8 +147,9 @@ func MatchesWithIDHandler(w http.ResponseWriter, r *http.Request) {
 				if session.Values["Loggedin"].(bool) == true {
 					u.LoggedIn = true
 					u.UserName = session.Values["Name"].(string)
-					u.UserID = session.Values["UserID"].(int)
-					userid = session.Values["UserID"].(int)
+					if session.Values["UserID"].(int) == userid {
+						u.MyMatches = true
+					}
 				}
 			}
 		}
@@ -151,11 +164,11 @@ func MatchesWithIDHandler(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 
-	fmt.Fprintf(w, templates.Match(u)) // TODO
+	fmt.Fprintf(w, templates.Matches(u)) // TODO
 }
 
 func MyMatchesHandler(w http.ResponseWriter, r *http.Request) {
-	//vars := mux.Vars(r) //パスパラメータ取得
+	vars := mux.Vars(r) //パスパラメータ取得
 	fmt.Printf("MatchesHandler\n")
 
 	name := ""
@@ -163,10 +176,15 @@ func MyMatchesHandler(w http.ResponseWriter, r *http.Request) {
 	loggedin := false
 	session, _ := db.SessionStore.Get(r, db.SessionData)
 
+	user, err := db.SQLAccess.MySQLGetUserData(1, "id", vars["userID"])
+
 	u := &db.MatchesPageData{
-		LoggedIn: loggedin,
-		UserName: name,
-		UserID:   userid,
+		LoggedIn:   loggedin,
+		UserName:   name,
+		UserID:     userid,
+		MyMatches:  true,
+		AllMatches: false,
+		Owner:      user,
 	}
 
 	if _, ok := session.Values["Loggedin"]; ok { // FUCK.
@@ -196,5 +214,5 @@ func MyMatchesHandler(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 
-	fmt.Fprintf(w, templates.Match(u)) // TODO
+	fmt.Fprintf(w, templates.Matches(u)) // TODO
 }
