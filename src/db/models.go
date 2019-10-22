@@ -294,13 +294,13 @@ func (m *MatchData) GetStatusString(ShowWinner bool) (string, error) {
 	if m.Pending() {
 		return "Pending", nil
 	} else if m.Live() {
-		teams1core, team2score := m.GetCurrentScore()
+		teams1core, team2score := m.GetCurrentScore(SQLAccess.Gorm)
 		return fmt.Sprintf("Live, %d:%d", teams1core, team2score), nil
 	} else if m.Finished() {
-		teams1core, team2score := m.GetCurrentScore()
+		teams1core, team2score := m.GetCurrentScore(SQLAccess.Gorm)
 		minscore := math.Min(float64(teams1core), float64(team2score))
 		maxscore := math.Max(float64(teams1core), float64(team2score))
-		ScoreString := fmt.Sprintf("%f:%f", maxscore, minscore)
+		ScoreString := fmt.Sprintf("%d:%d", int(maxscore), int(minscore))
 		winner, _ := m.Winner.Value()
 		if !ShowWinner {
 			return "Finished", nil
@@ -330,7 +330,7 @@ func (m *MatchData) GetVSString() (string, error) {
 	if err != nil {
 		return "", err
 	}
-	team1score, team2score := m.GetCurrentScore()
+	team1score, team2score := m.GetCurrentScore(SQLAccess.Gorm)
 	str := fmt.Sprintf("%s VS %s (%d:%d)", team1.GetNameURLHtml(), team2.GetNameURLHtml(), team1score, team2score)
 	return str, nil
 }
@@ -351,11 +351,15 @@ func (m *MatchData) Live() bool {
 	return m.StartTime.Valid && !m.EndTime.Valid && !m.Cancelled
 }
 
-func (m *MatchData) GetServer() int64 {
+func (m *MatchData) GetServer() int64 { // TODO : return server instance
 	return m.ServerID // TODO
 }
 
-func (m *MatchData) GetCurrentScore() (int, int) {
+func (m *MatchData) GetCurrentScore(g *gorm.DB) (int, int) {
+	//g.First(&m).Association("MapStats").Find(&m)
+	m.MapStats = []MapStatsData{}
+	g.Limit(1).Find(&m.MapStats, "match_id = ?", m.ID)
+	fmt.Println(m.MapStats)
 	if m.MaxMaps == 1 {
 		if len(m.MapStats) == 0 { // check ok?
 			return 0, 0 // TODO
@@ -419,7 +423,7 @@ func (m *MatchData) GetTeam2() (TeamData, error) {
 
 type MapStatsData struct {
 	ID         int          `gorm:"primary_key" gorm:"column:id"`
-	MatchID    int          `gorm:"column:match_id"`
+	MatchID    int          `gorm:"column:match_id" gorm:"ForeignKey:match_id"`
 	MapNumber  int          `gorm:"column:map_number"`
 	MapName    string       `gorm:"column:map_name"`
 	StartTime  sql.NullTime `gorm:"column:start_time"`
@@ -429,21 +433,13 @@ type MapStatsData struct {
 	Team2Score int          `gorm:"column:team2_score"`
 }
 
+func (m *MapStatsData) TableName() string {
+	return "map_stats"
+}
+
 /*func (m *MapStatsData) GetOrCreate(matchID int,MapNumber int,mapname string){
 
 }*/
-
-type SQLMapStatsData struct {
-	Id          int `gorm:"primary_key"`
-	Match_id    int
-	Map_number  int
-	Map_name    string
-	Start_time  sql.NullTime
-	End_time    sql.NullTime
-	Winner      sql.NullInt64
-	Team1_score int
-	Team2_score int
-}
 
 type SQLPlayerStatsData struct {
 	Id                int `gorm:"primary_key"`

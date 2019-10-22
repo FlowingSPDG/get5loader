@@ -154,7 +154,7 @@ func (s *DBdatas) MySQLGetTeamData(limit int, wherekey string, wherevalue string
 func (s *DBdatas) MySQLGetMatchData(limit int, wherekey string, wherevalue string) ([]MatchData, error) {
 	Matches := []MatchData{}
 	if wherekey == "" || wherevalue == "" {
-		s.Gorm.Limit(limit).Find(&Matches)
+		s.Gorm.Order("id DESC").Limit(limit).Find(&Matches)
 	} else {
 		s.Gorm.Limit(limit).Where(wherekey+" = ?", wherevalue).Find(&Matches)
 	}
@@ -167,8 +167,8 @@ func (s *DBdatas) MySQLGetPlayerStatsData(limit int, wherekey string, wherevalue
 	return PlayerStatsData, nil
 }
 
-func (s *DBdatas) MySQLGetMapStatsData(limit int, wherekey string, wherevalue string) ([]SQLMapStatsData, error) {
-	MapStatsData := []SQLMapStatsData{}
+func (s *DBdatas) MySQLGetMapStatsData(limit int, wherekey string, wherevalue string) ([]MapStatsData, error) {
+	MapStatsData := []MapStatsData{}
 	s.Gorm.Limit(limit).Where(wherekey+" = ?", wherevalue).Find(&MapStatsData)
 	return MapStatsData, nil
 }
