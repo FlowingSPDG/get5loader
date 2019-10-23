@@ -75,7 +75,6 @@ func init() {
 		Port: Cnf.SQLPort,
 	}
 	sqloption := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8mb4&parseTime=True&loc=Local", SQLAccess.User, SQLAccess.Pass, SQLAccess.Host, SQLAccess.Port, SQLAccess.Db)
-	// gorm.Open("mysql", "gorm:password@/country?charset=utf8&parseTime=True&loc=Local")
 	//fmt.Println(sqloption)
 	DB, err := gorm.Open("mysql", sqloption)
 	if err != nil {
@@ -97,8 +96,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	case "":
 		http.Redirect(w, r, opID.AuthUrl(), 302)
 	case "cancel":
-		//w.Write([]byte("Authorization cancelled"))
-		http.Redirect(w, r, "/", 302)
+		http.Redirect(w, r, DefaultPage, 302)
 	default:
 		steamid, err := opID.ValidateAndGetId()
 		if err != nil {
