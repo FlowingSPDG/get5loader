@@ -62,7 +62,7 @@ func TeamHandler(w http.ResponseWriter, r *http.Request) { // NEED Team player's
 		panic(err)
 	}
 
-	PageData := &db.TeamPageData{
+	u := &db.TeamPageData{
 		LoggedIn:   loggedin,
 		Team:       team[0],
 		IsYourTeam: IsYourTeam,
@@ -70,7 +70,7 @@ func TeamHandler(w http.ResponseWriter, r *http.Request) { // NEED Team player's
 	}
 	fmt.Println(team[0].Name)
 
-	fmt.Fprintf(w, templates.Team(PageData)) // TODO
+	fmt.Fprintf(w, templates.Team(u)) // TODO
 }
 
 func TeamEditHandler(w http.ResponseWriter, r *http.Request) {

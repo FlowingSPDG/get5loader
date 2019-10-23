@@ -62,7 +62,7 @@ func RenderTeam(_buffer io.StringWriter, u *db.TeamPageData) {
 		if u.Team.CanEdit(u.User.ID) {
 
 			_buffer.WriteString("<div class=\"pull-right\">\n        <a href=\"/team/")
-			_buffer.WriteString(gorazor.HTMLEscInt(u.Team.ID))
+			_buffer.WriteString(gorazor.HTMLEscape(u.Team.ID))
 			_buffer.WriteString("/edit\" class=\"btn btn-primary btn-xs\">Edit</a>\n      </div>")
 
 		}
@@ -75,11 +75,11 @@ func RenderTeam(_buffer io.StringWriter, u *db.TeamPageData) {
 			p := players[i]
 
 			_buffer.WriteString("<a href=\"http://steamcommunity.com/profiles/")
-			_buffer.WriteString(gorazor.HTMLEscStr(u.Team.Auths[i]))
+			_buffer.WriteString(gorazor.HTMLEscape(u.Team.Auths[i]))
 			_buffer.WriteString("\" class=\"col-sm-offset-0\"> ")
-			_buffer.WriteString(gorazor.HTMLEscStr(u.Team.Auths[i]))
+			_buffer.WriteString(gorazor.HTMLEscape(u.Team.Auths[i]))
 			_buffer.WriteString(" </a>")
-			_buffer.WriteString(gorazor.HTMLEscStr(p.Name))
+			_buffer.WriteString(gorazor.HTMLEscape(p.Name))
 
 			_buffer.WriteString("<br>\n        ")
 		}
@@ -98,7 +98,7 @@ func RenderTeam(_buffer io.StringWriter, u *db.TeamPageData) {
 			_buffer.WriteString(gorazor.HTMLEscape(m.ID))
 			_buffer.WriteString("</a>")
 			_buffer.WriteString((":"))
-			_buffer.WriteString(gorazor.HTMLEscStr(matchresult))
+			_buffer.WriteString(gorazor.HTMLEscape(matchresult))
 
 			_buffer.WriteString("<br>\n          ")
 		}

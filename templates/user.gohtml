@@ -27,20 +27,26 @@
   <div class="panel panel-default">
     <div class="panel-heading">User information</div>
     <div class="panel-body">
-      Name: @u.User.Name}<br>
-      Steam account: <a href="https://steamcommunity.com/profiles/@u.User.SteamID"> {u.User.SteamID}}</a> <br>
-      Teams saved: <a href="/teams/@u.User.SteamID"> {{displaying_user.teams.count()}}</a> <br>
-      Matches created: <a href="/matches/{{displaying_user.id}}"> {{displaying_user.matches.count()}}</a> <br>
+      @{
+        matches := u.User.GetRecentMatches(10)
+        teams := u.User.GetTeams(10)
+      }
+      Name: @u.User.Name<br>
+      Steam account: <a href="https://steamcommunity.com/profiles/@u.User.SteamID"> @u.User.SteamID</a> <br>
+      Teams saved: <a href="/teams/@u.User.ID"> @len(teams)</a> <br>
+      Matches created: <a href="/matches/@u.User.ID"> @len(u.User.Matches)</a> <br>
     </div>
   </div>
 
   <div class="panel panel-default">
     <div class="panel-heading">Recent Matches</div>
     <div class="panel-body">
-      {% for match in displaying_user.get_recent_matches() %}
-        <a href="/match/{{match.id}}">#{{match.id}}</a>: {{ match.get_vs_string() }}
+      @for i:=0; i < len(matches); i++ {
+        m:=matches[i]
+        vsstr,_:=m.GetVSString()
+        <a href="/match/@m.ID">#@m.ID</a>@raw(":")@raw(vsstr)
         <br>
-      {% endfor %}
+      }
     </div>
   </div>
 

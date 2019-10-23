@@ -64,9 +64,9 @@ func RenderMatches(_buffer io.StringWriter, u *db.MatchesPageData) {
 		} else {
 
 			_buffer.WriteString("<h1>Matches for <a href=\"/user/")
-			_buffer.WriteString(gorazor.HTMLEscInt(u.Owner.ID))
+			_buffer.WriteString(gorazor.HTMLEscape(u.Owner.ID))
 			_buffer.WriteString("\"> ")
-			_buffer.WriteString(gorazor.HTMLEscStr(u.Owner.Name))
+			_buffer.WriteString(gorazor.HTMLEscape(u.Owner.Name))
 			_buffer.WriteString("</a></h1>")
 
 		}
@@ -87,17 +87,17 @@ func RenderMatches(_buffer io.StringWriter, u *db.MatchesPageData) {
 			_buffer.WriteString(" </a></td>\n\n        <td>\n          ")
 			_buffer.WriteString((team1.GetFlagHTML(0.75)))
 			_buffer.WriteString("\n          <a href=\"/team/")
-			_buffer.WriteString(gorazor.HTMLEscInt(team1.ID))
+			_buffer.WriteString(gorazor.HTMLEscape(team1.ID))
 			_buffer.WriteString("\">")
-			_buffer.WriteString(gorazor.HTMLEscStr(team1.Name))
+			_buffer.WriteString(gorazor.HTMLEscape(team1.Name))
 			_buffer.WriteString("</a>\n        </td>\n\n        <td>\n        ")
 			_buffer.WriteString((team2.GetFlagHTML(0.75)))
 			_buffer.WriteString("\n          <a href=\"/team/")
-			_buffer.WriteString(gorazor.HTMLEscInt(team2.ID))
+			_buffer.WriteString(gorazor.HTMLEscape(team2.ID))
 			_buffer.WriteString("\">")
-			_buffer.WriteString(gorazor.HTMLEscStr(team2.Name))
+			_buffer.WriteString(gorazor.HTMLEscape(team2.Name))
 			_buffer.WriteString("</a>\n        </td>\n\n        <td>\n          <p>")
-			_buffer.WriteString(gorazor.HTMLEscStr(status))
+			_buffer.WriteString(gorazor.HTMLEscape(status))
 			_buffer.WriteString("</p>\n        </td>\n      </tr>")
 
 		}

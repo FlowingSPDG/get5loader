@@ -60,9 +60,9 @@ func RenderTeams(_buffer io.StringWriter, u *db.TeamsPageData) {
 		} else {
 
 			_buffer.WriteString("<h1> Teams for <a href=\"/user/")
-			_buffer.WriteString(gorazor.HTMLEscInt(u.User.ID))
+			_buffer.WriteString(gorazor.HTMLEscape(u.User.ID))
 			_buffer.WriteString("\"> ")
-			_buffer.WriteString(gorazor.HTMLEscStr(u.User.Name))
+			_buffer.WriteString(gorazor.HTMLEscape(u.User.Name))
 			_buffer.WriteString(" </a> </h1>")
 
 		}
@@ -77,9 +77,9 @@ func RenderTeams(_buffer io.StringWriter, u *db.TeamsPageData) {
 			n := u.Teams[i]
 
 			_buffer.WriteString("<li class=\"list-group-item\">\n\t\t\t<a href=\"/team/")
-			_buffer.WriteString(gorazor.HTMLEscInt(n.ID))
+			_buffer.WriteString(gorazor.HTMLEscape(n.ID))
 			_buffer.WriteString("\" class=\"col-sm-offset-1\"> ")
-			_buffer.WriteString(gorazor.HTMLEscStr(n.Name))
+			_buffer.WriteString(gorazor.HTMLEscape(n.Name))
 			_buffer.WriteString(" </a>\n\t  \t</li>")
 
 		}

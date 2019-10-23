@@ -36,9 +36,10 @@ type UserData struct {
 	SteamID string `gorm:"column:steam_id;unique"`
 	Name    string `gorm:"column:name"`
 	Admin   bool   `gorm:"column:admin"`
-	Servers []GameServerData
-	Teams   []TeamData
-	Matches []MatchData
+
+	Servers []GameServerData `gorm:"foreignkey:user_id"`
+	Teams   []TeamData       `gorm:"foreignkey:user_id"`
+	Matches []MatchData      `gorm:"foreignkey:user_id"`
 }
 
 func (u *UserData) TableName() string {
@@ -81,15 +82,22 @@ func (u *UserData) GetSteamURL() string {
 	return "http://steamcommunity.com/profiles/" + u.SteamID
 }
 
-/*
-func (u *UserData) get_recent_matches(limit int) string {
-	return "http://steamcommunity.com/profiles/" + u.SteamID
+func (u *UserData) GetRecentMatches(limit int) []MatchData {
+	SQLAccess.Gorm.Where("user_id = ?", u.ID).Limit(limit).Find(&u.Matches)
+	//SQLAccess.Gorm.Model(&u).Related(&u.Matches)
+	return u.Matches
+	//u.Matches
+	//return self.matches.filter_by(cancelled=False).limit(limit)
 }
-*/
+
+func (u *UserData) GetTeams(limit int) []TeamData {
+	SQLAccess.Gorm.Where("user_id = ?", u.ID).Limit((limit)).Find(&u.Teams)
+	return u.Teams
+}
 
 type GameServerData struct {
-	Id            int    `gorm:"primary_key"column:id`
-	User_id       int    `gorm:"column:user_id"`
+	ID            int    `gorm:"primary_key;column:id"`
+	UserID        int    `gorm:"column:user_id"`
 	In_use        bool   `gorm:"column:in_use"`
 	Ip_string     string `gorm:"column:ip_string"`
 	Port          int    `gorm:"column:port"`
@@ -103,7 +111,7 @@ func (u *GameServerData) TableName() string {
 }
 
 func (g *GameServerData) Create(userid int, display_name string, ip_string string, port int, rcon_password string, public_server bool) *GameServerData {
-	g.User_id = userid
+	g.UserID = userid
 	g.Display_name = display_name
 	g.Ip_string = ip_string
 	g.Port = port
@@ -142,7 +150,7 @@ func (g *GameServerData) GetDisplay() string {
 }
 
 type TeamData struct {
-	ID          int      `gorm:"primary_key"column:id`
+	ID          int      `gorm:"primary_key;column:id"`
 	UserID      int      `gorm:"column:user_id"`
 	Name        string   `gorm:"column:name"`
 	Tag         string   `gorm:"column:tag"`
@@ -318,7 +326,7 @@ func (t *TeamData) GetLogoHtml(scale float32) string {
 }
 
 func (t *TeamData) GetURL() string {
-	return fmt.Sprintf("http://%s/team/%d", Cnf.HOST, t.ID)
+	return fmt.Sprintf("%s/team/%d", Cnf.HOST, t.ID)
 }
 
 func (t *TeamData) GetNameURLHtml() string {
@@ -333,9 +341,8 @@ func (t *TeamData) GetLogoOrFlagHtml(scale float32, otherteam TeamData) string {
 }
 
 type MatchData struct {
-	ID            int64 `gorm:"primary_key"column:id`
-	UserID        int64 `gorm:"column:user_id"`
-	User          UserData
+	ID            int64         `gorm:"primary_key;column:id"`
+	UserID        int64         `gorm:"column:user_id"`
 	ServerID      int64         `gorm:"column:server_id"`
 	Team1ID       int64         `gorm:"column:team1_id"`
 	Team2ID       int64         `gorm:"column:team2_id"`
@@ -645,7 +652,6 @@ type TeamPageData struct {
 type UserPageData struct {
 	LoggedIn bool
 	User     UserData
-	Teams    []TeamData
 }
 
 type MyserversPageData struct {

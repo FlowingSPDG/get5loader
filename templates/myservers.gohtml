@@ -46,7 +46,7 @@
     @for i:=0; i < len(u.Servers); i++ {
         s:=u.Servers[i];
       <tr>
-        <td>@s.Id</td>
+        <td>@s.ID</td>
         <td>@s.Display_name</td>
         <td>@s.Ip_string</td>
         <td>@s.Port</td>
@@ -56,9 +56,9 @@
                 <td>Free</td>
             }
         <td>
-          <a href="/server/@s.Id/edit" class="btn btn-primary btn-xs">Edit</a>
+          <a href="/server/@s.ID/edit" class="btn btn-primary btn-xs">Edit</a>
           @if s.In_use == false {
-          <a href="/server/@s.Id/delete" class="btn btn-danger btn-xs">Delete</a>
+          <a href="/server/@s.ID/delete" class="btn btn-danger btn-xs">Delete</a>
           }
         </td>
       </tr>

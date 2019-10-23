@@ -2,13 +2,18 @@ package get5
 
 import (
 	"fmt"
+
 	"github.com/gorilla/mux"
 	_ "github.com/gorilla/sessions"
 	_ "github.com/solovev/steam_go"
+
 	//_ "html/template"
 	"net/http"
 	_ "strconv"
 	_ "time"
+
+	"github.com/FlowingSPDG/get5-web-go/src/db"
+	"github.com/FlowingSPDG/get5-web-go/templates"
 )
 
 func MatchFinishHandler(w http.ResponseWriter, r *http.Request) {
@@ -44,5 +49,29 @@ func MatchMapPlayerUpdateHandler(w http.ResponseWriter, r *http.Request) {
 func UserHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r) //パスパラメータ取得
 	fmt.Printf("UserHandler\nvars : %v", vars)
-	w.WriteHeader(http.StatusOK)
+
+	loggedin := false
+	session, _ := db.SessionStore.Get(r, db.SessionData)
+
+	User, err := db.SQLAccess.GetUserData(1, "id", vars["userID"])
+	if err != nil {
+		panic(err)
+	}
+
+	u := &db.UserPageData{
+		LoggedIn: loggedin,
+		User:     User[0],
+	}
+
+	if _, ok := session.Values["Loggedin"]; ok { // FUCK.
+		if _, ok := session.Values["Name"]; ok {
+			if _, ok := session.Values["UserID"].(int); ok {
+				if session.Values["Loggedin"].(bool) == true {
+					u.LoggedIn = true
+				}
+			}
+		}
+	}
+
+	fmt.Fprintf(w, templates.User(u)) // TODO
 }
