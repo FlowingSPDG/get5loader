@@ -3,7 +3,10 @@ get5-web-go
 **Status: Work-In-Progress!!!**
 
 This is recreation of [get5 web panel](https://github.com/splewis/get5-web) with GOLANG.  
-This is still Work-In-Progress project. PRs are welcome!
+Still Work-In-Progress project. PRs are welcome!
+
+## Author:
+Shugo **FlowingSPDG** Kawamura
 
 ## WHY?
 1. Python2.7,which is used in original get5-web, will be no longer supported after Jan.2020. very soon!!
