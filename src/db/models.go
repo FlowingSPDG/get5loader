@@ -229,7 +229,7 @@ func (t *TeamData) CanDelete(userid int) bool {
 func (t *TeamData) GetRecentMatches(limit int) []MatchData {
 	var matches []MatchData
 	if t.PublicTeam == true {
-		SQLAccess.Gorm.Where("team1_id = ? AND cancelled = false", t.ID).Or("team2_id = ? AND cancelled = false", t.ID).Not("start_time = null").Limit(limit).Find(&matches)
+		SQLAccess.Gorm.Where("team1_id = ?", t.ID).Or("team2_id = ?", t.ID).Not("start_time = null AND cancelled = true").Limit(limit).Find(&matches)
 	} else {
 		var owner UserData
 		SQLAccess.Gorm.Where("id = ?", t.UserID).First(&owner)
@@ -248,7 +248,7 @@ func (t *TeamData) GetVSMatchResult(matchid int) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	if int(matches[0].ID) == t.ID {
+	if int(matches[0].Team1ID) == t.ID {
 		myscore = matches[0].Team1Score
 		otherteamscore = matches[0].Team2Score
 		otherteams, err := SQLAccess.MySQLGetTeamData(1, "id", strconv.Itoa(int(matches[0].Team2ID)))
