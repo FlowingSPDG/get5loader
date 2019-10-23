@@ -32,8 +32,8 @@ func init() {
 }
 
 type UserData struct {
-	ID      int    `gorm:"primary_key"column:id`
-	SteamID string `gorm:"column:steam_id"`
+	ID      int    `gorm:"primary_key;column:id;AUTO_INCREMENT"`
+	SteamID string `gorm:"column:steam_id;unique"`
 	Name    string `gorm:"column:name"`
 	Admin   bool   `gorm:"column:admin"`
 	Servers []GameServerData
@@ -549,7 +549,7 @@ type PlayerStatsData struct {
 	Match_id          int    `gorm:"column:match_id"`
 	Map_id            int    `gorm:"column:map_id"`
 	Team_id           int    `gorm:"column:team_id"`
-	Steam_id          string `gorm:"column:steam_id"`
+	Steam_id          string `gorm:"column:steam_id;unique"`
 	Name              string `gorm:"column:name"`
 	Kills             int    `gorm:"column:kills"`
 	Deaths            int    `gorm:"column:deaths"`
