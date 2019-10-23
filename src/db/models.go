@@ -282,7 +282,7 @@ func (t *TeamData) GetVSMatchResult(matchid int) (string, error) {
 		}
 	}
 	if matches[0].Live() == true {
-		return fmt.Sprint("Live, %d:%d vs %s", myscore, otherteamscore, otherteam.Name), nil
+		return fmt.Sprintf("Live, %d:%d vs %s", myscore, otherteamscore, otherteam.Name), nil // maybe add <a> tag for otherteam.Name ?
 	}
 	if myscore < otherteamscore {
 		return fmt.Sprintf("Lost %d:%d vs %s", myscore, otherteamscore, otherteam.Name), nil
