@@ -1,0 +1,229 @@
+@{
+	import (
+		"github.com/FlowingSPDG/get5-web-go/templates/layout"
+		db "github.com/FlowingSPDG/get5-web-go/src/db"
+	)
+	var u *db.MatchPageData
+	layout := layout.Base
+
+  team1,_:=u.Match.GetTeam1()
+  team2,_:=u.Match.GetTeam1()
+  team1players,_:=team1.GetPlayers()
+  team2players,_:=team2.GetPlayers()
+
+}
+
+@section menu {
+	if u.LoggedIn == true {
+		<li><a id="mymatches" href="/mymatches">My Matches</a></li>
+        <li><a id="match_create" href="/match/create">Create a Match</a></li>
+        <li><a id="myteams" href="/myteams">My Teams</a></li>
+        <li><a id="team_create" href="/team/create">Create a Team</a></li>
+        <li><a id="myservers" href="/myservers">My Servers</a></li>
+        <li><a id="server_create" href="/server/create">Add a Server</a></li>
+        <li><a href="/logout">Logout</a></li>
+	} else {
+		<li><a href="/login"><img src="/static/img/login_small.png" height="18"/></a></li>
+	}
+}
+@section content {
+{% macro player_stat_table(team, map_stats) %}
+  <td> <b>{{ team.name }}</b> </td>
+  <td></td>
+  <td></td>
+  <td></td>
+  <td></td>
+  <td></td>
+  <td></td>
+  <td></td>
+  <td></td>
+  <td></td>
+  <td></td>
+  <td></td>
+
+@{ func DrawPlayerStatsData(player PlayerStatsData) string {
+  {% for player in map_stats.player_stats.filter_by(team_id=team.id) %}
+  {% if player.roundsplayed > 0 %}
+    <tr>
+      <td> <a href="{{player.get_steam_url()}}"> {{ player.name }} </a></td>
+      <td class="text-center"> {{ player.kills }}  </td>
+      <td class="text-center"> {{ player.deaths }} </td>
+      <td class="text-center"> {{ player.assists }} </td>
+      <td class="text-center"> {{ player.flashbang_assists }} </td>
+
+      <td class="text-center"> {{ player.v1 }} </td>
+      <td class="text-center"> {{ player.v2 }} </td>
+      <td class="text-center"> {{ player.v3 }} </td>
+
+      <td class="text-center"> {{ player.get_rating() | round(2) }} </td>
+      <td class="text-center"> {{ player.get_fpr() | round(2) }} </td>
+      <td class="text-center"> {{ player.get_adr() | round(1) }} </td>
+      <td class="text-center"> {{ player.get_hsp() | round(2) }} </td>
+    </tr>
+  {% endif %}
+  {% endfor %}
+{% endmacro %}
+}}
+}
+
+{% block content %}
+
+<div id="content">
+
+  <div class="container">
+
+    <h1>
+      @team1.GetLogoOrFlagHtml(1.0,team2) <a href="/team/@team1.ID"> @team1.Name</a>
+      @u.MatchTeam1Score
+      @{
+        if match.team1_score < match.team2_score {
+          <
+        } else if match.team1_score == match.team2_score {
+          ==
+        } else {
+          >
+        }
+      }
+      @u.MatchTeam2Score
+      @team2.GetLogoOrFlagHtml(1.0,team1) <a href="/team/@team2.ID"> @team2.Name</a>
+
+      @if u.AdminAccess && u.Match.Live() || u.Match.Pending(){
+        <div class="dropdown dropdown-header pull-right">
+        <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+          Admin tools
+          <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+          if u.Match.Live(){
+            <li><a id="pause" href="{{request.path}}/pause">Pause match</a></li>
+            <li><a id="unpause" href="{{request.path}}/unpause">Unpause match</a></li>
+          }
+          <li><a id="addplayer_team1" href="#">Add player to team1</a></li>
+          <li><a id="addplayer_team2" href="#">Add player to team2</a></li>
+          <li><a id="addplayer_spec" href="#">Add player to specator list</a></li>
+          <li><a id="rcon_command" href="#">Send rcon command</a></li>
+          <li role="separator" class="divider"></li>
+          <li><a id="backup_manager" href="{{request.path}}/backup">Load a backup file</a></li>
+          <li><a href="{{request.path}}/cancel">Cancel match</a></li>
+        </ul>
+      </div>
+      }
+    </h1>
+
+
+    <br>
+    @ if u.Match.Cancelled{
+      <div class="alert alert-danger" role="alert">
+      <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+      <span class="sr-only">Error:</span>
+        This match has been cancelled.
+      </div>
+    }
+
+    @ if u.Match.Forfeit{
+    <div class="alert alert-warning" role="alert">
+      <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+      <span class="sr-only">Error:</span>
+        This match was forfeit by @u.Match.GetLoser() .
+      </div>
+    }
+
+
+    @ if u.Match.StartTime.Valid {
+      starttime:=strconv.Itoa(int(u.Match.StartTime.Value))
+      <p>Started at @starttime</p>
+    } else {
+      <div class="panel panel-default" role="alert">
+      <div class="panel-body">
+        This match is pending start.
+      </div>
+    </div>
+    }
+
+
+    @ if u.Match.EndTime.Valid {
+      endtime:=strconv.Itoa(int(u.Match.EndTime.Value))
+      <p>Ended at @endtime</p>
+    }
+
+    {% for map_stats in map_stat_list %}
+    <br>
+    <div class="panel panel-primary">
+      <div class="panel-heading">
+        Map {{map_stats.map_number + 1}}: {{ map_stats.map_name }},
+        {{team1.name}} {{ score_symbol(map_stats.team1_score, map_stats.team2_score) }} {{team2.name}},
+        {{map_stats.team1_score}}:{{map_stats.team2_score}}
+      </div>
+
+      <div class="panel-body">
+        <p>Started at {{ map_stats.start_time.strftime('%Y-%m-%d %H:%M') }}</p>
+
+        {% if map_stats.end_time is not none %}
+        <p>Ended at {{ map_stats.end_time.strftime('%Y-%m-%d %H:%M') }}</p>
+        {% endif %}
+
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th>Player</th>
+              <th class="text-center">Kills</th>
+              <th class="text-center">Deaths</th>
+              <th class="text-center">Assists</th>
+              <th class="text-center">Flash assists</th>
+              <th class="text-center">1v1</th>
+              <th class="text-center">1v2</th>
+              <th class="text-center">1v3</th>
+              <th class="text-center">Rating</th>
+              <th class="text-center"><acronym title="Frags per round">FPR</acronym></th>
+              <th class="text-center"><acronym title="Average damage per round">ADR</acronym></th>
+              <th class="text-center"><acronym title="Headshot percentage">HSP</acronym></th>
+            </tr>
+          </thead>
+          <tbody>
+          {{ player_stat_table(team1, map_stats) }}
+          {{ player_stat_table(team2, map_stats) }}
+          </tbody>
+
+        </table>
+      </div>
+
+    </div>
+    {% endfor %}
+
+  </div>
+
+
+  <br>
+</div>
+
+<script>
+
+jQuery("#addplayer_team1").click(function(e) {
+    var input = prompt("Please enter a steamid to add to {{team1.name}}", "");
+    if (input != null) {
+      window.location.href = "{{request.path}}/adduser?team=team1&auth=" + encodeURIComponent(input);
+    }
+});
+
+jQuery("#addplayer_team2").click(function(e) {
+    var input = prompt("Please enter a steamid to add to {{team2.name}}", "");
+    if (input != null) {
+      window.location.href = "{{request.path}}/adduser?team=team2&auth=" + encodeURIComponent(input);
+    }
+});
+
+jQuery("#addplayer_spec").click(function(e) {
+    var input = prompt("Please enter a steamid to add to the spectators list", "");
+    if (input != null) {
+      window.location.href = "{{request.path}}/adduser?team=spec&auth=" + encodeURIComponent(input);
+    }
+});
+
+jQuery("#rcon_command").click(function(e) {
+    var input = prompt("Enter a command to send", "");
+    if (input != null) {
+      window.location.href = "{{request.path}}/rcon?command=" + encodeURIComponent(input);
+    }
+});
+</script>
+}

@@ -510,13 +510,41 @@ func (m *MatchData) GetTeam2() (TeamData, error) {
 	//return m.UserID
 }*/
 
-/*func (m *MatchData) GetWinner() TeamData {
-	//return m.UserID
-}*/
+func (m *MatchData) GetWinner() (TeamData, error) {
+	var Empty TeamData
+	if m.Team1Score > m.Team2Score {
+		winner, err := m.GetTeam1()
+		if err != nil {
+			return Empty, err
+		}
+		return winner, nil
+	} else if m.Team2Score > m.Team1Score {
+		winner, err := m.GetTeam2()
+		if err != nil {
+			return Empty, err
+		}
+		return winner, nil
+	}
+	return Empty, nil
+}
 
-/*func (m *MatchData) GetLoser() TeamData {
-	//return m.UserID
-}*/
+func (m *MatchData) GetLoser() (TeamData, error) {
+	var Empty TeamData
+	if m.Team1Score > m.Team2Score {
+		loser, err := m.GetTeam2()
+		if err != nil {
+			return Empty, err
+		}
+		return loser, nil
+	} else if m.Team2Score > m.Team1Score {
+		loser, err := m.GetTeam1()
+		if err != nil {
+			return Empty, err
+		}
+		return loser, nil
+	}
+	return Empty, nil
+}
 
 /*func (m *MatchData) BuildMatchDict() TeamData {
 	//return m.UserID //get5 thing??
@@ -633,6 +661,12 @@ type MatchesPageData struct {
 	AllMatches bool
 	MyMatches  bool
 	Owner      UserData
+}
+
+type MatchPageData struct {
+	LoggedIn    bool
+	AdminAccess bool
+	Match       MatchData
 }
 
 type TeamsPageData struct {
