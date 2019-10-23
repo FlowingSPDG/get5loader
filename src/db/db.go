@@ -166,7 +166,7 @@ func (s *DBdatas) MySQLGetMatchData(limit int, wherekey string, wherevalue strin
 	if wherekey == "" || wherevalue == "" {
 		s.Gorm.Order("id DESC").Limit(limit).Find(&Matches)
 	} else {
-		s.Gorm.Limit(limit).Where(wherekey+" = ?", wherevalue).Find(&Matches)
+		s.Gorm.Order("id DESC").Limit(limit).Where(wherekey+" = ?", wherevalue).Find(&Matches)
 	}
 	return Matches, nil
 }
