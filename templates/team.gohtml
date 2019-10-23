@@ -54,10 +54,14 @@
     <div class="panel panel-default">
       <div class="panel-heading">Recent Matches</div>
         <div class="panel-body">
-          {% for match in team.get_recent_matches() %}
-            <a href="/match/{{match.id}}">#{{match.id}}</a>: {{ team.get_vs_match_result(match.id) }}
+          @{
+            matches := u.Team.GetRecentMatches(100)
+          }
+          @for i:=0; i < len(matches); i++ {
+            m:=matches[i]
+            <a href="/match/@m.ID">#@m.ID</a> team-get_vs_match_result(match.id)
             <br>
-          {% endfor %}
+          }
       </div>
     </div>
 

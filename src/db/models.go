@@ -81,9 +81,11 @@ func (u *UserData) GetSteamURL() string {
 	return "http://steamcommunity.com/profiles/" + u.SteamID
 }
 
+/*
 func (u *UserData) get_recent_matches(limit int) string {
 	return "http://steamcommunity.com/profiles/" + u.SteamID
 }
+*/
 
 type GameServerData struct {
 	Id            int    `gorm:"primary_key"column:id`
@@ -107,7 +109,7 @@ func (g *GameServerData) Create(userid int, display_name string, ip_string strin
 	g.Port = port
 	g.Rcon_password = rcon_password
 	g.Public_server = public_server
-	// ADD TO DB
+	// ADD TO DB TODO
 	return g
 }
 
@@ -132,10 +134,12 @@ func (g *GameServerData) GetHostPort() string {
 	return fmt.Sprintf("%s:%d", g.Ip_string, g.Port)
 }
 
-/*
 func (g *GameServerData) GetDisplay() string {
-
-}*/
+	if g.Display_name == "" {
+		return g.Display_name
+	}
+	return g.GetHostPort()
+}
 
 type TeamData struct {
 	ID          int      `gorm:"primary_key"column:id`
@@ -160,7 +164,7 @@ func (t *TeamData) Create(userid int, name string, tag string, flag string, logo
 	t.Tag = tag
 	t.Flag = flag
 	t.Logo = logo
-	t.AuthsPickle = auths // should convert into pickle
+	t.AuthsPickle = auths // should convert into pickle. TODO
 	t.PublicTeam = public_team
 	return t
 }
@@ -170,7 +174,7 @@ func (t *TeamData) SetData(name string, tag string, flag string, logo string, au
 	t.Tag = tag
 	t.Flag = flag
 	t.Logo = logo
-	t.AuthsPickle = auths // should convert into pickle
+	t.AuthsPickle = auths // should convert into pickle. TODO
 	t.PublicTeam = public_team
 	return t
 }
@@ -222,11 +226,18 @@ func (t *TeamData) CanDelete(userid int) bool {
 }
 */
 
-/*
-func (t *TeamData) GetRecentMatches(limit int) []SQLMatchData {
-
+func (t *TeamData) GetRecentMatches(limit int) []MatchData {
+	var matches []MatchData
+	if t.PublicTeam == true {
+		SQLAccess.Gorm.Where("team1_id = ? AND cancelled = false", t.ID).Or("team2_id = ? AND cancelled = false", t.ID).Not("start_time = null").Limit(limit).Find(&matches)
+	} else {
+		var owner UserData
+		SQLAccess.Gorm.Where("id = ?", t.UserID).First(&owner)
+		SQLAccess.Gorm.Where("user_id = ?", t.UserID).Find(&owner.Matches).Limit(limit)
+		matches = owner.Matches
+	}
+	return matches
 }
-*/
 
 /*
 func (t *TeamData) GetVSMatchResult(matchid int) []SQLMatchData {
@@ -270,8 +281,9 @@ func (t *TeamData) GetLogoOrFlagHtml(scale float32, otherteam TeamData) string {
 }
 
 type MatchData struct {
-	ID            int64         `gorm:"primary_key"column:id`
-	UserID        int64         `gorm:"column:user_id"`
+	ID            int64 `gorm:"primary_key"column:id`
+	UserID        int64 `gorm:"column:user_id"`
+	User          UserData
 	ServerID      int64         `gorm:"column:server_id"`
 	Team1ID       int64         `gorm:"column:team1_id"`
 	Team2ID       int64         `gorm:"column:team2_id"`

@@ -12,6 +12,7 @@ import (
 	"github.com/gorilla/mux"
 	_ "github.com/sipin/gorazor/gorazor"
 	_ "github.com/solovev/steam_go"
+	_ "github.com/hydrogen18/stalecucumber"
 )
 
 type Config struct {

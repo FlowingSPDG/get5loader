@@ -5,7 +5,7 @@ import (
 
 	"github.com/hydrogen18/stalecucumber"
 
-	// "database/sql" //ここでパッケージをimport
+	// "database/sql"
 	"fmt"
 
 	"github.com/jinzhu/gorm"
