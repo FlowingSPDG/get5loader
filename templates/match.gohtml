@@ -2,6 +2,7 @@
 	import (
 		"github.com/FlowingSPDG/get5-web-go/templates/layout"
 		db "github.com/FlowingSPDG/get5-web-go/src/db"
+    "strconv
 	)
 	var u *db.MatchPageData
 	layout := layout.Base
@@ -11,6 +12,7 @@
   team1players,_:=team1.GetPlayers()
   team2players,_:=team2.GetPlayers()
 
+  mapstats,_ := u.Match.GetMapStat()
 }
 
 @section menu {
@@ -27,21 +29,7 @@
 	}
 }
 @section content {
-{% macro player_stat_table(team, map_stats) %}
-  <td> <b>{{ team.name }}</b> </td>
-  <td></td>
-  <td></td>
-  <td></td>
-  <td></td>
-  <td></td>
-  <td></td>
-  <td></td>
-  <td></td>
-  <td></td>
-  <td></td>
-  <td></td>
-
-@{ func DrawPlayerStatsData(player PlayerStatsData) string {
+@{ func DrawPlayerStatsData(team TeamData) string {
   {% for player in map_stats.player_stats.filter_by(team_id=team.id) %}
   {% if player.roundsplayed > 0 %}
     <tr>
@@ -146,21 +134,35 @@
       <p>Ended at @endtime</p>
     }
 
-    {% for map_stats in map_stat_list %}
+    @for i:=0; i < len(mapstats); i++ {
     <br>
     <div class="panel panel-primary">
       <div class="panel-heading">
-        Map {{map_stats.map_number + 1}}: {{ map_stats.map_name }},
-        {{team1.name}} {{ score_symbol(map_stats.team1_score, map_stats.team2_score) }} {{team2.name}},
-        {{map_stats.team1_score}}:{{map_stats.team2_score}}
+        Map @mapstats[i].MapNumber+1: @mapstats[i].MapName,
+        @team1.Name 
+        @{
+          if match.team1_score < match.team2_score {
+            <
+          } else if match.team1_score == match.team2_score {
+            ==
+          } else {
+            >
+          }
+        }
+        @team2.Name,
+        @{
+          mTeam1Score:=strconv.Itoa(mapstats[i]Team1Score)
+          mTeam2Score:=strconv.Itoa(mapstats[i]Team2Score)
+        }
+        @mTeam1Score@raw(":")@mTeam2Score
       </div>
 
       <div class="panel-body">
-        <p>Started at {{ map_stats.start_time.strftime('%Y-%m-%d %H:%M') }}</p>
+        <p>Started at @mapstats[i].StartTime</p>
 
-        {% if map_stats.end_time is not none %}
-        <p>Ended at {{ map_stats.end_time.strftime('%Y-%m-%d %H:%M') }}</p>
-        {% endif %}
+        @if mapstats[i].EndTime.Valid{
+          <p>Ended at @mapstats[i].EndTime</p>
+        }
 
         <table class="table table-hover">
           <thead>
@@ -180,16 +182,15 @@
             </tr>
           </thead>
           <tbody>
-          {{ player_stat_table(team1, map_stats) }}
-          {{ player_stat_table(team2, map_stats) }}
+          {{ DrawPlayerStatsData(team1) }}
+          {{ DrawPlayerStatsData(team2) }}
           </tbody>
 
         </table>
       </div>
 
     </div>
-    {% endfor %}
-
+    }
   </div>
 
 

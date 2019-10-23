@@ -565,7 +565,7 @@ type MapStatsData struct {
 	MapNumber  int          `gorm:"column:map_number"`
 	MapName    string       `gorm:"column:map_name"`
 	StartTime  sql.NullTime `gorm:"column:start_time"`
-	EndTIme    sql.NullTime `gorm:"column:end_time"`
+	EndTime    sql.NullTime `gorm:"column:end_time"`
 	Winner     int          `gorm:"column:winner"`
 	Team1Score int          `gorm:"column:team1_score"`
 	Team2Score int          `gorm:"column:team2_score"`
