@@ -272,6 +272,9 @@ func (t *TeamData) GetVSMatchResult(matchid int) (string, error) {
 		if err != nil {
 			return "", err
 		}
+		if len(mapstats) <= 0 {
+			return fmt.Sprintf("Pending, vs %s", otherteam.Name), nil // maybe add <a> tag for otherteam.Name ?
+		}
 		mapstat := mapstats[0]
 		if int(matches[0].Team1ID) == t.ID {
 			myscore = mapstat.Team1Score
