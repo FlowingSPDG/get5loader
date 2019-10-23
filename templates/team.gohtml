@@ -59,9 +59,11 @@
           }
           @for i:=0; i < len(matches); i++ {
             m:=matches[i]
-            <a href="/match/@m.ID">#@m.ID</a> team-get_vs_match_result(match.id)
+            matchresult,_ := u.Team.GetVSMatchResult(int(m.ID))
+            <a href="/match/@m.ID">#@m.ID</a>@raw(":")@matchresult
             <br>
           }
+          
       </div>
     </div>
 

@@ -239,11 +239,60 @@ func (t *TeamData) GetRecentMatches(limit int) []MatchData {
 	return matches
 }
 
-/*
-func (t *TeamData) GetVSMatchResult(matchid int) []SQLMatchData {
+func (t *TeamData) GetVSMatchResult(matchid int) (string, error) {
+	var otherteam TeamData
+	myscore := 0
+	otherteamscore := 0
+
+	matches, err := SQLAccess.MySQLGetMatchData(1, "id", strconv.Itoa(matchid))
+	if err != nil {
+		return "", err
+	}
+	if int(matches[0].ID) == t.ID {
+		myscore = matches[0].Team1Score
+		otherteamscore = matches[0].Team2Score
+		otherteams, err := SQLAccess.MySQLGetTeamData(1, "id", strconv.Itoa(int(matches[0].Team2ID)))
+		if err != nil {
+			return "", err
+		}
+		otherteam = otherteams[0]
+	} else {
+		myscore = matches[0].Team2Score
+		otherteamscore = matches[0].Team1Score
+		otherteams, err := SQLAccess.MySQLGetTeamData(1, "id", strconv.Itoa(int(matches[0].Team1ID)))
+		if err != nil {
+			return "", err
+		}
+		otherteam = otherteams[0]
+	}
+
+	// for a bo1 replace series score with the map score...
+	if matches[0].MaxMaps == 1 {
+		mapstats, err := matches[0].GetMapStat()
+		if err != nil {
+			return "", err
+		}
+		mapstat := mapstats[0]
+		if int(matches[0].Team1ID) == t.ID {
+			myscore = mapstat.Team1Score
+			otherteamscore = mapstat.Team2Score
+		} else {
+			myscore = mapstat.Team2Score
+			otherteamscore = mapstat.Team1Score
+		}
+	}
+	if matches[0].Live() == true {
+		return fmt.Sprint("Live, %d:%d vs %s", myscore, otherteamscore, otherteam.Name), nil
+	}
+	if myscore < otherteamscore {
+		return fmt.Sprintf("Lost %d:%d vs %s", myscore, otherteamscore, otherteam.Name), nil
+	} else if myscore > otherteamscore {
+		return fmt.Sprintf("Won %d:%d vs %s", otherteamscore, myscore, otherteam.Name), nil
+	} else {
+		return fmt.Sprintf("Tied %d:%d vs %s", otherteamscore, myscore, otherteam.Name), nil
+	}
 
 }
-*/
 
 func (t *TeamData) GetFlagHTML(scale float32) string {
 	if t.Flag == "" {
@@ -462,6 +511,15 @@ func (m *MatchData) GetTeam2() (TeamData, error) {
 /*func (m *MatchData) BuildMatchDict() TeamData {
 	//return m.UserID //get5 thing??
 }*/
+
+func (m *MatchData) GetMapStat() ([]MapStatsData, error) {
+	var err error
+	m.MapStats, err = SQLAccess.MySQLGetMapStatsData(7, "match_id", strconv.Itoa(int(m.ID)))
+	if err != nil {
+		return m.MapStats, err
+	}
+	return m.MapStats, nil
+}
 
 type MapStatsData struct {
 	ID         int          `gorm:"primary_key" gorm:"column:id"`

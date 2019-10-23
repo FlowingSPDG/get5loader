@@ -53,13 +53,13 @@ func RenderUser(_buffer io.StringWriter, u *db.UserPageData) {
 	_content := func(_buffer io.StringWriter) {
 
 		_buffer.WriteString("<div id=\"content\">\n\n  <div class=\"panel panel-default\">\n    <div class=\"panel-heading\">User information</div>\n    <div class=\"panel-body\">\n      Name: ")
-		_buffer.WriteString(gorazor.HTMLEscape(u.User.Name))
+		_buffer.WriteString(gorazor.HTMLEscStr(u.User.Name))
 
 	}
 	_buffer.WriteString("<br>\n      Steam account: <a href=\"https://steamcommunity.com/profiles/")
-	_buffer.WriteString(gorazor.HTMLEscape(u.User.SteamID))
+	_buffer.WriteString(gorazor.HTMLEscStr(u.User.SteamID))
 	_buffer.WriteString("\"> {u.User.SteamID}}</a> <br>\n      Teams saved: <a href=\"/teams/")
-	_buffer.WriteString(gorazor.HTMLEscape(u.User.SteamID))
+	_buffer.WriteString(gorazor.HTMLEscStr(u.User.SteamID))
 	_buffer.WriteString("\"> {{displaying_user.teams.count()}}</a> <br>\n      Matches created: <a href=\"/matches/{{displaying_user.id}}\"> {{displaying_user.matches.count()}}</a> <br>\n    </div>\n  </div>\n\n  <div class=\"panel panel-default\">\n    <div class=\"panel-heading\">Recent Matches</div>\n    <div class=\"panel-body\">\n      {% for match in displaying_user.get_recent_matches() %}\n        <a href=\"/match/{{match.id}}\">#{{match.id}}</a>: {{ match.get_vs_string() }}\n        <br>\n      {% endfor %}\n    </div>\n  </div>\n\n</div>\n\n}")
 
 	layout.RenderBase(_buffer, _body, _menu, _content)

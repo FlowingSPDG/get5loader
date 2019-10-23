@@ -24,7 +24,7 @@ Shugo **FlowingSPDG** Kawamura
 ## Setup(Developers)
 - ``git clone $GOPATH/src/github.com/FlowingSPDG/get5-web-go``  
 - ``cd $GOPATH/src/github.com/FlowingSPDG/get5-web-go && go get``
-- ``go get gorazor``
+- ``go get -u gorazor``
 - You're good to GO! edit each .go files to fix/add something nice!
 - You can test your build by ``go run ./main.go``,and build them by ``go build ./main.go``.You may ged binary files for your OS.  
 - ``gorazor -prefix github.com\FlowingSPDG\get5-web-go ./templates ./templates`` to compile .gotemplate into .go files. this is nessecery when you changed .gohtml file. **DONT EDIT ./template/\*.go directly!!!**
