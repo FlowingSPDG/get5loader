@@ -196,6 +196,35 @@ func (t *TeamData) CanEdit(userid int) bool {
 	return false
 }
 
+type GetPlayerData struct {
+	Auth string
+	Name string
+}
+
+func (t *TeamData) GetPlayers() ([]GetPlayerData, error) {
+	reader := bytes.NewReader(t.AuthsPickle)
+	var auths []string
+	var results []GetPlayerData
+	err := stalecucumber.UnpackInto(&auths).From(stalecucumber.Unpickle(reader))
+	if err != nil {
+		return results, err
+	}
+	for i := 0; i < len(auths); i++ {
+		steamid64, err := strconv.Atoi(auths[i])
+		if err != nil {
+			return results, err
+		}
+		playername, err := GetSteamName(uint64(steamid64))
+		if err != nil {
+			return results, err
+		}
+		results = append(results, GetPlayerData{Auth: auths[i], Name: playername})
+	}
+
+	return results, nil
+}
+
+/*
 func (t *TeamData) GetPlayers() ([]PlayerStatsData, error) {
 	reader := bytes.NewReader(t.AuthsPickle)
 	var results []string
@@ -203,21 +232,25 @@ func (t *TeamData) GetPlayers() ([]PlayerStatsData, error) {
 	if err != nil {
 		return t.Players, err
 	}
-	t.Players = []PlayerStatsData{}
-	for i := 0; i < len(results); i++ {
-		if results[i] != "" {
-			p := PlayerStatsData{}
-			SQLAccess.Gorm.Where("steam_id = ?", results[i]).First(&p)
-			fmt.Println(p)
-			if err != nil {
-				return t.Players, err
+	// it won't return datas in case team never played game...
+		t.Players = []PlayerStatsData{}
+		for i := 0; i < len(results); i++ {
+			if results[i] != "" {
+				p := PlayerStatsData{}
+				SQLAccess.Gorm.Where("steam_id = ?", results[i]).First(&p)
+				fmt.Println(p)
+				if err != nil {
+					return t.Players, err
+				}
+				if p.Steam_id != "" {
+					t.Players = append(t.Players, p)
+				}
 			}
-			t.Players = append(t.Players, p)
 		}
-	}
 	//SQLAccess.Gorm.Where("team_id = ?", t.ID).Find(&t.Players) // N+1 issue
 	return t.Players, nil
 }
+*/
 
 /*
 func (t *TeamData) CanDelete(userid int) bool {
