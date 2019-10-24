@@ -195,8 +195,8 @@ func RenderMatch(_buffer io.StringWriter, u *db.MatchPageData) {
 			_buffer.WriteString(gorazor.HTMLEscape(team1.Name))
 			_buffer.WriteString("</b> </td>\n          <td></td>\n          <td></td>\n          <td></td>\n          <td></td>\n          <td></td>\n          <td></td>\n          <td></td>\n          <td></td>\n          <td></td>\n          <td></td>\n          <td></td>\n            ")
 			for i := 0; i < len(players1); i++ {
-				player := players1[i]
-				db.SQLAccess.Gorm.Where("match_id = ? AND steam_id = ? AND map_id = ?", u.Match.ID, player.Steam_id, mapstat.MapNumber).First(&player)
+				player := db.PlayerStatsData{}
+				db.SQLAccess.Gorm.Where("team_id = ? AND match_id = ? AND steam_id = ? AND map_id = ?", team1.ID, u.Match.ID, players1[i].Steam_id, mapstat.ID).First(&player)
 				if player.Roundsplayed > 0 {
 
 					_buffer.WriteString("<tr>\n                <td> <a href=\"")
@@ -220,8 +220,8 @@ func RenderMatch(_buffer io.StringWriter, u *db.MatchPageData) {
 					_buffer.WriteString(" </td>\n\n                <td class=\"text-center\"> ")
 					_buffer.WriteString(gorazor.HTMLEscape(strconv.Itoa(int(player.GetRating()))))
 					_buffer.WriteString(" </td>\n                <td class=\"text-center\"> {{ player.get_fpr() | round(2) }} </td>\n                <td class=\"text-center\"> {{ player.get_adr() | round(1) }} </td>\n                <td class=\"text-center\"> ")
-					_buffer.WriteString(gorazor.HTMLEscape(strconv.Itoa(int(player.GetHSP()))))
-					_buffer.WriteString(" </td>\n              </tr>")
+					_buffer.WriteString(gorazor.HTMLEscape(strconv.FormatFloat(float64(player.GetHSP()), 'f', 3, 32)))
+					_buffer.WriteString("%% </td>\n              </tr>")
 
 				}
 			}
@@ -231,8 +231,8 @@ func RenderMatch(_buffer io.StringWriter, u *db.MatchPageData) {
 			_buffer.WriteString(gorazor.HTMLEscape(team2.Name))
 			_buffer.WriteString("</b> </td>\n          <td></td>\n          <td></td>\n          <td></td>\n          <td></td>\n          <td></td>\n          <td></td>\n          <td></td>\n          <td></td>\n          <td></td>\n          <td></td>\n          <td></td>\n            ")
 			for i := 0; i < len(players2); i++ {
-				player := players2[i]
-				db.SQLAccess.Gorm.Where("match_id = ? AND steam_id = ? AND map_id = ?", u.Match.ID, player.Steam_id, mapstat.MapNumber).First(&player)
+				player := db.PlayerStatsData{}
+				db.SQLAccess.Gorm.Where("team_id = ? AND match_id = ? AND steam_id = ? AND map_id = ?", team2.ID, u.Match.ID, players2[i].Steam_id, mapstat.ID).First(&player)
 				if player.Roundsplayed > 0 {
 
 					_buffer.WriteString("<tr>\n                <td> <a href=\"")
@@ -256,8 +256,8 @@ func RenderMatch(_buffer io.StringWriter, u *db.MatchPageData) {
 					_buffer.WriteString(" </td>\n\n                <td class=\"text-center\"> ")
 					_buffer.WriteString(gorazor.HTMLEscape(strconv.Itoa(int(player.GetRating()))))
 					_buffer.WriteString(" </td>\n                <td class=\"text-center\"> {{ player.get_fpr() | round(2) }} </td>\n                <td class=\"text-center\"> {{ player.get_adr() | round(1) }} </td>\n                <td class=\"text-center\"> ")
-					_buffer.WriteString(gorazor.HTMLEscape(strconv.Itoa(int(player.GetHSP()))))
-					_buffer.WriteString(" </td>\n              </tr>")
+					_buffer.WriteString(gorazor.HTMLEscape(strconv.FormatFloat(float64(player.GetHSP()), 'f', 3, 32)))
+					_buffer.WriteString("%% </td>\n              </tr>")
 
 				}
 			}

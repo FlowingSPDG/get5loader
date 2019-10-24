@@ -178,8 +178,8 @@
           <td></td>
           <td></td>
             @for i:=0; i < len(players1); i++ {
-              player:=players1[i]
-              db.SQLAccess.Gorm.Where("team_id = ? AND match_id = ? AND steam_id = ? AND map_id = ?",team1.ID,u.Match.ID,player.Steam_id,mapstat.MapNumber).First(&player)
+              player:=db.PlayerStatsData{}
+              db.SQLAccess.Gorm.Where("team_id = ? AND match_id = ? AND steam_id = ? AND map_id = ?",team1.ID,u.Match.ID,players1[i].Steam_id,mapstat.ID).First(&player)
               if player.Roundsplayed > 0 {
                 <tr>
                 <td> <a href="@player.GetSteamURL()"> @player.Name </a></td>
@@ -195,7 +195,7 @@
                 <td class="text-center"> @strconv.Itoa(int(player.GetRating())) </td>
                 <td class="text-center"> {{ player.get_fpr() | round(2) }} </td>
                 <td class="text-center"> {{ player.get_adr() | round(1) }} </td>
-                <td class="text-center"> @strconv.Itoa(int(player.GetHSP())) </td>
+                <td class="text-center"> @strconv.FormatFloat(float64(player.GetHSP()),'f',3,32)%% </td>
               </tr>
               }
           }
@@ -213,8 +213,8 @@
           <td></td>
           <td></td>
             @for i:=0; i < len(players2); i++ {
-              player:=players2[i]
-              db.SQLAccess.Gorm.Where("team_id = ? AND match_id = ? AND steam_id = ? AND map_id = ?",team2.ID,u.Match.ID,player.Steam_id,mapstat.MapNumber).First(&player)
+              player:=db.PlayerStatsData{}
+              db.SQLAccess.Gorm.Where("team_id = ? AND match_id = ? AND steam_id = ? AND map_id = ?",team2.ID,u.Match.ID,players2[i].Steam_id,mapstat.ID).First(&player)
               if player.Roundsplayed > 0 {
                 <tr>
                 <td> <a href="@player.GetSteamURL()"> @player.Name </a></td>
@@ -230,7 +230,7 @@
                 <td class="text-center"> @strconv.Itoa(int(player.GetRating())) </td>
                 <td class="text-center"> {{ player.get_fpr() | round(2) }} </td>
                 <td class="text-center"> {{ player.get_adr() | round(1) }} </td>
-                <td class="text-center"> @strconv.Itoa(int(player.GetHSP())) </td>
+                <td class="text-center"> @strconv.FormatFloat(float64(player.GetHSP()),'f',3,32)%% </td>
               </tr>
               }
             }

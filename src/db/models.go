@@ -205,13 +205,15 @@ func (t *TeamData) GetPlayers() ([]PlayerStatsData, error) {
 	}
 	t.Players = []PlayerStatsData{}
 	for i := 0; i < len(results); i++ {
-		p := PlayerStatsData{}
-		SQLAccess.Gorm.Where("steam_id = ?", results[i]).First(&p)
-		fmt.Println(p)
-		if err != nil {
-			return t.Players, err
+		if results[i] != "" {
+			p := PlayerStatsData{}
+			SQLAccess.Gorm.Where("steam_id = ?", results[i]).First(&p)
+			fmt.Println(p)
+			if err != nil {
+				return t.Players, err
+			}
+			t.Players = append(t.Players, p)
 		}
-		t.Players = append(t.Players, p)
 	}
 	//SQLAccess.Gorm.Where("team_id = ?", t.ID).Find(&t.Players) // N+1 issue
 	return t.Players, nil
@@ -642,7 +644,7 @@ func (p *PlayerStatsData) GetHSP() float32 {
 	if p.Deaths == 0 {
 		return float32(p.Kills)
 	}
-	return float32(p.Headshot_kills / p.Kills)
+	return float32(float32(p.Headshot_kills) / float32(p.Kills) * 100)
 }
 
 type MatchesPageData struct {
