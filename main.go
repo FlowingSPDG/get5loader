@@ -8,7 +8,6 @@ import (
 	"github.com/FlowingSPDG/get5-web-go/src/db"
 	"github.com/FlowingSPDG/get5-web-go/src/get5"
 	"github.com/go-ini/ini"
-	_ "github.com/go-sql-driver/mysql"
 	"github.com/gorilla/mux"
 	_ "github.com/hydrogen18/stalecucumber"
 	_ "github.com/sipin/gorazor/gorazor"

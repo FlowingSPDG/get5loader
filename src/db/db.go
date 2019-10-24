@@ -8,23 +8,20 @@ import (
 	// "database/sql"
 	"fmt"
 
+	_ "github.com/go-sql-driver/mysql"
 	"github.com/jinzhu/gorm"
 
 	// "github.com/jinzhu/gorm/dialects/mysql"
 
 	"github.com/go-ini/ini"
-	//"github.com/go-sql-driver/mysql"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/sessions"
 	"github.com/solovev/steam_go"
 
-	//_ "html/template"
-	_ "log"
 	"net/http"
-	_ "strconv"
-	_ "time"
 )
 
+// Config Configration Struct for config.ini
 type Config struct {
 	SteamAPIKey string
 	DefaultPage string
@@ -36,6 +33,7 @@ type Config struct {
 	HOST        string
 }
 
+// DBdatas Struct for MySQL configration and Gorm
 type DBdatas struct {
 	Host string
 	User string
@@ -46,13 +44,18 @@ type DBdatas struct {
 }
 
 var (
-	UserDatas    = map[string]*UserData{}
-	SteamAPIKey  = ""
+	// SteamAPIKey Steam Web API Key for accessing Steam API.
+	SteamAPIKey = ""
+	// SessionStore Session cookie store data.
 	SessionStore = sessions.NewCookieStore([]byte("GET5_GO_SESSIONKEY"))
-	SessionData  = "SessionData"
-	DefaultPage  string
-	SQLAccess    DBdatas
-	Cnf          Config
+	// SessionData Contains Session data.
+	SessionData = "SessionData"
+	//DefaultPage Default page where player access root directly.
+	DefaultPage string
+	//SQLAccess SQL Access Object for MySQL and GORM things
+	SQLAccess DBdatas
+	//Cnf Configration Data
+	Cnf Config
 )
 
 func init() {
@@ -86,10 +89,12 @@ func init() {
 	DefaultPage = Cnf.DefaultPage
 }
 
+// HomeHandler HTTP Handler for default page redirecting.
 func HomeHandler(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, DefaultPage, 302)
 }
 
+// LoginHandler HTTP Handler for /login page.
 func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	opID := steam_go.NewOpenId(r)
 	switch opID.Mode() {
@@ -128,6 +133,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 }
 
+// LogoutHandler HTTP Handler for /logout
 func LogoutHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r) //パスパラメータ取得
 	fmt.Printf("LogoutHandler\nvars : %v", vars)
@@ -141,12 +147,14 @@ func LogoutHandler(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/", 302)
 }
 
+// GetUserData Gets UserData array via MySQL(GORM).
 func (s *DBdatas) GetUserData(limit int, wherekey string, wherevalue string) ([]UserData, error) {
 	UserData := []UserData{}
 	s.Gorm.Limit(limit).Where(wherekey+" = ?", wherevalue).Find(&UserData)
 	return UserData, nil
 }
 
+// MySQLGetTeamData Gets TeamData array via MySQL(GORM).
 func (s *DBdatas) MySQLGetTeamData(limit int, wherekey string, wherevalue string) ([]TeamData, error) {
 	TeamData := []TeamData{}
 	s.Gorm.Limit(limit).Where(wherekey+" = ?", wherevalue).Find(&TeamData)
@@ -161,6 +169,7 @@ func (s *DBdatas) MySQLGetTeamData(limit int, wherekey string, wherevalue string
 	return TeamData, nil
 }
 
+// MySQLGetMatchData Gets MatchData array via MySQL(GORM).
 func (s *DBdatas) MySQLGetMatchData(limit int, wherekey string, wherevalue string) ([]MatchData, error) {
 	Matches := []MatchData{}
 	if wherekey == "" || wherevalue == "" {
@@ -171,24 +180,28 @@ func (s *DBdatas) MySQLGetMatchData(limit int, wherekey string, wherevalue strin
 	return Matches, nil
 }
 
+// MySQLGetPlayerStatsData Gets PlayerStatsData array via MySQL(GORM).
 func (s *DBdatas) MySQLGetPlayerStatsData(limit int, wherekey string, wherevalue string) ([]PlayerStatsData, error) {
 	PlayerStatsData := []PlayerStatsData{}
 	s.Gorm.Limit(limit).Where(wherekey+" = ?", wherevalue).Find(&PlayerStatsData)
 	return PlayerStatsData, nil
 }
 
+// MySQLGetMapStatsData Gets MapStatsData array via MySQL(GORM).
 func (s *DBdatas) MySQLGetMapStatsData(limit int, wherekey string, wherevalue string) ([]MapStatsData, error) {
 	MapStatsData := []MapStatsData{}
 	s.Gorm.Limit(limit).Where(wherekey+" = ?", wherevalue).Find(&MapStatsData)
 	return MapStatsData, nil
 }
 
+// MySQLGetGameServerData Gets GameServerData array via MySQL(GORM).
 func (s *DBdatas) MySQLGetGameServerData(limit int, wherekey string, wherevalue string) ([]GameServerData, error) {
 	GameServer := []GameServerData{}
 	s.Gorm.Limit(limit).Where(wherekey+" = ?", wherevalue).Find(&GameServer)
 	return GameServer, nil
 }
 
+// MySQLGetUserData Gets UserData via MySQL(GORM).
 func (s *DBdatas) MySQLGetUserData(limit int, wherekey string, wherevalue string) (UserData, error) {
 	UserData := UserData{}
 	s.Gorm.Limit(limit).Where(wherekey+" = ?", wherevalue).Find(&UserData)

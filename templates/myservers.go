@@ -66,13 +66,13 @@ func RenderMyservers(_buffer io.StringWriter, u *db.MyserversPageData) {
 				_buffer.WriteString("<tr>\n        <td>")
 				_buffer.WriteString(gorazor.HTMLEscInt(s.ID))
 				_buffer.WriteString("</td>\n        <td>")
-				_buffer.WriteString(gorazor.HTMLEscStr(s.Display_name))
+				_buffer.WriteString(gorazor.HTMLEscStr(s.DisplayName))
 				_buffer.WriteString("</td>\n        <td>")
-				_buffer.WriteString(gorazor.HTMLEscStr(s.Ip_string))
+				_buffer.WriteString(gorazor.HTMLEscStr(s.IPString))
 				_buffer.WriteString("</td>\n        <td>")
 				_buffer.WriteString(gorazor.HTMLEscInt(s.Port))
 				_buffer.WriteString("</td>\n            ")
-				if s.In_use == true {
+				if s.InUse == true {
 
 					_buffer.WriteString("<td>In use</td>")
 
@@ -84,7 +84,7 @@ func RenderMyservers(_buffer io.StringWriter, u *db.MyserversPageData) {
 				_buffer.WriteString("\n        <td>\n          <a href=\"/server/")
 				_buffer.WriteString(gorazor.HTMLEscInt(s.ID))
 				_buffer.WriteString("/edit\" class=\"btn btn-primary btn-xs\">Edit</a>\n          ")
-				if s.In_use == false {
+				if s.InUse == false {
 
 					_buffer.WriteString("<a href=\"/server/")
 					_buffer.WriteString(gorazor.HTMLEscInt(s.ID))

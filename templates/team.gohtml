@@ -27,7 +27,7 @@
 
   <div class="container">
     <h1>
-      @raw(u.Team.GetFlagHTML(1.0)) @raw(u.Team.Name) @raw(u.Team.GetLogoHtml(1.0))
+      @raw(u.Team.GetFlagHTML(1.0)) @raw(u.Team.Name) @raw(u.Team.GetLogoHTML(1.0))
       @if u.Team.CanEdit(u.User.ID){
         <div class="pull-right">
         <a href="/team/@u.Team.ID/edit" class="btn btn-primary btn-xs">Edit</a>

@@ -47,17 +47,17 @@
         s:=u.Servers[i];
       <tr>
         <td>@s.ID</td>
-        <td>@s.Display_name</td>
-        <td>@s.Ip_string</td>
+        <td>@s.DisplayName</td>
+        <td>@s.IPString</td>
         <td>@s.Port</td>
-            @if s.In_use == true {
+            @if s.InUse == true {
                 <td>In use</td>
             } else {
                 <td>Free</td>
             }
         <td>
           <a href="/server/@s.ID/edit" class="btn btn-primary btn-xs">Edit</a>
-          @if s.In_use == false {
+          @if s.InUse == false {
           <a href="/server/@s.ID/delete" class="btn btn-danger btn-xs">Delete</a>
           }
         </td>

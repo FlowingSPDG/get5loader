@@ -3,8 +3,9 @@ package get5
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/FlowingSPDG/get5-web-go/src/db"
 	"strings"
+
+	"github.com/FlowingSPDG/get5-web-go/src/db"
 
 	_ "github.com/gorilla/mux"
 	_ "github.com/gorilla/sessions"
@@ -49,7 +50,7 @@ func SendRCON(host string, pass string, cmd string) (string, error) {
 }
 
 func CheckServerConnection(srv db.GameServerData) bool {
-	_, err := SendRCON(srv.Ip_string, srv.Rcon_password, "status")
+	_, err := SendRCON(srv.IPString, srv.RconPassword, "status")
 	if err != nil {
 		return false
 	}
@@ -63,7 +64,7 @@ type GET5AvailableDatas struct {
 }
 
 func CheckServerAvailability(srv db.GameServerData) (bool, string) { // available or error string
-	resp, err := SendRCON(srv.Ip_string, srv.Rcon_password, "get5_web_avaliable")
+	resp, err := SendRCON(srv.IPString, srv.RconPassword, "get5_web_avaliable")
 	if err != nil {
 		return false, "Connect fails"
 	}

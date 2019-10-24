@@ -34,7 +34,7 @@
         mapstats,_ := u.Match.GetMapStat()
         var timeformat = "2006/01/02 15:04"
       }
-      @raw(team1.GetLogoOrFlagHtml(1.0,team2)) <a href="/team/@team1.ID"> @team1.Name</a>
+      @raw(team1.GetLogoOrFlagHTML(1.0,team2)) <a href="/team/@team1.ID"> @team1.Name</a>
       @u.Match.Team1Score
       @{
         if u.Match.Team1Score < u.Match.Team2Score {
@@ -46,7 +46,7 @@
         }
       }
       @u.Match.Team2Score
-      @raw(team2.GetLogoOrFlagHtml(1.0,team1)) <a href="/team/@team2.ID"> @team2.Name</a>
+      @raw(team2.GetLogoOrFlagHTML(1.0,team1)) <a href="/team/@team2.ID"> @team2.Name</a>
 
       @if u.AdminAccess && u.Match.Live() || u.Match.Pending(){
         <div class="dropdown dropdown-header pull-right">
@@ -186,7 +186,7 @@
                 <td class="text-center"> @player.Kills  </td>
                 <td class="text-center"> @player.Deaths </td>
                 <td class="text-center"> @player.Assists </td>
-                <td class="text-center"> @player.Flashbang_assists </td>
+                <td class="text-center"> @player.FlashbangAssists </td>
 
                 <td class="text-center"> @player.V1 </td>
                 <td class="text-center"> @player.V2 </td>
@@ -221,7 +221,7 @@
                 <td class="text-center"> @player.Kills  </td>
                 <td class="text-center"> @player.Deaths </td>
                 <td class="text-center"> @player.Assists </td>
-                <td class="text-center"> @player.Flashbang_assists </td>
+                <td class="text-center"> @player.FlashbangAssists </td>
 
                 <td class="text-center"> @player.V1 </td>
                 <td class="text-center"> @player.V2 </td>

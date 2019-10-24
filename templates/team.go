@@ -58,7 +58,7 @@ func RenderTeam(_buffer io.StringWriter, u *db.TeamPageData) {
 		_buffer.WriteString(" ")
 		_buffer.WriteString((u.Team.Name))
 		_buffer.WriteString(" ")
-		_buffer.WriteString((u.Team.GetLogoHtml(1.0)))
+		_buffer.WriteString((u.Team.GetLogoHTML(1.0)))
 		_buffer.WriteString("\n      ")
 		if u.Team.CanEdit(u.User.ID) {
 
