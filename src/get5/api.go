@@ -64,14 +64,29 @@ func UserHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if _, ok := session.Values["Loggedin"]; ok { // FUCK.
-		if _, ok := session.Values["Name"]; ok {
-			if _, ok := session.Values["UserID"].(int); ok {
-				if session.Values["Loggedin"].(bool) == true {
-					u.LoggedIn = true
-				}
-			}
+		if session.Values["Loggedin"].(bool) == true {
+			u.LoggedIn = true
 		}
 	}
 
 	fmt.Fprintf(w, templates.User(u)) // TODO
+}
+
+func MetricsHandler(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("MetricsHandler")
+
+	loggedin := false
+	session, _ := db.SessionStore.Get(r, db.SessionData)
+
+	u := &db.MetricsData{
+		LoggedIn: loggedin,
+	}
+
+	if _, ok := session.Values["Loggedin"]; ok { // FUCK.
+		if session.Values["Loggedin"].(bool) == true {
+			u.LoggedIn = true
+		}
+	}
+
+	fmt.Fprintf(w, templates.Metrics(u)) // TODO
 }

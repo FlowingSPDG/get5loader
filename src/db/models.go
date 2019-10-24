@@ -741,3 +741,28 @@ func GetSteamName(steamid uint64) (string, error) {
 	}
 	return summary.DisplayName, nil
 }
+
+type MetricsData struct {
+	LoggedIn           bool
+	RegisteredUsers    int
+	SavedTeams         int
+	MatchesCreated     int
+	CompletedMatches   int
+	ServersAdded       int
+	MapsWithStatsSaved int
+	UniquePlayers      int
+}
+
+func GetMetrics() MetricsData {
+	var result MetricsData
+
+	SQLAccess.Gorm.Table("user").Count(&result.RegisteredUsers)
+	SQLAccess.Gorm.Table("team").Count(&result.SavedTeams)
+	SQLAccess.Gorm.Table("match").Count(&result.MatchesCreated)
+	SQLAccess.Gorm.Table("match").Not("end_time = NULL").Count(&result.CompletedMatches)
+	SQLAccess.Gorm.Table("game_server").Count(&result.ServersAdded)
+	SQLAccess.Gorm.Table("map_stats").Count(&result.MapsWithStatsSaved)
+	SQLAccess.Gorm.Table("player_stats").Count(&result.UniquePlayers)
+
+	return result
+}

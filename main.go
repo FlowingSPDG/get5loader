@@ -10,9 +10,9 @@ import (
 	"github.com/go-ini/ini"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/gorilla/mux"
+	_ "github.com/hydrogen18/stalecucumber"
 	_ "github.com/sipin/gorazor/gorazor"
 	_ "github.com/solovev/steam_go"
-	_ "github.com/hydrogen18/stalecucumber"
 )
 
 type Config struct {
@@ -94,6 +94,8 @@ func main() {
 	r.HandleFunc("/myservers", get5.MyServersHandler)                                  // ?
 
 	r.HandleFunc("/user/{userID}", get5.UserHandler)
+
+	r.HandleFunc("/metrics", get5.MetricsHandler)
 
 	r.Methods("GET", "POST")
 	http.Handle("/", r)

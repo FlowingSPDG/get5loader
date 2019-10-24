@@ -64,13 +64,13 @@ func RenderMyservers(_buffer io.StringWriter, u *db.MyserversPageData) {
 				s := u.Servers[i]
 
 				_buffer.WriteString("<tr>\n        <td>")
-				_buffer.WriteString(gorazor.HTMLEscape(s.ID))
+				_buffer.WriteString(gorazor.HTMLEscInt(s.ID))
 				_buffer.WriteString("</td>\n        <td>")
-				_buffer.WriteString(gorazor.HTMLEscape(s.Display_name))
+				_buffer.WriteString(gorazor.HTMLEscStr(s.Display_name))
 				_buffer.WriteString("</td>\n        <td>")
-				_buffer.WriteString(gorazor.HTMLEscape(s.Ip_string))
+				_buffer.WriteString(gorazor.HTMLEscStr(s.Ip_string))
 				_buffer.WriteString("</td>\n        <td>")
-				_buffer.WriteString(gorazor.HTMLEscape(s.Port))
+				_buffer.WriteString(gorazor.HTMLEscInt(s.Port))
 				_buffer.WriteString("</td>\n            ")
 				if s.In_use == true {
 
@@ -82,12 +82,12 @@ func RenderMyservers(_buffer io.StringWriter, u *db.MyserversPageData) {
 
 				}
 				_buffer.WriteString("\n        <td>\n          <a href=\"/server/")
-				_buffer.WriteString(gorazor.HTMLEscape(s.ID))
+				_buffer.WriteString(gorazor.HTMLEscInt(s.ID))
 				_buffer.WriteString("/edit\" class=\"btn btn-primary btn-xs\">Edit</a>\n          ")
 				if s.In_use == false {
 
 					_buffer.WriteString("<a href=\"/server/")
-					_buffer.WriteString(gorazor.HTMLEscape(s.ID))
+					_buffer.WriteString(gorazor.HTMLEscInt(s.ID))
 					_buffer.WriteString("/delete\" class=\"btn btn-danger btn-xs\">Delete</a>")
 
 				}

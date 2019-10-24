@@ -65,11 +65,11 @@ func RenderMatch(_buffer io.StringWriter, u *db.MatchPageData) {
 		_buffer.WriteString("\n      ")
 		_buffer.WriteString((team1.GetLogoOrFlagHtml(1.0, team2)))
 		_buffer.WriteString(" <a href=\"/team/")
-		_buffer.WriteString(gorazor.HTMLEscape(team1.ID))
+		_buffer.WriteString(gorazor.HTMLEscInt(team1.ID))
 		_buffer.WriteString("\"> ")
-		_buffer.WriteString(gorazor.HTMLEscape(team1.Name))
+		_buffer.WriteString(gorazor.HTMLEscStr(team1.Name))
 		_buffer.WriteString("</a>\n      ")
-		_buffer.WriteString(gorazor.HTMLEscape(u.Match.Team1Score))
+		_buffer.WriteString(gorazor.HTMLEscInt(u.Match.Team1Score))
 		_buffer.WriteString("\n      ")
 
 		if u.Match.Team1Score < u.Match.Team2Score {
@@ -87,13 +87,13 @@ func RenderMatch(_buffer io.StringWriter, u *db.MatchPageData) {
 		}
 
 		_buffer.WriteString("\n      ")
-		_buffer.WriteString(gorazor.HTMLEscape(u.Match.Team2Score))
+		_buffer.WriteString(gorazor.HTMLEscInt(u.Match.Team2Score))
 		_buffer.WriteString("\n      ")
 		_buffer.WriteString((team2.GetLogoOrFlagHtml(1.0, team1)))
 		_buffer.WriteString(" <a href=\"/team/")
-		_buffer.WriteString(gorazor.HTMLEscape(team2.ID))
+		_buffer.WriteString(gorazor.HTMLEscInt(team2.ID))
 		_buffer.WriteString("\"> ")
-		_buffer.WriteString(gorazor.HTMLEscape(team2.Name))
+		_buffer.WriteString(gorazor.HTMLEscStr(team2.Name))
 		_buffer.WriteString("</a>\n\n      ")
 		if u.AdminAccess && u.Match.Live() || u.Match.Pending() {
 
@@ -121,7 +121,7 @@ func RenderMatch(_buffer io.StringWriter, u *db.MatchPageData) {
 			starttime := u.Match.StartTime.Time.Format(timeformat)
 
 			_buffer.WriteString("<p>Started at ")
-			_buffer.WriteString(gorazor.HTMLEscape(starttime))
+			_buffer.WriteString(gorazor.HTMLEscStr(starttime))
 			_buffer.WriteString("</p>")
 
 		} else {
@@ -134,7 +134,7 @@ func RenderMatch(_buffer io.StringWriter, u *db.MatchPageData) {
 			endtime := u.Match.EndTime.Time.Format(timeformat)
 
 			_buffer.WriteString("<p>Ended at ")
-			_buffer.WriteString(gorazor.HTMLEscape(endtime))
+			_buffer.WriteString(gorazor.HTMLEscStr(endtime))
 			_buffer.WriteString("</p>")
 
 		}
@@ -150,13 +150,13 @@ func RenderMatch(_buffer io.StringWriter, u *db.MatchPageData) {
 			mapnumber := mapstat.MapNumber + 1
 
 			_buffer.WriteString("\n        Map ")
-			_buffer.WriteString(gorazor.HTMLEscape(mapnumber))
+			_buffer.WriteString(gorazor.HTMLEscInt(mapnumber))
 			_buffer.WriteString(" ")
 			_buffer.WriteString((":"))
 			_buffer.WriteString(" ")
-			_buffer.WriteString(gorazor.HTMLEscape(mapstat.MapName))
+			_buffer.WriteString(gorazor.HTMLEscStr(mapstat.MapName))
 			_buffer.WriteString(",\n        ")
-			_buffer.WriteString(gorazor.HTMLEscape(team1.Name))
+			_buffer.WriteString(gorazor.HTMLEscStr(team1.Name))
 			_buffer.WriteString(" \n        ")
 
 			if u.Match.Team1Score < u.Match.Team2Score {
@@ -174,25 +174,25 @@ func RenderMatch(_buffer io.StringWriter, u *db.MatchPageData) {
 			}
 
 			_buffer.WriteString("\n        ")
-			_buffer.WriteString(gorazor.HTMLEscape(team2.Name))
+			_buffer.WriteString(gorazor.HTMLEscStr(team2.Name))
 			_buffer.WriteString(",\n        ")
-			_buffer.WriteString(gorazor.HTMLEscape(mTeam1Score))
+			_buffer.WriteString(gorazor.HTMLEscStr(mTeam1Score))
 			_buffer.WriteString((":"))
-			_buffer.WriteString(gorazor.HTMLEscape(mTeam2Score))
+			_buffer.WriteString(gorazor.HTMLEscStr(mTeam2Score))
 			_buffer.WriteString("\n      </div>\n\n      <div class=\"panel-body\">\n        <p>Started at ")
-			_buffer.WriteString(gorazor.HTMLEscape(mapstat.StartTime.Time.Format(timeformat)))
+			_buffer.WriteString(gorazor.HTMLEscStr(mapstat.StartTime.Time.Format(timeformat)))
 			_buffer.WriteString("</p>\n\n        ")
 			if mapstat.EndTime.Valid {
 
 				_buffer.WriteString("<p>Ended at ")
-				_buffer.WriteString(gorazor.HTMLEscape(mapstat.EndTime.Time.Format(timeformat)))
+				_buffer.WriteString(gorazor.HTMLEscStr(mapstat.EndTime.Time.Format(timeformat)))
 				_buffer.WriteString("</p>")
 
 			}
 			_buffer.WriteString("\n\n        <table class=\"table table-hover\">\n          <thead>\n            <tr>\n              <th>Player</th>\n              <th class=\"text-center\">Kills</th>\n              <th class=\"text-center\">Deaths</th>\n              <th class=\"text-center\">Assists</th>\n              <th class=\"text-center\">Flash assists</th>\n              <th class=\"text-center\">1v1</th>\n              <th class=\"text-center\">1v2</th>\n              <th class=\"text-center\">1v3</th>\n              <th class=\"text-center\">Rating</th>\n              <th class=\"text-center\"><acronym title=\"Frags per round\">FPR</acronym></th>\n              <th class=\"text-center\"><acronym title=\"Average damage per round\">ADR</acronym></th>\n              <th class=\"text-center\"><acronym title=\"Headshot percentage\">HSP</acronym></th>\n            </tr>\n          </thead>\n          <tbody>\n          ")
 			players1, _ := team1.GetPlayers()
 			_buffer.WriteString("\n          <td> <b>")
-			_buffer.WriteString(gorazor.HTMLEscape(team1.Name))
+			_buffer.WriteString(gorazor.HTMLEscStr(team1.Name))
 			_buffer.WriteString("</b> </td>\n          <td></td>\n          <td></td>\n          <td></td>\n          <td></td>\n          <td></td>\n          <td></td>\n          <td></td>\n          <td></td>\n          <td></td>\n          <td></td>\n          <td></td>\n            ")
 			for i := 0; i < len(players1); i++ {
 				player := db.PlayerStatsData{}
@@ -200,31 +200,31 @@ func RenderMatch(_buffer io.StringWriter, u *db.MatchPageData) {
 				if player.Roundsplayed > 0 {
 
 					_buffer.WriteString("<tr>\n                <td> <a href=\"")
-					_buffer.WriteString(gorazor.HTMLEscape(player.GetSteamURL()))
+					_buffer.WriteString(gorazor.HTMLEscStr(player.GetSteamURL()))
 					_buffer.WriteString("\"> ")
-					_buffer.WriteString(gorazor.HTMLEscape(player.Name))
+					_buffer.WriteString(gorazor.HTMLEscStr(player.Name))
 					_buffer.WriteString(" </a></td>\n                <td class=\"text-center\"> ")
-					_buffer.WriteString(gorazor.HTMLEscape(player.Kills))
+					_buffer.WriteString(gorazor.HTMLEscInt(player.Kills))
 					_buffer.WriteString("  </td>\n                <td class=\"text-center\"> ")
-					_buffer.WriteString(gorazor.HTMLEscape(player.Deaths))
+					_buffer.WriteString(gorazor.HTMLEscInt(player.Deaths))
 					_buffer.WriteString(" </td>\n                <td class=\"text-center\"> ")
-					_buffer.WriteString(gorazor.HTMLEscape(player.Assists))
+					_buffer.WriteString(gorazor.HTMLEscInt(player.Assists))
 					_buffer.WriteString(" </td>\n                <td class=\"text-center\"> ")
-					_buffer.WriteString(gorazor.HTMLEscape(player.Flashbang_assists))
+					_buffer.WriteString(gorazor.HTMLEscInt(player.Flashbang_assists))
 					_buffer.WriteString(" </td>\n\n                <td class=\"text-center\"> ")
-					_buffer.WriteString(gorazor.HTMLEscape(player.V1))
+					_buffer.WriteString(gorazor.HTMLEscInt(player.V1))
 					_buffer.WriteString(" </td>\n                <td class=\"text-center\"> ")
-					_buffer.WriteString(gorazor.HTMLEscape(player.V2))
+					_buffer.WriteString(gorazor.HTMLEscInt(player.V2))
 					_buffer.WriteString(" </td>\n                <td class=\"text-center\"> ")
-					_buffer.WriteString(gorazor.HTMLEscape(player.V3))
+					_buffer.WriteString(gorazor.HTMLEscInt(player.V3))
 					_buffer.WriteString(" </td>\n\n                <td class=\"text-center\"> ")
-					_buffer.WriteString(gorazor.HTMLEscape(strconv.FormatFloat(float64(player.GetRating()), 'f', 3, 32)))
+					_buffer.WriteString(gorazor.HTMLEscStr(strconv.FormatFloat(float64(player.GetRating()), 'f', 3, 32)))
 					_buffer.WriteString(" </td>\n                <td class=\"text-center\"> ")
-					_buffer.WriteString(gorazor.HTMLEscape(strconv.FormatFloat(float64(player.GetFPR()), 'f', 3, 32)))
+					_buffer.WriteString(gorazor.HTMLEscStr(strconv.FormatFloat(float64(player.GetFPR()), 'f', 3, 32)))
 					_buffer.WriteString(" </td>\n                <td class=\"text-center\"> ")
-					_buffer.WriteString(gorazor.HTMLEscape(strconv.FormatFloat(float64(player.GetADR()), 'f', 3, 32)))
+					_buffer.WriteString(gorazor.HTMLEscStr(strconv.FormatFloat(float64(player.GetADR()), 'f', 3, 32)))
 					_buffer.WriteString(" </td>\n                <td class=\"text-center\"> ")
-					_buffer.WriteString(gorazor.HTMLEscape(strconv.FormatFloat(float64(player.GetHSP()), 'f', 3, 32)))
+					_buffer.WriteString(gorazor.HTMLEscStr(strconv.FormatFloat(float64(player.GetHSP()), 'f', 3, 32)))
 					_buffer.WriteString("%% </td>\n              </tr>")
 
 				}
@@ -232,7 +232,7 @@ func RenderMatch(_buffer io.StringWriter, u *db.MatchPageData) {
 			_buffer.WriteString("\n          ")
 			players2, _ := team2.GetPlayers()
 			_buffer.WriteString("\n          <td> <b>")
-			_buffer.WriteString(gorazor.HTMLEscape(team2.Name))
+			_buffer.WriteString(gorazor.HTMLEscStr(team2.Name))
 			_buffer.WriteString("</b> </td>\n          <td></td>\n          <td></td>\n          <td></td>\n          <td></td>\n          <td></td>\n          <td></td>\n          <td></td>\n          <td></td>\n          <td></td>\n          <td></td>\n          <td></td>\n            ")
 			for i := 0; i < len(players2); i++ {
 				player := db.PlayerStatsData{}
@@ -240,31 +240,31 @@ func RenderMatch(_buffer io.StringWriter, u *db.MatchPageData) {
 				if player.Roundsplayed > 0 {
 
 					_buffer.WriteString("<tr>\n                <td> <a href=\"")
-					_buffer.WriteString(gorazor.HTMLEscape(player.GetSteamURL()))
+					_buffer.WriteString(gorazor.HTMLEscStr(player.GetSteamURL()))
 					_buffer.WriteString("\"> ")
-					_buffer.WriteString(gorazor.HTMLEscape(player.Name))
+					_buffer.WriteString(gorazor.HTMLEscStr(player.Name))
 					_buffer.WriteString(" </a></td>\n                <td class=\"text-center\"> ")
-					_buffer.WriteString(gorazor.HTMLEscape(player.Kills))
+					_buffer.WriteString(gorazor.HTMLEscInt(player.Kills))
 					_buffer.WriteString("  </td>\n                <td class=\"text-center\"> ")
-					_buffer.WriteString(gorazor.HTMLEscape(player.Deaths))
+					_buffer.WriteString(gorazor.HTMLEscInt(player.Deaths))
 					_buffer.WriteString(" </td>\n                <td class=\"text-center\"> ")
-					_buffer.WriteString(gorazor.HTMLEscape(player.Assists))
+					_buffer.WriteString(gorazor.HTMLEscInt(player.Assists))
 					_buffer.WriteString(" </td>\n                <td class=\"text-center\"> ")
-					_buffer.WriteString(gorazor.HTMLEscape(player.Flashbang_assists))
+					_buffer.WriteString(gorazor.HTMLEscInt(player.Flashbang_assists))
 					_buffer.WriteString(" </td>\n\n                <td class=\"text-center\"> ")
-					_buffer.WriteString(gorazor.HTMLEscape(player.V1))
+					_buffer.WriteString(gorazor.HTMLEscInt(player.V1))
 					_buffer.WriteString(" </td>\n                <td class=\"text-center\"> ")
-					_buffer.WriteString(gorazor.HTMLEscape(player.V2))
+					_buffer.WriteString(gorazor.HTMLEscInt(player.V2))
 					_buffer.WriteString(" </td>\n                <td class=\"text-center\"> ")
-					_buffer.WriteString(gorazor.HTMLEscape(player.V3))
+					_buffer.WriteString(gorazor.HTMLEscInt(player.V3))
 					_buffer.WriteString(" </td>\n\n                <td class=\"text-center\"> ")
-					_buffer.WriteString(gorazor.HTMLEscape(strconv.FormatFloat(float64(player.GetRating()), 'f', 3, 32)))
+					_buffer.WriteString(gorazor.HTMLEscStr(strconv.FormatFloat(float64(player.GetRating()), 'f', 3, 32)))
 					_buffer.WriteString(" </td>\n                <td class=\"text-center\"> ")
-					_buffer.WriteString(gorazor.HTMLEscape(strconv.FormatFloat(float64(player.GetFPR()), 'f', 3, 32)))
+					_buffer.WriteString(gorazor.HTMLEscStr(strconv.FormatFloat(float64(player.GetFPR()), 'f', 3, 32)))
 					_buffer.WriteString(" </td>\n                <td class=\"text-center\"> ")
-					_buffer.WriteString(gorazor.HTMLEscape(strconv.FormatFloat(float64(player.GetADR()), 'f', 3, 32)))
+					_buffer.WriteString(gorazor.HTMLEscStr(strconv.FormatFloat(float64(player.GetADR()), 'f', 3, 32)))
 					_buffer.WriteString(" </td>\n                <td class=\"text-center\"> ")
-					_buffer.WriteString(gorazor.HTMLEscape(strconv.FormatFloat(float64(player.GetHSP()), 'f', 3, 32)))
+					_buffer.WriteString(gorazor.HTMLEscStr(strconv.FormatFloat(float64(player.GetHSP()), 'f', 3, 32)))
 					_buffer.WriteString("%% </td>\n              </tr>")
 
 				}
