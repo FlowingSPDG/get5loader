@@ -743,8 +743,8 @@ func GetSteamName(steamid uint64) (string, error) {
 }
 
 type MetricsDataPage struct {
-	LoggedIn           bool
-	Data MetricsData
+	LoggedIn bool
+	Data     MetricsData
 }
 
 type MetricsData struct {
@@ -763,7 +763,7 @@ func GetMetrics() MetricsData {
 	SQLAccess.Gorm.Table("user").Count(&result.RegisteredUsers)
 	SQLAccess.Gorm.Table("team").Count(&result.SavedTeams)
 	SQLAccess.Gorm.Table("match").Count(&result.MatchesCreated)
-	SQLAccess.Gorm.Table("match").Not("end_time = NULL").Count(&result.CompletedMatches)
+	SQLAccess.Gorm.Table("match").Where("end_time IS NOT NULL").Count(&result.CompletedMatches)
 	SQLAccess.Gorm.Table("game_server").Count(&result.ServersAdded)
 	SQLAccess.Gorm.Table("map_stats").Count(&result.MapsWithStatsSaved)
 	SQLAccess.Gorm.Table("player_stats").Count(&result.UniquePlayers)
