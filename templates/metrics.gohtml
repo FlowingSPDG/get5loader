@@ -4,7 +4,7 @@
 		db "github.com/FlowingSPDG/get5-web-go/src/db"
     "strconv"
 	)
-	var u *db.MetricsData
+	var u *db.MetricsDataPage
 	layout := layout.Base
 }
 
@@ -22,20 +22,17 @@
 	}
 }
 
-<div id="content">
+@section content{
+  <div id="content">
   <h1>Get5 Metrics</h1>
   <ul class="list-group">
-    @{
-      Metrics:=db.GetMetrics()
-    }
-    <li class="list-group-item">
-      Registered users: @strconv.Itoa(Metrics.RegisteredUsers)
-      Saved teams: @strconv.Itoa(Metrics.SavedTeams)
-      Matches created: @strconv.Itoa(Metrics.MatchesCreated)
-      Completed matches: @strconv.Itoa(Metrics.CompletedMatches)
-      Servers added: @strconv.Itoa(Metrics.ServersAdded)
-      Maps with stats saved: @strconv.Itoa(Metrics.MapsWithStatsSaved)
-      Unique players: @strconv.Itoa(Metrics.UniquePlayers)
-    </li>
+    <li class="list-group-item"> Registered users: @strconv.Itoa(u.Data.RegisteredUsers) </li>
+    <li class="list-group-item"> Saved teams: @strconv.Itoa(u.Data.SavedTeams)</li>
+    <li class="list-group-item"> Matches created: @strconv.Itoa(u.Data.MatchesCreated)</li>
+    <li class="list-group-item"> Completed matches: @strconv.Itoa(u.Data.CompletedMatches)</li>
+    <li class="list-group-item"> Servers added: @strconv.Itoa(u.Data.ServersAdded)</li>
+    <li class="list-group-item"> Maps with stats saved: @strconv.Itoa(u.Data.MapsWithStatsSaved)</li>
+    <li class="list-group-item"> Unique players: @strconv.Itoa(u.Data.UniquePlayers)</li>
   </ul>
 </div>
+}

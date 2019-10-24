@@ -742,8 +742,12 @@ func GetSteamName(steamid uint64) (string, error) {
 	return summary.DisplayName, nil
 }
 
-type MetricsData struct {
+type MetricsDataPage struct {
 	LoggedIn           bool
+	Data MetricsData
+}
+
+type MetricsData struct {
 	RegisteredUsers    int
 	SavedTeams         int
 	MatchesCreated     int

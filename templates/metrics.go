@@ -14,14 +14,14 @@ import (
 )
 
 // Metrics generates templates/metrics.gohtml
-func Metrics(u *db.MetricsData) string {
+func Metrics(u *db.MetricsDataPage) string {
 	var _b strings.Builder
 	RenderMetrics(&_b, u)
 	return _b.String()
 }
 
 // RenderMetrics render templates/metrics.gohtml
-func RenderMetrics(_buffer io.StringWriter, u *db.MetricsData) {
+func RenderMetrics(_buffer io.StringWriter, u *db.MetricsDataPage) {
 
 	_body := func(_buffer io.StringWriter) {
 
@@ -50,25 +50,26 @@ func RenderMetrics(_buffer io.StringWriter, u *db.MetricsData) {
 
 		}
 	}
-	_buffer.WriteString("\n\n<div id=\"content\">\n  <h1>Get5 Metrics</h1>\n  <ul class=\"list-group\">\n    ")
 
-	Metrics := db.GetMetrics()
+	_content := func(_buffer io.StringWriter) {
 
-	_buffer.WriteString("\n    <li class=\"list-group-item\">\n      Registered users: ")
-	_buffer.WriteString(gorazor.HTMLEscStr(strconv.Itoa(Metrics.RegisteredUsers)))
-	_buffer.WriteString("\n      Saved teams: ")
-	_buffer.WriteString(gorazor.HTMLEscStr(strconv.Itoa(Metrics.SavedTeams)))
-	_buffer.WriteString("\n      Matches created: ")
-	_buffer.WriteString(gorazor.HTMLEscStr(strconv.Itoa(Metrics.MatchesCreated)))
-	_buffer.WriteString("\n      Completed matches: ")
-	_buffer.WriteString(gorazor.HTMLEscStr(strconv.Itoa(Metrics.CompletedMatches)))
-	_buffer.WriteString("\n      Servers added: ")
-	_buffer.WriteString(gorazor.HTMLEscStr(strconv.Itoa(Metrics.ServersAdded)))
-	_buffer.WriteString("\n      Maps with stats saved: ")
-	_buffer.WriteString(gorazor.HTMLEscStr(strconv.Itoa(Metrics.MapsWithStatsSaved)))
-	_buffer.WriteString("\n      Unique players: ")
-	_buffer.WriteString(gorazor.HTMLEscStr(strconv.Itoa(Metrics.UniquePlayers)))
-	_buffer.WriteString("\n    </li>\n  </ul>\n</div>")
+		_buffer.WriteString("<div id=\"content\">\n  <h1>Get5 Metrics</h1>\n  <ul class=\"list-group\">\n    <li class=\"list-group-item\"> Registered users: ")
+		_buffer.WriteString(gorazor.HTMLEscStr(strconv.Itoa(u.Data.RegisteredUsers)))
+		_buffer.WriteString(" </li>\n    <li class=\"list-group-item\"> Saved teams: ")
+		_buffer.WriteString(gorazor.HTMLEscStr(strconv.Itoa(u.Data.SavedTeams)))
+		_buffer.WriteString("</li>\n    <li class=\"list-group-item\"> Matches created: ")
+		_buffer.WriteString(gorazor.HTMLEscStr(strconv.Itoa(u.Data.MatchesCreated)))
+		_buffer.WriteString("</li>\n    <li class=\"list-group-item\"> Completed matches: ")
+		_buffer.WriteString(gorazor.HTMLEscStr(strconv.Itoa(u.Data.CompletedMatches)))
+		_buffer.WriteString("</li>\n    <li class=\"list-group-item\"> Servers added: ")
+		_buffer.WriteString(gorazor.HTMLEscStr(strconv.Itoa(u.Data.ServersAdded)))
+		_buffer.WriteString("</li>\n    <li class=\"list-group-item\"> Maps with stats saved: ")
+		_buffer.WriteString(gorazor.HTMLEscStr(strconv.Itoa(u.Data.MapsWithStatsSaved)))
+		_buffer.WriteString("</li>\n    <li class=\"list-group-item\"> Unique players: ")
+		_buffer.WriteString(gorazor.HTMLEscStr(strconv.Itoa(u.Data.UniquePlayers)))
+		_buffer.WriteString("</li>\n  </ul>\n</div>")
 
-	layout.RenderBase(_buffer, _body, _menu, nil)
+	}
+
+	layout.RenderBase(_buffer, _body, _menu, _content)
 }

@@ -78,14 +78,16 @@ func MetricsHandler(w http.ResponseWriter, r *http.Request) {
 	loggedin := false
 	session, _ := db.SessionStore.Get(r, db.SessionData)
 
-	u := &db.MetricsData{
+	data := db.GetMetrics()
+	fmt.Println(data)
+
+	u := &db.MetricsDataPage{
 		LoggedIn: loggedin,
+		Data:     data,
 	}
 
-	if _, ok := session.Values["Loggedin"]; ok { // FUCK.
-		if session.Values["Loggedin"].(bool) == true {
-			u.LoggedIn = true
-		}
+	if _, ok := session.Values["Loggedin"]; ok { //
+		u.LoggedIn = session.Values["Loggedin"].(bool)
 	}
 
 	fmt.Fprintf(w, templates.Metrics(u)) // TODO
