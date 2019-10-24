@@ -19,6 +19,7 @@ import (
 	_ "time"
 )
 
+// FormatMapName Formats correct map name.
 func FormatMapName(mapname string) string {
 	FormattedNames := make(map[string]string)
 	FormattedNames["de_dust2"] = "Dust II"
@@ -32,6 +33,7 @@ func FormatMapName(mapname string) string {
 	return FormattedNames["mapname"]
 }
 
+// SendRCON Sends Remote-Commands to specific IP SRCDS.
 func SendRCON(host string, pass string, cmd string) (string, error) {
 	o := &steam.ConnectOptions{RCONPassword: pass}
 	rcon, err := steam.Connect(host, o)
@@ -49,6 +51,7 @@ func SendRCON(host string, pass string, cmd string) (string, error) {
 	return resp, nil
 }
 
+// CheckServerConnection Check server pulse by sending "status" command
 func CheckServerConnection(srv db.GameServerData) bool {
 	_, err := SendRCON(srv.IPString, srv.RconPassword, "status")
 	if err != nil {
@@ -57,12 +60,14 @@ func CheckServerConnection(srv db.GameServerData) bool {
 	return true
 }
 
+// GET5AvailableDatas Struct for Get5 availability check.
 type GET5AvailableDatas struct {
 	Gamestate     int    `json:"gamestate"`
 	Available     int    `json:"available"`
 	PluginVersion string `json:"plugin_version"`
 }
 
+// CheckServerAvailability if server is usable for get5_web
 func CheckServerAvailability(srv db.GameServerData) (bool, string) { // available or error string
 	resp, err := SendRCON(srv.IPString, srv.RconPassword, "get5_web_avaliable")
 	if err != nil {

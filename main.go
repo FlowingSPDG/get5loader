@@ -14,6 +14,7 @@ import (
 	_ "github.com/solovev/steam_go"
 )
 
+// Config Configration Struct for config.ini
 type Config struct {
 	SteamAPIKey string
 	DefaultPage string
@@ -26,10 +27,14 @@ type Config struct {
 }
 
 var (
-	STATIC_DIR = "./static"
-	HOST       = "localhost:8081"
-	Cnf        Config
-	SQLAccess  db.DBdatas
+	// StaticDir Directly where serves static files
+	StaticDir = "./static"
+	// HOST Server's domain name
+	HOST string
+	//Cnf Configration Data
+	Cnf Config
+	// SQLAccess SQL Access Object for MySQL and GORM things
+	SQLAccess db.DBdatas
 )
 
 func init() {
@@ -38,7 +43,7 @@ func init() {
 		panic(err)
 	}
 	Cnf = Config{
-		HOST:      c.Section("GET5").Key("HOST").MustString(""),
+		HOST:      c.Section("GET5").Key("HOST").MustString("localhost:8080"),
 		SQLHost:   c.Section("sql").Key("host").MustString(""),
 		SQLUser:   c.Section("sql").Key("user").MustString(""),
 		SQLPass:   c.Section("sql").Key("pass").MustString(""),

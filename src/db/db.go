@@ -50,11 +50,11 @@ var (
 	SessionStore = sessions.NewCookieStore([]byte("GET5_GO_SESSIONKEY"))
 	// SessionData Contains Session data.
 	SessionData = "SessionData"
-	//DefaultPage Default page where player access root directly.
+	// DefaultPage Default page where player access root directly.
 	DefaultPage string
-	//SQLAccess SQL Access Object for MySQL and GORM things
+	// SQLAccess SQL Access Object for MySQL and GORM things
 	SQLAccess DBdatas
-	//Cnf Configration Data
+	// Cnf Configration Data
 	Cnf Config
 )
 
