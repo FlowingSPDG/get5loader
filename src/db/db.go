@@ -80,7 +80,7 @@ func init() {
 	if err != nil {
 		panic(err)
 	}
-	DB.SingularTable(true)
+	DB.LogMode(true)
 	SQLAccess.Gorm = DB
 	SteamAPIKey = Cnf.SteamAPIKey
 	DefaultPage = Cnf.DefaultPage

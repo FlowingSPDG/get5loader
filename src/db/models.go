@@ -196,33 +196,27 @@ func (t *TeamData) CanEdit(userid int) bool {
 	return false
 }
 
-type PlayerIDName struct {
-	Name string
-	ID   string
-}
-
-func (t *TeamData) GetPlayers() ([]PlayerIDName, error) {
+func (t *TeamData) GetPlayers() ([]PlayerStatsData, error) {
 	reader := bytes.NewReader(t.AuthsPickle)
 	var results []string
-	var players = []PlayerIDName{}
 	err := stalecucumber.UnpackInto(&results).From(stalecucumber.Unpickle(reader))
 	if err != nil {
-		return players, err
+		return t.Players, err
 	}
+	t.Players = []PlayerStatsData{}
 	for i := 0; i < len(results); i++ {
-		p := PlayerStatsData{}
-		SQLAccess.Gorm.Where("steam_id = ?", results[i]).First(&p)
-		fmt.Println(p)
-		if err != nil {
-			return players, err
+		if results[i] != "" {
+			p := PlayerStatsData{}
+			SQLAccess.Gorm.Where("steam_id = ?", results[i]).First(&p)
+			fmt.Println(p)
+			if err != nil {
+				return t.Players, err
+			}
+			t.Players = append(t.Players, p)
 		}
-		player := PlayerIDName{
-			ID:   results[i],
-			Name: p.Name,
-		}
-		players = append(players, player)
 	}
-	return players, nil
+	//SQLAccess.Gorm.Where("team_id = ?", t.ID).Find(&t.Players) // N+1 issue
+	return t.Players, nil
 }
 
 /*
@@ -510,13 +504,41 @@ func (m *MatchData) GetTeam2() (TeamData, error) {
 	//return m.UserID
 }*/
 
-/*func (m *MatchData) GetWinner() TeamData {
-	//return m.UserID
-}*/
+func (m *MatchData) GetWinner() (TeamData, error) {
+	var Empty TeamData
+	if m.Team1Score > m.Team2Score {
+		winner, err := m.GetTeam1()
+		if err != nil {
+			return Empty, err
+		}
+		return winner, nil
+	} else if m.Team2Score > m.Team1Score {
+		winner, err := m.GetTeam2()
+		if err != nil {
+			return Empty, err
+		}
+		return winner, nil
+	}
+	return Empty, nil
+}
 
-/*func (m *MatchData) GetLoser() TeamData {
-	//return m.UserID
-}*/
+func (m *MatchData) GetLoser() (TeamData, error) {
+	var Empty TeamData
+	if m.Team1Score > m.Team2Score {
+		loser, err := m.GetTeam2()
+		if err != nil {
+			return Empty, err
+		}
+		return loser, nil
+	} else if m.Team2Score > m.Team1Score {
+		loser, err := m.GetTeam1()
+		if err != nil {
+			return Empty, err
+		}
+		return loser, nil
+	}
+	return Empty, nil
+}
 
 /*func (m *MatchData) BuildMatchDict() TeamData {
 	//return m.UserID //get5 thing??
@@ -537,7 +559,7 @@ type MapStatsData struct {
 	MapNumber  int          `gorm:"column:map_number"`
 	MapName    string       `gorm:"column:map_name"`
 	StartTime  sql.NullTime `gorm:"column:start_time"`
-	EndTIme    sql.NullTime `gorm:"column:end_time"`
+	EndTime    sql.NullTime `gorm:"column:end_time"`
 	Winner     int          `gorm:"column:winner"`
 	Team1Score int          `gorm:"column:team1_score"`
 	Team2Score int          `gorm:"column:team2_score"`
@@ -552,7 +574,7 @@ func (m *MapStatsData) TableName() string {
 }*/
 
 type PlayerStatsData struct {
-	Id                int    `gorm:"primary_key" gorm:"column:id"`
+	Id                int    `gorm:"primary_key;column:id"`
 	Match_id          int    `gorm:"column:match_id"`
 	Map_id            int    `gorm:"column:map_id"`
 	Team_id           int    `gorm:"column:team_id"`
@@ -562,7 +584,7 @@ type PlayerStatsData struct {
 	Deaths            int    `gorm:"column:deaths"`
 	Roundsplayed      int    `gorm:"column:roundsplayed"`
 	Assists           int    `gorm:"column:assists"`
-	Flashbang_assists int    `gorm:"column:map_numbeflashbang_assists"`
+	Flashbang_assists int    `gorm:"column:flashbang_assists"`
 	Teamkills         int    `gorm:"column:teamkills"`
 	Suicides          int    `gorm:"column:suicides"`
 	Headshot_kills    int    `gorm:"column:headshot_kills"`
@@ -622,7 +644,21 @@ func (p *PlayerStatsData) GetHSP() float32 {
 	if p.Deaths == 0 {
 		return float32(p.Kills)
 	}
-	return float32(p.Headshot_kills / p.Kills)
+	return float32(float32(p.Headshot_kills) / float32(p.Kills) * 100)
+}
+
+func (p *PlayerStatsData) GetADR() float32 {
+	if p.Roundsplayed == 0 {
+		return 0.0
+	}
+	return float32(p.Damage) / float32(p.Roundsplayed)
+}
+
+func (p *PlayerStatsData) GetFPR() float32 {
+	if p.Roundsplayed == 0 {
+		return 0.0
+	}
+	return float32(p.Kills) / float32(p.Roundsplayed)
 }
 
 type MatchesPageData struct {
@@ -633,6 +669,12 @@ type MatchesPageData struct {
 	AllMatches bool
 	MyMatches  bool
 	Owner      UserData
+}
+
+type MatchPageData struct {
+	LoggedIn    bool
+	AdminAccess bool
+	Match       MatchData
 }
 
 type TeamsPageData struct {

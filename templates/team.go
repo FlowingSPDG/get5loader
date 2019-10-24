@@ -71,13 +71,13 @@ func RenderTeam(_buffer io.StringWriter, u *db.TeamPageData) {
 		players, _ := u.Team.GetPlayers()
 
 		_buffer.WriteString("\n        ")
-		for i := 0; i < len(u.Team.Auths); i++ {
+		for i := 0; i < len(players); i++ {
 			p := players[i]
 
 			_buffer.WriteString("<a href=\"http://steamcommunity.com/profiles/")
-			_buffer.WriteString(gorazor.HTMLEscape(u.Team.Auths[i]))
+			_buffer.WriteString(gorazor.HTMLEscape(p.Steam_id))
 			_buffer.WriteString("\" class=\"col-sm-offset-0\"> ")
-			_buffer.WriteString(gorazor.HTMLEscape(u.Team.Auths[i]))
+			_buffer.WriteString(gorazor.HTMLEscape(p.Steam_id))
 			_buffer.WriteString(" </a>")
 			_buffer.WriteString(gorazor.HTMLEscape(p.Name))
 
