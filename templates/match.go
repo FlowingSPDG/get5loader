@@ -141,14 +141,21 @@ func RenderMatch(_buffer io.StringWriter, u *db.MatchPageData) {
 		_buffer.WriteString("\n\n    ")
 		for i := 0; i < len(mapstats); i++ {
 
+			mapstat := mapstats[i]
 			mTeam1Score := strconv.Itoa(mapstats[i].Team1Score)
 			mTeam2Score := strconv.Itoa(mapstats[i].Team2Score)
 
-			_buffer.WriteString("<br>\n    <div class=\"panel panel-primary\">\n      <div class=\"panel-heading\">\n        Map ")
-			_buffer.WriteString(gorazor.HTMLEscape(mapstats[i]))
-			_buffer.WriteString(".MapNumber+1: ")
-			_buffer.WriteString(gorazor.HTMLEscape(mapstats[i]))
-			_buffer.WriteString(".MapName,\n        ")
+			_buffer.WriteString("<br>\n    <div class=\"panel panel-primary\">\n      <div class=\"panel-heading\">\n        ")
+
+			mapnumber := mapstat.MapNumber + 1
+
+			_buffer.WriteString("\n        Map ")
+			_buffer.WriteString(gorazor.HTMLEscape(mapnumber))
+			_buffer.WriteString(" ")
+			_buffer.WriteString((":"))
+			_buffer.WriteString(" ")
+			_buffer.WriteString(gorazor.HTMLEscape(mapstat.MapName))
+			_buffer.WriteString(",\n        ")
 			_buffer.WriteString(gorazor.HTMLEscape(team1.Name))
 			_buffer.WriteString(" \n        ")
 
@@ -173,13 +180,13 @@ func RenderMatch(_buffer io.StringWriter, u *db.MatchPageData) {
 			_buffer.WriteString((":"))
 			_buffer.WriteString(gorazor.HTMLEscape(mTeam2Score))
 			_buffer.WriteString("\n      </div>\n\n      <div class=\"panel-body\">\n        <p>Started at ")
-			_buffer.WriteString(gorazor.HTMLEscape(mapstats[i]))
-			_buffer.WriteString(".StartTime</p>\n\n        ")
-			if mapstats[i].EndTime.Valid {
+			_buffer.WriteString(gorazor.HTMLEscape(mapstat.StartTime.Time.Format(timeformat)))
+			_buffer.WriteString("</p>\n\n        ")
+			if mapstat.EndTime.Valid {
 
 				_buffer.WriteString("<p>Ended at ")
-				_buffer.WriteString(gorazor.HTMLEscape(mapstats[i]))
-				_buffer.WriteString(".EndTime</p>")
+				_buffer.WriteString(gorazor.HTMLEscape(mapstat.EndTime.Time.Format(timeformat)))
+				_buffer.WriteString("</p>")
 
 			}
 			_buffer.WriteString("\n\n        <table class=\"table table-hover\">\n          <thead>\n            <tr>\n              <th>Player</th>\n              <th class=\"text-center\">Kills</th>\n              <th class=\"text-center\">Deaths</th>\n              <th class=\"text-center\">Assists</th>\n              <th class=\"text-center\">Flash assists</th>\n              <th class=\"text-center\">1v1</th>\n              <th class=\"text-center\">1v2</th>\n              <th class=\"text-center\">1v3</th>\n              <th class=\"text-center\">Rating</th>\n              <th class=\"text-center\"><acronym title=\"Frags per round\">FPR</acronym></th>\n              <th class=\"text-center\"><acronym title=\"Average damage per round\">ADR</acronym></th>\n              <th class=\"text-center\"><acronym title=\"Headshot percentage\">HSP</acronym></th>\n            </tr>\n          </thead>\n          <tbody>\n          ")

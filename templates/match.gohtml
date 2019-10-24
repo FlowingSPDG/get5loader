@@ -114,13 +114,17 @@
 
     @for i:=0; i < len(mapstats); i++ {
       @{
+        mapstat:=mapstats[i]
         mTeam1Score:=strconv.Itoa(mapstats[i].Team1Score)
         mTeam2Score:=strconv.Itoa(mapstats[i].Team2Score)
       }
     <br>
     <div class="panel panel-primary">
       <div class="panel-heading">
-        Map @mapstats[i].MapNumber+1: @mapstats[i].MapName,
+        @{
+          mapnumber:=mapstat.MapNumber+1
+        }
+        Map @mapnumber @raw(":") @mapstat.MapName,
         @team1.Name 
         @{
           if u.Match.Team1Score < u.Match.Team2Score {
@@ -136,10 +140,10 @@
       </div>
 
       <div class="panel-body">
-        <p>Started at @mapstats[i].StartTime</p>
+        <p>Started at @mapstat.StartTime.Time.Format(timeformat)</p>
 
-        @if mapstats[i].EndTime.Valid{
-          <p>Ended at @mapstats[i].EndTime</p>
+        @if mapstat.EndTime.Valid{
+          <p>Ended at @mapstat.EndTime.Time.Format(timeformat)</p>
         }
 
         <table class="table table-hover">
