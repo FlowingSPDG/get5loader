@@ -34,7 +34,7 @@
         mapstats,_ := u.Match.GetMapStat()
         var timeformat = "2006/01/02 15:04"
       }
-      @team1.GetLogoOrFlagHtml(1.0,team2) <a href="/team/@team1.ID"> @team1.Name</a>
+      @raw(team1.GetLogoOrFlagHtml(1.0,team2)) <a href="/team/@team1.ID"> @team1.Name</a>
       @u.Match.Team1Score
       @{
         if u.Match.Team1Score < u.Match.Team2Score {
@@ -46,7 +46,7 @@
         }
       }
       @u.Match.Team2Score
-      @team2.GetLogoOrFlagHtml(1.0,team1) <a href="/team/@team2.ID"> @team2.Name</a>
+      @raw(team2.GetLogoOrFlagHtml(1.0,team1)) <a href="/team/@team2.ID"> @team2.Name</a>
 
       @if u.AdminAccess && u.Match.Live() || u.Match.Pending(){
         <div class="dropdown dropdown-header pull-right">
@@ -73,25 +73,25 @@
 
 
     <br>
-    @ if u.Match.Cancelled{
+    @{if u.Match.Cancelled{
       <div class="alert alert-danger" role="alert">
       <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
       <span class="sr-only">Error:</span>
         This match has been cancelled.
       </div>
-    }
+    }}
 
-    @ if u.Match.Forfeit{
+    @{if u.Match.Forfeit{
       @{loser,_:=u.Match.GetLoser()}
     <div class="alert alert-warning" role="alert">
       <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
       <span class="sr-only">Error:</span>
         This match was forfeit by @loser .
       </div>
-    }
+    }}
 
 
-    @ if u.Match.StartTime.Valid {
+    @{if u.Match.StartTime.Valid {
       @{
         starttime:=u.Match.StartTime.Time.Format(timeformat)
       }
@@ -102,15 +102,15 @@
         This match is pending start.
       </div>
     </div>
-    }
+    }}
 
 
-    @ if u.Match.EndTime.Valid {
+    @{if u.Match.EndTime.Valid {
       @{
         endtime:=u.Match.EndTime.Time.Format(timeformat)
       }
       <p>Ended at @endtime</p>
-    }
+    }}
 
     @for i:=0; i < len(mapstats); i++ {
       @{

@@ -63,7 +63,7 @@ func RenderMatch(_buffer io.StringWriter, u *db.MatchPageData) {
 		var timeformat = "2006/01/02 15:04"
 
 		_buffer.WriteString("\n      ")
-		_buffer.WriteString(gorazor.HTMLEscape(team1.GetLogoOrFlagHtml(1.0, team2)))
+		_buffer.WriteString((team1.GetLogoOrFlagHtml(1.0, team2)))
 		_buffer.WriteString(" <a href=\"/team/")
 		_buffer.WriteString(gorazor.HTMLEscape(team1.ID))
 		_buffer.WriteString("\"> ")
@@ -89,7 +89,7 @@ func RenderMatch(_buffer io.StringWriter, u *db.MatchPageData) {
 		_buffer.WriteString("\n      ")
 		_buffer.WriteString(gorazor.HTMLEscape(u.Match.Team2Score))
 		_buffer.WriteString("\n      ")
-		_buffer.WriteString(gorazor.HTMLEscape(team2.GetLogoOrFlagHtml(1.0, team1)))
+		_buffer.WriteString((team2.GetLogoOrFlagHtml(1.0, team1)))
 		_buffer.WriteString(" <a href=\"/team/")
 		_buffer.WriteString(gorazor.HTMLEscape(team2.ID))
 		_buffer.WriteString("\"> ")
@@ -100,23 +100,45 @@ func RenderMatch(_buffer io.StringWriter, u *db.MatchPageData) {
 			_buffer.WriteString("<div class=\"dropdown dropdown-header pull-right\">\n        <button class=\"btn btn-default dropdown-toggle\" type=\"button\" id=\"dropdownMenu1\" data-toggle=\"dropdown\" aria-haspopup=\"true\" aria-expanded=\"true\">\n          Admin tools\n          <span class=\"caret\"></span>\n        </button>\n        <ul class=\"dropdown-menu\" aria-labelledby=\"dropdownMenu1\">\n          if u.Match.Live(){\n            <li><a id=\"pause\" href=\"{{request.path}}/pause\">Pause match</a></li>\n            <li><a id=\"unpause\" href=\"{{request.path}}/unpause\">Unpause match</a></li>\n          }\n          <li><a id=\"addplayer_team1\" href=\"#\">Add player to team1</a></li>\n          <li><a id=\"addplayer_team2\" href=\"#\">Add player to team2</a></li>\n          <li><a id=\"addplayer_spec\" href=\"#\">Add player to specator list</a></li>\n          <li><a id=\"rcon_command\" href=\"#\">Send rcon command</a></li>\n          <li role=\"separator\" class=\"divider\"></li>\n          <li><a id=\"backup_manager\" href=\"{{request.path}}/backup\">Load a backup file</a></li>\n          <li><a href=\"{{request.path}}/cancel\">Cancel match</a></li>\n        </ul>\n      </div>")
 
 		}
-		_buffer.WriteString("\n    </h1>\n\n\n    <br>\n     if u.Match.Cancelled{\n      <div class=\"alert alert-danger\" role=\"alert\">\n      <span class=\"glyphicon glyphicon-exclamation-sign\" aria-hidden=\"true\"></span>\n      <span class=\"sr-only\">Error:</span>\n        This match has been cancelled.\n      </div>\n    }\n\n     if u.Match.Forfeit{\n      ")
-		loser, _ := u.Match.GetLoser()
-		_buffer.WriteString("\n    <div class=\"alert alert-warning\" role=\"alert\">\n      <span class=\"glyphicon glyphicon-exclamation-sign\" aria-hidden=\"true\"></span>\n      <span class=\"sr-only\">Error:</span>\n        This match was forfeit by ")
-		_buffer.WriteString(gorazor.HTMLEscape(loser))
-		_buffer.WriteString(" .\n      </div>\n    }\n\n\n     if u.Match.StartTime.Valid {\n      ")
+		_buffer.WriteString("\n    </h1>\n\n\n    <br>\n    ")
+		if u.Match.Cancelled {
 
-		starttime := u.Match.StartTime.Time.Format(timeformat)
+			_buffer.WriteString("<div class=\"alert alert-danger\" role=\"alert\">\n      <span class=\"glyphicon glyphicon-exclamation-sign\" aria-hidden=\"true\"></span>\n      <span class=\"sr-only\">Error:</span>\n        This match has been cancelled.\n      </div>")
 
-		_buffer.WriteString("\n      <p>Started at ")
-		_buffer.WriteString(gorazor.HTMLEscape(starttime))
-		_buffer.WriteString("</p>\n    } else {\n      <div class=\"panel panel-default\" role=\"alert\">\n      <div class=\"panel-body\">\n        This match is pending start.\n      </div>\n    </div>\n    }\n\n\n     if u.Match.EndTime.Valid {\n      ")
+		}
+		_buffer.WriteString("\n\n    ")
+		if u.Match.Forfeit {
+			loser, _ := u.Match.GetLoser()
 
-		endtime := u.Match.EndTime.Time.Format(timeformat)
+			_buffer.WriteString("<div class=\"alert alert-warning\" role=\"alert\">\n      <span class=\"glyphicon glyphicon-exclamation-sign\" aria-hidden=\"true\"></span>\n      <span class=\"sr-only\">Error:</span>\n        This match was forfeit by ")
+			_buffer.WriteString(gorazor.HTMLEscape(loser))
+			_buffer.WriteString(" .\n      </div>")
 
-		_buffer.WriteString("\n      <p>Ended at ")
-		_buffer.WriteString(gorazor.HTMLEscape(endtime))
-		_buffer.WriteString("</p>\n    }\n\n    ")
+		}
+		_buffer.WriteString("\n\n\n    ")
+		if u.Match.StartTime.Valid {
+
+			starttime := u.Match.StartTime.Time.Format(timeformat)
+
+			_buffer.WriteString("<p>Started at ")
+			_buffer.WriteString(gorazor.HTMLEscape(starttime))
+			_buffer.WriteString("</p>")
+
+		} else {
+
+			_buffer.WriteString("<div class=\"panel panel-default\" role=\"alert\">\n      <div class=\"panel-body\">\n        This match is pending start.\n      </div>\n    </div>\n    ")
+		}
+		_buffer.WriteString("\n\n\n    ")
+		if u.Match.EndTime.Valid {
+
+			endtime := u.Match.EndTime.Time.Format(timeformat)
+
+			_buffer.WriteString("<p>Ended at ")
+			_buffer.WriteString(gorazor.HTMLEscape(endtime))
+			_buffer.WriteString("</p>")
+
+		}
+		_buffer.WriteString("\n\n    ")
 		for i := 0; i < len(mapstats); i++ {
 
 			mTeam1Score := strconv.Itoa(mapstats[i].Team1Score)
