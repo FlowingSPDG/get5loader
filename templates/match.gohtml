@@ -192,9 +192,9 @@
                 <td class="text-center"> @player.V2 </td>
                 <td class="text-center"> @player.V3 </td>
 
-                <td class="text-center"> @strconv.Itoa(int(player.GetRating())) </td>
-                <td class="text-center"> {{ player.get_fpr() | round(2) }} </td>
-                <td class="text-center"> {{ player.get_adr() | round(1) }} </td>
+                <td class="text-center"> @strconv.FormatFloat(float64(player.GetRating()),'f',3,32) </td>
+                <td class="text-center"> @strconv.FormatFloat(float64(player.GetFPR()),'f',3,32) </td>
+                <td class="text-center"> @strconv.FormatFloat(float64(player.GetADR()),'f',3,32) </td>
                 <td class="text-center"> @strconv.FormatFloat(float64(player.GetHSP()),'f',3,32)%% </td>
               </tr>
               }
@@ -227,9 +227,9 @@
                 <td class="text-center"> @player.V2 </td>
                 <td class="text-center"> @player.V3 </td>
 
-                <td class="text-center"> @strconv.Itoa(int(player.GetRating())) </td>
-                <td class="text-center"> {{ player.get_fpr() | round(2) }} </td>
-                <td class="text-center"> {{ player.get_adr() | round(1) }} </td>
+                <td class="text-center"> @strconv.FormatFloat(float64(player.GetRating()),'f',3,32) </td>
+                <td class="text-center"> @strconv.FormatFloat(float64(player.GetFPR()),'f',3,32) </td>
+                <td class="text-center"> @strconv.FormatFloat(float64(player.GetADR()),'f',3,32) </td>
                 <td class="text-center"> @strconv.FormatFloat(float64(player.GetHSP()),'f',3,32)%% </td>
               </tr>
               }

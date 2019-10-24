@@ -584,7 +584,7 @@ type PlayerStatsData struct {
 	Deaths            int    `gorm:"column:deaths"`
 	Roundsplayed      int    `gorm:"column:roundsplayed"`
 	Assists           int    `gorm:"column:assists"`
-	Flashbang_assists int    `gorm:"column:map_numbeflashbang_assists"`
+	Flashbang_assists int    `gorm:"column:flashbang_assists"`
 	Teamkills         int    `gorm:"column:teamkills"`
 	Suicides          int    `gorm:"column:suicides"`
 	Headshot_kills    int    `gorm:"column:headshot_kills"`
@@ -645,6 +645,20 @@ func (p *PlayerStatsData) GetHSP() float32 {
 		return float32(p.Kills)
 	}
 	return float32(float32(p.Headshot_kills) / float32(p.Kills) * 100)
+}
+
+func (p *PlayerStatsData) GetADR() float32 {
+	if p.Roundsplayed == 0 {
+		return 0.0
+	}
+	return float32(p.Damage) / float32(p.Roundsplayed)
+}
+
+func (p *PlayerStatsData) GetFPR() float32 {
+	if p.Roundsplayed == 0 {
+		return 0.0
+	}
+	return float32(p.Kills) / float32(p.Roundsplayed)
 }
 
 type MatchesPageData struct {
