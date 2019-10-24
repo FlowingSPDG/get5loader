@@ -1,8 +1,9 @@
-package get5
+package util
 
 import (
 	"encoding/json"
 	"fmt"
+	"os/exec"
 	"strings"
 
 	"github.com/FlowingSPDG/get5-web-go/src/db"
@@ -88,4 +89,13 @@ func CheckServerAvailability(srv db.GameServerData) (bool, string) { // availabl
 	}
 	return true, ""
 
+}
+
+func GetVersion() (string, error) {
+	//root_dir, err := os.Executable()
+	out, err := exec.Command("git", "rev-parse", "--short", "HEAD").Output()
+	if err != nil {
+		return "", nil
+	}
+	return string(out), nil
 }

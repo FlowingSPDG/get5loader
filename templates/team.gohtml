@@ -2,6 +2,7 @@
 	import (
 		"github.com/FlowingSPDG/get5-web-go/templates/layout"
 		"github.com/FlowingSPDG/get5-web-go/src/db"
+    util "github.com/FlowingSPDG/get5-web-go/src/util"
     "strconv"
 	)
 	var u *db.TeamPageData
@@ -74,4 +75,18 @@
   <br>
 
 </div>
+}
+
+@section version{
+  version,err:=util.GetVersion()
+  if err!= nil{
+    version = "N/A"
+  }
+  <div class="panel-footer text-muted">
+      <p>
+        Powered by <a href="http://steampowered.com">Steam</a> -
+        <a href="/metrics">Stats</a>
+         - Version <a href="https://github.com/FlowingSPDG/get5-web-go">@version+</a>
+      </p>
+    </div>
 }

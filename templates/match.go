@@ -6,6 +6,7 @@ package templates
 
 import (
 	db "github.com/FlowingSPDG/get5-web-go/src/db"
+	util "github.com/FlowingSPDG/get5-web-go/src/util"
 	"github.com/FlowingSPDG/get5-web-go/templates/layout"
 	"github.com/sipin/gorazor/gorazor"
 	"io"
@@ -274,5 +275,17 @@ func RenderMatch(_buffer io.StringWriter, u *db.MatchPageData) {
 		_buffer.WriteString("\n    </div>\n  </div>\n\n\n  <br>\n</div>\n\n<script>\n\njQuery(\"#addplayer_team1\").click(function(e) {\n    var input = prompt(\"Please enter a steamid to add to {{team1.name}}\", \"\");\n    if (input != null) {\n      window.location.href = \"{{request.path}}/adduser?team=team1&auth=\" + encodeURIComponent(input);\n    }\n});\n\njQuery(\"#addplayer_team2\").click(function(e) {\n    var input = prompt(\"Please enter a steamid to add to {{team2.name}}\", \"\");\n    if (input != null) {\n      window.location.href = \"{{request.path}}/adduser?team=team2&auth=\" + encodeURIComponent(input);\n    }\n});\n\njQuery(\"#addplayer_spec\").click(function(e) {\n    var input = prompt(\"Please enter a steamid to add to the spectators list\", \"\");\n    if (input != null) {\n      window.location.href = \"{{request.path}}/adduser?team=spec&auth=\" + encodeURIComponent(input);\n    }\n});\n\njQuery(\"#rcon_command\").click(function(e) {\n    var input = prompt(\"Enter a command to send\", \"\");\n    if (input != null) {\n      window.location.href = \"{{request.path}}/rcon?command=\" + encodeURIComponent(input);\n    }\n});\n</script>")
 	}
 
-	layout.RenderBase(_buffer, _body, _menu, _content)
+	_version := func(_buffer io.StringWriter) {
+		version, err := util.GetVersion()
+		if err != nil {
+			version = "N/A"
+		}
+
+		_buffer.WriteString("<div class=\"panel-footer text-muted\">\n      <p>\n        Powered by <a href=\"http://steampowered.com\">Steam</a> -\n        <a href=\"/metrics\">Stats</a>\n         - Version <a href=\"https://github.com/FlowingSPDG/get5-web-go\">")
+		_buffer.WriteString(gorazor.HTMLEscStr(version))
+		_buffer.WriteString("+</a>\n      </p>\n    </div>")
+
+	}
+
+	layout.RenderBase(_buffer, _body, _menu, _content, _version)
 }

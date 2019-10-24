@@ -6,6 +6,7 @@ package templates
 
 import (
 	db "github.com/FlowingSPDG/get5-web-go/src/db"
+	util "github.com/FlowingSPDG/get5-web-go/src/util"
 	"github.com/FlowingSPDG/get5-web-go/templates/layout"
 	"github.com/sipin/gorazor/gorazor"
 	"io"
@@ -71,5 +72,17 @@ func RenderMetrics(_buffer io.StringWriter, u *db.MetricsDataPage) {
 
 	}
 
-	layout.RenderBase(_buffer, _body, _menu, _content)
+	_version := func(_buffer io.StringWriter) {
+		version, err := util.GetVersion()
+		if err != nil {
+			version = "N/A"
+		}
+
+		_buffer.WriteString("<div class=\"panel-footer text-muted\">\n      <p>\n        Powered by <a href=\"http://steampowered.com\">Steam</a> -\n        <a href=\"/metrics\">Stats</a>\n         - Version <a href=\"https://github.com/FlowingSPDG/get5-web-go\">")
+		_buffer.WriteString(gorazor.HTMLEscStr(version))
+		_buffer.WriteString("+</a>\n      </p>\n    </div>")
+
+	}
+
+	layout.RenderBase(_buffer, _body, _menu, _content, _version)
 }
