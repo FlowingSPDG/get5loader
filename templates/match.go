@@ -191,10 +191,12 @@ func RenderMatch(_buffer io.StringWriter, u *db.MatchPageData) {
 			}
 			_buffer.WriteString("\n\n        <table class=\"table table-hover\">\n          <thead>\n            <tr>\n              <th>Player</th>\n              <th class=\"text-center\">Kills</th>\n              <th class=\"text-center\">Deaths</th>\n              <th class=\"text-center\">Assists</th>\n              <th class=\"text-center\">Flash assists</th>\n              <th class=\"text-center\">1v1</th>\n              <th class=\"text-center\">1v2</th>\n              <th class=\"text-center\">1v3</th>\n              <th class=\"text-center\">Rating</th>\n              <th class=\"text-center\"><acronym title=\"Frags per round\">FPR</acronym></th>\n              <th class=\"text-center\"><acronym title=\"Average damage per round\">ADR</acronym></th>\n              <th class=\"text-center\"><acronym title=\"Headshot percentage\">HSP</acronym></th>\n            </tr>\n          </thead>\n          <tbody>\n          ")
 			players1, _ := team1.GetPlayers()
-			_buffer.WriteString("\n            ")
+			_buffer.WriteString("\n          <td> <b>")
+			_buffer.WriteString(gorazor.HTMLEscape(team1.Name))
+			_buffer.WriteString("</b> </td>\n          <td></td>\n          <td></td>\n          <td></td>\n          <td></td>\n          <td></td>\n          <td></td>\n          <td></td>\n          <td></td>\n          <td></td>\n          <td></td>\n          <td></td>\n            ")
 			for i := 0; i < len(players1); i++ {
 				player := players1[i]
-				db.SQLAccess.Gorm.Where("team_id = ? AND match_id = ? AND steam_id = ?", team1.ID, u.Match.ID, player.Steam_id).First(&player)
+				db.SQLAccess.Gorm.Where("match_id = ? AND steam_id = ? AND map_id = ?", u.Match.ID, player.Steam_id, mapstat.MapNumber).First(&player)
 				if player.Roundsplayed > 0 {
 
 					_buffer.WriteString("<tr>\n                <td> <a href=\"")
@@ -225,10 +227,12 @@ func RenderMatch(_buffer io.StringWriter, u *db.MatchPageData) {
 			}
 			_buffer.WriteString("\n          ")
 			players2, _ := team2.GetPlayers()
-			_buffer.WriteString("\n            ")
+			_buffer.WriteString("\n          <td> <b>")
+			_buffer.WriteString(gorazor.HTMLEscape(team2.Name))
+			_buffer.WriteString("</b> </td>\n          <td></td>\n          <td></td>\n          <td></td>\n          <td></td>\n          <td></td>\n          <td></td>\n          <td></td>\n          <td></td>\n          <td></td>\n          <td></td>\n          <td></td>\n            ")
 			for i := 0; i < len(players2); i++ {
 				player := players2[i]
-				db.SQLAccess.Gorm.Where("team_id = ? AND match_id = ? AND steam_id = ?", team2.ID, u.Match.ID, player.Steam_id).First(&player)
+				db.SQLAccess.Gorm.Where("match_id = ? AND steam_id = ? AND map_id = ?", u.Match.ID, player.Steam_id, mapstat.MapNumber).First(&player)
 				if player.Roundsplayed > 0 {
 
 					_buffer.WriteString("<tr>\n                <td> <a href=\"")
