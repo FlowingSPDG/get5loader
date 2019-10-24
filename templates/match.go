@@ -194,7 +194,7 @@ func RenderMatch(_buffer io.StringWriter, u *db.MatchPageData) {
 			_buffer.WriteString("\n            ")
 			for i := 0; i < len(players1); i++ {
 				player := players1[i]
-				db.SQLAccess.Gorm.Where("team_id = ?", team1.ID).Find(&player)
+				db.SQLAccess.Gorm.Where("team_id = ? AND match_id = ? AND steam_id = ?", team1.ID, u.Match.ID, player.Steam_id).First(&player)
 				if player.Roundsplayed > 0 {
 
 					_buffer.WriteString("<tr>\n                <td> <a href=\"")
@@ -228,7 +228,7 @@ func RenderMatch(_buffer io.StringWriter, u *db.MatchPageData) {
 			_buffer.WriteString("\n            ")
 			for i := 0; i < len(players2); i++ {
 				player := players2[i]
-				db.SQLAccess.Gorm.Where("team_id = ?", team2.ID).Find(&player)
+				db.SQLAccess.Gorm.Where("team_id = ? AND match_id = ? AND steam_id = ?", team2.ID, u.Match.ID, player.Steam_id).First(&player)
 				if player.Roundsplayed > 0 {
 
 					_buffer.WriteString("<tr>\n                <td> <a href=\"")

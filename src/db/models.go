@@ -203,6 +203,7 @@ func (t *TeamData) GetPlayers() ([]PlayerStatsData, error) {
 	if err != nil {
 		return t.Players, err
 	}
+	t.Players = []PlayerStatsData{}
 	for i := 0; i < len(results); i++ {
 		p := PlayerStatsData{}
 		SQLAccess.Gorm.Where("steam_id = ?", results[i]).First(&p)
