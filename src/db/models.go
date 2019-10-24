@@ -196,33 +196,24 @@ func (t *TeamData) CanEdit(userid int) bool {
 	return false
 }
 
-type PlayerIDName struct {
-	Name string
-	ID   string
-}
-
-func (t *TeamData) GetPlayers() ([]PlayerIDName, error) {
+func (t *TeamData) GetPlayers() ([]PlayerStatsData, error) {
 	reader := bytes.NewReader(t.AuthsPickle)
 	var results []string
-	var players = []PlayerIDName{}
 	err := stalecucumber.UnpackInto(&results).From(stalecucumber.Unpickle(reader))
 	if err != nil {
-		return players, err
+		return t.Players, err
 	}
 	for i := 0; i < len(results); i++ {
 		p := PlayerStatsData{}
 		SQLAccess.Gorm.Where("steam_id = ?", results[i]).First(&p)
 		fmt.Println(p)
 		if err != nil {
-			return players, err
+			return t.Players, err
 		}
-		player := PlayerIDName{
-			ID:   results[i],
-			Name: p.Name,
-		}
-		players = append(players, player)
+		t.Players = append(t.Players, p)
 	}
-	return players, nil
+	//SQLAccess.Gorm.Where("team_id = ?", t.ID).Find(&t.Players) // N+1 issue
+	return t.Players, nil
 }
 
 /*
@@ -580,7 +571,7 @@ func (m *MapStatsData) TableName() string {
 }*/
 
 type PlayerStatsData struct {
-	Id                int    `gorm:"primary_key" gorm:"column:id"`
+	Id                int    `gorm:"primary_key;column:id"`
 	Match_id          int    `gorm:"column:match_id"`
 	Map_id            int    `gorm:"column:map_id"`
 	Team_id           int    `gorm:"column:team_id"`

@@ -26,7 +26,25 @@ func MatchCreateHandler(w http.ResponseWriter, r *http.Request) {
 func MatchHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r) //パスパラメータ取得
 	fmt.Printf("MatchHandler\nvars : %v", vars)
-	w.WriteHeader(http.StatusOK)
+
+	loggedin := false
+	session, _ := db.SessionStore.Get(r, db.SessionData)
+
+	match, err := db.SQLAccess.MySQLGetMatchData(1, "id", vars["matchID"])
+	if err != nil {
+		panic(err)
+	}
+
+	u := &db.MatchPageData{
+		LoggedIn: loggedin,
+		Match:    match[0],
+	}
+
+	if _, ok := session.Values["Loggedin"]; ok { // FUCK.
+		u.LoggedIn = session.Values["Loggedin"].(bool)
+	}
+
+	fmt.Fprintf(w, templates.Match(u)) // TODO
 }
 
 func MatchConfigHandler(w http.ResponseWriter, r *http.Request) {

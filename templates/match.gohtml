@@ -2,21 +2,15 @@
 	import (
 		"github.com/FlowingSPDG/get5-web-go/templates/layout"
 		db "github.com/FlowingSPDG/get5-web-go/src/db"
-    "strconv
+    "strconv"
 	)
 	var u *db.MatchPageData
 	layout := layout.Base
-
-  team1,_:=u.Match.GetTeam1()
-  team2,_:=u.Match.GetTeam1()
-  team1players,_:=team1.GetPlayers()
-  team2players,_:=team2.GetPlayers()
-
-  mapstats,_ := u.Match.GetMapStat()
 }
 
 @section menu {
-	if u.LoggedIn == true {
+	@{
+    if u.LoggedIn == true {
 		<li><a id="mymatches" href="/mymatches">My Matches</a></li>
         <li><a id="match_create" href="/match/create">Create a Match</a></li>
         <li><a id="myteams" href="/myteams">My Teams</a></li>
@@ -27,52 +21,31 @@
 	} else {
 		<li><a href="/login"><img src="/static/img/login_small.png" height="18"/></a></li>
 	}
+  }
 }
+
 @section content {
-@{ func DrawPlayerStatsData(team TeamData) string {
-  {% for player in map_stats.player_stats.filter_by(team_id=team.id) %}
-  {% if player.roundsplayed > 0 %}
-    <tr>
-      <td> <a href="{{player.get_steam_url()}}"> {{ player.name }} </a></td>
-      <td class="text-center"> {{ player.kills }}  </td>
-      <td class="text-center"> {{ player.deaths }} </td>
-      <td class="text-center"> {{ player.assists }} </td>
-      <td class="text-center"> {{ player.flashbang_assists }} </td>
-
-      <td class="text-center"> {{ player.v1 }} </td>
-      <td class="text-center"> {{ player.v2 }} </td>
-      <td class="text-center"> {{ player.v3 }} </td>
-
-      <td class="text-center"> {{ player.get_rating() | round(2) }} </td>
-      <td class="text-center"> {{ player.get_fpr() | round(2) }} </td>
-      <td class="text-center"> {{ player.get_adr() | round(1) }} </td>
-      <td class="text-center"> {{ player.get_hsp() | round(2) }} </td>
-    </tr>
-  {% endif %}
-  {% endfor %}
-{% endmacro %}
-}}
-}
-
-{% block content %}
-
 <div id="content">
-
   <div class="container">
-
     <h1>
-      @team1.GetLogoOrFlagHtml(1.0,team2) <a href="/team/@team1.ID"> @team1.Name</a>
-      @u.MatchTeam1Score
       @{
-        if match.team1_score < match.team2_score {
-          <
-        } else if match.team1_score == match.team2_score {
-          ==
+        team1,_:=u.Match.GetTeam1()
+        team2,_:=u.Match.GetTeam2()
+        mapstats,_ := u.Match.GetMapStat()
+        var timeformat = "2006/01/02 15:04"
+      }
+      @team1.GetLogoOrFlagHtml(1.0,team2) <a href="/team/@team1.ID"> @team1.Name</a>
+      @u.Match.Team1Score
+      @{
+        if u.Match.Team1Score < u.Match.Team2Score {
+          @raw("<")
+        } else if u.Match.Team1Score == u.Match.Team2Score {
+          @raw("==")
         } else {
-          >
+          @raw(">")
         }
       }
-      @u.MatchTeam2Score
+      @u.Match.Team2Score
       @team2.GetLogoOrFlagHtml(1.0,team1) <a href="/team/@team2.ID"> @team2.Name</a>
 
       @if u.AdminAccess && u.Match.Live() || u.Match.Pending(){
@@ -109,16 +82,19 @@
     }
 
     @ if u.Match.Forfeit{
+      @{loser,_:=u.Match.GetLoser()}
     <div class="alert alert-warning" role="alert">
       <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
       <span class="sr-only">Error:</span>
-        This match was forfeit by @u.Match.GetLoser() .
+        This match was forfeit by @loser .
       </div>
     }
 
 
     @ if u.Match.StartTime.Valid {
-      starttime:=strconv.Itoa(int(u.Match.StartTime.Value))
+      @{
+        starttime:=u.Match.StartTime.Time.Format(timeformat)
+      }
       <p>Started at @starttime</p>
     } else {
       <div class="panel panel-default" role="alert">
@@ -130,30 +106,32 @@
 
 
     @ if u.Match.EndTime.Valid {
-      endtime:=strconv.Itoa(int(u.Match.EndTime.Value))
+      @{
+        endtime:=u.Match.EndTime.Time.Format(timeformat)
+      }
       <p>Ended at @endtime</p>
     }
 
     @for i:=0; i < len(mapstats); i++ {
+      @{
+        mTeam1Score:=strconv.Itoa(mapstats[i].Team1Score)
+        mTeam2Score:=strconv.Itoa(mapstats[i].Team2Score)
+      }
     <br>
     <div class="panel panel-primary">
       <div class="panel-heading">
         Map @mapstats[i].MapNumber+1: @mapstats[i].MapName,
         @team1.Name 
         @{
-          if match.team1_score < match.team2_score {
-            <
-          } else if match.team1_score == match.team2_score {
-            ==
+          if u.Match.Team1Score < u.Match.Team2Score {
+            @raw("<")
+          } else if u.Match.Team1Score == u.Match.Team2Score {
+            @raw("==")
           } else {
-            >
+            @raw(">")
           }
         }
         @team2.Name,
-        @{
-          mTeam1Score:=strconv.Itoa(mapstats[i]Team1Score)
-          mTeam2Score:=strconv.Itoa(mapstats[i]Team2Score)
-        }
         @mTeam1Score@raw(":")@mTeam2Score
       </div>
 
@@ -182,15 +160,57 @@
             </tr>
           </thead>
           <tbody>
-          {{ DrawPlayerStatsData(team1) }}
-          {{ DrawPlayerStatsData(team2) }}
-          </tbody>
+          @{players1,_:=team1.GetPlayers()}
+            @for i:=0; i < len(players1); i++ {
+              player:=players1[i]
+              db.SQLAccess.Gorm.Where("team_id = ?",team1.ID).Find(&player)
+              if player.Roundsplayed > 0 {
+                <tr>
+                <td> <a href="@player.GetSteamURL()"> @player.Name </a></td>
+                <td class="text-center"> @player.Kills  </td>
+                <td class="text-center"> @player.Deaths </td>
+                <td class="text-center"> @player.Assists </td>
+                <td class="text-center"> @player.Flashbang_assists </td>
 
+                <td class="text-center"> @player.V1 </td>
+                <td class="text-center"> @player.V2 </td>
+                <td class="text-center"> @player.V3 </td>
+
+                <td class="text-center"> @strconv.Itoa(int(player.GetRating())) </td>
+                <td class="text-center"> {{ player.get_fpr() | round(2) }} </td>
+                <td class="text-center"> {{ player.get_adr() | round(1) }} </td>
+                <td class="text-center"> @strconv.Itoa(int(player.GetHSP())) </td>
+              </tr>
+              }
+          }
+          @{players2,_:=team2.GetPlayers()}
+            @for i:=0; i < len(players2); i++ {
+              player:=players2[i]
+              db.SQLAccess.Gorm.Where("team_id = ?",team2.ID).Find(&player)
+              if player.Roundsplayed > 0 {
+                <tr>
+                <td> <a href="@player.GetSteamURL()"> @player.Name </a></td>
+                <td class="text-center"> @player.Kills  </td>
+                <td class="text-center"> @player.Deaths </td>
+                <td class="text-center"> @player.Assists </td>
+                <td class="text-center"> @player.Flashbang_assists </td>
+
+                <td class="text-center"> @player.V1 </td>
+                <td class="text-center"> @player.V2 </td>
+                <td class="text-center"> @player.V3 </td>
+
+                <td class="text-center"> @strconv.Itoa(int(player.GetRating())) </td>
+                <td class="text-center"> {{ player.get_fpr() | round(2) }} </td>
+                <td class="text-center"> {{ player.get_adr() | round(1) }} </td>
+                <td class="text-center"> @strconv.Itoa(int(player.GetHSP())) </td>
+              </tr>
+              }
+            }
+          </tbody>
         </table>
       </div>
-
-    </div>
     }
+    </div>
   </div>
 
 
