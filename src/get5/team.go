@@ -76,7 +76,7 @@ func TeamEditHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 }
 
-// TeamDeletehandler HTTP Handler for /team/{teamID}/delete . not implemented yet
+// TeamDeleteHandler HTTP Handler for /team/{teamID}/delete . not implemented yet
 func TeamDeleteHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r) //パスパラメータ取得
 	fmt.Printf("TeamDeleteHandler\nvars : %v", vars)

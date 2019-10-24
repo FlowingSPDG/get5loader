@@ -15,24 +15,28 @@ import (
 	_ "time"
 )
 
+// ServerCreateHandler HTTP Handler for /server/create
 func ServerCreateHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r) //パスパラメータ取得
 	fmt.Printf("ServerCreateHandler\nvars : %v", vars)
 	w.WriteHeader(http.StatusOK)
 }
 
+// ServerEditHandler HTTP Handler for /server/{serverID}/edit
 func ServerEditHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r) //パスパラメータ取得
 	fmt.Printf("ServerEditHandler\nvars : %v", vars)
 	w.WriteHeader(http.StatusOK)
 }
 
+// ServerDeleteHandler HTTP Handler for /server/{serverID}/delete
 func ServerDeleteHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r) //パスパラメータ取得
 	fmt.Printf("ServerDeleteHandler\nvars : %v", vars)
 	w.WriteHeader(http.StatusOK)
 }
 
+// MyServersHandler HTTP Handler for /myservers
 func MyServersHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r) //パスパラメータ取得
 	var servers []db.GameServerData
