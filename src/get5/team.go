@@ -15,6 +15,7 @@ import (
 	_ "time"
 )
 
+// TeamCreateHandler HTTP Handler for /teams/create . not implemented yet
 func TeamCreateHandler(w http.ResponseWriter, r *http.Request) {
 	session, _ := db.SessionStore.Get(r, db.SessionData)
 	m := &db.TeamCreatePageData{
@@ -28,6 +29,7 @@ func TeamCreateHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// TeamHandler HTTP Handler for /team/{teamID}
 func TeamHandler(w http.ResponseWriter, r *http.Request) { // NEED Team player's info and recent matches info
 	vars := mux.Vars(r)
 	teamID := vars["teamID"]
@@ -67,18 +69,21 @@ func TeamHandler(w http.ResponseWriter, r *http.Request) { // NEED Team player's
 	fmt.Fprintf(w, templates.Team(u)) // TODO
 }
 
+// TeamEditHandler HTTP Handler for /team/{teamID}/edit . not implemented yet
 func TeamEditHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r) //パスパラメータ取得
 	fmt.Printf("TeamEditHandler\nvars : %v", vars)
 	w.WriteHeader(http.StatusOK)
 }
 
+// TeamDeletehandler HTTP Handler for /team/{teamID}/delete . not implemented yet
 func TeamDeleteHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r) //パスパラメータ取得
 	fmt.Printf("TeamDeleteHandler\nvars : %v", vars)
 	w.WriteHeader(http.StatusOK)
 }
 
+// TeamsHandler HTTP Handler for /teams/{userID}
 func TeamsHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	userid, err := strconv.Atoi(vars["userID"])
@@ -114,6 +119,7 @@ func TeamsHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, templates.Teams(PageData)) // TODO
 }
 
+// MyTeamsHandler HTTP Handler for /myteams re-direct
 func MyTeamsHandler(w http.ResponseWriter, r *http.Request) {
 	session, _ := db.SessionStore.Get(r, db.SessionData)
 	if _, ok := session.Values["Loggedin"]; ok {

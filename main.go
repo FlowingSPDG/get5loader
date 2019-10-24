@@ -71,7 +71,7 @@ func main() {
 	r.HandleFunc("/match/{matchID}/rcon", get5.MatchRconHandler)       // ?
 	r.HandleFunc("/match/{matchID}/pause", get5.MatchPauseHandler)     // ?
 	r.HandleFunc("/match/{matchID}/unpause", get5.MatchUnpauseHandler) // ?
-	r.HandleFunc("/match/{matchID}/adduser", get5.MatchAdduserHandler) // ?
+	r.HandleFunc("/match/{matchID}/adduser", get5.MatchAddUserHandler) // ?
 	//r.HandleFunc("/match/{matchID}/sendconfig", get5.MatchSendConfigHandler) // ?
 	r.HandleFunc("/match/{matchID}/backup", get5.MatchBackupHandler).Methods("GET") // GET
 

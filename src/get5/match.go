@@ -17,12 +17,14 @@ import (
 	"github.com/FlowingSPDG/get5-web-go/templates"
 )
 
+// MatchCreateHandler HTTP Handler for /match/create . not implemented yet
 func MatchCreateHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r) //パスパラメータ取得
 	fmt.Printf("MatchCreateHandler\nvars : %v", vars)
 	w.WriteHeader(http.StatusOK)
 }
 
+// MatchHandler HTTP Handler for /match/{matchID} page.
 func MatchHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r) //パスパラメータ取得
 	fmt.Printf("MatchHandler\nvars : %v", vars)
@@ -47,37 +49,43 @@ func MatchHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, templates.Match(u)) // TODO
 }
 
+// MatchConfigHandler HTTP Handler for /match/{matchID}/config page.
 func MatchConfigHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r) //パスパラメータ取得
 	fmt.Printf("MatchConfigHandler\nvars : %v", vars)
 	w.WriteHeader(http.StatusOK)
 }
 
+// MatchCancelHandler HTTP Handler for /match/{matchID}/cancel page.
 func MatchCancelHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r) //パスパラメータ取得
 	fmt.Printf("MatchCancelHandler\nvars : %v", vars)
 	w.WriteHeader(http.StatusOK)
 }
 
+// MatchRconHandler HTTP Handler for /match/{matchID}/rcon
 func MatchRconHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r) //パスパラメータ取得
 	fmt.Printf("MatchRconHandler\nvars : %v", vars)
 	w.WriteHeader(http.StatusOK)
 }
 
+// MatchPauseHandler HTTP Handler for /match/{matchID}/pause
 func MatchPauseHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r) //パスパラメータ取得
 	fmt.Printf("MatchPauseHandler\nvars : %v", vars)
 	w.WriteHeader(http.StatusOK)
 }
 
+// MatchUnpauseHandler HTTP Handler for /match/{matchID}/unpause
 func MatchUnpauseHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r) //パスパラメータ取得
 	fmt.Printf("MatchUnpauseHandler\nvars : %v", vars)
 	w.WriteHeader(http.StatusOK)
 }
 
-func MatchAdduserHandler(w http.ResponseWriter, r *http.Request) {
+// MatchAddUserHandler HTTP Handler for /match/{matchID}/adduser
+func MatchAddUserHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r) //パスパラメータ取得
 	fmt.Printf("MatchAdduserHandler\nvars : %v", vars)
 	w.WriteHeader(http.StatusOK)
@@ -91,12 +99,14 @@ func MatchSendConfigHandler(w http.ResponseWriter, r *http.Request) {
 }
 */
 
+// MatchBackupHandler HTTP Handler for /match/{matchID}/backup
 func MatchBackupHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r) //パスパラメータ取得
 	fmt.Printf("MatchBackupHandler\nvars : %v", vars)
 	w.WriteHeader(http.StatusOK)
 }
 
+// MatchesHandler HTTP Handler for /matches/
 func MatchesHandler(w http.ResponseWriter, r *http.Request) {
 	//vars := mux.Vars(r) //パスパラメータ取得
 	fmt.Printf("MatchesHandler\n")
@@ -134,6 +144,7 @@ func MatchesHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, templates.Matches(u)) // TODO
 }
 
+// MatchesWithIDHandler HTTP Handler for /matches/{userID}
 func MatchesWithIDHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r) //パスパラメータ取得
 	fmt.Printf("MatchesWithIDHandler\n")
@@ -185,6 +196,7 @@ func MatchesWithIDHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, templates.Matches(u)) // TODO
 }
 
+// MyMatchesHandler HTTP Handler for /mymatches
 func MyMatchesHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r) //パスパラメータ取得
 	fmt.Printf("MatchesHandler\n")
