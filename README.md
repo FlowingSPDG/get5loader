@@ -16,6 +16,7 @@ Shugo **FlowingSPDG** Kawamura
 
 ## Requirements:
 - Open port 8081 to access web-panel and accept RCON connection
+- MySQL
 
 ## Requirements(Developers):
 - GO v1.13.3
@@ -28,3 +29,18 @@ Shugo **FlowingSPDG** Kawamura
 - You're good to GO! edit each .go files to fix/add something nice!
 - You can test your build by ``go run ./main.go``,and build them by ``go build ./main.go``.You may ged binary files for your OS.  
 - ``gorazor -prefix github.com\FlowingSPDG\get5-web-go ./templates ./templates`` to compile .gotemplate into .go files. this is nessecery when you changed .gohtml file. **DONT EDIT ./template/\*.go directly!!!**
+
+
+## Build(get5-web-go itself doesnt work yet!)
+- ``git clone $GOPATH/src/github.com/FlowingSPDG/get5-web-go``  
+- ``cd $GOPATH/src/github.com/FlowingSPDG/get5-web-go && go get``
+- ``go get -u gorazor``
+- ``gorazor -prefix github.com\FlowingSPDG\get5-web-go ./templates ./templates``
+- ``go build -o get5``
+- You'll get `get5` file(depends on your Operating System).  
+I'm planning to release binary-file for people who feel lazy to build. :P
+
+## Deploy and Launch
+- Edit `config.ini` to your MySQL DB and SteamAPI keys
+- `./get5`
+- Now it's up!
