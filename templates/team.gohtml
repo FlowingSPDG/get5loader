@@ -2,6 +2,7 @@
 	import (
 		"github.com/FlowingSPDG/get5-web-go/templates/layout"
 		"github.com/FlowingSPDG/get5-web-go/src/db"
+    "strconv"
 	)
 	var u *db.TeamPageData
 	layout := layout.Base
@@ -44,7 +45,9 @@
         }
         @for i:=0; i < len(players); i++ {
           p:=players[i]
-          <a href="http://steamcommunity.com/profiles/@p.Auth" class="col-sm-offset-0"> @p.Auth </a>@p.Name
+          steamid,_:=strconv.Atoi(p.Auth)
+          steamname,_:=db.GetSteamName(uint64(steamid))
+          <a href="http://steamcommunity.com/profiles/@p.Auth" class="col-sm-offset-0"> @p.Auth </a>@steamname
           <br>
         }
       </div>

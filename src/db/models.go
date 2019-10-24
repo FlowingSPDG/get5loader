@@ -198,7 +198,7 @@ func (t *TeamData) CanEdit(userid int) bool {
 
 type GetPlayerData struct {
 	Auth string
-	Name string
+	//Name string
 }
 
 func (t *TeamData) GetPlayers() ([]GetPlayerData, error) {
@@ -210,6 +210,9 @@ func (t *TeamData) GetPlayers() ([]GetPlayerData, error) {
 		return results, err
 	}
 	for i := 0; i < len(auths); i++ {
+		results = append(results, GetPlayerData{Auth: auths[i]})
+	}
+	/*for i := 0; i < len(auths); i++ {
 		steamid64, err := strconv.Atoi(auths[i])
 		if err != nil {
 			return results, err
@@ -218,8 +221,9 @@ func (t *TeamData) GetPlayers() ([]GetPlayerData, error) {
 		if err != nil {
 			return results, err
 		}
-		results = append(results, GetPlayerData{Auth: auths[i], Name: playername})
-	}
+		//results = append(results, GetPlayerData{Auth: auths[i], Name: playername})
+		results = append(results, GetPlayerData{Auth: auths[i]})
+	}*/
 
 	return results, nil
 }

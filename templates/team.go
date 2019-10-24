@@ -9,6 +9,7 @@ import (
 	"github.com/FlowingSPDG/get5-web-go/templates/layout"
 	"github.com/sipin/gorazor/gorazor"
 	"io"
+	"strconv"
 	"strings"
 )
 
@@ -73,13 +74,15 @@ func RenderTeam(_buffer io.StringWriter, u *db.TeamPageData) {
 		_buffer.WriteString("\n        ")
 		for i := 0; i < len(players); i++ {
 			p := players[i]
+			steamid, _ := strconv.Atoi(p.Auth)
+			steamname, _ := db.GetSteamName(uint64(steamid))
 
 			_buffer.WriteString("<a href=\"http://steamcommunity.com/profiles/")
 			_buffer.WriteString(gorazor.HTMLEscStr(p.Auth))
 			_buffer.WriteString("\" class=\"col-sm-offset-0\"> ")
 			_buffer.WriteString(gorazor.HTMLEscStr(p.Auth))
 			_buffer.WriteString(" </a>")
-			_buffer.WriteString(gorazor.HTMLEscStr(p.Name))
+			_buffer.WriteString(gorazor.HTMLEscStr(steamname))
 
 			_buffer.WriteString("<br>\n        ")
 		}
