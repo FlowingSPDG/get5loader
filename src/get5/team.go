@@ -15,15 +15,9 @@ import (
 	_ "time"
 )
 
-type TeamCreatePageData struct {
-	LoggedIn bool
-	Edit     bool
-	Content  interface{} // should be template
-}
-
 func TeamCreateHandler(w http.ResponseWriter, r *http.Request) {
 	session, _ := db.SessionStore.Get(r, db.SessionData)
-	m := &TeamCreatePageData{
+	m := &db.TeamCreatePageData{
 		Edit: false,
 		//Content: tpl,
 	}

@@ -804,6 +804,13 @@ type MyserversPageData struct {
 	LoggedIn bool
 }
 
+// TeamCreatePageData Struct for /team/create page.
+type TeamCreatePageData struct {
+	LoggedIn bool
+	Edit     bool
+	Content  interface{} // should be template
+}
+
 // GetSteamName Get steam profile name by steamid64 via Steam web API
 func GetSteamName(steamid uint64) (string, error) {
 	summary, err := steam.GetPlayerSummaries(SteamAPIKey, steam.SteamID64(steamid))
