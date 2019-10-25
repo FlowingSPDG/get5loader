@@ -22,6 +22,14 @@ import (
 
 func init() {
 	c, _ := ini.Load("config.ini")
+	Cnf = Config{
+		HOST:      c.Section("GET5").Key("HOST").MustString("localhost:8080"),
+		SQLHost:   c.Section("sql").Key("host").MustString(""),
+		SQLUser:   c.Section("sql").Key("user").MustString(""),
+		SQLPass:   c.Section("sql").Key("pass").MustString(""),
+		SQLPort:   c.Section("sql").Key("port").MustInt(3306),
+		SQLDBName: c.Section("sql").Key("database").MustString(""),
+	}
 	SteamAPIKey = c.Section("Steam").Key("APIKey").MustString("")
 }
 
@@ -73,6 +81,7 @@ func (u *UserData) GetOrCreate(g *gorm.DB, steamid string) (*UserData, error) {
 
 // GetURL Get user page URL
 func (u *UserData) GetURL() string {
+	fmt.Println(Cnf)
 	return fmt.Sprintf("http://%s/user/%d", Cnf.HOST, u.ID)
 }
 
@@ -380,7 +389,7 @@ func (t *TeamData) GetLogoHTML(scale float32) string {
 
 // GetURL Get URL of team page.
 func (t *TeamData) GetURL() string {
-	return fmt.Sprintf("%s/team/%d", Cnf.HOST, t.ID)
+	return fmt.Sprintf("http://%s/team/%d", Cnf.HOST, t.ID)
 }
 
 // GetNameURLHtml Get team page and name as a-tag. for gorazor template
@@ -511,9 +520,10 @@ func (m *MatchData) Live() bool {
 	return m.StartTime.Valid && !m.EndTime.Valid && !m.Cancelled
 }
 
-// GetServer Get match server ID as int64
-func (m *MatchData) GetServer() int64 { // TODO : return server instance
-	return m.ServerID // TODO
+// GetServer Get match server ID as GameServerData
+func (m *MatchData) GetServer() GameServerData {
+	SQLAccess.Gorm.Where("user_id = ?", m.UserID).First(&m.Server)
+	return m.Server
 }
 
 // GetCurrentScore Returns current match score. returns map-score if match is BO1.
@@ -577,9 +587,10 @@ func (m *MatchData) GetTeam2() (TeamData, error) {
 }
 
 // GetUser Get Match owner as "UserData" struct.
-/*func (m *MatchData) GetUser() UserData {
-	//return m.UserID
-}*/
+func (m *MatchData) GetUser() UserData {
+	SQLAccess.Gorm.Where("id = ?", m.UserID).First(&m.User)
+	return m.User
+}
 
 // GetWinner Get Winner team as "TeamData" struct.
 func (m *MatchData) GetWinner() (TeamData, error) {

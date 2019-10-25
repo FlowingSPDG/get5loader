@@ -39,36 +39,56 @@
         <th>Team 1</th>
         <th>Team 2</th>
         <th>Status</th>
+        @if u.MyMatches == true {
+          <th>Server</th>
+          <th></th>
+        } else {
+          <th>Owner</th>
+        }
       </tr>
     </thead>
     <tbody>
-	@{n:=u.Matches}
-	@for i:=0; i < len(n); i++ {
-    m:=n[i]
-		id:=n[i].ID
-    team1,_:=m.GetTeam1()
-    team2,_:=m.GetTeam2()
-    status,_:=m.GetStatusString(true)
-
-	<tr>
+  	@{n:=u.Matches}
+  	@for i:=0; i < len(n); i++ {
+      m:=n[i]
+  		id:=n[i].ID
+      team1,_:=m.GetTeam1()
+      team2,_:=m.GetTeam2()
+      status,_:=m.GetStatusString(true)
+  	  <tr>
         <td><a href="/match/@id"> @id </a></td>
-
         <td>
           @raw(team1.GetFlagHTML(0.75))
           <a href="/team/@team1.ID">@team1.Name</a>
         </td>
-
         <td>
         @raw(team2.GetFlagHTML(0.75))
           <a href="/team/@team2.ID">@team2.Name</a>
         </td>
-
         <td>
           <p>@status</p>
         </td>
+
+        @if u.MyMatches == true {
+          <td>
+            @{
+              server:=m.GetServer()
+            }
+            if server != nil {
+              @server.GetDisplay()
+            }
+           </td>
+          <td>
+            if m.Pending() or m.Live() {
+              <a href="/match/@m.ID/cancel" class="btn btn-danger btn-xs align-right">Cancel</a>
+            }
+          </td>
+        } else {
+          user:=m.GetUser()
+          <td> <a href="@user.GetURL()"> @user.Name </a> </td>
+        }
       </tr>
     }
-
     </tbody>
   </table>
 

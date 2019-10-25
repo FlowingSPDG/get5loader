@@ -71,9 +71,21 @@ func RenderMatches(_buffer io.StringWriter, u *db.MatchesPageData) {
 			_buffer.WriteString("</a></h1>")
 
 		}
-		_buffer.WriteString("\n\n  <table class=\"table table-striped\">\n    <thead>\n      <tr>\n        <th>Match ID</th>\n        <th>Team 1</th>\n        <th>Team 2</th>\n        <th>Status</th>\n      </tr>\n    </thead>\n    <tbody>\n\t")
+		_buffer.WriteString("\n\n  <table class=\"table table-striped\">\n    <thead>\n      <tr>\n        <th>Match ID</th>\n        <th>Team 1</th>\n        <th>Team 2</th>\n        <th>Status</th>\n        ")
+		if u.MyMatches == true {
+
+			_buffer.WriteString("<th>Server</th>")
+
+			_buffer.WriteString("<th></th>")
+
+		} else {
+
+			_buffer.WriteString("<th>Owner</th>")
+
+		}
+		_buffer.WriteString("\n      </tr>\n    </thead>\n    <tbody>\n  \t")
 		n := u.Matches
-		_buffer.WriteString("\n\t")
+		_buffer.WriteString("\n  \t")
 		for i := 0; i < len(n); i++ {
 			m := n[i]
 			id := n[i].ID
@@ -85,24 +97,49 @@ func RenderMatches(_buffer io.StringWriter, u *db.MatchesPageData) {
 			_buffer.WriteString(gorazor.HTMLEscape(id))
 			_buffer.WriteString("\"> ")
 			_buffer.WriteString(gorazor.HTMLEscape(id))
-			_buffer.WriteString(" </a></td>\n\n        <td>\n          ")
+			_buffer.WriteString(" </a></td>\n        <td>\n          ")
 			_buffer.WriteString((team1.GetFlagHTML(0.75)))
 			_buffer.WriteString("\n          <a href=\"/team/")
 			_buffer.WriteString(gorazor.HTMLEscInt(team1.ID))
 			_buffer.WriteString("\">")
 			_buffer.WriteString(gorazor.HTMLEscStr(team1.Name))
-			_buffer.WriteString("</a>\n        </td>\n\n        <td>\n        ")
+			_buffer.WriteString("</a>\n        </td>\n        <td>\n        ")
 			_buffer.WriteString((team2.GetFlagHTML(0.75)))
 			_buffer.WriteString("\n          <a href=\"/team/")
 			_buffer.WriteString(gorazor.HTMLEscInt(team2.ID))
 			_buffer.WriteString("\">")
 			_buffer.WriteString(gorazor.HTMLEscStr(team2.Name))
-			_buffer.WriteString("</a>\n        </td>\n\n        <td>\n          <p>")
+			_buffer.WriteString("</a>\n        </td>\n        <td>\n          <p>")
 			_buffer.WriteString(gorazor.HTMLEscStr(status))
-			_buffer.WriteString("</p>\n        </td>\n      </tr>")
+			_buffer.WriteString("</p>\n        </td>\n\n        ")
+			if u.MyMatches == true {
+
+				_buffer.WriteString("<td>\n            ")
+
+				server := m.GetServer()
+
+				_buffer.WriteString("\n            if server != nil {\n              ")
+				_buffer.WriteString(gorazor.HTMLEscStr(server.GetDisplay()))
+				_buffer.WriteString("\n            }\n           </td>")
+
+				_buffer.WriteString("<td>\n            if m.Pending() or m.Live() {\n              <a href=\"/match/")
+				_buffer.WriteString(gorazor.HTMLEscape(m.ID))
+				_buffer.WriteString("/cancel\" class=\"btn btn-danger btn-xs align-right\">Cancel</a>\n            }\n          </td>")
+
+			} else {
+				user := m.GetUser()
+
+				_buffer.WriteString("<td> <a href=\"")
+				_buffer.WriteString(gorazor.HTMLEscStr(user.GetURL()))
+				_buffer.WriteString("\"> ")
+				_buffer.WriteString(gorazor.HTMLEscStr(user.Name))
+				_buffer.WriteString(" </a> </td>")
+
+			}
+			_buffer.WriteString("\n      </tr>")
 
 		}
-		_buffer.WriteString("\n\n    </tbody>\n  </table>\n\n</div>")
+		_buffer.WriteString("\n    </tbody>\n  </table>\n\n</div>")
 
 	}
 
