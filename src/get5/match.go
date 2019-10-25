@@ -34,16 +34,24 @@ func MatchHandler(w http.ResponseWriter, r *http.Request) {
 
 	match, err := db.SQLAccess.MySQLGetMatchData(1, "id", vars["matchID"])
 	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
 		panic(err)
 	}
+	var user db.UserData
 
 	u := &db.MatchPageData{
-		LoggedIn: loggedin,
-		Match:    match[0],
+		LoggedIn:    loggedin,
+		Match:       match[0],
+		AdminAccess: false,
 	}
 
 	if _, ok := session.Values["Loggedin"]; ok { // FUCK.
 		u.LoggedIn = session.Values["Loggedin"].(bool)
+		if _, ok := session.Values["UserID"]; ok {
+			db.SQLAccess.Gorm.Where("id = ?", session.Values["UserID"].(int)).First(&user)
+			fmt.Println(user)
+			u.AdminAccess = user.Admin
+		}
 	}
 
 	fmt.Fprintf(w, templates.Match(u)) // TODO
@@ -118,6 +126,7 @@ func MatchesHandler(w http.ResponseWriter, r *http.Request) {
 
 	matches, err := db.SQLAccess.MySQLGetMatchData(20, "", "")
 	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
 		panic(err)
 	}
 
@@ -152,12 +161,14 @@ func MatchesWithIDHandler(w http.ResponseWriter, r *http.Request) {
 	name := ""
 	userid, err := strconv.Atoi(vars["userID"])
 	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
 		panic(err)
 	}
 	session, _ := db.SessionStore.Get(r, db.SessionData)
 
 	user, err := db.SQLAccess.MySQLGetUserData(1, "id", vars["userID"])
 	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
 		panic(err)
 	}
 
@@ -190,6 +201,7 @@ func MatchesWithIDHandler(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Println(matches)
 	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
 		panic(err)
 	}
 
@@ -241,6 +253,7 @@ func MyMatchesHandler(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Println(matches)
 	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
 		panic(err)
 	}
 

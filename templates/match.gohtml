@@ -49,14 +49,14 @@
       @u.Match.Team2Score
       @raw(team2.GetLogoOrFlagHTML(1.0,team1)) <a href="/team/@team2.ID"> @team2.Name</a>
 
-      @if u.AdminAccess && u.Match.Live() || u.Match.Pending(){
+      @if u.AdminAccess == true && (u.Match.Live() || u.Match.Pending()){
         <div class="dropdown dropdown-header pull-right">
         <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
           Admin tools
           <span class="caret"></span>
         </button>
         <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
-          if u.Match.Live(){
+          @if u.Match.Live(){
             <li><a id="pause" href="{{request.path}}/pause">Pause match</a></li>
             <li><a id="unpause" href="{{request.path}}/unpause">Unpause match</a></li>
           }

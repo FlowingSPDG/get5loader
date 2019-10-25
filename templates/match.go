@@ -96,9 +96,17 @@ func RenderMatch(_buffer io.StringWriter, u *db.MatchPageData) {
 		_buffer.WriteString("\"> ")
 		_buffer.WriteString(gorazor.HTMLEscStr(team2.Name))
 		_buffer.WriteString("</a>\n\n      ")
-		if u.AdminAccess && u.Match.Live() || u.Match.Pending() {
+		if u.AdminAccess == true && (u.Match.Live() || u.Match.Pending()) {
 
-			_buffer.WriteString("<div class=\"dropdown dropdown-header pull-right\">\n        <button class=\"btn btn-default dropdown-toggle\" type=\"button\" id=\"dropdownMenu1\" data-toggle=\"dropdown\" aria-haspopup=\"true\" aria-expanded=\"true\">\n          Admin tools\n          <span class=\"caret\"></span>\n        </button>\n        <ul class=\"dropdown-menu\" aria-labelledby=\"dropdownMenu1\">\n          if u.Match.Live(){\n            <li><a id=\"pause\" href=\"{{request.path}}/pause\">Pause match</a></li>\n            <li><a id=\"unpause\" href=\"{{request.path}}/unpause\">Unpause match</a></li>\n          }\n          <li><a id=\"addplayer_team1\" href=\"#\">Add player to team1</a></li>\n          <li><a id=\"addplayer_team2\" href=\"#\">Add player to team2</a></li>\n          <li><a id=\"addplayer_spec\" href=\"#\">Add player to specator list</a></li>\n          <li><a id=\"rcon_command\" href=\"#\">Send rcon command</a></li>\n          <li role=\"separator\" class=\"divider\"></li>\n          <li><a id=\"backup_manager\" href=\"{{request.path}}/backup\">Load a backup file</a></li>\n          <li><a href=\"{{request.path}}/cancel\">Cancel match</a></li>\n        </ul>\n      </div>")
+			_buffer.WriteString("<div class=\"dropdown dropdown-header pull-right\">\n        <button class=\"btn btn-default dropdown-toggle\" type=\"button\" id=\"dropdownMenu1\" data-toggle=\"dropdown\" aria-haspopup=\"true\" aria-expanded=\"true\">\n          Admin tools\n          <span class=\"caret\"></span>\n        </button>\n        <ul class=\"dropdown-menu\" aria-labelledby=\"dropdownMenu1\">\n          ")
+			if u.Match.Live() {
+
+				_buffer.WriteString("<li><a id=\"pause\" href=\"{{request.path}}/pause\">Pause match</a></li>")
+
+				_buffer.WriteString("<li><a id=\"unpause\" href=\"{{request.path}}/unpause\">Unpause match</a></li>")
+
+			}
+			_buffer.WriteString("\n          <li><a id=\"addplayer_team1\" href=\"#\">Add player to team1</a></li>\n          <li><a id=\"addplayer_team2\" href=\"#\">Add player to team2</a></li>\n          <li><a id=\"addplayer_spec\" href=\"#\">Add player to specator list</a></li>\n          <li><a id=\"rcon_command\" href=\"#\">Send rcon command</a></li>\n          <li role=\"separator\" class=\"divider\"></li>\n          <li><a id=\"backup_manager\" href=\"{{request.path}}/backup\">Load a backup file</a></li>\n          <li><a href=\"{{request.path}}/cancel\">Cancel match</a></li>\n        </ul>\n      </div>")
 
 		}
 		_buffer.WriteString("\n    </h1>\n\n\n    <br>\n    ")
