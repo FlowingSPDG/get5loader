@@ -366,7 +366,7 @@ func (t *TeamData) GetVSMatchResult(matchid int) (string, error) {
 }
 
 // GetFlagHTML Get team's flag as a HTML string. for gorazor template
-func (t *TeamData) GetFlagHTML(scale float32) string {
+func (t *TeamData) GetFlagHTML(scale float64) string {
 	if t.Flag == "" {
 		return ""
 	}
@@ -377,7 +377,7 @@ func (t *TeamData) GetFlagHTML(scale float32) string {
 }
 
 // GetLogoHTML Get team's Logo as a HTML string. for gorazor template
-func (t *TeamData) GetLogoHTML(scale float32) string {
+func (t *TeamData) GetLogoHTML(scale float64) string {
 	if t.Logo == "" {
 		return ""
 	}
@@ -398,7 +398,7 @@ func (t *TeamData) GetNameURLHtml() string {
 }
 
 // GetLogoOrFlagHTML Get team logo or flag as a HTML.
-func (t *TeamData) GetLogoOrFlagHTML(scale float32, otherteam TeamData) string {
+func (t *TeamData) GetLogoOrFlagHTML(scale float64, otherteam TeamData) string {
 	if t.Logo == "" && otherteam.Logo != "" { // or otherteam is empty...
 		return t.GetLogoHTML(scale)
 	}
@@ -725,48 +725,48 @@ func (p *PlayerStatsData) GetSteamURL() string {
 }
 
 // GetRating Get player's rating. Average datas are static tho.
-func (p *PlayerStatsData) GetRating() float32 { // Rating value can be more accurate??
-	var AverageKPR float32 = 0.679
-	var AverageSPR float32 = 0.317
-	var AverageRMK float32 = 1.277
-	var KillRating float32 = float32(p.Kills) / float32(p.Roundsplayed) / AverageKPR
-	var SurvivalRating float32 = float32(p.Roundsplayed-p.Deaths) / float32(p.Roundsplayed) / float32(AverageSPR)
-	var killcount float32 = float32(p.K1 + 4*p.K2 + 9*p.K3 + 16*p.K4 + 25*p.K5)
-	var RoundsWithMultipleKillsRating float32 = killcount / float32(p.Roundsplayed) / float32(AverageRMK)
-	var rating float32 = (KillRating + 0.7*SurvivalRating + RoundsWithMultipleKillsRating) / 2.7
+func (p *PlayerStatsData) GetRating() float64 { // Rating value can be more accurate??
+	var AverageKPR float64 = 0.679
+	var AverageSPR float64 = 0.317
+	var AverageRMK float64 = 1.277
+	var KillRating float64 = float64(p.Kills) / float64(p.Roundsplayed) / AverageKPR
+	var SurvivalRating float64 = float64(p.Roundsplayed-p.Deaths) / float64(p.Roundsplayed) / float64(AverageSPR)
+	var killcount float64 = float64(p.K1 + 4*p.K2 + 9*p.K3 + 16*p.K4 + 25*p.K5)
+	var RoundsWithMultipleKillsRating float64 = killcount / float64(p.Roundsplayed) / float64(AverageRMK)
+	var rating float64 = (KillRating + 0.7*SurvivalRating + RoundsWithMultipleKillsRating) / 2.7
 	return rating
 }
 
 // GetKDR Returns player's KDR(Kill/Deaths Ratio).
-func (p *PlayerStatsData) GetKDR() float32 {
+func (p *PlayerStatsData) GetKDR() float64 {
 	if p.Deaths == 0 {
-		return float32(p.Kills)
+		return float64(p.Kills)
 	}
-	return float32(p.Kills) / float32(p.Deaths)
+	return float64(p.Kills) / float64(p.Deaths)
 }
 
 // GetHSP Returns player's HSP(HeadShot Percentage).
-func (p *PlayerStatsData) GetHSP() float32 {
+func (p *PlayerStatsData) GetHSP() float64 {
 	if p.Deaths == 0 {
-		return float32(p.Kills)
+		return float64(p.Kills)
 	}
-	return float32(float32(p.HeadshotKills) / float32(p.Kills) * 100)
+	return float64(p.HeadshotKills) / float64(p.Kills) * 100
 }
 
 // GetADR Returns player's ADR(Average Damage per Round).
-func (p *PlayerStatsData) GetADR() float32 {
+func (p *PlayerStatsData) GetADR() float64 {
 	if p.Roundsplayed == 0 {
 		return 0.0
 	}
-	return float32(p.Damage) / float32(p.Roundsplayed)
+	return float64(p.Damage) / float64(p.Roundsplayed)
 }
 
 // GetFPR Returns player's FPR(Frags Per Round).
-func (p *PlayerStatsData) GetFPR() float32 {
+func (p *PlayerStatsData) GetFPR() float64 {
 	if p.Roundsplayed == 0 {
 		return 0.0
 	}
-	return float32(p.Kills) / float32(p.Roundsplayed)
+	return float64(p.Kills) / float64(p.Roundsplayed)
 }
 
 // MatchesPageData Struct for /matches/ page.
