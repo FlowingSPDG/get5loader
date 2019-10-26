@@ -197,6 +197,7 @@ func (t *TeamData) Create(userid int, name string, tag string, flag string, logo
 	t.Logo = logo
 	t.AuthsPickle = auths // should convert into pickle. TODO
 	t.PublicTeam = publicteam
+	// should register into DB. TODO
 	return t
 }
 
@@ -211,7 +212,7 @@ func (t *TeamData) SetData(name string, tag string, flag string, logo string, au
 	return t
 }
 
-// CanEdit Check if server is editable or not.
+// CanEdit Check if server is editable for user or not.
 func (t *TeamData) CanEdit(userid int) bool {
 	if userid == 0 {
 		return false
@@ -219,6 +220,14 @@ func (t *TeamData) CanEdit(userid int) bool {
 		return true
 	}
 	return false
+}
+
+// CanDelete Check if server is deletable for user or not.
+func (t *TeamData) CanDelete(userid int) bool {
+	if t.CanEdit(userid) == false {
+		return false
+	}
+	return len(t.GetRecentMatches(10)) == 0
 }
 
 // GetPlayerData Struct for GetPlayers() function.
@@ -280,15 +289,6 @@ func (t *TeamData) GetPlayers() ([]PlayerStatsData, error) {
 		}
 	//SQLAccess.Gorm.Where("team_id = ?", t.ID).Find(&t.Players) // N+1 issue
 	return t.Players, nil
-}
-*/
-
-/*
-func (t *TeamData) CanDelete(userid int) bool {
-	if t.CanEdit(userid) == false {
-		return false
-	}
-	return len(t.GetRecentMatches()) == 0
 }
 */
 
@@ -769,59 +769,6 @@ func (p *PlayerStatsData) GetFPR() float64 {
 	return float64(p.Kills) / float64(p.Roundsplayed)
 }
 
-// MatchesPageData Struct for /matches/ page.
-type MatchesPageData struct {
-	LoggedIn   bool
-	UserName   string
-	UserID     int
-	Matches    []MatchData
-	AllMatches bool
-	MyMatches  bool
-	Owner      UserData
-}
-
-// MatchPageData Struct for /match/{matchID} page.
-type MatchPageData struct {
-	LoggedIn    bool
-	AdminAccess bool
-	Match       MatchData
-}
-
-// TeamsPageData Struct for /teams/{userID} page.
-type TeamsPageData struct {
-	LoggedIn   bool
-	User       UserData
-	IsYourTeam bool
-	Teams      []TeamData
-}
-
-// TeamPageData Struct for /team/{teamID} page.
-type TeamPageData struct {
-	LoggedIn   bool
-	IsYourTeam bool
-	User       UserData
-	Team       TeamData
-}
-
-// UserPageData Struct for /user/{userID} page.
-type UserPageData struct {
-	LoggedIn bool
-	User     UserData
-}
-
-// MyserversPageData Struct for /myservers page.
-type MyserversPageData struct {
-	Servers  []GameServerData
-	LoggedIn bool
-}
-
-// TeamCreatePageData Struct for /team/create page.
-type TeamCreatePageData struct {
-	LoggedIn bool
-	Edit     bool
-	Content  interface{} // should be template
-}
-
 // GetSteamName Get steam profile name by steamid64 via Steam web API
 func GetSteamName(steamid uint64) (string, error) {
 	summary, err := steam.GetPlayerSummaries(SteamAPIKey, steam.SteamID64(steamid))
@@ -829,12 +776,6 @@ func GetSteamName(steamid uint64) (string, error) {
 		return "", err
 	}
 	return summary.DisplayName, nil
-}
-
-// MetricsDataPage Struct for /metrics page.
-type MetricsDataPage struct {
-	LoggedIn bool
-	Data     MetricsData
 }
 
 // MetricsData Struct metrics analysys.
