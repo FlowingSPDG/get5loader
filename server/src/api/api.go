@@ -49,6 +49,36 @@ func GetMatchInfo(w http.ResponseWriter, r *http.Request) {
 	w.Write(jsonbyte)
 }
 
+func GetUserInfo(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	fmt.Printf("GetUserInfo\n")
+	userid := vars["userID"]
+	response := db.UserData{}
+	db.SQLAccess.Gorm.Where("id = ?", userid).First(&response)
+	jsonbyte, err := json.Marshal(response)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+	}
+	fmt.Println(string(jsonbyte))
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(jsonbyte)
+}
+
+func GetServerInfo(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	fmt.Printf("GetUserInfo\n")
+	serverID := vars["serverID"]
+	response := db.GameServerData{}
+	db.SQLAccess.Gorm.Where("id = ?", serverID).First(&response)
+	jsonbyte, err := json.Marshal(response)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+	}
+	fmt.Println(string(jsonbyte))
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(jsonbyte)
+}
+
 func GetStatusString(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	fmt.Printf("GetStatusString\n")

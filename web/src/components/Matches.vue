@@ -70,6 +70,8 @@ export default {
         name:"hoge"
       },
       teamdatas:{},
+      userdatas:{},
+      serverdatas:{},
       matchstatusstrings:{}
     }
   },
@@ -99,6 +101,24 @@ export default {
       return new Promise((resolve, reject) => {
         axios.get(`/api/v1/team/${teamid}/GetTeamInfo`).then((res) => {
           this.$set(this.teamdatas,teamid,res.data)
+          console.log(res.data)
+          resolve(res.data)
+        })
+      })
+    },
+    GetUserData: function(userid){
+      return new Promise((resolve, reject) => {
+        axios.get(`/api/v1/user/${userid}/GetUserInfo`).then((res) => {
+          this.$set(this.userdatas,userid,res.data)
+          console.log(res.data)
+          resolve(res.data)
+        })
+      })
+    },
+    GetServerData: function(serverid){
+      return new Promise((resolve, reject) => {
+        axios.get(`/api/v1/server/${serverid}/GetServerInfo`).then((res) => {
+          this.$set(this.serverdatas,serverid,res.data)
           console.log(res.data)
           resolve(res.data)
         })
