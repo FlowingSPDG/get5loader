@@ -13,15 +13,15 @@
                 </div>
                 <div class="collapse navbar-collapse" id="myNavbar">
                     <ul class="nav navbar-nav">
-                        <li><router-link id="matches" to="/matches" v-if="user">All Matches</router-link></li>
-                        <li><a id="mymatches" href="/mymatches" v-if="user">My Matches</a></li>
-                        <li><a id="match_create" href="/match/create" v-if="user">Create a Match</a></li>
-                        <li><a id="myteams" href="/myteams" v-if="user">My Teams</a></li>
-                        <li><a id="team_create" href="/team/create" v-if="user">Create a Team</a></li>
-                        <li><a id="myservers" href="/myservers" v-if="user">My Servers</a></li>
-                        <li><a id="server_create" href="/server/create" v-if="user">Add a Server</a></li>
+                        <li><router-link id="matches" to="/matches" v-if="user.isLoggedIn">All Matches</router-link></li>
+                        <li><a id="mymatches" href="/mymatches" v-if="user.isLoggedIn">My Matches</a></li>
+                        <li><a id="match_create" href="/match/create" v-if="user.isLoggedIn">Create a Match</a></li>
+                        <li><a id="myteams" href="/myteams" v-if="user.isLoggedIn">My Teams</a></li>
+                        <li><a id="team_create" href="/team/create" v-if="user.isLoggedIn">Create a Team</a></li>
+                        <li><a id="myservers" href="/myservers" v-if="user.isLoggedIn">My Servers</a></li>
+                        <li><a id="server_create" href="/server/create" v-if="user.isLoggedIn">Add a Server</a></li>
                         <li><a href="/logout" v-if="user">Logout</a></li>
-                        <li><a href="/login" v-if="!user"> <img src="/static/img/login_small.png" height="18" /></a></li>
+                        <li><a href="/login" v-if="!user.isLoggedIn"> <img src="/static/img/login_small.png" height="18" /></a></li>
                     </ul>
                 </div>
             </div>
@@ -44,7 +44,11 @@ export default {
     name: 'App',
     data() {
         return {
-            user: false, // should be object from JSON response
+            user: {
+                isLoggedIn:false,
+                steamid:undefined,
+                userid:undefined
+            }, // should be object from JSON response
             COMMIT_STRING: "COMMIT NUMBER HERE"
         }
     },
@@ -52,7 +56,8 @@ export default {
         axios
             .get('/api/v1/CheckLoggedIn')
             .then((res) => {
-                this.user = res.data.isLoggedIn
+                console.log(res.data)
+                this.user = res.data
             })
   }
 }

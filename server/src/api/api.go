@@ -10,7 +10,9 @@ import (
 )
 
 type CheckLoggedInJSON struct {
-	IsLoggedIn bool `json:"isLoggedIn"`
+	IsLoggedIn bool   `json:"isLoggedIn"`
+	SteamID    string `json:"steamid"`
+	UserID     int    `json:"userid"`
 }
 
 func CheckLoggedIn(w http.ResponseWriter, r *http.Request) {
@@ -21,6 +23,8 @@ func CheckLoggedIn(w http.ResponseWriter, r *http.Request) {
 	session, _ := db.SessionStore.Get(r, db.SessionData)
 	if _, ok := session.Values["Loggedin"]; ok {
 		response.IsLoggedIn = session.Values["Loggedin"].(bool)
+		response.SteamID = session.Values["SteamID"].(string)
+		response.UserID = session.Values["UserID"].(int)
 	}
 	jsonbyte, err := json.Marshal(response)
 	if err != nil {

@@ -118,6 +118,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		session.Values["Loggedin"] = true
 		session.Values["UserID"] = user.ID // should be get5 id
 		session.Values["Name"] = user.Name
+		session.Values["SteamID"] = steamid
 		// Save it before we write to the response/return from the handler.
 		err = session.Save(r, w)
 		if err != nil {
