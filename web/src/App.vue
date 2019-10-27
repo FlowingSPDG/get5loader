@@ -39,14 +39,23 @@
 </template>
 
 <script>
+import axios from 'axios'
 export default {
     name: 'App',
     data() {
         return {
-            user: false,
+            user: false, // should be object from JSON response
             COMMIT_STRING: "COMMIT NUMBER HERE"
         }
     },
+    mounted () {
+    this.url = window.location.origin
+    axios
+      .get('/api/v1/CheckLoggedIn')
+      .then((res) => {
+          this.user = res.data.isLoggedIn
+      })
+  }
 }
 </script>
 

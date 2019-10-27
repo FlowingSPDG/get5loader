@@ -13,21 +13,16 @@
 </template>
 
 <script>
-import axios from 'axios'
 export default {
   name: 'matches',
   data () {
     return {
       msg: 'Matches page',
-      url: '',
       info: ''
     }
   },
   mounted () {
-    this.url = window.location.origin
-    axios
-      .get('/api/v1/CheckLoggedIn')
-      .then(response => (this.info = response.data))
+    
   }
 }
 </script>
