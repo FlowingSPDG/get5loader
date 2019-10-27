@@ -49,12 +49,11 @@ export default {
         }
     },
     mounted () {
-    this.url = window.location.origin
-    axios
-      .get('/api/v1/CheckLoggedIn')
-      .then((res) => {
-          this.user = res.data.isLoggedIn
-      })
+        axios
+            .get('/api/v1/CheckLoggedIn')
+            .then((res) => {
+                this.user = res.data.isLoggedIn
+            })
   }
 }
 </script>

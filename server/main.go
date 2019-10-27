@@ -63,6 +63,9 @@ func main() {
 	//s := r.Host(HOST).Subrouter()
 
 	r.HandleFunc("/api/v1/CheckLoggedIn", api.CheckLoggedIn).Methods("GET")
+	r.HandleFunc("/api/v1/match/{matchID}/GetMatchInfo", api.GetMatchInfo).Methods("GET")
+	r.HandleFunc("/api/v1/GetMatches", api.GetMatches).Methods("GET")
+	r.HandleFunc("/api/v1/team/{teamID}/GetTeamInfo", api.GetTeamInfo).Methods("GET")
 
 	r.HandleFunc("/", db.HomeHandler).Methods("GET")
 	r.HandleFunc("/login", db.LoginHandler).Methods("GET")
