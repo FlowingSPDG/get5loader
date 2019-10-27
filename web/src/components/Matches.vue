@@ -32,7 +32,7 @@
         </td>
 
         <td>
-          {{ GetMatchStatusString(match.id) }}
+          {{ matchstatusstrings[match.id] }}
         </td>
 
         {% if my_matches %}
@@ -75,9 +75,11 @@ export default {
   },
   created () {
     this.GetMatches().then((res) => {
-      for(let i=0;i<this.matches.length;i++){
-        this.GetTeamData(this.matches[i].team1_id)
-        this.GetTeamData(this.matches[i].team2_id)
+      console.log(res)
+      for(let i=0;i<res.length;i++){
+        this.GetTeamData(res[i].team1_id)
+        this.GetTeamData(res[i].team2_id)
+        this.GetMatchStatusString(res[i].id)
       }
     })
   },
@@ -85,11 +87,10 @@ export default {
     GetMatches: function(){
       return new Promise((resolve, reject) => {
         axios.get('/api/v1/GetMatches').then(res => {
-          //this.matches = res.data
-          for(let i=0;i<res.data.length;i++){
+          this.matches = res.data
+          /*for(let i=0;i<res.data.length;i++){
             this.$set(this.matches, i, res.data[i])
-          }
-          console.log(res.data)
+          }*/
           resolve(res.data)
         })
       })
@@ -104,12 +105,10 @@ export default {
       })
     },
     GetMatchStatusString: function(matchid){
-      return new Promise((resolve, reject) => {
-        axios.get(`/api/v1/match/${matchid}/GetStatusString`).then((res) => {
-          this.$set(this.matchstatusstrings,matchid,res.data)
-          console.log(res.data)
-          resolve(res.data)
-        })
+      axios.get(`/api/v1/match/${matchid}/GetStatusString`).then((res) => {
+        this.$set(this.matchstatusstrings,matchid,res.data)
+        console.log(res.data)
+        return(res.data)
       })
     }
   }
