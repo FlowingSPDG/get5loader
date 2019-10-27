@@ -2,7 +2,7 @@ get5-web-go
 ===========================
 **Status: Work-In-Progress!!!**
 
-This is recreation of [get5 web panel](https://github.com/splewis/get5-web) with GOLANG.  
+This is recreation of [get5 web panel](https://github.com/splewis/get5-web) with GOLANG / VueJS.  
 Still Work-In-Progress project. PRs are welcome!
 
 ## Author:
