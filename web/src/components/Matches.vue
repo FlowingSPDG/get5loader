@@ -21,14 +21,14 @@
       <tr v-for="(match, index) in matches" :key="index">
         <td><a :href="'/match/'+match.id">{{match.id}}</a></td>
 
-        <td>
-          {{GetTeamData(match.team1_id)}}
-          <a :href="'/team/'+match.team1_id">{{GetTeamData(match.team1_id)}}</a>
+        <td v-if="teamdatas[match.team1_id]">
+          {{teamdatas[match.team1_id].flag}}
+          <a :href="'/team/'+match.team1_id">{{teamdatas[match.team1_id].name}}</a>
         </td>
 
-        <td>
-          {{GetTeamData(match.team2_id)}}
-          <a :href="'/team/'+match.team2_id">{{GetTeamData(match.team2_id)}}</a>
+        <td v-if="teamdatas[match.team2_id]">
+          {{teamdatas[match.team2_id].flag}}
+          <a :href="'/team/'+match.team2_id">{{teamdatas[match.team2_id].name}}</a>
         </td>
 
         <td>
@@ -36,14 +36,14 @@
         </td>
 
         {% if my_matches %}
-        <td>{% if match.get_server() is not none   %} {{ match.get_server().get_display() }} {% endif %}</td>
+        <!--<td>{% if match.get_server() is not none   %} {{ match.get_server().get_display() }} {% endif %}</td>-->
         <td>
           {% if match.pending() or match.live() %}
           <a :href="'/match/'+match.id+'cancel'" class="btn btn-danger btn-xs align-right">Cancel</a>
           {% endif %}
         </td>
         {% else %}
-        <td> <a :href="match.get_user().get_url()"> {{ match.get_user().name }} </a> </td>
+        <!--<td> <a :href="match.get_user().get_url()"> {{ match.get_user().name }} </a> </td>-->
         {% endif %}
 
       </tr>
@@ -68,26 +68,48 @@ export default {
       match_owner:{
         id:1,
         name:"hoge"
-      }
+      },
+      teamdatas:{},
+      matchstatusstrings:{}
     }
   },
-  mounted () {
-    axios.get('/api/v1/GetMatches').then((res) => {
-      this.matches = res.data
-      console.log(res.data)
+  created () {
+    this.GetMatches().then((res) => {
+      for(let i=0;i<this.matches.length;i++){
+        this.GetTeamData(this.matches[i].team1_id)
+        this.GetTeamData(this.matches[i].team2_id)
+      }
     })
   },
   methods: {
+    GetMatches: function(){
+      return new Promise((resolve, reject) => {
+        axios.get('/api/v1/GetMatches').then(res => {
+          //this.matches = res.data
+          for(let i=0;i<res.data.length;i++){
+            this.$set(this.matches, i, res.data[i])
+          }
+          console.log(res.data)
+          resolve(res.data)
+        })
+      })
+    },
     GetTeamData: function(teamid){
-      axios.get(`/api/v1/team/${teamid}/GetTeamInfo`).then((res) => {
-        console.log(res.data)
-        return res.data
+      return new Promise((resolve, reject) => {
+        axios.get(`/api/v1/team/${teamid}/GetTeamInfo`).then((res) => {
+          this.$set(this.teamdatas,teamid,res.data)
+          console.log(res.data)
+          resolve(res.data)
+        })
       })
     },
     GetMatchStatusString: function(matchid){
-      axios.get(`/api/v1/match/${matchid}/GetStatusString`).then((res) => {
-        console.log(res.data)
-        return res.data
+      return new Promise((resolve, reject) => {
+        axios.get(`/api/v1/match/${matchid}/GetStatusString`).then((res) => {
+          this.$set(this.matchstatusstrings,matchid,res.data)
+          console.log(res.data)
+          resolve(res.data)
+        })
       })
     }
   }
