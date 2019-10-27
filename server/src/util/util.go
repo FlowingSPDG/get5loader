@@ -6,7 +6,7 @@ import (
 	"os/exec"
 	"strings"
 
-	"github.com/FlowingSPDG/get5-web-go/src/db"
+	"github.com/FlowingSPDG/get5-web-go/server/src/db"
 
 	_ "github.com/gorilla/mux"
 	_ "github.com/gorilla/sessions"

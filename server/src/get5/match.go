@@ -13,8 +13,8 @@ import (
 	_ "strconv"
 	_ "time"
 
-	"github.com/FlowingSPDG/get5-web-go/src/db"
-	"github.com/FlowingSPDG/get5-web-go/templates"
+	"github.com/FlowingSPDG/get5-web-go/server/src/db"
+	"github.com/FlowingSPDG/get5-web-go/server/templates"
 )
 
 // MatchCreateHandler HTTP Handler for /match/create . not implemented yet
@@ -53,7 +53,6 @@ func MatchHandler(w http.ResponseWriter, r *http.Request) {
 			u.AdminAccess = user.Admin
 		}
 	}
-
 	fmt.Fprintf(w, templates.Match(u)) // TODO
 }
 

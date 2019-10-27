@@ -12,8 +12,8 @@ import (
 	_ "strconv"
 	_ "time"
 
-	"github.com/FlowingSPDG/get5-web-go/src/db"
-	"github.com/FlowingSPDG/get5-web-go/templates"
+	"github.com/FlowingSPDG/get5-web-go/server/src/db"
+	"github.com/FlowingSPDG/get5-web-go/server/templates"
 )
 
 // MatchFinishHandler HTTP Handler for manage match finish. not implemented yet

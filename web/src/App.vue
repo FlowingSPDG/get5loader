@@ -13,7 +13,7 @@
                 </div>
                 <div class="collapse navbar-collapse" id="myNavbar">
                     <ul class="nav navbar-nav">
-                        <li><a id="matches" href="/matches" v-if="user">All Matches</a></li>
+                        <li><router-link id="matches" to="/matches" v-if="user">All Matches</router-link></li>
                         <li><a id="mymatches" href="/mymatches" v-if="user">My Matches</a></li>
                         <li><a id="match_create" href="/match/create" v-if="user">Create a Match</a></li>
                         <li><a id="myteams" href="/myteams" v-if="user">My Teams</a></li>
@@ -29,11 +29,11 @@
     </div>
     <router-view />
     <div class="panel-footer text-muted">
-        <p>
+        <div>
             Powered by <a href="http://steampowered.com">Steam</a> -
             <a href="/metrics">Stats</a>
             <div v-if="COMMIT_STRING">- Version <a href="https://github.com/FlowingSPDG/get5-web-go">{{ COMMIT_STRING }}+</a></div>
-        </p>
+        </div>
     </div>
 </div>
 </template>
@@ -43,7 +43,7 @@ export default {
     name: 'App',
     data() {
         return {
-            user: true,
+            user: false,
             COMMIT_STRING: "COMMIT NUMBER HERE"
         }
     },

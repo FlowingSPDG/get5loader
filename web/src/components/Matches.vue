@@ -1,7 +1,8 @@
 <template>
   <div class="matches">
-    <h1>{{ msg }}</h1>
-    <h2>Essential Links</h2>
+    <h1>Matches Page</h1>
+    <p>{{ msg }}</p>
+    <p>{{ info }}</p>
     <ul>
       <li>
         <router-link to="/">/</router-link>
@@ -12,12 +13,21 @@
 </template>
 
 <script>
+import axios from 'axios'
 export default {
   name: 'matches',
   data () {
     return {
-      msg: 'Matches page'
+      msg: 'Matches page',
+      url: '',
+      info: ''
     }
+  },
+  mounted () {
+    this.url = window.location.origin
+    axios
+      .get('/api/v1/CheckLoggedIn')
+      .then(response => (this.info = response.data))
   }
 }
 </script>

@@ -3,8 +3,8 @@ package get5
 import (
 	"fmt"
 
-	"github.com/FlowingSPDG/get5-web-go/src/db"
-	"github.com/FlowingSPDG/get5-web-go/templates"
+	"github.com/FlowingSPDG/get5-web-go/server/src/db"
+	"github.com/FlowingSPDG/get5-web-go/server/templates"
 	"github.com/gorilla/mux"
 	_ "github.com/gorilla/sessions"
 	_ "github.com/solovev/steam_go"

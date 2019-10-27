@@ -5,8 +5,9 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/FlowingSPDG/get5-web-go/src/db"
-	"github.com/FlowingSPDG/get5-web-go/src/get5"
+	"github.com/FlowingSPDG/get5-web-go/server/src/api"
+	"github.com/FlowingSPDG/get5-web-go/server/src/db"
+	"github.com/FlowingSPDG/get5-web-go/server/src/get5"
 	"github.com/go-ini/ini"
 	"github.com/gorilla/mux"
 	_ "github.com/hydrogen18/stalecucumber"
@@ -60,6 +61,9 @@ func main() {
 	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
 
 	//s := r.Host(HOST).Subrouter()
+
+	r.HandleFunc("/api/v1/CheckLoggedIn", api.CheckLoggedIn).Methods("GET")
+
 	r.HandleFunc("/", db.HomeHandler).Methods("GET")
 	r.HandleFunc("/login", db.LoginHandler).Methods("GET")
 	r.HandleFunc("/logout", db.LogoutHandler).Methods("GET")
