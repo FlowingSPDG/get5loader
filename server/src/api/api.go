@@ -3,8 +3,10 @@ package api
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/gorilla/mux"
 	"net/http"
+	"strings"
+
+	"github.com/gorilla/mux"
 
 	"github.com/FlowingSPDG/get5-web-go/server/src/db"
 )
@@ -38,8 +40,58 @@ func GetMatchInfo(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	fmt.Printf("GetMatchInfo\n")
 	matchid := vars["matchID"]
-	response := db.MatchData{}
-	db.SQLAccess.Gorm.Where("id = ?", matchid).First(&response)
+	match := db.MatchData{}
+	mapstats := []APIMapStatsData{}
+	server := APIGameServerData{}
+	team1 := APITeamData{}
+	team2 := APITeamData{}
+	user := APIUserData{}
+	db.SQLAccess.Gorm.Where("id = ?", matchid).First(&match)
+	db.SQLAccess.Gorm.Where("match_id = ?", matchid).Limit(7).Find(&mapstats)
+	db.SQLAccess.Gorm.Where("id = ?", match.ServerID).First(&server)
+	db.SQLAccess.Gorm.Where("id = ?", match.Team1ID).First(&team1)
+	db.SQLAccess.Gorm.Where("id = ?", match.Team2ID).First(&team2)
+	db.SQLAccess.Gorm.Where("id = ?", match.UserID).First(&user)
+	var winner int64
+	if match.Winner.Valid {
+		winner_, err := match.Winner.Value()
+		if err != nil {
+			winner = 0
+		}
+		winner = winner_.(int64)
+	}
+	starttime := match.StartTime.Time
+	endtime := match.EndTime.Time
+	status, err := match.GetStatusString(true)
+	if err != nil {
+		status = ""
+	}
+	response := APIMatchData{
+		ID:          match.ID,
+		UserID:      match.UserID,
+		Winner:      winner,
+		Cancelled:   match.Cancelled,
+		StartTime:   starttime,
+		EndTime:     endtime,
+		MaxMaps:     match.MaxMaps,
+		Title:       match.Title,
+		SkipVeto:    match.SkipVeto,
+		VetoMapPool: strings.Split(match.VetoMapPool, " "),
+		Team1Score:  match.Team1Score,
+		Team2Score:  match.Team2Score,
+		Team1String: match.Team1String,
+		Team2String: match.Team2String,
+		Forfeit:     match.Forfeit,
+		Pending:     match.Pending(),
+		Live:        match.Live(),
+		Server:      server,
+		MapStats:    mapstats,
+		Team1:       team1,
+		Team2:       team2,
+		User:        user,
+		Status:      status,
+	}
+
 	jsonbyte, err := json.Marshal(response)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
@@ -66,7 +118,7 @@ func GetUserInfo(w http.ResponseWriter, r *http.Request) {
 
 func GetServerInfo(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	fmt.Printf("GetUserInfo\n")
+	fmt.Printf("GetServerInfo\n")
 	serverID := vars["serverID"]
 	response := db.GameServerData{}
 	db.SQLAccess.Gorm.Where("id = ?", serverID).First(&response)

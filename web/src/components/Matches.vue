@@ -19,32 +19,29 @@
     <tbody>
 
       <tr v-for="(match, index) in matches" :key="index">
-        <td><a :href="'/match/'+match.id">{{match.id}}</a></td>
+        <td v-if="match"><a :href="'/match/'+match.id">{{match.id}}</a></td>
 
-        <td v-if="teamdatas[match.team1_id]">
-          {{teamdatas[match.team1_id].flag}}
-          <a :href="'/team/'+match.team1_id">{{teamdatas[match.team1_id].name}}</a>
+        <td v-if="matchinfo[match.id]">
+          {{matchinfo[match.id].team1.flag}}
+          <a :href="'/team/'+match.team1_id">{{matchinfo[match.id].team1.name}}</a>
         </td>
 
-        <td v-if="teamdatas[match.team2_id]">
-          {{teamdatas[match.team2_id].flag}}
-          <a :href="'/team/'+match.team2_id">{{teamdatas[match.team2_id].name}}</a>
+        <td v-if="matchinfo[match.id]">
+          {{matchinfo[match.id].team2.flag}}
+          <a :href="'/team/'+match.team2_id">{{matchinfo[match.id].team2.name}}</a>
         </td>
 
-        <td>
-          {{ matchstatusstrings[match.id] }}
+        <td v-if="matchinfo[match.id]">
+          {{ matchinfo[match.id].status }}
         </td>
 
-        {% if my_matches %}
-        <!--<td>{% if match.get_server() is not none   %} {{ match.get_server().get_display() }} {% endif %}</td>-->
+        <td v-if="my_matches && serverdatas[match.id]">{{ serverdatas[match.id].Display }} </td>
         <td>
           {% if match.pending() or match.live() %}
           <a :href="'/match/'+match.id+'cancel'" class="btn btn-danger btn-xs align-right">Cancel</a>
           {% endif %}
         </td>
-        {% else %}
-        <!--<td> <a :href="match.get_user().get_url()"> {{ match.get_user().name }} </a> </td>-->
-        {% endif %}
+        <td v-if="!my_matches && match.user"> <a :href="'/user/'+match.user.id"> {{ match.user.name }} </a> </td>
 
       </tr>
 
@@ -65,6 +62,7 @@ export default {
       my_matches:false,
       all_matches:false,
       matches:[],
+      matchinfo:{},
       match_owner:{
         id:1,
         name:"hoge"
@@ -72,16 +70,13 @@ export default {
       teamdatas:{},
       userdatas:{},
       serverdatas:{},
-      matchstatusstrings:{}
     }
   },
   created () {
     this.GetMatches().then((res) => {
       console.log(res)
       for(let i=0;i<res.length;i++){
-        this.GetTeamData(res[i].team1_id)
-        this.GetTeamData(res[i].team2_id)
-        this.GetMatchStatusString(res[i].id)
+        this.GetMatchInfo(res[i].id)
       }
     })
   },
@@ -124,9 +119,9 @@ export default {
         })
       })
     },
-    GetMatchStatusString: function(matchid){
-      axios.get(`/api/v1/match/${matchid}/GetStatusString`).then((res) => {
-        this.$set(this.matchstatusstrings,matchid,res.data)
+    GetMatchInfo: function(matchid){
+      axios.get(`/api/v1/match/${matchid}/GetMatchInfo`).then((res) => {
+        this.$set(this.matchinfo,matchid,res.data)
         console.log(res.data)
         return(res.data)
       })
