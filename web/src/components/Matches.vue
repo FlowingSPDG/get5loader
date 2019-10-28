@@ -23,12 +23,12 @@
 
         <td v-if="matchinfo[match.id]">
           {{matchinfo[match.id].team1.flag}}
-          <a :href="'/team/'+match.team1_id">{{matchinfo[match.id].team1.name}}</a>
+          <router-link :to="'/team?teamid='+match.team1_id">{{matchinfo[match.id].team1.name}}</router-link>
         </td>
 
         <td v-if="matchinfo[match.id]">
           {{matchinfo[match.id].team2.flag}}
-          <a :href="'/team/'+match.team2_id">{{matchinfo[match.id].team2.name}}</a>
+          <router-link :to="'/team?teamid='+match.team2_id">{{matchinfo[match.id].team2.name}}</router-link>
         </td>
 
         <td v-if="matchinfo[match.id]">
