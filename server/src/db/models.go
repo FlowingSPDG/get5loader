@@ -780,13 +780,13 @@ func GetSteamName(steamid uint64) (string, error) {
 
 // MetricsData Struct metrics analysys.
 type MetricsData struct {
-	RegisteredUsers    int
-	SavedTeams         int
-	MatchesCreated     int
-	CompletedMatches   int
-	ServersAdded       int
-	MapsWithStatsSaved int
-	UniquePlayers      int
+	RegisteredUsers    int  `json:"users"`
+	SavedTeams         int `json:"saved_teams"`
+	MatchesCreated     int `json:"matches_created"`
+	CompletedMatches   int `json:"completed_matches"`
+	ServersAdded       int `json:"servers_added"`
+	MapsWithStatsSaved int `json:"maps_with_stats"`
+	UniquePlayers      int `json:"unique_players"`
 }
 
 // GetMetrics Get Each table's count.

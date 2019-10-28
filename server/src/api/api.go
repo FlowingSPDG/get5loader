@@ -173,3 +173,15 @@ func GetTeamInfo(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(jsonbyte)
 }
+
+func GetMetrics(w http.ResponseWriter, r *http.Request) {
+	fmt.Printf("GetMetrics\n")
+	Metrics := db.GetMetrics()
+	jsonbyte, err := json.Marshal(Metrics)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+	}
+	fmt.Println(string(jsonbyte))
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(jsonbyte)
+}

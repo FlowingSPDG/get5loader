@@ -52,7 +52,6 @@
 </template>
 
 <script>
-import axios from 'axios'
 export default {
   name: 'matches',
   data () {
@@ -81,7 +80,7 @@ export default {
   methods: {
     GetMatches: function(){
       return new Promise((resolve, reject) => {
-        axios.get('/api/v1/GetMatches').then(res => {
+        this.axios.get('/api/v1/GetMatches').then(res => {
           this.matches = res.data
           /*for(let i=0;i<res.data.length;i++){
             this.$set(this.matches, i, res.data[i])
@@ -92,7 +91,7 @@ export default {
     },
     GetTeamData: function(teamid){
       return new Promise((resolve, reject) => {
-        axios.get(`/api/v1/team/${teamid}/GetTeamInfo`).then((res) => {
+        this.axios.get(`/api/v1/team/${teamid}/GetTeamInfo`).then((res) => {
           this.$set(this.teamdatas,teamid,res.data)
           console.log(res.data)
           resolve(res.data)
@@ -101,7 +100,7 @@ export default {
     },
     GetUserData: function(userid){
       return new Promise((resolve, reject) => {
-        axios.get(`/api/v1/user/${userid}/GetUserInfo`).then((res) => {
+        this.axios.get(`/api/v1/user/${userid}/GetUserInfo`).then((res) => {
           this.$set(this.userdatas,userid,res.data)
           console.log(res.data)
           resolve(res.data)
@@ -110,7 +109,7 @@ export default {
     },
     GetServerData: function(serverid){
       return new Promise((resolve, reject) => {
-        axios.get(`/api/v1/server/${serverid}/GetServerInfo`).then((res) => {
+        this.axios.get(`/api/v1/server/${serverid}/GetServerInfo`).then((res) => {
           this.$set(this.serverdatas,serverid,res.data)
           console.log(res.data)
           resolve(res.data)
@@ -118,7 +117,7 @@ export default {
       })
     },
     GetMatchInfo: function(matchid){
-      axios.get(`/api/v1/match/${matchid}/GetMatchInfo`).then((res) => {
+      this.axios.get(`/api/v1/match/${matchid}/GetMatchInfo`).then((res) => {
         this.$set(this.matchinfo,matchid,res.data)
         console.log(res.data)
         return(res.data)

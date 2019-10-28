@@ -31,7 +31,7 @@
     <div class="panel-footer text-muted">
         <div>
             Powered by <a href="http://steampowered.com">Steam</a> -
-            <a href="/metrics">Stats</a>
+            <router-link id="metrics" to="/metrics" >Stats</router-link>
             <div v-if="COMMIT_STRING">- Version <a href="https://github.com/FlowingSPDG/get5-web-go">{{ COMMIT_STRING }}+</a></div>
         </div>
     </div>
