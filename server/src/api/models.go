@@ -42,15 +42,15 @@ func (u *APIGameServerData) TableName() string {
 
 // TeamData Struct for team table.
 type APITeamData struct {
-	ID          int           `gorm:"primary_key;column:id" json:"id"`
-	UserID      int           `gorm:"column:user_id" json:"user_id"`
-	Name        string        `gorm:"column:name" json:"name"`
-	Tag         string        `gorm:"column:tag" json:"tag"`
-	Flag        string        `gorm:"column:flag" json:"flag"`
-	Logo        string        `gorm:"column:logo" json:"logo"`
-	AuthsPickle []byte        `gorm:"column:auths" json:"-"`
-	SteamIDs     []string `gorm:"-" json:"steamids"`
-	PublicTeam  bool          `gorm:"column:public_team" json:"public_team"`
+	ID          int      `gorm:"primary_key;column:id" json:"id"`
+	UserID      int      `gorm:"column:user_id" json:"user_id"`
+	Name        string   `gorm:"column:name" json:"name"`
+	Tag         string   `gorm:"column:tag" json:"tag"`
+	Flag        string   `gorm:"column:flag" json:"flag"`
+	Logo        string   `gorm:"column:logo" json:"logo"`
+	AuthsPickle []byte   `gorm:"column:auths" json:"-"`
+	SteamIDs    []string `gorm:"-" json:"steamids"`
+	PublicTeam  bool     `gorm:"column:public_team" json:"public_team"`
 
 	User APIUserData `gorm:"ASSOCIATION_FOREIGNKEY:user_id" json:"-"`
 }
@@ -163,4 +163,10 @@ type APIPlayerStatsData struct {
 // TableName declairation for GORM
 func (u *APIPlayerStatsData) TableName() string {
 	return "game_server"
+}
+
+type SimpleJSONResponse struct {
+	Response     string `json:"response"`
+	Errorcode    int    `json:"errorcode"`
+	Errormessage string `json:"errormessage"`
 }

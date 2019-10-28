@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strconv"
 	"strings"
 
 	"github.com/gorilla/mux"
@@ -162,9 +163,9 @@ func GetMatches(w http.ResponseWriter, r *http.Request) {
 func GetTeamInfo(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	fmt.Printf("GetMatchInfo\n")
-	matchid := vars["teamID"]
+	teamid := vars["teamID"]
 	response := APITeamData{}
-	db.SQLAccess.Gorm.Where("id = ?", matchid).First(&response)
+	db.SQLAccess.Gorm.Where("id = ?", teamid).First(&response)
 	steamids, err := response.GetPlayers()
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
@@ -173,6 +174,28 @@ func GetTeamInfo(w http.ResponseWriter, r *http.Request) {
 		response.SteamIDs = append(response.SteamIDs, steamids[i])
 	}
 	jsonbyte, err := json.Marshal(response)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(jsonbyte)
+}
+
+func CheckUserCanEdit(w http.ResponseWriter, r *http.Request) {
+	fmt.Printf("CheckUserCanEdit\n")
+	vars := mux.Vars(r)
+	q := r.URL.Query()
+	teamid := vars["teamID"]
+	useridstr := q.Get("userID")
+	team := db.TeamData{}
+	res := SimpleJSONResponse{}
+	db.SQLAccess.Gorm.Where("id = ?", teamid).First(&team)
+	userid, err := strconv.Atoi(useridstr)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+	}
+	res.Response = strconv.FormatBool(team.CanEdit(userid))
+	jsonbyte, err := json.Marshal(res)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 	}
@@ -190,4 +213,19 @@ func GetMetrics(w http.ResponseWriter, r *http.Request) {
 	fmt.Println(string(jsonbyte))
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(jsonbyte)
+}
+
+func GetSteamName(w http.ResponseWriter, r *http.Request) {
+	fmt.Printf("GetSteamName\n")
+	q := r.URL.Query()
+	steamid := q.Get("steamID")
+	steamid64, err := strconv.Atoi(steamid)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+	}
+	steamname, err := db.GetSteamName(uint64(steamid64))
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+	}
+	w.Write([]byte(steamname))
 }

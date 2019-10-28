@@ -1,23 +1,21 @@
 <template>
   
   <div class="container">
-    <h1 v-if="team">
+    <h1 v-cloak>
       {{ team.flag }} {{ team.name }} {{ team.logo }}
-      {% if team.can_edit(user) %}
-      <div class="pull-right">
+      <div class="pull-right" v-if="Editable == true">
         <a :href="'/team/'+team.id+'/edit'" class="btn btn-primary btn-xs">Edit</a>
       </div>
-      {% endif %}
     </h1>
 
     <br>
 
     <div class="panel panel-default">
       <div class="panel-heading">Players</div>
-      <div class="panel-body"  v-if="team">
-        <div v-for="(steamid, index) in team.steamids" :key="index">
-          <a :href="'http://steamcommunity.com/profiles/'+steamid" class="col-sm-offset-0"> {{steamid}}</a>
-          {{GetSteamName(steamid)}}
+      <div class="panel-body" v-cloak>
+        <div v-for="player in players" :key="player.steamid">
+          <a :href="'http://steamcommunity.com/profiles/'+player.steamid" class="col-sm-offset-0"> {{player.steamid}}</a>
+          <div>{{player.name}}</div>
           <br>
         </div>
       </div>
@@ -27,10 +25,10 @@
     <div class="panel panel-default">
       <div class="panel-heading">Recent Matches</div>
         <div class="panel-body"  v-if="team">
-          {% for match in team.get_recent_matches() %}
+          <!--{% for match in team.get_recent_matches() %}
             <a :href="'/match/'+match.id">#{{match.id}}</a>: {{ team.get_vs_match_result(match.id) }}
             <br>
-          {% endfor %}
+          {% endfor %}-->
       </div>
     </div>
 
@@ -42,19 +40,40 @@ export default {
   name: 'Team',
   data () {
     return {
-      team: {},
-      teamdatas: {}
+      team: {
+        flag:"",
+        name:"",
+        logo:"",
+      },
+      players:[],
+      teamdatas: {},
+      user: {
+        isLoggedIn:false,
+        steamid:"",
+        userid:""
+      },
+      Editable:false
     }
   },
   created () {
-      this.GetTeamData(this.$route.query.teamid)
+    this.GetTeamData(this.$route.query.teamid).then(()=>{
+      for(let i=0;i<this.team.steamids.length;i++){
+        this.GetSteamName(this.team.steamids[i])
+      }
+    })
+    this.axios
+      .get('/api/v1/CheckLoggedIn')
+      .then((res) => {
+          console.log(res.data)
+          this.user = res.data
+          this.Editable = this.CheckTeamEditable(this.$route.query.teamid,this.user.userid)
+      })
   },
   methods: {
     GetTeamData: function(teamid){
      return new Promise((resolve, reject) => {
       this.axios.get(`/api/v1/team/${teamid}/GetTeamInfo`).then((res) => {
-        this.$set(this.teamdatas,teamid,res.data)
-        this.team = this.teamdatas[0]
+        this.team = res.data
         console.log(res.data)
         resolve(res.data)
       })
@@ -64,7 +83,26 @@ export default {
       
   },
   GetSteamName: function(steamid){
-
+    var self = this
+    if(steamid == ""){
+      return
+    }
+    return new Promise((resolve, reject) => {
+      this.axios.get(`/api/v1/GetSteamName?steamID=${steamid}`).then((res) => {
+        console.log(res.data)
+        console.log(self.team)
+        self.players.push({steamid:steamid,name:res.data})
+        resolve(res.data)
+      })
+    })
+  },
+  CheckTeamEditable: function(teamid,userid){
+    return new Promise((resolve, reject) => {
+      this.axios.get(`/api/v1/team/${teamid}/CheckUserCanEdit?userID=${userid}`).then((res) => {
+        console.log(res.data)
+        resolve(res.data)
+      })
+    })
   }
   }
 }

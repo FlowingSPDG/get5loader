@@ -46,8 +46,8 @@ export default {
         return {
             user: {
                 isLoggedIn:false,
-                steamid:undefined,
-                userid:undefined
+                steamid:"",
+                userid:""
             }, // should be object from JSON response
             COMMIT_STRING: "COMMIT NUMBER HERE"
         }
