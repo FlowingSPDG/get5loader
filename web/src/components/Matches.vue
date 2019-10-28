@@ -18,7 +18,7 @@
     </thead>
     <tbody>
 
-      <tr v-for="(match, index) in matches" :key="index">
+      <tr v-for="(match, index) in matches" :key="index" align="left">
         <td v-if="match"><a :href="'/match/'+match.id">{{match.id}}</a></td>
 
         <td v-if="matchinfo[match.id]">
@@ -35,13 +35,11 @@
           {{ matchinfo[match.id].status }}
         </td>
 
-        <td v-if="my_matches && serverdatas[match.id]">{{ serverdatas[match.id].Display }} </td>
-        <td>
-          {% if match.pending() or match.live() %}
-          <a :href="'/match/'+match.id+'cancel'" class="btn btn-danger btn-xs align-right">Cancel</a>
-          {% endif %}
+        <td v-if="my_matches && matchinfo[match.id].server">{{ matchinfo[match.id].server.display }} </td>
+        <td v-if="my_matches && matchinfo[match.id]">
+          <a v-if="(match.pending || match.live)" :href="'/match/'+match.id+'cancel'" class="btn btn-danger btn-xs align-right">Cancel</a>
         </td>
-        <td v-if="!my_matches && match.user"> <a :href="'/user/'+match.user.id"> {{ match.user.name }} </a> </td>
+        <td v-if="!my_matches && matchinfo[match.id]"> <a :href="'/user/'+matchinfo[match.id].user.id"> {{ matchinfo[match.id].user.name }} </a> </td>
 
       </tr>
 
