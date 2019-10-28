@@ -2,9 +2,9 @@
   <div id="metrics">
     <h1>Get5 Metrics</h1>
     <ul class="list-group">
-        <li class="list-group-item" v-for="(value,key, index) in metrics" :key="value.key">
+        <el-table class="list-group-item" v-for="(value,key, index) in metrics" :key="value.key">
             {{key}}: {{value}}
-        </li>
+        </el-table>
     </ul>
   </div>
 </template>
