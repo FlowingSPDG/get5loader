@@ -170,7 +170,7 @@ func GetTeamInfo(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 	}
 	for i := 0; i < len(steamids); i++ {
-		response.Players[i].SteamID = steamids[i]
+		response.SteamIDs = append(response.SteamIDs, steamids[i])
 	}
 	jsonbyte, err := json.Marshal(response)
 	if err != nil {

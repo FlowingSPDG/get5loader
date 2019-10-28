@@ -15,11 +15,9 @@
     <div class="panel panel-default">
       <div class="panel-heading">Players</div>
       <div class="panel-body"  v-if="team">
-        <div v-for="(auth, index) in auths" :key="index">
-          <a :href="'http://steamcommunity.com/profiles/'+auth" class="col-sm-offset-0"> {{auth}}</a>
-          {% if name %}
-          {{name}}
-          {% endif %}
+        <div v-for="(steamid, index) in team.steamids" :key="index">
+          <a :href="'http://steamcommunity.com/profiles/'+steamid" class="col-sm-offset-0"> {{steamid}}</a>
+          {{GetSteamName(steamid)}}
           <br>
         </div>
       </div>
@@ -64,6 +62,9 @@ export default {
   },
   GetRecentMatches: function(teamid) {
       
+  },
+  GetSteamName: function(steamid){
+
   }
   }
 }

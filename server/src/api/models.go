@@ -40,21 +40,17 @@ func (u *APIGameServerData) TableName() string {
 	return "game_server"
 }
 
-type PlayersData struct{
-	SteamID       string             `gorm:"-" json:"steamid"` // converts pickle []byte to []string
-	Names     string `gorm:"-" json:"name"`
-}
 // TeamData Struct for team table.
 type APITeamData struct {
-	ID          int                  `gorm:"primary_key;column:id" json:"id"`
-	UserID      int                  `gorm:"column:user_id" json:"user_id"`
-	Name        string               `gorm:"column:name" json:"name"`
-	Tag         string               `gorm:"column:tag" json:"tag"`
-	Flag        string               `gorm:"column:flag" json:"flag"`
-	Logo        string               `gorm:"column:logo" json:"logo"`
-	AuthsPickle []byte               `gorm:"column:auths" json:"-"`
-	Players []PlayersData `gorm:"-" json:"players"`
-	PublicTeam  bool                 `gorm:"column:public_team" json:"public_team"`
+	ID          int           `gorm:"primary_key;column:id" json:"id"`
+	UserID      int           `gorm:"column:user_id" json:"user_id"`
+	Name        string        `gorm:"column:name" json:"name"`
+	Tag         string        `gorm:"column:tag" json:"tag"`
+	Flag        string        `gorm:"column:flag" json:"flag"`
+	Logo        string        `gorm:"column:logo" json:"logo"`
+	AuthsPickle []byte        `gorm:"column:auths" json:"-"`
+	SteamIDs     []string `gorm:"-" json:"steamids"`
+	PublicTeam  bool          `gorm:"column:public_team" json:"public_team"`
 
 	User APIUserData `gorm:"ASSOCIATION_FOREIGNKEY:user_id" json:"-"`
 }
