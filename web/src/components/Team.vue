@@ -15,13 +15,13 @@
     <div class="panel panel-default">
       <div class="panel-heading">Players</div>
       <div class="panel-body"  v-if="team">
-          {% for auth,name in team.get_players() %}
+        <div v-for="(auth, index) in auths" :key="index">
           <a :href="'http://steamcommunity.com/profiles/'+auth" class="col-sm-offset-0"> {{auth}}</a>
           {% if name %}
           {{name}}
           {% endif %}
           <br>
-          {% endfor %}
+        </div>
       </div>
     </div>
 
@@ -41,7 +41,7 @@
 
 <script>
 export default {
-  name: 'HelloWorld',
+  name: 'Team',
   data () {
     return {
       team: {},
@@ -61,6 +61,9 @@ export default {
         resolve(res.data)
       })
     })
+  },
+  GetRecentMatches: function(teamid) {
+      
   }
   }
 }

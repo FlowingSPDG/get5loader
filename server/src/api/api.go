@@ -163,13 +163,19 @@ func GetTeamInfo(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	fmt.Printf("GetMatchInfo\n")
 	matchid := vars["teamID"]
-	response := db.TeamData{}
+	response := APITeamData{}
 	db.SQLAccess.Gorm.Where("id = ?", matchid).First(&response)
+	steamids, err := response.GetPlayers()
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+	}
+	for i := 0; i < len(steamids); i++ {
+		response.Players[i].SteamID = steamids[i]
+	}
 	jsonbyte, err := json.Marshal(response)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 	}
-	fmt.Println(string(jsonbyte))
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(jsonbyte)
 }

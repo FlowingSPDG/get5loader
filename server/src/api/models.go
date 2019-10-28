@@ -1,7 +1,9 @@
 package api
 
 import (
+	"bytes"
 	"database/sql"
+	"github.com/hydrogen18/stalecucumber"
 	"time"
 )
 
@@ -38,6 +40,10 @@ func (u *APIGameServerData) TableName() string {
 	return "game_server"
 }
 
+type PlayersData struct{
+	SteamID       string             `gorm:"-" json:"steamid"` // converts pickle []byte to []string
+	Names     string `gorm:"-" json:"name"`
+}
 // TeamData Struct for team table.
 type APITeamData struct {
 	ID          int                  `gorm:"primary_key;column:id" json:"id"`
@@ -47,8 +53,7 @@ type APITeamData struct {
 	Flag        string               `gorm:"column:flag" json:"flag"`
 	Logo        string               `gorm:"column:logo" json:"logo"`
 	AuthsPickle []byte               `gorm:"column:auths" json:"-"`
-	Auths       []string             `json:"auths"` // converts pickle []byte to []string
-	Players     []APIPlayerStatsData `gorm:"-" json:"-"`
+	Players []PlayersData `gorm:"-" json:"players"`
 	PublicTeam  bool                 `gorm:"column:public_team" json:"public_team"`
 
 	User APIUserData `gorm:"ASSOCIATION_FOREIGNKEY:user_id" json:"-"`
@@ -57,6 +62,17 @@ type APITeamData struct {
 // TableName declairation for GORM
 func (u *APITeamData) TableName() string {
 	return "team"
+}
+
+// GetPlayers Gets registered player's steamid64.
+func (t *APITeamData) GetPlayers() ([]string, error) {
+	reader := bytes.NewReader(t.AuthsPickle)
+	var auths []string
+	err := stalecucumber.UnpackInto(&auths).From(stalecucumber.Unpickle(reader))
+	if err != nil {
+		return auths, err
+	}
+	return auths, nil
 }
 
 // MatchData Struct for match table.
