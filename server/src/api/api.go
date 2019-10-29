@@ -147,10 +147,15 @@ func GetStatusString(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetMatches(w http.ResponseWriter, r *http.Request) {
-	//vars := mux.Vars(r) //パスパラメータ取得
 	fmt.Printf("GetMatches\n")
+	q := r.URL.Query()
+	userID := q.Get("userID")
 	response := []db.MatchData{}
-	db.SQLAccess.Gorm.Limit(20).Order("id DESC").Find(&response)
+	if userID != "" {
+		db.SQLAccess.Gorm.Limit(20).Where("user_id = ?", userID).Order("id DESC").Find(&response)
+	} else {
+		db.SQLAccess.Gorm.Limit(20).Order("id DESC").Find(&response)
+	}
 	jsonbyte, err := json.Marshal(response)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)

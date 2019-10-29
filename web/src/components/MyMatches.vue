@@ -56,8 +56,13 @@ export default {
   name: 'matches',
   data () {
     return {
-      my_matches:false,
-      all_matches:true,
+      user: {
+        isLoggedIn:false,
+        steamid:"",
+        userid:""
+      },
+      my_matches:true,
+      all_matches:false, // TODO
       matches:[],
       matchinfo:{},
       match_owner:{ // TODO
@@ -70,12 +75,17 @@ export default {
     }
   },
   created () {
-    this.GetMatches(this.$route.query.userid).then((res) => {
-      console.log(res)
-      for(let i=0;i<res.length;i++){
-        this.GetMatchInfo(res[i].id)
-      }
-    })
+    this.axios
+      .get('/api/v1/CheckLoggedIn')
+      .then((res) => {
+          this.user = res.data
+          this.GetMatches(this.user.userid).then((res) => {
+            console.log(res)
+            for(let i=0;i<res.length;i++){
+                this.GetMatchInfo(res[i].id)
+            }
+        })
+      })
   },
   methods: {
     GetMatches: function(userid){

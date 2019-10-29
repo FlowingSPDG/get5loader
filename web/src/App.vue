@@ -9,12 +9,12 @@
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
                     </button>
-                    <a class="navbar-brand" href="/">Get5 Web Panel</a>
+                    <router-link to="/" class="navbar-brand" >Get5 Web Panel</router-link>
                 </div>
                 <div class="collapse navbar-collapse" id="myNavbar">
                     <ul class="nav navbar-nav">
                         <li><router-link id="matches" to="/matches" v-if="user.isLoggedIn">All Matches</router-link></li>
-                        <li><a id="mymatches" href="/mymatches" v-if="user.isLoggedIn">My Matches</a></li>
+                        <li><router-link id="mymatches" to="/mymatches" v-if="user.isLoggedIn">My Matches</router-link></li>
                         <li><a id="match_create" href="/match/create" v-if="user.isLoggedIn">Create a Match</a></li>
                         <li><a id="myteams" href="/myteams" v-if="user.isLoggedIn">My Teams</a></li>
                         <li><a id="team_create" href="/team/create" v-if="user.isLoggedIn">Create a Team</a></li>
