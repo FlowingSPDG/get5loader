@@ -427,7 +427,7 @@ export default {
     },
     get_flag_link : function(team){
         //return `<img src="/static/img/valve_flags/${team.flag}"  width="24" height="16">`
-        return `/static/img/valve_flags/${team.flag}`
+        return `/static/img/valve_flags/${team.flag}.png`
     },
     score_symbol: function(score1,score2){
         if ( score1 > score2){
