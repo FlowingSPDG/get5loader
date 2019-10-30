@@ -102,6 +102,23 @@ func GetMatchInfo(w http.ResponseWriter, r *http.Request) {
 	w.Write(jsonbyte)
 }
 
+func GetPlayerStatInfo(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	fmt.Printf("GetPlayerStatInfo\n")
+	q := r.URL.Query()
+	matchID := vars["matchID"]
+	mapID := q.Get("mapID")
+	response := []APIPlayerStatsData{}
+	db.SQLAccess.Gorm.Where("match_id = ? AND map_id = ?", matchID, mapID).Limit(10).Find(&response)
+	jsonbyte, err := json.Marshal(response)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+	}
+	fmt.Println(string(jsonbyte))
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(jsonbyte)
+}
+
 func GetUserInfo(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	fmt.Printf("GetUserInfo\n")

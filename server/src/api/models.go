@@ -71,25 +71,25 @@ func (t *APITeamData) GetPlayers() ([]string, error) {
 	return auths, nil
 }
 
-// MatchData Struct for match table.
+// APIMatchData Struct for match table.
 type APIMatchData struct {
-	ID          int64       `json:"id"`
-	UserID      int64       `json:"user_id"`
+	ID          int64       `gorm:"primary_key;column:id" json:"id"`
+	UserID      int64       `gorm:"column:user_id" json:"user_id"`
 	Team1       APITeamData `json:"team1"`
 	Team2       APITeamData `json:"team2"`
-	Winner      int64       `json:"winner"`
-	Cancelled   bool        `json:"cancelled"`
-	StartTime   time.Time   `json:"start_time"`
-	EndTime     time.Time   `json:"end_time"`
-	MaxMaps     int         `json:"max_maps"`
-	Title       string      `json:"title"`
-	SkipVeto    bool        `json:"skip_veto"`
-	VetoMapPool []string    `json:"veto_mappool"`
-	Team1Score  int         `json:"team1_score"`
-	Team2Score  int         `json:"team2_score"`
-	Team1String string      `json:"team1_string"`
-	Team2String string      `json:"team2_string"`
-	Forfeit     bool        `json:"forfeit"`
+	Winner      int64       `gorm:"column:winner" json:"winner"`
+	Cancelled   bool        `gorm:"column:cancelled" json:"cancelled"`
+	StartTime   time.Time   `gorm:"column:start_time" json:"start_time"`
+	EndTime     time.Time   `gorm:"column:end_time" json:"end_time"`
+	MaxMaps     int         `gorm:"column:max_maps" json:"max_maps"`
+	Title       string      `gorm:"column:title" json:"title"`
+	SkipVeto    bool        `gorm:"column:skip_veto" json:"skip_veto"`
+	VetoMapPool []string    `gorm:"column:veto_mappool" json:"veto_mappool"`
+	Team1Score  int         `gorm:"column:team1_score" json:"team1_score"`
+	Team2Score  int         `gorm:"column:team2_score" json:"team2_score"`
+	Team1String string      `gorm:"column:team1_string" json:"team1_string"`
+	Team2String string      `gorm:"column:team2_string" json:"team2_string"`
+	Forfeit     bool        `gorm:"column:forfeit" json:"forfeit"`
 
 	MapStats []APIMapStatsData `json:"map_stats"`
 	Server   APIGameServerData `json:"server"`
@@ -105,7 +105,7 @@ func (u *APIMatchData) TableName() string {
 	return "match"
 }
 
-// MapStatsData MapStatsData struct for map_stats table.
+// APIMapStatsData MapStatsData struct for map_stats table.
 type APIMapStatsData struct {
 	ID         int          `gorm:"primary_key" gorm:"column:id" json:"id"`
 	MatchID    int          `gorm:"column:match_id" gorm:"ForeignKey:match_id" json:"match_id"`
@@ -123,46 +123,46 @@ func (u *APIMapStatsData) TableName() string {
 	return "map_stats"
 }
 
-// PlayerStatsData Player stats data struct for player_stats table.
+// APIPlayerStatsData Player stats data struct for player_stats table.
 type APIPlayerStatsData struct {
-	ID               int    `gorm:"primary_key;column:id"`
-	MatchID          int    `gorm:"column:match_id"`
-	MapID            int    `gorm:"column:map_id"`
-	TeamID           int    `gorm:"column:team_id"`
-	SteamID          string `gorm:"column:steam_id;unique"`
-	Name             string `gorm:"column:name"`
-	Kills            int    `gorm:"column:kills"`
-	Deaths           int    `gorm:"column:deaths"`
-	Roundsplayed     int    `gorm:"column:roundsplayed"`
-	Assists          int    `gorm:"column:assists"`
-	FlashbangAssists int    `gorm:"column:flashbang_assists"`
-	Teamkills        int    `gorm:"column:teamkills"`
-	Suicides         int    `gorm:"column:suicides"`
-	HeadshotKills    int    `gorm:"column:headshot_kills"`
-	Damage           int64  `gorm:"column:damage"`
-	BombPlants       int    `gorm:"column:bomb_plants"`
-	BombDefuses      int    `gorm:"column:bomb_defuses"`
-	V1               int    `gorm:"column:v1"`
-	V2               int    `gorm:"column:v2"`
-	V3               int    `gorm:"column:v3"`
-	V4               int    `gorm:"column:v4"`
-	V5               int    `gorm:"column:v5"`
-	K1               int    `gorm:"column:k1"`
-	K2               int    `gorm:"column:k2"`
-	K3               int    `gorm:"column:k3"`
-	K4               int    `gorm:"column:k4"`
-	K5               int    `gorm:"column:k5"`
-	FirstdeathCT     int    `gorm:"column:firstdeath_Ct"`
-	FirstdeathT      int    `gorm:"column:firstdeath_t"`
-	FirstkillCT      int    `gorm:"column:firstkill_ct"`
-	FirstkillT       int    `gorm:"column:firstkill_t"`
+	ID               int    `gorm:"primary_key;column:id" json:"id"`
+	MatchID          int    `gorm:"column:match_id" json:"match_id"`
+	MapID            int    `gorm:"column:map_id" json:"map_id"`
+	TeamID           int    `gorm:"column:team_id" json:"team_id"`
+	SteamID          string `gorm:"column:steam_id;unique" json:"steam_id"`
+	Name             string `gorm:"column:name" json:"name"`
+	Kills            int    `gorm:"column:kills" json:"kills"`
+	Deaths           int    `gorm:"column:deaths" json:"deaths"`
+	Roundsplayed     int    `gorm:"column:roundsplayed" json:"roundsplayed"`
+	Assists          int    `gorm:"column:assists" json:"assists"`
+	FlashbangAssists int    `gorm:"column:flashbang_assists" json:"flashbang_assists"`
+	Teamkills        int    `gorm:"column:teamkills" json:"teamkills"`
+	Suicides         int    `gorm:"column:suicides" json:"suicides"`
+	HeadshotKills    int    `gorm:"column:headshot_kills" json:"headshot_kills"`
+	Damage           int64  `gorm:"column:damage" json:"damage"`
+	BombPlants       int    `gorm:"column:bomb_plants" json:"bomb_plants"`
+	BombDefuses      int    `gorm:"column:bomb_defuses" json:"bomb_defuses"`
+	V1               int    `gorm:"column:v1" json:"v1"`
+	V2               int    `gorm:"column:v2" json:"v2"`
+	V3               int    `gorm:"column:v3" json:"v3"`
+	V4               int    `gorm:"column:v4" json:"v4"`
+	V5               int    `gorm:"column:v5" json:"v5"`
+	K1               int    `gorm:"column:k1" json:"k1"`
+	K2               int    `gorm:"column:k2" json:"k2"`
+	K3               int    `gorm:"column:k3" json:"k3"`
+	K4               int    `gorm:"column:k4" json:"k4"`
+	K5               int    `gorm:"column:k5" json:"k5"`
+	FirstdeathCT     int    `gorm:"column:firstdeath_Ct" json:"firstdeath_Ct"`
+	FirstdeathT      int    `gorm:"column:firstdeath_t" json:"firstdeath_t"`
+	FirstkillCT      int    `gorm:"column:firstkill_ct" json:"firstkill_ct"`
+	FirstkillT       int    `gorm:"column:firstkill_t" json:"firstkill_t"`
 
-	User APIUserData `gorm:"ASSOCIATION_FOREIGNKEY:user_id"`
+	User APIUserData `gorm:"ASSOCIATION_FOREIGNKEY:user_id" json:"-"`
 }
 
 // TableName declairation for GORM
 func (u *APIPlayerStatsData) TableName() string {
-	return "game_server"
+	return "player_stats"
 }
 
 type SimpleJSONResponse struct {

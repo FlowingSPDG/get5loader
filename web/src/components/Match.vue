@@ -1,0 +1,435 @@
+<template>
+<div>
+<td> <b>{{ team1.name }}</b> </td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+
+{% for player in map_stats.player_stats.filter_by(team_id=team.id) %}
+{% if player.roundsplayed > 0 %}
+<tr>
+    <td> <a :href="GetSteamURL(player.steamid)"> {{ player.name }} </a></td>
+    <td class="text-center"> {{ player.kills }} </td>
+    <td class="text-center"> {{ player.deaths }} </td>
+    <td class="text-center"> {{ player.assists }} </td>
+    <td class="text-center"> {{ player.flashbang_assists }} </td>
+
+    <td class="text-center"> {{ player.v1 }} </td>
+    <td class="text-center"> {{ player.v2 }} </td>
+    <td class="text-center"> {{ player.v3 }} </td>
+
+    <td class="text-center"> {{ player.get_rating() | round(2) }} </td>
+    <td class="text-center"> {{ player.get_fpr() | round(2) }} </td>
+    <td class="text-center"> {{ player.get_adr() | round(1) }} </td>
+    <td class="text-center"> {{ player.get_hsp() | round(2) }} </td>
+</tr>
+{% endif %}
+{% endfor %}
+
+<td> <b>{{ team2.name }}</b> </td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+
+{% for player in map_stats.player_stats.filter_by(team_id=team.id) %}
+{% if player.roundsplayed > 0 %}
+<tr>
+    <td> <a :href="GetSteamURL(player.steamid)"> {{ player.name }} </a></td>
+    <td class="text-center"> {{ player.kills }} </td>
+    <td class="text-center"> {{ player.deaths }} </td>
+    <td class="text-center"> {{ player.assists }} </td>
+    <td class="text-center"> {{ player.flashbang_assists }} </td>
+
+    <td class="text-center"> {{ player.v1 }} </td>
+    <td class="text-center"> {{ player.v2 }} </td>
+    <td class="text-center"> {{ player.v3 }} </td>
+
+    <td class="text-center"> {{ player.get_rating() | round(2) }} </td>
+    <td class="text-center"> {{ player.get_fpr() | round(2) }} </td>
+    <td class="text-center"> {{ player.get_adr() | round(1) }} </td>
+    <td class="text-center"> {{ player.get_hsp() | round(2) }} </td>
+</tr>
+{% endif %}
+{% endfor %}
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}
+<div class="panel panel-primary">
+    <div class="panel-heading">Command response</div>
+
+    <div class="panel-body">
+        {% for message in messages %}
+        <b>{{ message[1] }}</b>
+        <br>
+        {% endfor %}
+    </div>
+
+</div>
+<br>
+{% endif %}
+{% endwith %}
+
+<div id="content">
+
+    <div class="container">
+
+        <h1>
+            {{ team1.get_logo_or_flag_html(1.0, team1) }} <a :href="'/team/'+team1.id"> {{team1.name}}</a>
+            {{ match.team1_score }}
+            {{ score_symbol(match.team1_score, match.team2_score) }}
+            {{ match.team2_score }}
+            {{ team1.get_logo_or_flag_html(1.0, team2) }} <a :href="'/team/'+team2.id"> {{team2.name}}</a>
+
+            {% if admin_access and (match.live() or match.pending()) %}
+            <div class="dropdown dropdown-header pull-right">
+                <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                    Admin tools
+                    <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                    {% if match.live() %}
+                    <li><a id="pause" :href="this.$route.path+'/pause'">Pause match</a></li>
+                    <li><a id="unpause" :href="this.$route.path+'/unpause'">Unpause match</a></li>
+                    {% endif %}
+                    <li><a id="addplayer_team1" href="#">Add player to team1</a></li>
+                    <li><a id="addplayer_team2" href="#">Add player to team2</a></li>
+                    <li><a id="addplayer_spec" href="#">Add player to specator list</a></li>
+                    <li><a id="rcon_command" href="#">Send rcon command</a></li>
+                    <li role="separator" class="divider"></li>
+                    <li><a id="backup_manager" :href="this.$route.path+'/backup'">Load a backup file</a></li>
+                    <li><a :href="this.$route.path+'/cancel'">Cancel match</a></li>
+                </ul>
+            </div>
+            {% endif %}
+
+        </h1>
+
+        <br>
+        {% if match.cancelled %}
+        <div class="alert alert-danger" role="alert">
+            <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+            <span class="sr-only">Error:</span>
+            This match has been cancelled.
+        </div>
+        {% endif %}
+
+        {% if match.forfeit %}
+        <div class="alert alert-warning" role="alert">
+            <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+            <span class="sr-only">Error:</span>
+            This match was forfeit by {{match.get_loser()}}.
+        </div>
+        {% endif %}
+
+        {% if match.start_time is not none %}
+        <p>Started at {{ match.start_time.strftime('%Y-%m-%d %H:%M') }}</p>
+        {% else %}
+        <div class="panel panel-default" role="alert">
+            <div class="panel-body">
+                This match is pending start.
+            </div>
+        </div>
+        {% endif %}
+
+        {% if match.end_time is not none %}
+        <p>Ended at {{ match.end_time.strftime('%Y-%m-%d %H:%M') }}</p>
+        {% endif %}
+
+        {% for map_stats in map_stat_list %}
+        <br>
+        <div class="panel panel-primary">
+            <div class="panel-heading">
+                Map {{map_stats.map_number + 1}}: {{ map_stats.map_name }},
+                {{team1.name}} {{ score_symbol(map_stats.team1_score, map_stats.team2_score) }} {{team2.name}},
+                {{map_stats.team1_score}}:{{map_stats.team2_score}}
+            </div>
+
+            <div class="panel-body">
+                <p>Started at {{ map_stats.start_time.strftime('%Y-%m-%d %H:%M') }}</p>
+
+                {% if map_stats.end_time is not none %}
+                <p>Ended at {{ map_stats.end_time.strftime('%Y-%m-%d %H:%M') }}</p>
+                {% endif %}
+
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Player</th>
+                            <th class="text-center">Kills</th>
+                            <th class="text-center">Deaths</th>
+                            <th class="text-center">Assists</th>
+                            <th class="text-center">Flash assists</th>
+                            <th class="text-center">1v1</th>
+                            <th class="text-center">1v2</th>
+                            <th class="text-center">1v3</th>
+                            <th class="text-center">Rating</th>
+                            <th class="text-center"><acronym title="Frags per round">FPR</acronym></th>
+                            <th class="text-center"><acronym title="Average damage per round">ADR</acronym></th>
+                            <th class="text-center"><acronym title="Headshot percentage">HSP</acronym></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {{ player_stat_table(team1, map_stats) }}
+                        {{ player_stat_table(team2, map_stats) }}
+                    </tbody>
+
+                </table>
+            </div>
+
+        </div>
+        {% endfor %}
+
+    </div>
+
+    <br>
+</div>
+
+<!--script>
+    jQuery("#addplayer_team1").click(function (e) {
+        var input = prompt("Please enter a steamid to add to {{team1.name}}", "");
+        if (input != null) {
+            window.location.href = "{{request.path}}/adduser?team=team1&auth=" + encodeURIComponent(input);
+        }
+    });
+
+    jQuery("#addplayer_team2").click(function (e) {
+        var input = prompt("Please enter a steamid to add to {{team2.name}}", "");
+        if (input != null) {
+            window.location.href = "{{request.path}}/adduser?team=team2&auth=" + encodeURIComponent(input);
+        }
+    });
+
+    jQuery("#addplayer_spec").click(function (e) {
+        var input = prompt("Please enter a steamid to add to the spectators list", "");
+        if (input != null) {
+            window.location.href = "{{request.path}}/adduser?team=spec&auth=" + encodeURIComponent(input);
+        }
+    });
+
+    jQuery("#rcon_command").click(function (e) {
+        var input = prompt("Enter a command to send", "");
+        if (input != null) {
+            window.location.href = "{{request.path}}/rcon?command=" + encodeURIComponent(input);
+        }
+    });
+</script>-->
+</div>
+</template>
+
+<script>
+export default {
+  name: 'Match',
+  data () {
+    return {
+        matchdata:{
+            id:0,
+            user_id:0,
+            team1: {
+                "id":0,
+                "user_id":0,
+                "name":"",
+                "tag":"",
+                "flag":"",
+                "logo":"",
+                "steamids":[],
+                "public_team":false
+                },
+            team2: {
+                "id":0,
+                "user_id":0,
+                "name":"",
+                "tag":"",
+                "flag":"",
+                "logo":"",
+                "steamids":[],
+                "public_team":false
+                },
+            winner:0,
+            cancelled:false,
+            start_time:"",
+            end_time:"",
+            max_maps:0,
+            title:"",
+            skip_veto:false,
+            veto_mappool:[],
+            team1_score:0,
+            team2_score:0,
+            team1_string:"",
+            team2_string:"",
+            forfeit:false,
+            map_stats:[],
+            team1_player_stats:[],
+            team2_player_stats:[],
+            server:{
+                id: 0,
+		        user_id: 0,
+		        in_use: false,
+		        ip_string: "",
+		        port: 0,
+		        display: "",
+		        public_server: false
+            },
+            user:{
+                id: 0,
+		        steam_id: "",
+		        name: "",
+		        admin: false,
+		        servers: null,
+		        teams: null,
+                matches: null
+            },
+            pending:false,
+            live:false,
+            status:""
+        },
+        user: {
+          isLoggedIn:false,
+          steamid:"",
+          userid:""
+        },
+        team1:{
+            "id": 0,
+	        "user_id": 0,
+	        "name": "",
+	        "tag": "",
+	        "flag": "",
+	        "logo": "",
+	        "steamids": [],
+	        "public_team": false
+        },
+        team2:{
+            "id": 0,
+	        "user_id": 0,
+	        "name": "",
+	        "tag": "",
+	        "flag": "",
+	        "logo": "",
+	        "steamids": [],
+	        "public_team": false
+        },
+    }
+  },
+  created () {
+    this.GetMatchData(this.$route.query.matchid).then((res)=>{
+        console.log("GetMatchData")
+        console.log(res)
+        for (let i=0;i<res.map_stats.length;i++){
+            console.log("GetPlayerStats")
+            this.GetPlayerStats(res.id,res.map_stats[i].id)
+        }
+        console.log("GetTeam1Data")
+        this.GetTeam1Data(res.team1.id)
+        console.log("GetTeam2Data")
+        this.GetTeam2Data(res.team2.id)
+    })
+    this.axios
+      .get('/api/v1/CheckLoggedIn')
+      .then((res) => {
+          console.log(res.data)
+          this.user = res.data
+          this.Editable = this.CheckTeamEditable(this.$route.query.teamid,this.user.userid)
+      })
+  },
+  methods: {
+    GetTeam1Data: function(team1id){
+     return new Promise((resolve, reject) => {
+      this.axios.get(`/api/v1/team/${team1id}/GetTeamInfo`).then((res) => {
+        this.team1 = res.data
+        resolve(res.data)
+      })
+     })
+    },
+    GetTeam2Data: function(team2id){
+     return new Promise((resolve, reject) => {
+      this.axios.get(`/api/v1/team/${team2id}/GetTeamInfo`).then((res) => {
+        this.team2 = res.data
+        resolve(res.data)
+      })
+     })
+    },
+    GetMatchData: function(matchid){
+     return new Promise((resolve, reject) => {
+      this.axios.get(`/api/v1/match/${matchid}/GetMatchInfo`).then((res) => {
+        this.matchdata = res.data
+        resolve(res.data)
+      })
+     })
+    },
+    GetMapStat: function(matchid){
+     return new Promise((resolve, reject) => {
+      this.axios.get(`/api/v1/match/${matchid}/GetMatchInfo`).then((res) => {
+        this.matchdata.map_stats.push(res.data)
+        console.log(res.data)
+        resolve(res.data)
+      })
+     })
+    },
+    GetPlayerStats: function(matchid,mapid){
+     return new Promise((resolve, reject) => {
+      this.axios.get(`/api/v1/match/${matchid}/GetPlayerStatInfo?mapID=${mapid}`).then((res) => {
+        console.log(res.data)
+        if(!this.matchdata.team1_player_stats){
+          this.matchdata.team1_player_stats = new Array
+        }
+        if(!this.matchdata.team2_player_stats){
+          this.matchdata.team2_player_stats = new Array
+        }
+
+        let team1stats = res.data.filter(player => player.team_id == this.matchdata.team1.id)
+        let team2stats = res.data.filter(player => player.team_id == this.matchdata.team2.id)
+
+        for(let i=0;i<team1stats.length;i++){
+            this.$set(this.matchdata.team1_player_stats, i, team1stats[i]);
+        }
+        for(let i=0;i<team2stats.length;i++){
+            this.$set(this.matchdata.team2_player_stats, i, team2stats[i]);
+        }
+        resolve(res.data)
+      })
+     })
+    },
+    GetSteamURL: function(steamid){
+        return `https://steamcommunity.com/profiles/${steamid}`
+    }
+  }
+}
+</script>
+
+<!-- Add "scoped" attribute to limit CSS to this component only -->
+
+<style scoped>
+h1,
+h2 {
+    font-weight: normal;
+}
+
+ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+li {
+    display: inline-block;
+    margin: 0 10px;
+}
+
+a {
+    color: #42b983;
+}
+</style>
