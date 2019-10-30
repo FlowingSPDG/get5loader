@@ -255,7 +255,7 @@ export default {
             team1_string:"",
             team2_string:"",
             forfeit:false,
-            map_stats:[],
+            map_stats:{},
             team1_player_stats:[],
             team2_player_stats:[],
             server:{
@@ -368,20 +368,22 @@ export default {
       this.axios.get(`/api/v1/match/${matchid}/GetPlayerStatInfo?mapID=${mapid}`).then((res) => {
         console.log(res.data)
         if(!this.matchdata.team1_player_stats){
-          this.matchdata.team1_player_stats = new Array
+          this.matchdata.team1_player_stats = {}
+          this.matchdata.team1_player_stats[mapid] = {}
         }
         if(!this.matchdata.team2_player_stats){
-          this.matchdata.team2_player_stats = new Array
+          this.matchdata.team2_player_stats = {}
+          this.matchdata.team2_player_stats[mapid] = {}
         }
 
         let team1stats = res.data.filter(player => player.team_id == this.matchdata.team1.id)
         let team2stats = res.data.filter(player => player.team_id == this.matchdata.team2.id)
 
         for(let i=0;i<team1stats.length;i++){
-            this.$set(this.matchdata.team1_player_stats, i, team1stats[i]);
+            this.$set(this.matchdata.team1_player_stats, mapid, team1stats);
         }
         for(let i=0;i<team2stats.length;i++){
-            this.$set(this.matchdata.team2_player_stats, i, team2stats[i]);
+            this.$set(this.matchdata.team2_player_stats, mapid, team2stats);
         }
         resolve(res.data)
       })
