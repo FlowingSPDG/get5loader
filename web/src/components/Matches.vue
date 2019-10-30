@@ -19,15 +19,14 @@
     <tbody>
 
       <tr v-for="(match, index) in matches" :key="index" align="left">
-        <td v-if="match"><router-link :to="'/match?matchid='+match.id">{{match.id}}</router-link></td>
-
+        <td v-if="match" v-loading="loading[match.id]"><router-link :to="'/match?matchid='+match.id">{{match.id}}</router-link></td>
         <td v-if="matchinfo[match.id]">
           <img :src="get_flag_link(matchinfo[match.id].team1)" />
           <router-link :to="'/team?teamid='+match.team1_id">{{matchinfo[match.id].team1.name}}</router-link>
         </td>
 
         <td v-if="matchinfo[match.id]">
-          <img :src="get_flag_link(matchinfo[match.id].team2)" />
+          <img :src="get_flag_link(matchinfo[match.id].team2)"  />
           <router-link :to="'/team?teamid='+match.team2_id">{{matchinfo[match.id].team2.name}}</router-link>
         </td>
 
@@ -40,7 +39,6 @@
           <a v-if="(match.pending || match.live)" :href="'/match/'+match.id+'cancel'" class="btn btn-danger btn-xs align-right">Cancel</a>
         </td>
         <td v-if="!my_matches && matchinfo[match.id]"> <a :href="'/user/'+matchinfo[match.id].user.id"> {{ matchinfo[match.id].user.name }} </a> </td>
-
       </tr>
 
     </tbody>
@@ -56,6 +54,8 @@ export default {
   name: 'matches',
   data () {
     return {
+      loading:{},
+      flag_loading:{},
       my_matches:false,
       all_matches:true,
       matches:[],
@@ -73,7 +73,10 @@ export default {
     this.GetMatches(this.$route.query.userid).then((res) => {
       console.log(res)
       for(let i=0;i<res.length;i++){
-        this.GetMatchInfo(res[i].id)
+        this.loading[res[i].id] = true
+        this.GetMatchInfo(res[i].id).then(() => {
+          this.loading[res[i].id] = false
+        })
       }
     })
   },
@@ -122,10 +125,12 @@ export default {
       })
     },
     GetMatchInfo: function(matchid){
+      return new Promise((resolve, reject) => {
       this.axios.get(`/api/v1/match/${matchid}/GetMatchInfo`).then((res) => {
         this.$set(this.matchinfo,matchid,res.data)
         console.log(res.data)
-        return(res.data)
+        resolve(res.data)
+      })
       })
     },
     get_flag_link : function(team){
@@ -154,5 +159,12 @@ li {
 }
 a {
   color: #42b983;
+}
+
+.fade-enter-active, .fade-leave-active {
+  transition: opacity .5s
+}
+.fade-enter, .fade-leave {
+  opacity: 0
 }
 </style>

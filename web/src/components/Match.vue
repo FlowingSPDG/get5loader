@@ -19,7 +19,7 @@
 
 <div id="content">
 
-    <div class="container">
+    <div class="container" v-loading="loading" v-cloak>
 
         <h1>
             <img :src="get_logo_or_flag_link(team1,team2).team1" /> <a :href="'/team/'+team1.id"> {{team1.name}}</a>
@@ -212,6 +212,7 @@ export default {
   name: 'Match',
   data () {
     return {
+        loading:true,
         matchdata:{
             id:0,
             user_id:0,
@@ -313,6 +314,7 @@ export default {
         this.GetTeam1Data(res.team1.id)
         console.log("GetTeam2Data")
         this.GetTeam2Data(res.team2.id)
+        this.loading = false;
     })
     this.axios
       .get('/api/v1/CheckLoggedIn')
