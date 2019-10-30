@@ -103,69 +103,65 @@
                     </thead>
                     <tbody>
                         <td> <b>{{ team1.name }}</b> </td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-
-{% for player in map_stats.player_stats.filter_by(team_id=team.id) %}
-<tr v-for="player in matchdata.team1_player_stats[map_stats.id]" :key="player.id">
-    <td v-if="player.roundsplayed"> <a :href="GetSteamURL(player.steamid)"> {{ player.name }} </a></td>
-    <td v-if="player.roundsplayed" class="text-center"> {{ player.kills }} </td>
-    <td v-if="player.roundsplayed" class="text-center"> {{ player.deaths }} </td>
-    <td v-if="player.roundsplayed" class="text-center"> {{ player.assists }} </td>
-    <td v-if="player.roundsplayed" class="text-center"> {{ player.flashbang_assists }} </td>
-
-    <td v-if="player.roundsplayed" class="text-center"> {{ player.v1 }} </td>
-    <td v-if="player.roundsplayed" class="text-center"> {{ player.v2 }} </td>
-    <td v-if="player.roundsplayed" class="text-center"> {{ player.v3 }} </td>
-
-    <td v-if="player.roundsplayed" class="text-center"> {{ player.rating }} </td>
-    <td v-if="player.roundsplayed" class="text-center"> {{ player.fpr }} </td>
-    <td v-if="player.roundsplayed" class="text-center"> {{ player.adr }} </td>
-    <td v-if="player.roundsplayed" class="text-center"> {{ player.hsp }} </td>
-</tr>
-{% endfor %}
-
-
-<td> <b>{{ team2.name }}</b> </td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-
-{% for player in map_stats.player_stats.filter_by(team_id=team.id) %}
-<tr v-for="player in matchdata.team2_player_stats[map_stats.id]" :key="player.id">
-    <td v-if="player.roundsplayed"> <a :href="GetSteamURL(player.steamid)"> {{ player.name }} </a></td>
-    <td v-if="player.roundsplayed" class="text-center"> {{ player.kills }} </td>
-    <td v-if="player.roundsplayed" class="text-center"> {{ player.deaths }} </td>
-    <td v-if="player.roundsplayed" class="text-center"> {{ player.assists }} </td>
-    <td v-if="player.roundsplayed" class="text-center"> {{ player.flashbang_assists }} </td>
-
-    <td v-if="player.roundsplayed" class="text-center"> {{ player.v1 }} </td>
-    <td v-if="player.roundsplayed" class="text-center"> {{ player.v2 }} </td>
-    <td v-if="player.roundsplayed" class="text-center"> {{ player.v3 }} </td>
-
-    <td v-if="player.roundsplayed" class="text-center"> {{ player.rating }} </td>
-    <td v-if="player.roundsplayed" class="text-center"> {{ player.fpr }} </td>
-    <td v-if="player.roundsplayed" class="text-center"> {{ player.adr }} </td>
-    <td v-if="player.roundsplayed" class="text-center"> {{ player.hsp }} </td>
-</tr>
-{% endfor %}
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        
+                        <tr v-for="player in matchdata.team1_player_stats[map_stats.id]" :key="player.id">
+                            <td v-if="player.roundsplayed"> <a :href="GetSteamURL(player.steamid)"> {{ player.name }} </a></td>
+                            <td v-if="player.roundsplayed" class="text-center"> {{ player.kills }} </td>
+                            <td v-if="player.roundsplayed" class="text-center"> {{ player.deaths }} </td>
+                            <td v-if="player.roundsplayed" class="text-center"> {{ player.assists }} </td>
+                            <td v-if="player.roundsplayed" class="text-center"> {{ player.flashbang_assists }} </td>
+                        
+                            <td v-if="player.roundsplayed" class="text-center"> {{ player.v1 }} </td>
+                            <td v-if="player.roundsplayed" class="text-center"> {{ player.v2 }} </td>
+                            <td v-if="player.roundsplayed" class="text-center"> {{ player.v3 }} </td>
+                        
+                            <td v-if="player.roundsplayed" class="text-center"> {{ player.rating }} </td>
+                            <td v-if="player.roundsplayed" class="text-center"> {{ player.fpr }} </td>
+                            <td v-if="player.roundsplayed" class="text-center"> {{ player.adr }} </td>
+                            <td v-if="player.roundsplayed" class="text-center"> {{ player.hsp }} </td>
+                        </tr>
+                        
+                        
+                        <td> <b>{{ team2.name }}</b> </td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        
+                        <tr v-for="player in matchdata.team2_player_stats[map_stats.id]" :key="player.id">
+                            <td v-if="player.roundsplayed"> <a :href="GetSteamURL(player.steamid)"> {{ player.name }} </a></td>
+                            <td v-if="player.roundsplayed" class="text-center"> {{ player.kills }} </td>
+                            <td v-if="player.roundsplayed" class="text-center"> {{ player.deaths }} </td>
+                            <td v-if="player.roundsplayed" class="text-center"> {{ player.assists }} </td>
+                            <td v-if="player.roundsplayed" class="text-center"> {{ player.flashbang_assists }} </td>
+                        
+                            <td v-if="player.roundsplayed" class="text-center"> {{ player.v1 }} </td>
+                            <td v-if="player.roundsplayed" class="text-center"> {{ player.v2 }} </td>
+                            <td v-if="player.roundsplayed" class="text-center"> {{ player.v3 }} </td>
+                        
+                            <td v-if="player.roundsplayed" class="text-center"> {{ player.rating }} </td>
+                            <td v-if="player.roundsplayed" class="text-center"> {{ player.fpr }} </td>
+                            <td v-if="player.roundsplayed" class="text-center"> {{ player.adr }} </td>
+                            <td v-if="player.roundsplayed" class="text-center"> {{ player.hsp }} </td>
+                        </tr>
                     </tbody>
 
                 </table>
