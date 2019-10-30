@@ -70,12 +70,13 @@ export default {
     }
   },
   created () {
+    let self = this
     this.GetMatches(this.$route.query.userid).then((res) => {
       console.log(res)
       for(let i=0;i<res.length;i++){
-        this.loading[res[i].id] = true
+        self.$set(self.loading,[res[i].id],true)
         this.GetMatchInfo(res[i].id).then(() => {
-          this.loading[res[i].id] = false
+          self.$set(self.loading,[res[i].id],false)
         })
       }
     })
