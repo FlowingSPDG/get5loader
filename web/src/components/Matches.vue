@@ -129,6 +129,9 @@ export default {
       })
     },
     get_flag_link : function(team){
+        if(team.flag == ""){
+          return `/static/img/_unknown.png`  
+        }
         //return `<img src="/static/img/valve_flags/${team.flag}"  width="24" height="16">`
         return `/static/img/valve_flags/${team.flag}.png`
     },

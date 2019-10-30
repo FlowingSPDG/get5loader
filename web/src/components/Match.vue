@@ -14,25 +14,24 @@
 <td></td>
 
 {% for player in map_stats.player_stats.filter_by(team_id=team.id) %}
-{% if player.roundsplayed > 0 %}
 <tr v-for="player in matchdata.team1_player_stats" :key="player.id">
-    <td> <a :href="GetSteamURL(player.steam_id)"> {{ player.name }} </a></td>
-    <td class="text-center"> {{ player.kills }} </td>
-    <td class="text-center"> {{ player.deaths }} </td>
-    <td class="text-center"> {{ player.assists }} </td>
-    <td class="text-center"> {{ player.flashbang_assists }} </td>
+    <td v-if="player.roundsplayed"> <a :href="GetSteamURL(player.steamid)"> {{ player.name }} </a></td>
+    <td v-if="player.roundsplayed" class="text-center"> {{ player.kills }} </td>
+    <td v-if="player.roundsplayed" class="text-center"> {{ player.deaths }} </td>
+    <td v-if="player.roundsplayed" class="text-center"> {{ player.assists }} </td>
+    <td v-if="player.roundsplayed" class="text-center"> {{ player.flashbang_assists }} </td>
 
-    <td class="text-center"> {{ player.v1 }} </td>
-    <td class="text-center"> {{ player.v2 }} </td>
-    <td class="text-center"> {{ player.v3 }} </td>
+    <td v-if="player.roundsplayed" class="text-center"> {{ player.v1 }} </td>
+    <td v-if="player.roundsplayed" class="text-center"> {{ player.v2 }} </td>
+    <td v-if="player.roundsplayed" class="text-center"> {{ player.v3 }} </td>
 
-    <td class="text-center"> {{ player.rating }} </td>
-    <td class="text-center"> {{ player.fpr }} </td>
-    <td class="text-center"> {{ player.adr }} </td>
-    <td class="text-center"> {{ player.hsp }} </td>
+    <td v-if="player.roundsplayed" class="text-center"> {{ player.rating }} </td>
+    <td v-if="player.roundsplayed" class="text-center"> {{ player.fpr }} </td>
+    <td v-if="player.roundsplayed" class="text-center"> {{ player.adr }} </td>
+    <td v-if="player.roundsplayed" class="text-center"> {{ player.hsp }} </td>
 </tr>
-{% endif %}
 {% endfor %}
+
 
 <td> <b>{{ team2.name }}</b> </td>
 <td></td>
@@ -48,24 +47,22 @@
 <td></td>
 
 {% for player in map_stats.player_stats.filter_by(team_id=team.id) %}
-{% if player.roundsplayed > 0 %}
 <tr v-for="player in matchdata.team2_player_stats" :key="player.id">
-    <td> <a :href="GetSteamURL(player.steamid)"> {{ player.name }} </a></td>
-    <td class="text-center"> {{ player.kills }} </td>
-    <td class="text-center"> {{ player.deaths }} </td>
-    <td class="text-center"> {{ player.assists }} </td>
-    <td class="text-center"> {{ player.flashbang_assists }} </td>
+    <td v-if="player.roundsplayed"> <a :href="GetSteamURL(player.steamid)"> {{ player.name }} </a></td>
+    <td v-if="player.roundsplayed" class="text-center"> {{ player.kills }} </td>
+    <td v-if="player.roundsplayed" class="text-center"> {{ player.deaths }} </td>
+    <td v-if="player.roundsplayed" class="text-center"> {{ player.assists }} </td>
+    <td v-if="player.roundsplayed" class="text-center"> {{ player.flashbang_assists }} </td>
 
-    <td class="text-center"> {{ player.v1 }} </td>
-    <td class="text-center"> {{ player.v2 }} </td>
-    <td class="text-center"> {{ player.v3 }} </td>
+    <td v-if="player.roundsplayed" class="text-center"> {{ player.v1 }} </td>
+    <td v-if="player.roundsplayed" class="text-center"> {{ player.v2 }} </td>
+    <td v-if="player.roundsplayed" class="text-center"> {{ player.v3 }} </td>
 
-    <td class="text-center"> {{ player.rating }} </td>
-    <td class="text-center"> {{ player.fpr }} </td>
-    <td class="text-center"> {{ player.adr }} </td>
-    <td class="text-center"> {{ player.hsp }} </td>
+    <td v-if="player.roundsplayed" class="text-center"> {{ player.rating }} </td>
+    <td v-if="player.roundsplayed" class="text-center"> {{ player.fpr }} </td>
+    <td v-if="player.roundsplayed" class="text-center"> {{ player.adr }} </td>
+    <td v-if="player.roundsplayed" class="text-center"> {{ player.hsp }} </td>
 </tr>
-{% endif %}
 {% endfor %}
 
 {% with messages = get_flashed_messages(with_categories=true) %}
@@ -96,17 +93,14 @@
             {{ matchdata.team2_score }}
             <img :src="get_logo_or_flag_link(team1,team2).team2" /> <a :href="'/team/'+team2.id"> {{team2.name}}</a>
 
-            {% if admin_access and (match.live() or match.pending()) %}
-            <div class="dropdown dropdown-header pull-right">
+            <div class="dropdown dropdown-header pull-right" v-if="user.adminaccess == true && matchdata.live && match.pending">
                 <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
                     Admin tools
                     <span class="caret"></span>
                 </button>
                 <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
-                    {% if match.live() %}
-                    <li><a id="pause" :href="this.$route.path+'/pause'">Pause match</a></li>
-                    <li><a id="unpause" :href="this.$route.path+'/unpause'">Unpause match</a></li>
-                    {% endif %}
+                    <li v-if="matchdata.live"><a id="pause" :href="this.$route.path+'/pause'">Pause match</a></li>
+                    <li v-if="matchdata.live"><a id="unpause" :href="this.$route.path+'/unpause'">Unpause match</a></li>
                     <li><a id="addplayer_team1" href="#">Add player to team1</a></li>
                     <li><a id="addplayer_team2" href="#">Add player to team2</a></li>
                     <li><a id="addplayer_spec" href="#">Add player to specator list</a></li>
@@ -116,42 +110,31 @@
                     <li><a :href="this.$route.path+'/cancel'">Cancel match</a></li>
                 </ul>
             </div>
-            {% endif %}
 
         </h1>
 
         <br>
-        {% if match.cancelled %}
-        <div class="alert alert-danger" role="alert">
+        <div class="alert alert-danger" role="alert" v-if="matchdata.cancelled">
             <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
             <span class="sr-only">Error:</span>
             This match has been cancelled.
         </div>
-        {% endif %}
 
-        {% if match.forfeit %}
-        <div class="alert alert-warning" role="alert">
+        <div class="alert alert-warning" role="alert" v-if="matchdata.forfeit">
             <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
             <span class="sr-only">Error:</span>
             This match was forfeit by {{get_loser(matchdata)}}.
         </div>
-        {% endif %}
 
-        {% if matchdata.start_time is not none %}
-        <p>Started at {{ matchdata.start_time }}</p>
-        {% else %}
-        <div class="panel panel-default" role="alert">
+        <p v-if="matchdata.start_time != '0001-01-01T00:00:00Z'">Started at {{ matchdata.start_time }}</p>
+        <div class="panel panel-default" role="alert" v-else>
             <div class="panel-body">
                 This match is pending start.
             </div>
         </div>
-        {% endif %}
 
-        {% if matchdata.end_time is not none %}
-        <p>Ended at {{ matchdata.end_time }}</p>
-        {% endif %}
+        <p v-if="matchdata.end_time != '0001-01-01T00:00:00Z'">Ended at {{ matchdata.end_time }}</p>
 
-        {% for map_stats in map_stat_list %}
         <div v-for="map_stats in matchdata.map_stats" :key="map_stats.id">
         <br>
         <div class="panel panel-primary">
@@ -164,9 +147,7 @@
             <div class="panel-body">
                 <p>Started at {{ map_stats.start_time }}</p>
 
-                {% if map_stats.end_time is not none %}
-                <p>Ended at {{ map_stats.end_time }}</p>
-                {% endif %}
+                <p v-if="map_stats.end_time != '0001-01-01T00:00:00Z'">Ended at {{ map_stats.end_time }}</p>
 
                 <table class="table table-hover">
                     <thead>
@@ -194,7 +175,6 @@
             </div>
 
         </div>
-        {% endfor %}
         </div>
 
     </div>
@@ -427,6 +407,9 @@ export default {
         // TODO...
     },
     get_flag_link : function(team){
+        if(team.flag == ""){
+          return `/static/img/_unknown.png`  
+        }
         //return `<img src="/static/img/valve_flags/${team.flag}"  width="24" height="16">`
         return `/static/img/valve_flags/${team.flag}.png`
     },

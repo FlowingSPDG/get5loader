@@ -67,30 +67,39 @@ func GetMatchInfo(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		status = ""
 	}
+
+	for i := 0; i < len(mapstats); i++ {
+		if mapstats[i].StartTime.Valid {
+			mapstats[i].StartTimeJSON = mapstats[i].StartTime.Time
+		}
+		if mapstats[i].EndTime.Valid {
+			mapstats[i].EndTimeJSON = mapstats[i].EndTime.Time
+		}
+	}
 	response := APIMatchData{
-		ID:          match.ID,
-		UserID:      match.UserID,
-		Winner:      winner,
-		Cancelled:   match.Cancelled,
-		StartTime:   starttime,
-		EndTime:     endtime,
-		MaxMaps:     match.MaxMaps,
-		Title:       match.Title,
-		SkipVeto:    match.SkipVeto,
-		VetoMapPool: strings.Split(match.VetoMapPool, " "),
-		Team1Score:  match.Team1Score,
-		Team2Score:  match.Team2Score,
-		Team1String: match.Team1String,
-		Team2String: match.Team2String,
-		Forfeit:     match.Forfeit,
-		Pending:     match.Pending(),
-		Live:        match.Live(),
-		Server:      server,
-		MapStats:    mapstats,
-		Team1:       team1,
-		Team2:       team2,
-		User:        user,
-		Status:      status,
+		ID:            match.ID,
+		UserID:        match.UserID,
+		Winner:        winner,
+		Cancelled:     match.Cancelled,
+		StartTimeJSON: starttime,
+		EndTimeJSON:   endtime,
+		MaxMaps:       match.MaxMaps,
+		Title:         match.Title,
+		SkipVeto:      match.SkipVeto,
+		VetoMapPool:   strings.Split(match.VetoMapPool, " "),
+		Team1Score:    match.Team1Score,
+		Team2Score:    match.Team2Score,
+		Team1String:   match.Team1String,
+		Team2String:   match.Team2String,
+		Forfeit:       match.Forfeit,
+		Pending:       match.Pending(),
+		Live:          match.Live(),
+		Server:        server,
+		MapStats:      mapstats,
+		Team1:         team1,
+		Team2:         team2,
+		User:          user,
+		Status:        status,
 	}
 
 	jsonbyte, err := json.Marshal(response)

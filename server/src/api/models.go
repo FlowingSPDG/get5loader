@@ -79,8 +79,10 @@ type APIMatchData struct {
 	Team2       APITeamData `json:"team2"`
 	Winner      int64       `gorm:"column:winner" json:"winner"`
 	Cancelled   bool        `gorm:"column:cancelled" json:"cancelled"`
-	StartTime   time.Time   `gorm:"column:start_time" json:"start_time"`
-	EndTime     time.Time   `gorm:"column:end_time" json:"end_time"`
+	StartTime   sql.NullTime   `gorm:"column:start_time" json:"-"`
+	StartTimeJSON time.Time `json:"start_time"`
+	EndTime     sql.NullTime   `gorm:"column:end_time" json:"-"`
+	EndTimeJSON time.Time `json:"end_time"`
 	MaxMaps     int         `gorm:"column:max_maps" json:"max_maps"`
 	Title       string      `gorm:"column:title" json:"title"`
 	SkipVeto    bool        `gorm:"column:skip_veto" json:"skip_veto"`
@@ -111,8 +113,10 @@ type APIMapStatsData struct {
 	MatchID    int          `gorm:"column:match_id" gorm:"ForeignKey:match_id" json:"match_id"`
 	MapNumber  int          `gorm:"column:map_number" json:"map_number"`
 	MapName    string       `gorm:"column:map_name" json:"map_name"`
-	StartTime  sql.NullTime `gorm:"column:start_time" json:"start_time"`
-	EndTime    sql.NullTime `gorm:"column:end_time" json:"end_time"`
+	StartTime   sql.NullTime   `gorm:"column:start_time" json:"-"`
+	StartTimeJSON time.Time `json:"start_time"`
+	EndTime     sql.NullTime   `gorm:"column:end_time" json:"-"`
+	EndTimeJSON time.Time `json:"end_time"`
 	Winner     int          `gorm:"column:winner" json:"winner"`
 	Team1Score int          `gorm:"column:team1_score" json:"team1_score"`
 	Team2Score int          `gorm:"column:team2_score" json:"team2_score"`
