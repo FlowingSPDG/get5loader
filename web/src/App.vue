@@ -46,6 +46,7 @@ export default {
         return {
             user: {
                 isLoggedIn:false,
+                adminaccess:false,
                 steamid:"",
                 userid:""
             }, // should be object from JSON response

@@ -22,12 +22,12 @@
         <td v-if="match"><router-link :to="'/match?matchid='+match.id">{{match.id}}</router-link></td>
 
         <td v-if="matchinfo[match.id]">
-          {{matchinfo[match.id].team1.flag}}
+          <img :src="get_flag_link(matchinfo[match.id].team1)" />
           <router-link :to="'/team?teamid='+match.team1_id">{{matchinfo[match.id].team1.name}}</router-link>
         </td>
 
         <td v-if="matchinfo[match.id]">
-          {{matchinfo[match.id].team2.flag}}
+          <img :src="get_flag_link(matchinfo[match.id].team2)" />
           <router-link :to="'/team?teamid='+match.team2_id">{{matchinfo[match.id].team2.name}}</router-link>
         </td>
 
@@ -127,7 +127,11 @@ export default {
         console.log(res.data)
         return(res.data)
       })
-    }
+    },
+    get_flag_link : function(team){
+        //return `<img src="/static/img/valve_flags/${team.flag}"  width="24" height="16">`
+        return `/static/img/valve_flags/${team.flag}.png`
+    },
   }
 }
 </script>

@@ -302,6 +302,7 @@ export default {
         },
         user: {
           isLoggedIn:false,
+          adminaccess:false,
           steamid:"",
           userid:""
         },

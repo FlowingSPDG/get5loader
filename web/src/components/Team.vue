@@ -2,7 +2,7 @@
   
   <div class="container">
     <h1 v-cloak>
-      {{ team.flag }} {{ team.name }} {{ team.logo }}
+      <img :src="get_flag_link(team)" /> {{ team.name }} {{ team.logo }}
       <div class="pull-right" v-if="Editable == true">
         <a :href="'/team/'+team.id+'/edit'" class="btn btn-primary btn-xs">Edit</a>
       </div>
@@ -66,7 +66,7 @@ export default {
       .then((res) => {
           console.log(res.data)
           this.user = res.data
-          this.Editable = this.CheckTeamEditable(this.$route.query.teamid,this.user.userid)
+          this.Editable = this.CheckTeamEditable(this.user.userid)
       })
   },
   methods: {
@@ -96,14 +96,13 @@ export default {
       })
     })
   },
-  CheckTeamEditable: function(teamid,userid){
-    return new Promise((resolve, reject) => {
-      this.axios.get(`/api/v1/team/${teamid}/CheckUserCanEdit?userID=${userid}`).then((res) => {
-        console.log(res.data)
-        resolve(res.data)
-      })
-    })
-  }
+  CheckTeamEditable: function(userid){
+    return this.team.user_id == userid
+  },
+  get_flag_link : function(team){
+        //return `<img src="/static/img/valve_flags/${team.flag}"  width="24" height="16">`
+        return `/static/img/valve_flags/${team.flag}.png`
+    },
   }
 }
 </script>
