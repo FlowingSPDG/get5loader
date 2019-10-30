@@ -1,70 +1,5 @@
 <template>
 <div>
-<td> <b>{{ team1.name }}</b> </td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-
-{% for player in map_stats.player_stats.filter_by(team_id=team.id) %}
-<tr v-for="player in matchdata.team1_player_stats" :key="player.id">
-    <td v-if="player.roundsplayed"> <a :href="GetSteamURL(player.steamid)"> {{ player.name }} </a></td>
-    <td v-if="player.roundsplayed" class="text-center"> {{ player.kills }} </td>
-    <td v-if="player.roundsplayed" class="text-center"> {{ player.deaths }} </td>
-    <td v-if="player.roundsplayed" class="text-center"> {{ player.assists }} </td>
-    <td v-if="player.roundsplayed" class="text-center"> {{ player.flashbang_assists }} </td>
-
-    <td v-if="player.roundsplayed" class="text-center"> {{ player.v1 }} </td>
-    <td v-if="player.roundsplayed" class="text-center"> {{ player.v2 }} </td>
-    <td v-if="player.roundsplayed" class="text-center"> {{ player.v3 }} </td>
-
-    <td v-if="player.roundsplayed" class="text-center"> {{ player.rating }} </td>
-    <td v-if="player.roundsplayed" class="text-center"> {{ player.fpr }} </td>
-    <td v-if="player.roundsplayed" class="text-center"> {{ player.adr }} </td>
-    <td v-if="player.roundsplayed" class="text-center"> {{ player.hsp }} </td>
-</tr>
-{% endfor %}
-
-
-<td> <b>{{ team2.name }}</b> </td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-
-{% for player in map_stats.player_stats.filter_by(team_id=team.id) %}
-<tr v-for="player in matchdata.team2_player_stats" :key="player.id">
-    <td v-if="player.roundsplayed"> <a :href="GetSteamURL(player.steamid)"> {{ player.name }} </a></td>
-    <td v-if="player.roundsplayed" class="text-center"> {{ player.kills }} </td>
-    <td v-if="player.roundsplayed" class="text-center"> {{ player.deaths }} </td>
-    <td v-if="player.roundsplayed" class="text-center"> {{ player.assists }} </td>
-    <td v-if="player.roundsplayed" class="text-center"> {{ player.flashbang_assists }} </td>
-
-    <td v-if="player.roundsplayed" class="text-center"> {{ player.v1 }} </td>
-    <td v-if="player.roundsplayed" class="text-center"> {{ player.v2 }} </td>
-    <td v-if="player.roundsplayed" class="text-center"> {{ player.v3 }} </td>
-
-    <td v-if="player.roundsplayed" class="text-center"> {{ player.rating }} </td>
-    <td v-if="player.roundsplayed" class="text-center"> {{ player.fpr }} </td>
-    <td v-if="player.roundsplayed" class="text-center"> {{ player.adr }} </td>
-    <td v-if="player.roundsplayed" class="text-center"> {{ player.hsp }} </td>
-</tr>
-{% endfor %}
-
 {% with messages = get_flashed_messages(with_categories=true) %}
 {% if messages %}
 <div class="panel panel-primary">
@@ -167,8 +102,70 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <!--{{ player_stat_table(team1, map_stats) }}-->
-                        <!--{{ player_stat_table(team2, map_stats) }}-->
+                        <td> <b>{{ team1.name }}</b> </td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+
+{% for player in map_stats.player_stats.filter_by(team_id=team.id) %}
+<tr v-for="player in matchdata.team1_player_stats[map_stats.id]" :key="player.id">
+    <td v-if="player.roundsplayed"> <a :href="GetSteamURL(player.steamid)"> {{ player.name }} </a></td>
+    <td v-if="player.roundsplayed" class="text-center"> {{ player.kills }} </td>
+    <td v-if="player.roundsplayed" class="text-center"> {{ player.deaths }} </td>
+    <td v-if="player.roundsplayed" class="text-center"> {{ player.assists }} </td>
+    <td v-if="player.roundsplayed" class="text-center"> {{ player.flashbang_assists }} </td>
+
+    <td v-if="player.roundsplayed" class="text-center"> {{ player.v1 }} </td>
+    <td v-if="player.roundsplayed" class="text-center"> {{ player.v2 }} </td>
+    <td v-if="player.roundsplayed" class="text-center"> {{ player.v3 }} </td>
+
+    <td v-if="player.roundsplayed" class="text-center"> {{ player.rating }} </td>
+    <td v-if="player.roundsplayed" class="text-center"> {{ player.fpr }} </td>
+    <td v-if="player.roundsplayed" class="text-center"> {{ player.adr }} </td>
+    <td v-if="player.roundsplayed" class="text-center"> {{ player.hsp }} </td>
+</tr>
+{% endfor %}
+
+
+<td> <b>{{ team2.name }}</b> </td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+
+{% for player in map_stats.player_stats.filter_by(team_id=team.id) %}
+<tr v-for="player in matchdata.team2_player_stats[map_stats.id]" :key="player.id">
+    <td v-if="player.roundsplayed"> <a :href="GetSteamURL(player.steamid)"> {{ player.name }} </a></td>
+    <td v-if="player.roundsplayed" class="text-center"> {{ player.kills }} </td>
+    <td v-if="player.roundsplayed" class="text-center"> {{ player.deaths }} </td>
+    <td v-if="player.roundsplayed" class="text-center"> {{ player.assists }} </td>
+    <td v-if="player.roundsplayed" class="text-center"> {{ player.flashbang_assists }} </td>
+
+    <td v-if="player.roundsplayed" class="text-center"> {{ player.v1 }} </td>
+    <td v-if="player.roundsplayed" class="text-center"> {{ player.v2 }} </td>
+    <td v-if="player.roundsplayed" class="text-center"> {{ player.v3 }} </td>
+
+    <td v-if="player.roundsplayed" class="text-center"> {{ player.rating }} </td>
+    <td v-if="player.roundsplayed" class="text-center"> {{ player.fpr }} </td>
+    <td v-if="player.roundsplayed" class="text-center"> {{ player.adr }} </td>
+    <td v-if="player.roundsplayed" class="text-center"> {{ player.hsp }} </td>
+</tr>
+{% endfor %}
                     </tbody>
 
                 </table>
@@ -369,11 +366,11 @@ export default {
         console.log(res.data)
         if(!this.matchdata.team1_player_stats){
           this.matchdata.team1_player_stats = {}
-          this.matchdata.team1_player_stats[mapid] = {}
+          this.matchdata.team1_player_stats[mapid] = []
         }
         if(!this.matchdata.team2_player_stats){
           this.matchdata.team2_player_stats = {}
-          this.matchdata.team2_player_stats[mapid] = {}
+          this.matchdata.team2_player_stats[mapid] = []
         }
 
         let team1stats = res.data.filter(player => player.team_id == this.matchdata.team1.id)
