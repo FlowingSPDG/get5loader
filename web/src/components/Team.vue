@@ -14,9 +14,7 @@
       <div class="panel-heading">Players</div>
       <div class="panel-body" v-cloak>
         <div v-for="player in players" :key="player.steamid">
-          <a :href="'http://steamcommunity.com/profiles/'+player.steamid" class="col-sm-offset-0"> {{player.steamid}}</a>
-          <div>{{player.name}}</div>
-          <br>
+          <div><a :href="'http://steamcommunity.com/profiles/'+player.steamid" class="col-sm-offset-0"> {{player.steamid}}</a> {{player.name}} </div>
         </div>
       </div>
     </div>
