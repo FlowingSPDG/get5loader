@@ -157,12 +157,61 @@ type APIPlayerStatsData struct {
 	FirstkillCT      int    `gorm:"column:firstkill_ct" json:"firstkill_ct"`
 	FirstkillT       int    `gorm:"column:firstkill_t" json:"firstkill_t"`
 
-	User APIUserData `gorm:"ASSOCIATION_FOREIGNKEY:user_id" json:"-"`
+	Rating float64 `json:"rating"`
+	KDR    float64 `json:"kdr"`
+	HSP    float64 `json:"hsp"`
+	ADR    float64 `json:"adr"`
+	FPR    float64 `json:"fpr"`
 }
 
 // TableName declairation for GORM
 func (u *APIPlayerStatsData) TableName() string {
 	return "player_stats"
+}
+
+// GetRating Get player's rating. Average datas are static tho.
+func (p *APIPlayerStatsData) GetRating() float64 { // Rating value can be more accurate??
+	var AverageKPR float64 = 0.679
+	var AverageSPR float64 = 0.317
+	var AverageRMK float64 = 1.277
+	var KillRating float64 = float64(p.Kills) / float64(p.Roundsplayed) / AverageKPR
+	var SurvivalRating float64 = float64(p.Roundsplayed-p.Deaths) / float64(p.Roundsplayed) / float64(AverageSPR)
+	var killcount float64 = float64(p.K1 + 4*p.K2 + 9*p.K3 + 16*p.K4 + 25*p.K5)
+	var RoundsWithMultipleKillsRating float64 = killcount / float64(p.Roundsplayed) / float64(AverageRMK)
+	var rating float64 = (KillRating + 0.7*SurvivalRating + RoundsWithMultipleKillsRating) / 2.7
+	return rating
+}
+
+// GetKDR Returns player's KDR(Kill/Deaths Ratio).
+func (p *APIPlayerStatsData) GetKDR() float64 {
+	if p.Deaths == 0 {
+		return float64(p.Kills)
+	}
+	return float64(p.Kills) / float64(p.Deaths)
+}
+
+// GetHSP Returns player's HSP(HeadShot Percentage).
+func (p *APIPlayerStatsData) GetHSP() float64 {
+	if p.Deaths == 0 {
+		return float64(p.Kills)
+	}
+	return float64(p.HeadshotKills) / float64(p.Kills) * 100
+}
+
+// GetADR Returns player's ADR(Average Damage per Round).
+func (p *APIPlayerStatsData) GetADR() float64 {
+	if p.Roundsplayed == 0 {
+		return 0.0
+	}
+	return float64(p.Damage) / float64(p.Roundsplayed)
+}
+
+// GetFPR Returns player's FPR(Frags Per Round).
+func (p *APIPlayerStatsData) GetFPR() float64 {
+	if p.Roundsplayed == 0 {
+		return 0.0
+	}
+	return float64(p.Kills) / float64(p.Roundsplayed)
 }
 
 type SimpleJSONResponse struct {

@@ -110,6 +110,14 @@ func GetPlayerStatInfo(w http.ResponseWriter, r *http.Request) {
 	mapID := q.Get("mapID")
 	response := []APIPlayerStatsData{}
 	db.SQLAccess.Gorm.Where("match_id = ? AND map_id = ?", matchID, mapID).Limit(10).Find(&response)
+	for i := 0; i < len(response); i++ { // Calculates by server-side for avoiding JavaScript's float restrcition
+		response[i].Rating = response[i].GetRating()
+		response[i].KDR = response[i].GetKDR()
+		response[i].HSP = response[i].GetHSP()
+		response[i].ADR = response[i].GetADR()
+		response[i].FPR = response[i].GetFPR()
+	}
+
 	jsonbyte, err := json.Marshal(response)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
