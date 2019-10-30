@@ -13,9 +13,18 @@
     <div class="panel panel-default">
       <div class="panel-heading">Players</div>
       <div class="panel-body" v-cloak>
-        <div v-for="player in players" :key="player.steamid">
-          <div><a :href="'http://steamcommunity.com/profiles/'+player.steamid" class="col-sm-offset-0"> {{player.steamid}}</a> {{player.name}} </div>
-        </div>
+        <el-table :data="players">
+          <el-table-column label="SteamID" width="400">
+            <template slot-scope="scope">
+              <a v-for="steamid in scope.row.steamid" :key="steamid" :href="'https://steamcommunity.com/profiles/'+steamid">{{steamid}}</a>　　　　
+            </template>
+          </el-table-column>
+          <el-table-column
+            prop="name"
+            label="Name"
+            width="180">
+          </el-table-column>
+        </el-table>
       </div>
     </div>
 
