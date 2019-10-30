@@ -218,7 +218,7 @@ export default {
             team1: {
                 "id":0,
                 "user_id":0,
-                "name":"",
+                "name":"LOADING...",
                 "tag":"",
                 "flag":"",
                 "logo":"",
@@ -228,7 +228,7 @@ export default {
             team2: {
                 "id":0,
                 "user_id":0,
-                "name":"",
+                "name":"LOADING...",
                 "tag":"",
                 "flag":"",
                 "logo":"",
@@ -282,7 +282,7 @@ export default {
         team1:{
             "id": 0,
 	        "user_id": 0,
-	        "name": "",
+	        "name":"LOADING...",
 	        "tag": "",
 	        "flag": "",
 	        "logo": "",
@@ -292,7 +292,7 @@ export default {
         team2:{
             "id": 0,
 	        "user_id": 0,
-	        "name": "",
+	        "name":"LOADING...",
 	        "tag": "",
 	        "flag": "",
 	        "logo": "",
