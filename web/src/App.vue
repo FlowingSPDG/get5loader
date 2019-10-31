@@ -19,14 +19,14 @@
                             router
                         >
                         <el-menu-item index="Matches" id="matches" :route="{ path:'/matches' }" v-if="user.isLoggedIn">All Matches</el-menu-item>
-                        <el-menu-item index="MyMatches" id="mymatches" :route="{ path:'/mymatches' }" v-if="user.isLoggedIn">My Matches</el-menu-item>
-                        <el-menu-item index="Matches" id="matches" :route="{ path:'/matches' }" v-if="user.isLoggedIn"><a id="match_create" href="/match/create" v-if="user.isLoggedIn">Create a Match</a></li></el-menu-item>
-                        <el-menu-item index="Matches" id="matches" :route="{ path:'/matches' }" v-if="user.isLoggedIn"><a id="myteams" href="/myteams" v-if="user.isLoggedIn">My Teams</a></li></el-menu-item>
-                        <el-menu-item index="Matches" id="matches" :route="{ path:'/matches' }" v-if="user.isLoggedIn"><a id="team_create" href="/team/create" v-if="user.isLoggedIn">Create a Team</a></li></el-menu-item>
-                        <el-menu-item index="Matches" id="matches" :route="{ path:'/matches' }" v-if="user.isLoggedIn"><a id="myservers" href="/myservers" v-if="user.isLoggedIn">My Servers</a></li></el-menu-item>
-                        <el-menu-item index="Matches" id="matches" :route="{ path:'/matches' }" v-if="user.isLoggedIn"><a id="server_create" href="/server/create" v-if="user.isLoggedIn">Add a Server</a></li></el-menu-item>
-                        <el-menu-item index="Matches" id="matches" :route="{ path:'/matches' }" v-if="user.isLoggedIn"><a href="/logout" v-if="user">Logout</a></li></el-menu-item>
-                        <el-menu-item index="Matches" id="matches" :route="{ path:'/matches' }" v-if="user.isLoggedIn"><a href="/login" v-if="!user.isLoggedIn"> <img src="/static/img/login_small.png" height="18" /></a></li></el-menu-item>
+                        <el-menu-item index="My matches" id="mymatches" :route="{ path:'/mymatches' }" v-if="user.isLoggedIn">My Matches</el-menu-item>
+                        <el-menu-item index="match_create" id="match_create" :route="{ path:'/match/create' }" v-if="user.isLoggedIn">Create a Match</el-menu-item>
+                        <el-menu-item index="myteams" id="myteams" :route="{ path:'/myteams' }" v-if="user.isLoggedIn">My Teams</el-menu-item>
+                        <el-menu-item index="team_create" id="matches" :route="{ path:'/team/create' }" v-if="user.isLoggedIn">Create a Team</el-menu-item>
+                        <el-menu-item index="myservers" id="myservers" :route="{ path:'/myservers' }" v-if="user.isLoggedIn">My Servers</el-menu-item>
+                        <el-menu-item index="server_create" id="server_create" :route="{ path:'/server/create' }" v-if="user.isLoggedIn">Add a Server</el-menu-item>
+                        <el-menu-item index="Logout" :route="{ path:'/logout' }" v-if="user.isLoggedIn">Logout</el-menu-item>
+                        <el-menu-item index="login" id="login" :route="{ path:'/login' }" v-if="!user.isLoggedIn"> <img src="/static/img/login_small.png" height="18" /></el-menu-item>
                     </el-menu>
                 </div>
             </div>
@@ -49,6 +49,7 @@ export default {
     name: 'App',
     data() {
         return {
+            activeIndex: '',
             user: {
                 isLoggedIn:false,
                 adminaccess:false,
@@ -59,6 +60,7 @@ export default {
         }
     },
     mounted () {
+        this.activeIndex = this.$route.name;
         axios
             .get('/api/v1/CheckLoggedIn')
             .then((res) => {
