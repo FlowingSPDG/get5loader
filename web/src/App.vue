@@ -12,17 +12,22 @@
                     <router-link to="/" class="navbar-brand" >Get5 Web Panel</router-link>
                 </div>
                 <div class="collapse navbar-collapse" id="myNavbar">
-                    <ul class="nav navbar-nav">
-                        <li><router-link id="matches" to="/matches" v-if="user.isLoggedIn">All Matches</router-link></li>
-                        <li><router-link id="mymatches" to="/mymatches" v-if="user.isLoggedIn">My Matches</router-link></li>
-                        <li><a id="match_create" href="/match/create" v-if="user.isLoggedIn">Create a Match</a></li>
-                        <li><a id="myteams" href="/myteams" v-if="user.isLoggedIn">My Teams</a></li>
-                        <li><a id="team_create" href="/team/create" v-if="user.isLoggedIn">Create a Team</a></li>
-                        <li><a id="myservers" href="/myservers" v-if="user.isLoggedIn">My Servers</a></li>
-                        <li><a id="server_create" href="/server/create" v-if="user.isLoggedIn">Add a Server</a></li>
-                        <li><a href="/logout" v-if="user">Logout</a></li>
-                        <li><a href="/login" v-if="!user.isLoggedIn"> <img src="/static/img/login_small.png" height="18" /></a></li>
-                    </ul>
+                        <el-menu
+                            class="nav navbar-nav"
+                            :default-active="activeIndex"
+                            mode="horizontal"
+                            router
+                        >
+                        <el-menu-item index="Matches" id="matches" :route="{ path:'/matches' }" v-if="user.isLoggedIn">All Matches</el-menu-item>
+                        <el-menu-item index="MyMatches" id="mymatches" :route="{ path:'/mymatches' }" v-if="user.isLoggedIn">My Matches</el-menu-item>
+                        <el-menu-item index="Matches" id="matches" :route="{ path:'/matches' }" v-if="user.isLoggedIn"><a id="match_create" href="/match/create" v-if="user.isLoggedIn">Create a Match</a></li></el-menu-item>
+                        <el-menu-item index="Matches" id="matches" :route="{ path:'/matches' }" v-if="user.isLoggedIn"><a id="myteams" href="/myteams" v-if="user.isLoggedIn">My Teams</a></li></el-menu-item>
+                        <el-menu-item index="Matches" id="matches" :route="{ path:'/matches' }" v-if="user.isLoggedIn"><a id="team_create" href="/team/create" v-if="user.isLoggedIn">Create a Team</a></li></el-menu-item>
+                        <el-menu-item index="Matches" id="matches" :route="{ path:'/matches' }" v-if="user.isLoggedIn"><a id="myservers" href="/myservers" v-if="user.isLoggedIn">My Servers</a></li></el-menu-item>
+                        <el-menu-item index="Matches" id="matches" :route="{ path:'/matches' }" v-if="user.isLoggedIn"><a id="server_create" href="/server/create" v-if="user.isLoggedIn">Add a Server</a></li></el-menu-item>
+                        <el-menu-item index="Matches" id="matches" :route="{ path:'/matches' }" v-if="user.isLoggedIn"><a href="/logout" v-if="user">Logout</a></li></el-menu-item>
+                        <el-menu-item index="Matches" id="matches" :route="{ path:'/matches' }" v-if="user.isLoggedIn"><a href="/login" v-if="!user.isLoggedIn"> <img src="/static/img/login_small.png" height="18" /></a></li></el-menu-item>
+                    </el-menu>
                 </div>
             </div>
         </nav>
