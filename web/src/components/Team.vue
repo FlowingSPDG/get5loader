@@ -32,10 +32,10 @@
     <div class="panel panel-default">
       <div class="panel-heading">Recent Matches</div>
         <div class="panel-body"  v-if="team">
-          <!--{% for match in team.get_recent_matches() %}
-            <a :href="'/match/'+match.id">#{{match.id}}</a>: {{ team.get_vs_match_result(match.id) }}
+          <div v-for="(match, index) in matches" :key="index" >
+            <a :href="'/match/'+match.id">#{{match.id}}</a>: {{ get_vs_match_result(match.id) }}
             <br>
-          {% endfor %}-->
+          </div>
       </div>
     </div>
 
@@ -52,6 +52,7 @@ export default {
         name:"",
         logo:"",
       },
+      matches:[],
       players:[],
       teamdatas: {},
       user: {
@@ -64,6 +65,7 @@ export default {
   },
   created () {
     this.GetTeamData(this.$route.query.teamid).then(()=>{
+      this.GetRecentMatches(this.$route.query.teamid)
       for(let i=0;i<this.team.steamids.length;i++){
         this.GetSteamName(this.team.steamids[i])
       }
@@ -87,7 +89,12 @@ export default {
     })
   },
   GetRecentMatches: function(teamid) {
-      
+    return new Promise((resolve, reject) => {
+      this.axios.get(`/api/v1/team/${teamid}/GetRecentMatches`).then(res => {
+        this.matches = res.data
+          resolve(res.data)
+      })
+    })
   },
   GetSteamName: function(steamid){
     var self = this
@@ -113,6 +120,9 @@ export default {
         //return `<img src="/static/img/valve_flags/${team.flag}"  width="24" height="16">`
         return `/static/img/valve_flags/${team.flag}.png`
     },
+    get_vs_match_result: function(){
+      
+    }
   }
 }
 </script>

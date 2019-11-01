@@ -220,6 +220,25 @@ func GetTeamInfo(w http.ResponseWriter, r *http.Request) {
 	w.Write(jsonbyte)
 }
 
+func GetRecentMatches(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	fmt.Printf("GetRecentMatches\n vars:%v", vars)
+	teamID := vars["teamID"]
+	response := []db.MatchData{}
+	if teamID == "" {
+		w.WriteHeader(http.StatusInternalServerError)
+	} else {
+		db.SQLAccess.Gorm.Limit(20).Order("id DESC").Where("team1_id = ?", teamID).Or("team2_id = ?", teamID).Find(&response)
+	}
+	jsonbyte, err := json.Marshal(response)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+	}
+	fmt.Println(string(jsonbyte))
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(jsonbyte)
+}
+
 func CheckUserCanEdit(w http.ResponseWriter, r *http.Request) {
 	fmt.Printf("CheckUserCanEdit\n")
 	vars := mux.Vars(r)
