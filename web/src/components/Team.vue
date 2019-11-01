@@ -14,9 +14,9 @@
       <div class="panel-heading">Players</div>
       <div class="panel-body" v-cloak>
         <el-table :data="players">
-          <el-table-column label="SteamID" width="400">
+          <el-table-column label="SteamID" prop="steamid" width="400">
             <template slot-scope="scope">
-              <a v-for="steamid in scope.row.steamid" :key="steamid" :href="'https://steamcommunity.com/profiles/'+steamid">{{steamid}}</a>　　　　
+              <a :href="'https://steamcommunity.com/profiles/'+scope.row.steamid">{{scope.row.steamid}}</a>　　　　
             </template>
           </el-table-column>
           <el-table-column
