@@ -140,8 +140,9 @@ func GetUserInfo(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	fmt.Printf("GetUserInfo\n")
 	userid := vars["userID"]
-	response := db.UserData{}
+	response := APIUserData{}
 	db.SQLAccess.Gorm.Where("id = ?", userid).First(&response)
+
 	jsonbyte, err := json.Marshal(response)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
