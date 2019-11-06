@@ -222,14 +222,73 @@ func GetTeamInfo(w http.ResponseWriter, r *http.Request) {
 
 func GetRecentMatches(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	fmt.Printf("GetRecentMatches\n vars:%v", vars)
+	fmt.Printf("GetRecentMatches\n")
 	teamID := vars["teamID"]
-	response := []db.MatchData{}
-	if teamID == "" {
-		w.WriteHeader(http.StatusInternalServerError)
-	} else {
-		db.SQLAccess.Gorm.Limit(20).Order("id DESC").Where("team1_id = ?", teamID).Or("team2_id = ?", teamID).Find(&response)
+	matches := []db.MatchData{}
+	response := []APIMatchData{}
+	db.SQLAccess.Gorm.Where("team1_id = ?", teamID).Or("team2_id = ?", teamID).Limit(20).Order("id DESC").Find(&matches)
+	for i := 0; i < len(matches); i++ {
+		mapstats := []APIMapStatsData{}
+		server := APIGameServerData{}
+		team1 := APITeamData{}
+		team2 := APITeamData{}
+		user := APIUserData{}
+		db.SQLAccess.Gorm.Where("match_id = ?", matches[i].ID).Limit(7).Find(&mapstats)
+		db.SQLAccess.Gorm.Where("id = ?", matches[i].ServerID).First(&server)
+		db.SQLAccess.Gorm.Where("id = ?", matches[i].Team1ID).First(&team1)
+		db.SQLAccess.Gorm.Where("id = ?", matches[i].Team2ID).First(&team2)
+		db.SQLAccess.Gorm.Where("id = ?", matches[i].UserID).First(&user)
+		var winner int64
+		if matches[i].Winner.Valid {
+			winner_, err := matches[i].Winner.Value()
+			if err != nil {
+				winner = 0
+			}
+			winner = winner_.(int64)
+		}
+		starttime := matches[i].StartTime.Time
+		endtime := matches[i].EndTime.Time
+		status, err := matches[i].GetStatusString(true)
+		if err != nil {
+			status = ""
+		}
+
+		for i := 0; i < len(mapstats); i++ {
+			if mapstats[i].StartTime.Valid {
+				mapstats[i].StartTimeJSON = mapstats[i].StartTime.Time
+			}
+			if mapstats[i].EndTime.Valid {
+				mapstats[i].EndTimeJSON = mapstats[i].EndTime.Time
+			}
+		}
+		m := APIMatchData{
+			ID:            matches[i].ID,
+			UserID:        matches[i].UserID,
+			Winner:        winner,
+			Cancelled:     matches[i].Cancelled,
+			StartTimeJSON: starttime,
+			EndTimeJSON:   endtime,
+			MaxMaps:       matches[i].MaxMaps,
+			Title:         matches[i].Title,
+			SkipVeto:      matches[i].SkipVeto,
+			VetoMapPool:   strings.Split(matches[i].VetoMapPool, " "),
+			Team1Score:    matches[i].Team1Score,
+			Team2Score:    matches[i].Team2Score,
+			Team1String:   matches[i].Team1String,
+			Team2String:   matches[i].Team2String,
+			Forfeit:       matches[i].Forfeit,
+			Pending:       matches[i].Pending(),
+			Live:          matches[i].Live(),
+			Server:        server,
+			MapStats:      mapstats,
+			Team1:         team1,
+			Team2:         team2,
+			User:          user,
+			Status:        status,
+		}
+		response = append(response, m)
 	}
+
 	jsonbyte, err := json.Marshal(response)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
