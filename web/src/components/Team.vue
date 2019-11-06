@@ -4,7 +4,7 @@
     <h1 v-cloak>
       <img :src="get_flag_link(team)" /> {{ team.name }} {{ team.logo }}
       <div class="pull-right" v-if="Editable == true">
-        <router-link :to="'/team?teamid='+team.id+'/edit'" "btn btn-primary btn-xs">Edit</router-link>
+        <router-link :to="'/team?teamid='+team.id+'/edit'" class="btn btn-primary btn-xs">Edit</router-link>
       </div>
     </h1>
 
@@ -145,15 +145,14 @@ export default {
           other_team = res;
           //for a bo1 replace series score with the map score
     if (match.max_maps == 1){
-      mapstat = match.map_stats[0]
-      if (mapstat){
+      if (match.map_stats.length == 1){
         if (match.team1_id == self.id){
-          my_score = mapstat.team1_score
-          other_team_score = mapstat.team2_score
+          my_score = match.map_stats[0].team1_score
+          other_team_score = match.map_stats[0].team2_score
         }
         else{
-          my_score = mapstat.team2_score
-          other_team_score = mapstat.team1_score      
+          my_score = match.map_stats[0].team2_score
+          other_team_score = match.map_stats[0].team1_score      
         }
       }
     }
@@ -188,15 +187,14 @@ export default {
         other_team = res;
         //for a bo1 replace series score with the map score
     if (match.max_maps == 1){
-      mapstat = match.map_stats[0]
-      if (mapstat){
+      if (match.map_stats.length == 1){
         if (match.team1_id == self.id){
-          my_score = mapstat.team1_score
-          other_team_score = mapstat.team2_score
+          my_score = match.map_stats[0].team1_score
+          other_team_score = match.map_stats[0].team2_score
         }
         else{
-          my_score = mapstat.team2_score
-          other_team_score = mapstat.team1_score      
+          my_score = match.map_stats[0].team2_score
+          other_team_score = match.map_stats[0].team1_score      
         }
       }
     }
