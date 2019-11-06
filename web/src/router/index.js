@@ -8,6 +8,7 @@ import Match from '@/components/Match'
 import MyMatches from '@/components/MyMatches'
 import Metrics from '@/components/Metrics'
 import Team from '@/components/Team'
+import User from '@/components/User'
 
 Vue.use(VueAxios, axios)
 Vue.use(Router)
@@ -43,6 +44,11 @@ export default new Router({
       path: '/team',
       name: 'Team',
       component: Team
+    },
+    {
+      path: '/user',
+      name: 'User',
+      component: User
     }
   ]
 })
