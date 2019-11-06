@@ -25,8 +25,8 @@
                         <el-menu-item index="team_create" id="matches" :route="{ path:'/team/create' }" v-if="user.isLoggedIn">Create a Team</el-menu-item>
                         <el-menu-item index="myservers" id="myservers" :route="{ path:'/myservers' }" v-if="user.isLoggedIn">My Servers</el-menu-item>
                         <el-menu-item index="server_create" id="server_create" :route="{ path:'/server/create' }" v-if="user.isLoggedIn">Add a Server</el-menu-item>
-                        <el-menu-item index="logout" id="logout" v-if="user.isLoggedIn"> <a id="logout" href='/api/logout' v-if="user.isLoggedIn">Logout</a> </el-menu-item>
-                        <el-menu-item index="login" id="login" v-if="!user.isLoggedIn"> <a id="login" href='/api/login' v-if="!user.isLoggedIn"> <img src="/static/img/login_small.png" height="18" /></a> </el-menu-item>
+                        <el-menu-item index="logout" id="logout" v-if="user.isLoggedIn"> <a href='/api/logout' v-if="user.isLoggedIn">Logout</a> </el-menu-item>
+                        <el-menu-item index="login" id="login" v-if="!user.isLoggedIn"> <a href='/api/login' v-if="!user.isLoggedIn"> <img src="/static/img/login_small.png" height="18" /></a> </el-menu-item>
                     </el-menu>
                 </div>
             </div>

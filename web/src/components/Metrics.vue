@@ -1,11 +1,43 @@
 <template>
   <div id="metrics">
     <h1>Get5 Metrics</h1>
-    <ul class="list-group">
-        <el-table class="list-group-item" v-for="(value,key, index) in metrics" :key="value.key">
-            {{key}}: {{value}}
-        </el-table>
-    </ul>
+    <el-table :data="metrics">
+      <el-table-column
+        prop="users"
+        label="Registered Users"
+        width="300">
+      </el-table-column>
+      <el-table-column
+        prop="saved_teams"
+        label="Saved Teams"
+        width="300">
+      </el-table-column>
+      <el-table-column
+        prop="matches_created"
+        label="Matches created"
+        width="300">
+      </el-table-column>
+      <el-table-column
+        prop="completed_matches"
+        label="Completed matches"
+        width="300">
+      </el-table-column>
+      <el-table-column
+        prop="servers_added"
+        label="Servers added"
+        width="300">
+      </el-table-column>
+      <el-table-column
+        prop="maps_with_stats"
+        label="Maps with stats saved"
+        width="300">
+      </el-table-column>
+      <el-table-column
+        prop="unique_players"
+        label="Unique players"
+        width="300">
+      </el-table-column>
+    </el-table>
   </div>
 </template>
 
@@ -14,12 +46,12 @@ export default {
   name: 'Metrics',
   data () {
     return {
-      metrics:{}
+      metrics:[]
     }
   },
   created () {
     this.axios.get('/api/v1/GetMetrics').then(res => {
-      this.metrics = res.data
+      this.metrics.push(res.data)
     })
   },
 }
