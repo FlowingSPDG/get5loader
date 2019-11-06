@@ -1,21 +1,5 @@
 <template>
 <div>
-{% with messages = get_flashed_messages(with_categories=true) %}
-{% if messages %}
-<div class="panel panel-primary">
-    <div class="panel-heading">Command response</div>
-
-    <div class="panel-body">
-        {% for message in messages %}
-        <b>{ message[1] }</b>
-        <br>
-        {% endfor %}
-    </div>
-
-</div>
-<br>
-{% endif %}
-{% endwith %}
 
 <div id="content">
 
@@ -454,6 +438,15 @@ export default {
     	}
     	return playerstat.kills / playerstat.roundsplayed
     },
+    SendRCON: function(command){
+        //TODO
+        /*
+        this.$notify.info({
+          title: 'Info',
+          message: 'This is an info message'
+        });
+      */
+    }
   }
 }
 </script>

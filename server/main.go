@@ -79,6 +79,9 @@ func main() {
 	r.HandleFunc("/login", db.LoginHandler).Methods("GET")
 	r.HandleFunc("/logout", db.LogoutHandler).Methods("GET")
 
+	r.HandleFunc("/api/login", db.LoginHandler).Methods("GET")
+	r.HandleFunc("/api/logout", db.LogoutHandler).Methods("GET")
+
 	r.HandleFunc("/match/create", get5.MatchCreateHandler)             // GET/POST
 	r.HandleFunc("/match/{matchID}", get5.MatchHandler)                // ?
 	r.HandleFunc("/match/{matchID}/config", get5.MatchConfigHandler)   // ?
