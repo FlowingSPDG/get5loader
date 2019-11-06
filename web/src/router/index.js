@@ -2,7 +2,7 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import axios from 'axios';
 import VueAxios from 'vue-axios'
-import HelloWorld from '@/components/HelloWorld'
+
 import Matches from '@/components/Matches'
 import Match from '@/components/Match'
 import MyMatches from '@/components/MyMatches'
@@ -17,8 +17,7 @@ export default new Router({
   routes: [
     {
       path: '/',
-      name: 'HelloWorld',
-      component: HelloWorld
+      redirect: '/matches'
     },
     {
       path: '/matches',
