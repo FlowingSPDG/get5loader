@@ -116,7 +116,7 @@
                         <td></td>
                         
                         <tr v-for="player in matchdata.team1_player_stats[map_stats.id]" :key="player.id">
-                            <td v-if="player.roundsplayed"> <a :href="GetSteamURL(player.steamid)"> {{ player.name }} </a></td>
+                            <td v-if="player.roundsplayed"> <a :href="GetSteamURL(player.steam_id)"> {{ player.name }} </a></td>
                             <td v-if="player.roundsplayed" class="text-center"> {{ player.kills }} </td>
                             <td v-if="player.roundsplayed" class="text-center"> {{ player.deaths }} </td>
                             <td v-if="player.roundsplayed" class="text-center"> {{ player.assists }} </td>
@@ -147,7 +147,7 @@
                         <td></td>
                         
                         <tr v-for="player in matchdata.team2_player_stats[map_stats.id]" :key="player.id">
-                            <td v-if="player.roundsplayed"> <a :href="GetSteamURL(player.steamid)"> {{ player.name }} </a></td>
+                            <td v-if="player.roundsplayed"> <a :href="GetSteamURL(player.steam_id)"> {{ player.name }} </a></td>
                             <td v-if="player.roundsplayed" class="text-center"> {{ player.kills }} </td>
                             <td v-if="player.roundsplayed" class="text-center"> {{ player.deaths }} </td>
                             <td v-if="player.roundsplayed" class="text-center"> {{ player.assists }} </td>
