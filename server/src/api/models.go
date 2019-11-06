@@ -14,9 +14,9 @@ type APIUserData struct {
 	Name    string `gorm:"column:name" json:"name"`
 	Admin   bool   `gorm:"column:admin" json:"admin"`
 
-	Servers []APIGameServerData `gorm:"foreignkey:user_id" json:"servers"`
-	Teams   []APITeamData       `gorm:"foreignkey:user_id" json:"teams"`
-	Matches []APIMatchData      `gorm:"foreignkey:user_id" json:"matches"`
+	//Servers []APIGameServerData `gorm:"foreignkey:user_id" json:"servers"`
+	//Teams   []APITeamData       `gorm:"foreignkey:user_id" json:"teams"`
+	//Matches []APIMatchData      `gorm:"foreignkey:user_id" json:"matches"`
 }
 
 // TableName declairation for GORM
@@ -73,25 +73,25 @@ func (t *APITeamData) GetPlayers() ([]string, error) {
 
 // APIMatchData Struct for match table.
 type APIMatchData struct {
-	ID          int64       `gorm:"primary_key;column:id" json:"id"`
-	UserID      int64       `gorm:"column:user_id" json:"user_id"`
-	Team1       APITeamData `json:"team1"`
-	Team2       APITeamData `json:"team2"`
-	Winner      int64       `gorm:"column:winner" json:"winner"`
-	Cancelled   bool        `gorm:"column:cancelled" json:"cancelled"`
-	StartTime   sql.NullTime   `gorm:"column:start_time" json:"-"`
-	StartTimeJSON time.Time `json:"start_time"`
-	EndTime     sql.NullTime   `gorm:"column:end_time" json:"-"`
-	EndTimeJSON time.Time `json:"end_time"`
-	MaxMaps     int         `gorm:"column:max_maps" json:"max_maps"`
-	Title       string      `gorm:"column:title" json:"title"`
-	SkipVeto    bool        `gorm:"column:skip_veto" json:"skip_veto"`
-	VetoMapPool []string    `gorm:"column:veto_mappool" json:"veto_mappool"`
-	Team1Score  int         `gorm:"column:team1_score" json:"team1_score"`
-	Team2Score  int         `gorm:"column:team2_score" json:"team2_score"`
-	Team1String string      `gorm:"column:team1_string" json:"team1_string"`
-	Team2String string      `gorm:"column:team2_string" json:"team2_string"`
-	Forfeit     bool        `gorm:"column:forfeit" json:"forfeit"`
+	ID            int64        `gorm:"primary_key;column:id" json:"id"`
+	UserID        int64        `gorm:"column:user_id" json:"user_id"`
+	Team1         APITeamData  `json:"team1"`
+	Team2         APITeamData  `json:"team2"`
+	Winner        int64        `gorm:"column:winner" json:"winner"`
+	Cancelled     bool         `gorm:"column:cancelled" json:"cancelled"`
+	StartTime     sql.NullTime `gorm:"column:start_time" json:"-"`
+	StartTimeJSON time.Time    `json:"start_time"`
+	EndTime       sql.NullTime `gorm:"column:end_time" json:"-"`
+	EndTimeJSON   time.Time    `json:"end_time"`
+	MaxMaps       int          `gorm:"column:max_maps" json:"max_maps"`
+	Title         string       `gorm:"column:title" json:"title"`
+	SkipVeto      bool         `gorm:"column:skip_veto" json:"skip_veto"`
+	VetoMapPool   []string     `gorm:"column:veto_mappool" json:"veto_mappool"`
+	Team1Score    int          `gorm:"column:team1_score" json:"team1_score"`
+	Team2Score    int          `gorm:"column:team2_score" json:"team2_score"`
+	Team1String   string       `gorm:"column:team1_string" json:"team1_string"`
+	Team2String   string       `gorm:"column:team2_string" json:"team2_string"`
+	Forfeit       bool         `gorm:"column:forfeit" json:"forfeit"`
 
 	MapStats []APIMapStatsData `json:"map_stats"`
 	Server   APIGameServerData `json:"server"`
@@ -109,17 +109,17 @@ func (u *APIMatchData) TableName() string {
 
 // APIMapStatsData MapStatsData struct for map_stats table.
 type APIMapStatsData struct {
-	ID         int          `gorm:"primary_key" gorm:"column:id" json:"id"`
-	MatchID    int          `gorm:"column:match_id" gorm:"ForeignKey:match_id" json:"match_id"`
-	MapNumber  int          `gorm:"column:map_number" json:"map_number"`
-	MapName    string       `gorm:"column:map_name" json:"map_name"`
-	StartTime   sql.NullTime   `gorm:"column:start_time" json:"-"`
-	StartTimeJSON time.Time `json:"start_time"`
-	EndTime     sql.NullTime   `gorm:"column:end_time" json:"-"`
-	EndTimeJSON time.Time `json:"end_time"`
-	Winner     int          `gorm:"column:winner" json:"winner"`
-	Team1Score int          `gorm:"column:team1_score" json:"team1_score"`
-	Team2Score int          `gorm:"column:team2_score" json:"team2_score"`
+	ID            int          `gorm:"primary_key" gorm:"column:id" json:"id"`
+	MatchID       int          `gorm:"column:match_id" gorm:"ForeignKey:match_id" json:"match_id"`
+	MapNumber     int          `gorm:"column:map_number" json:"map_number"`
+	MapName       string       `gorm:"column:map_name" json:"map_name"`
+	StartTime     sql.NullTime `gorm:"column:start_time" json:"-"`
+	StartTimeJSON time.Time    `json:"start_time"`
+	EndTime       sql.NullTime `gorm:"column:end_time" json:"-"`
+	EndTimeJSON   time.Time    `json:"end_time"`
+	Winner        int          `gorm:"column:winner" json:"winner"`
+	Team1Score    int          `gorm:"column:team1_score" json:"team1_score"`
+	Team2Score    int          `gorm:"column:team2_score" json:"team2_score"`
 }
 
 // TableName declairation for GORM
