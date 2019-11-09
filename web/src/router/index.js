@@ -36,6 +36,11 @@ export default new Router({
       component: MyMatches
     },
     {
+      path: '/match/create', // TODO
+      name: 'Create Match',
+      component: Matches
+    },
+    {
       path: '/match/:matchid',
       name: 'Match',
       component: Match
@@ -46,6 +51,11 @@ export default new Router({
       component: Metrics
     },
     {
+      path: '/team/create', // TODO
+      name: 'Create Team',
+      component: Team
+    },
+    {
       path: '/team/:teamid',
       name: 'Team',
       component: Team
@@ -53,6 +63,11 @@ export default new Router({
     {
       path: '/user/:userid',
       name: 'User',
+      component: User
+    },
+    {
+      path: '/servers/create', // TODO
+      name: 'Create Server',
       component: User
     }
   ]
