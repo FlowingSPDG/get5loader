@@ -184,12 +184,16 @@ func GetStatusString(w http.ResponseWriter, r *http.Request) {
 func GetMatches(w http.ResponseWriter, r *http.Request) {
 	fmt.Printf("GetMatches\n")
 	q := r.URL.Query()
+	offset := q.Get("offset")
+	if offset == "" {
+		offset = "0"
+	}
 	userID := q.Get("userID")
 	response := []db.MatchData{}
 	if userID != "" {
-		db.SQLAccess.Gorm.Limit(20).Where("user_id = ?", userID).Order("id DESC").Find(&response)
+		db.SQLAccess.Gorm.Limit(20).Where("user_id = ?", userID).Order("id DESC").Offset(offset).Find(&response)
 	} else {
-		db.SQLAccess.Gorm.Limit(20).Order("id DESC").Find(&response)
+		db.SQLAccess.Gorm.Limit(20).Order("id DESC").Offset(offset).Find(&response)
 	}
 	jsonbyte, err := json.Marshal(response)
 	if err != nil {

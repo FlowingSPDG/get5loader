@@ -9,15 +9,17 @@
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
                     </button>
-                    <router-link to="/" class="navbar-brand" >Get5 Web Panel</router-link>
+                    <transition name="fade">
+                        <router-link to="/" class="navbar-brand" >Get5 Web Panel</router-link>
+                    </transition>
                 </div>
                 <div class="collapse navbar-collapse" id="myNavbar">
-                        <el-menu
-                            class="nav navbar-nav"
-                            :default-active="activeIndex"
-                            mode="horizontal"
-                            router
-                        >
+                    <el-menu
+                        class="nav navbar-nav"
+                        :default-active="activeIndex"
+                        mode="horizontal"
+                        router
+                    >
                         <el-menu-item index="Matches" id="matches" :route="{ path:'/matches' }" v-if="user.isLoggedIn">All Matches</el-menu-item>
                         <el-menu-item index="My matches" id="mymatches" :route="{ path:'/mymatches' }" v-if="user.isLoggedIn">My Matches</el-menu-item>
                         <el-menu-item index="match_create" id="match_create" :route="{ path:'/match/create' }" v-if="user.isLoggedIn">Create a Match</el-menu-item>
@@ -79,5 +81,12 @@ export default {
     text-align: center;
     color: #2c3e50;
     margin-top: 60px;
+}
+
+.fade-enter-active, .fade-leave-active {
+  transition: opacity .5s;
+}
+.fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+  opacity: 0;
 }
 </style>

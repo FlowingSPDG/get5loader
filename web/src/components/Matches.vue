@@ -16,9 +16,8 @@
         <th v-else>Owner</th>
       </tr>
     </thead>
-    <tbody>
-
-      <tr v-for="(match, index) in matches" :key="index" align="left">
+    <tbody style="overflow:auto">
+      <tr v-for="(match,index) in matches" :key="'m_'+match.id+'_'+index" align="left">
         <td v-if="match" v-loading="loading[match.id]"><router-link :to="'/match?matchid='+match.id">{{match.id}}</router-link></td>
         <td v-if="matchinfo[match.id]">
           <img :src="get_flag_link(matchinfo[match.id].team1)" />
@@ -40,7 +39,7 @@
         </td>
         <td v-if="!my_matches && matchinfo[match.id]"> <a :href="'/user/'+matchinfo[match.id].user.id"> {{ matchinfo[match.id].user.name }} </a> </td>
       </tr>
-
+    <el-button type="primary" :loading="loadingmore" @click="GetMatches()">Load more...</el-button>
     </tbody>
   </table>
 
@@ -54,6 +53,8 @@ export default {
   name: 'matches',
   data () {
     return {
+      loadingmore:false,
+      loaded:0,
       loading:{},
       flag_loading:{},
       my_matches:false,
@@ -70,30 +71,46 @@ export default {
     }
   },
   created () {
-    let self = this
-    this.GetMatches(this.$route.query.userid).then((res) => {
-      console.log(res)
-      for(let i=0;i<res.length;i++){
-        self.$set(self.loading,[res[i].id],true)
-        this.GetMatchInfo(res[i].id).then(() => {
-          self.$set(self.loading,[res[i].id],false)
-        })
-      }
-    })
+    this.GetMatches();
   },
   methods: {
     GetMatches: function(userid){
+      let self = this
+      self.loadingmore = true
+      console.log("GetMatches")
       return new Promise((resolve, reject) => {
-        if (!userid){
-          this.axios.get('/api/v1/GetMatches').then(res => {
-            this.matches = res.data
-            resolve(res.data)
+        if (userid){
+          this.axios.get(`/api/v1/GetMatches?userID=${userid}&offset=${self.loaded+1}`).then(res => {
+            self.loaded = self.loaded+res.data.length;
+            for(let i=0;i<res.data.length;i++){
+              this.matches.push(res.data[i])
+              self.$set(self.loading,[res.data[i].id],true)
+              this.GetMatchInfo(res.data[i].id).then(() => {
+                self.$set(self.loading,[res.data[i].id],false)
+              })
+              if (i+1 == res.data.length ){
+                console.log("resolved")
+                self.loadingmore = false
+                resolve(res.data)
+              }
+            }
           })
-      }
+        }
       else {
-        this.axios.get(`/api/v1/GetMatches?userID=${userid}`).then(res => {
-          this.matches = res.data
-          resolve(res.data)
+        this.axios.get(`/api/v1/GetMatches?offset=${this.loaded+1}`).then(res => {
+          self.loaded = self.loaded+res.data.length;
+          for(let i=0;i<res.data.length;i++){
+              this.matches.push(res.data[i])
+              self.$set(self.loading,[res.data[i].id],true)
+              this.GetMatchInfo(res.data[i].id).then(() => {
+                self.$set(self.loading,[res.data[i].id],false)
+              })
+              if (i+1 == res.data.length ){
+                console.log("resolved")
+                self.loadingmore = false
+                resolve(res.data)
+              }
+            }
         })
       }
       })
