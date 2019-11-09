@@ -1,8 +1,8 @@
 <template>
-  <div id="content" class="matches">
+  <div id="content" class="matches" v-if="match_owner" v-loading="!match_owner">
     <h1 v-if="my_matches">Your matches</h1>
     <h1 v-else-if="all_matches">All matches</h1>
-    <h1 v-else>Matches for <router-link :to="'/user?userid='+match_owner.id">{{match_owner.name}}</router-link></h1>
+    <h1 v-else>Matches for <router-link :to="'/user/'+match_owner.id">{{match_owner.name}}</router-link></h1>
 
   <table class="table table-striped">
     <thead>
@@ -18,15 +18,15 @@
     </thead>
     <tbody style="overflow:auto">
       <tr v-for="(match,index) in matches" :key="'m_'+match.id+'_'+index" align="left">
-        <td v-if="match" v-loading="loading[match.id]"><router-link :to="'/match?matchid='+match.id">{{match.id}}</router-link></td>
+        <td v-if="match" v-loading="loading[match.id]"><router-link :to="'/match/'+match.id">{{match.id}}</router-link></td>
         <td v-if="matchinfo[match.id]">
           <img :src="get_flag_link(matchinfo[match.id].team1)" />
-          <router-link :to="'/team?teamid='+match.team1_id">{{matchinfo[match.id].team1.name}}</router-link>
+          <router-link :to="'/team/'+match.team1_id">{{matchinfo[match.id].team1.name}}</router-link>
         </td>
 
         <td v-if="matchinfo[match.id]">
           <img :src="get_flag_link(matchinfo[match.id].team2)"  />
-          <router-link :to="'/team?teamid='+match.team2_id">{{matchinfo[match.id].team2.name}}</router-link>
+          <router-link :to="'/team/'+match.team2_id">{{matchinfo[match.id].team2.name}}</router-link>
         </td>
 
         <td v-if="matchinfo[match.id]">
@@ -38,7 +38,7 @@
           <a v-if="(match.pending || match.live)" :href="'/match/'+match.id+'cancel'" class="btn btn-danger btn-xs align-right">Cancel</a>
         </td>
         <td v-if="!my_matches && matchinfo[match.id]">
-          <router-link :to="'/user?userid='+matchinfo[match.id].user.id">{{ matchinfo[match.id].user.name }}</router-link>
+          <router-link :to="'/user/'+matchinfo[match.id].user.id">{{ matchinfo[match.id].user.name }}</router-link>
         </td>
       </tr>
     <el-button type="primary" :loading="loadingmore" @click="GetMatches()">Load more...</el-button>
@@ -55,6 +55,7 @@ export default {
   name: 'matches',
   data () {
     return {
+      user:{},
       loadingmore:false,
       loaded:0,
       loading:{},
@@ -63,26 +64,71 @@ export default {
       all_matches:true,
       matches:[],
       matchinfo:{},
-      match_owner:{ // TODO
-        id:1,
-        name:"hoge"
-      },
+      match_owner:{},
       teamdatas:{},
       userdatas:{},
       serverdatas:{},
     }
   },
   created () {
-    this.GetMatches();
+    this.Init()
+  },
+  watch: {
+    $route(to, from) {
+      this.Init()
+    },
   },
   methods: {
+    Init:function(){
+      this.user={}
+      this.loadingmore=false
+      this.loaded=0
+      this.loading={}
+      this.flag_loading={}
+      this.my_matches=false
+      this.all_matches=true
+      this.matches=[]
+      this.matchinfo={}
+      this.match_owner={}
+      this.teamdatas={}
+      this.userdatas={}
+      this.serverdatas={}
+      return new Promise((resolve, reject) => {
+        this.matches = []
+        if (this.$route.params.userid) {
+          this.all_matches = false
+          this.axios
+            .get('/api/v1/CheckLoggedIn')
+            .then((res) => {
+              this.user = res.data
+              this.my_matches = this.$route.params.userid == this.user.userid
+              this.GetMatches(this.$route.params.userid);
+              this.GetUserData(this.$route.params.userid).then((res) => {
+                this.match_owner = res
+                resolve()
+              })
+            })
+        } else {
+          this.axios
+            .get('/api/v1/CheckLoggedIn')
+            .then((res) => {
+              this.user = res.data
+              this.my_matches = this.$route.params.userid == this.user.userid
+              this.GetMatches().then(() => {
+                resolve()
+              })
+            })      
+        }
+        this.activeIndex = this.$route.name;
+      })
+    },
     GetMatches: function(userid){
       let self = this
       self.loadingmore = true
       console.log("GetMatches")
       return new Promise((resolve, reject) => {
         if (userid){
-          this.axios.get(`/api/v1/GetMatches?userID=${userid}&offset=${self.loaded+1}`).then(res => {
+          this.axios.get(`/api/v1/GetMatches?userID=${userid}`).then(res => {
             self.loaded = self.loaded+res.data.length;
             for(let i=0;i<res.data.length;i++){
               this.matches.push(res.data[i])

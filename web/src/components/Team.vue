@@ -4,7 +4,7 @@
     <h1 v-cloak>
       <img :src="get_flag_link(team)" /> {{ team.name }} {{ team.logo }}
       <div class="pull-right" v-if="Editable == true">
-        <router-link :to="'/team?teamid='+team.id+'/edit'" class="btn btn-primary btn-xs">Edit</router-link>
+        <router-link :to="'/team/'+team.id+'/edit'" class="btn btn-primary btn-xs">Edit</router-link>
       </div>
     </h1>
 
@@ -33,7 +33,7 @@
       <div class="panel-heading">Recent Matches</div>
         <div class="panel-body"  v-if="team">
           <div v-for="(match, index) in matches" :key="index" >
-            <router-link :to="'/match?matchid='+match.id">#{{match.id}}</router-link>: {{ matchdata[index] }}
+            <router-link :to="'/match/'+match.id">#{{match.id}}</router-link>: {{ matchdata[index] }}
             <br>
           </div>
       </div>
@@ -65,9 +65,9 @@ export default {
     }
   },
   created () {
-    this.GetTeamData(this.$route.query.teamid).then((teamdata)=>{
+    this.GetTeamData(this.$route.params.teamid).then((teamdata)=>{
       this.team = teamdata
-      this.GetRecentMatches(this.$route.query.teamid).then((matches) => {
+      this.GetRecentMatches(this.$route.params.teamid).then((matches) => {
         this.matches = matches
         for(let i=0;i<this.matches.length;i++){
           if (!this.matchdata){
@@ -138,7 +138,7 @@ export default {
     let my_score
     let other_team_score
     let other_team;
-    if (match.team1.id == this.$route.query.teamid){
+    if (match.team1.id == this.$route.params.teamid){
         my_score = match.team1_score
         other_team_score = match.team2_score
         this.GetTeamData(match.team2.id).then((res) => {

@@ -2,7 +2,7 @@
   <div id="content" class="matches">
     <h1 v-if="my_matches">Your matches</h1>
     <h1 v-else-if="all_matches">All matches</h1>
-    <h1 v-else>Matches for <router-link :to="'/user?userid='+match_owner.id">{{match_owner.name}}</router-link></h1>
+    <h1 v-else>Matches for <router-link :to="'/user/'+match_owner.id">{{match_owner.name}}</router-link></h1>
 
   <table class="table table-striped">
     <thead>
@@ -23,12 +23,12 @@
 
         <td v-if="matchinfo[match.id]">
           {{matchinfo[match.id].team1.flag}}
-          <router-link :to="'/team?teamid='+match.team1_id">{{matchinfo[match.id].team1.name}}</router-link>
+          <router-link :to="'/team/'+match.team1_id">{{matchinfo[match.id].team1.name}}</router-link>
         </td>
 
         <td v-if="matchinfo[match.id]">
           {{matchinfo[match.id].team2.flag}}
-          <router-link :to="'/team?teamid='+match.team2_id">{{matchinfo[match.id].team2.name}}</router-link>
+          <router-link :to="'/team/'+match.team2_id">{{matchinfo[match.id].team2.name}}</router-link>
         </td>
 
         <td v-if="matchinfo[match.id]">
@@ -40,7 +40,7 @@
           <a v-if="(match.pending || match.live)" :href="'/match/'+match.id+'cancel'" class="btn btn-danger btn-xs align-right">Cancel</a>
         </td>
         <td v-if="!my_matches && matchinfo[match.id]"> 
-          <router-link :to="'/user?userid='+matchinfo[match.id].user.id">{{ matchinfo[match.id].user.name }}</router-link>
+          <router-link :to="'/user/='+matchinfo[match.id].user.id">{{ matchinfo[match.id].user.name }}</router-link>
         </td>
 
       </tr>

@@ -26,12 +26,17 @@ export default new Router({
       component: Matches
     },
     {
+      path: '/matches/:userid',
+      name: 'Matches',
+      component: Matches
+    },
+    {
       path: '/mymatches',
       name: 'My matches',
       component: MyMatches
     },
     {
-      path: '/match',
+      path: '/match/:matchid',
       name: 'Match',
       component: Match
     },
@@ -41,12 +46,12 @@ export default new Router({
       component: Metrics
     },
     {
-      path: '/team',
+      path: '/team/:teamid',
       name: 'Team',
       component: Team
     },
     {
-      path: '/user',
+      path: '/user/:userid',
       name: 'User',
       component: User
     }

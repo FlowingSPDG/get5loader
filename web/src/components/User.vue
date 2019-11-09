@@ -7,14 +7,14 @@
       Name: {{displaying_user.name}}<br>
       Steam account: <a :href="GetSteamURL(displaying_user.steam_id)"> {{displaying_user.steam_id}}</a> <br>
       Teams saved: <a :href="'/teams/'+displaying_user.id"> {{displaying_user.teams.length}}</a> <br>
-      Matches created: <a :href="'/matches/'+displaying_user.id"> {{displaying_user.matches.length}}</a> <br>
+      Matches created: <router-link :to="'/matches/'+displaying_user.id">{{displaying_user.matches.length}}</router-link> <br>
     </div>
   </div>
 
   <div class="panel panel-default" v-if="displaying_user">
     <div class="panel-heading">Recent Matches</div>
     <span class="panel-body" v-for="(match, index) in matches" :key=match.id>
-        <router-link :to="'/match?matchid='+match.id">#{{match.id}}</router-link> {{ matchdata[index] }}
+        <router-link :to="'/match/'+match.id">#{{match.id}}</router-link> {{ matchdata[index] }}
     </span>
   </div>
 
@@ -40,7 +40,7 @@ export default {
   },
   created () {
     let self = this
-      this.GetUserData(this.$route.query.userid).then((user) => {
+      this.GetUserData(this.$route.params.userid).then((user) => {
         self.displaying_user = user;
         self.matches = user.matches
         for(let i=0;i<self.matches.length;i++){
@@ -77,7 +77,7 @@ export default {
     let my_score
     let other_team_score
     let other_team;
-    if (match.team1.id == this.$route.query.teamid){
+    if (match.team1.id == this.$route.params.teamid){
         my_score = match.team1_score
         other_team_score = match.team2_score
         this.GetTeamData(match.team2.id).then((res) => {
