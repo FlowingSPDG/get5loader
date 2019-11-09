@@ -11,14 +11,11 @@
     </div>
   </div>
 
-  <div class="panel panel-default">
+  <div class="panel panel-default" v-if="displaying_user">
     <div class="panel-heading">Recent Matches</div>
-    <div class="panel-body">
-      {% for match in displaying_user.get_recent_matches() %}
-        <a :href="'/match/'+match.id">#{{match.id}}</a>: {{ match.get_vs_string() }}
-        <br>
-      {% endfor %}
-    </div>
+    <span class="panel-body" v-for="(match, index) in matches" :key=match.id>
+        <router-link :to="'/match?matchid='+match.id">#{{match.id}}</router-link> {{ matchdata[index] }}
+    </span>
   </div>
 
 </div>
@@ -33,12 +30,25 @@ export default {
           id:"",
           name:"",
           steam_id:"",
-          matches:[]        
-      }
+          matches:[],
+          teams:[],
+          servers:[]
+      },
+      matches:[],
+      matchdata:[]
     }
   },
   created () {
-      this.GetUserData(this.$route.query.userid)
+    let self = this
+      this.GetUserData(this.$route.query.userid).then((user) => {
+        self.displaying_user = user;
+        self.matches = user.matches
+        for(let i=0;i<self.matches.length;i++){
+          self.get_vs_match_result(self.matches[i]).then((res) => {
+            self.matchdata.push(res)
+          })
+        }
+      })
   },
   methods: {
     GetSteamURL: function(steamid){
@@ -52,6 +62,107 @@ export default {
         })
       })
     },
+    GetTeamData: function(teamid){
+     return new Promise((resolve, reject) => {
+        this.axios.get(`/api/v1/team/${teamid}/GetTeamInfo`).then((res) => {
+          console.log(res.data)
+          resolve(res.data)
+        })
+      })
+    },
+    get_vs_match_result: function(match){
+    return new Promise((resolve, reject) => {
+    console.log("get_vs_match_result")
+    console.log(match)
+    let my_score
+    let other_team_score
+    let other_team;
+    if (match.team1.id == this.$route.query.teamid){
+        my_score = match.team1_score
+        other_team_score = match.team2_score
+        this.GetTeamData(match.team2.id).then((res) => {
+          other_team = res;
+          //for a bo1 replace series score with the map score
+    if (match.max_maps == 1){
+      if (match.map_stats.length == 1){
+        if (match.team1_id == self.id){
+          my_score = match.map_stats[0].team1_score
+          other_team_score = match.map_stats[0].team2_score
+        }
+        else{
+          my_score = match.map_stats[0].team2_score
+          other_team_score = match.map_stats[0].team1_score      
+        }
+      }
+    }
+    console.log("other_team")
+    console.log(other_team)
+    if (match.live){
+      let r = `Live, ${my_score}:${other_team_score} vs ${other_team.name}` 
+      console.log(r)
+      resolve(r)
+    }
+    if (my_score < other_team_score){
+      let r = `Lost ${my_score}:${other_team_score} vs ${other_team.name}`
+      console.log(r)
+      resolve(r)
+    }
+    else if(my_score > other_team_score){
+       let r = `Won ${my_score}:${other_team_score} vs ${other_team.name}`
+       console.log(r)
+      resolve(r)
+    }
+    else{
+      let r = `Tied ${other_team_score}:${my_score} vs ${other_team.name}`
+      console.log(r)
+      resolve(r)
+    }
+        })
+    }
+    else{
+      my_score = match.team2_score
+      other_team_score = match.team1_score
+      this.GetTeamData(match.team1.id).then((res) => {
+        other_team = res;
+        //for a bo1 replace series score with the map score
+    if (match.max_maps == 1){
+      if (match.map_stats.length == 1){
+        if (match.team1_id == self.id){
+          my_score = match.map_stats[0].team1_score
+          other_team_score = match.map_stats[0].team2_score
+        }
+        else{
+          my_score = match.map_stats[0].team2_score
+          other_team_score = match.map_stats[0].team1_score      
+        }
+      }
+    }
+    console.log("other_team")
+    console.log(other_team)
+    if (match.live){
+      let r = `Live, ${my_score}:${other_team_score} vs ${other_team.name}` 
+      console.log(r)
+      resolve(r)
+    }
+    if (my_score < other_team_score){
+      let r = `Lost ${my_score}:${other_team_score} vs ${other_team.name}`
+      console.log(r)
+      resolve(r)
+    }
+    else if(my_score > other_team_score){
+       let r = `Won ${my_score}:${other_team_score} vs ${other_team.name}`
+       console.log(r)
+      resolve(r)
+    }
+    else{
+      let r = `Tied ${other_team_score}:${my_score} vs ${other_team.name}`
+      console.log(r)
+      resolve(r)
+    }
+      })
+    }
+    })
+  }
   }
 }
 </script>

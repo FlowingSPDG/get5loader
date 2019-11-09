@@ -2,7 +2,7 @@
   <div id="content" class="matches">
     <h1 v-if="my_matches">Your matches</h1>
     <h1 v-else-if="all_matches">All matches</h1>
-    <h1 v-else>Matches for <a :href="'/user/'+match_owner.id"> {{ match_owner.name }}</a></h1>
+    <h1 v-else>Matches for <router-link :to="'/user?userid='+match_owner.id">{{match_owner.name}}</router-link></h1>
 
   <table class="table table-striped">
     <thead>
@@ -37,7 +37,9 @@
         <td v-if="my_matches && matchinfo[match.id]">
           <a v-if="(match.pending || match.live)" :href="'/match/'+match.id+'cancel'" class="btn btn-danger btn-xs align-right">Cancel</a>
         </td>
-        <td v-if="!my_matches && matchinfo[match.id]"> <a :href="'/user/'+matchinfo[match.id].user.id"> {{ matchinfo[match.id].user.name }} </a> </td>
+        <td v-if="!my_matches && matchinfo[match.id]">
+          <router-link :to="'/user?userid='+matchinfo[match.id].user.id">{{ matchinfo[match.id].user.name }}</router-link>
+        </td>
       </tr>
     <el-button type="primary" :loading="loadingmore" @click="GetMatches()">Load more...</el-button>
     </tbody>

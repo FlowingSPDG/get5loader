@@ -14,9 +14,9 @@ type APIUserData struct {
 	Name    string `gorm:"column:name" json:"name"`
 	Admin   bool   `gorm:"column:admin" json:"admin"`
 
-	//Servers []APIGameServerData `gorm:"foreignkey:user_id" json:"servers"`
-	//Teams   []APITeamData       `gorm:"foreignkey:user_id" json:"teams"`
-	//Matches []APIMatchData      `gorm:"foreignkey:user_id" json:"matches"`
+	Servers []APIGameServerData `gorm:"foreignkey:-" json:"servers"`
+	Teams   []APITeamData       `gorm:"foreignkey:-" json:"teams"`
+	Matches []APIMatchData      `gorm:"foreignkey:-" json:"matches"`
 }
 
 // TableName declairation for GORM
