@@ -1,10 +1,6 @@
 package db
 
 import (
-	"bytes"
-
-	"github.com/hydrogen18/stalecucumber"
-
 	// "database/sql"
 	"fmt"
 
@@ -151,60 +147,6 @@ func LogoutHandler(w http.ResponseWriter, r *http.Request) {
 // GetUserData Gets UserData array via MySQL(GORM).
 func (s *DBdatas) GetUserData(limit int, wherekey string, wherevalue string) ([]UserData, error) {
 	UserData := []UserData{}
-	s.Gorm.Limit(limit).Where(wherekey+" = ?", wherevalue).Find(&UserData)
-	return UserData, nil
-}
-
-// MySQLGetTeamData Gets TeamData array via MySQL(GORM).
-func (s *DBdatas) MySQLGetTeamData(limit int, wherekey string, wherevalue string) ([]TeamData, error) {
-	TeamData := []TeamData{}
-	s.Gorm.Limit(limit).Where(wherekey+" = ?", wherevalue).Find(&TeamData)
-	for i := 0; i < len(TeamData); i++ {
-		reader := bytes.NewReader(TeamData[i].AuthsPickle)
-		TeamData[i].Auths = make([]string, 0)
-		err := stalecucumber.UnpackInto(&TeamData[i].Auths).From(stalecucumber.Unpickle(reader))
-		if err != nil {
-			return TeamData, err
-		}
-	}
-	return TeamData, nil
-}
-
-// MySQLGetMatchData Gets MatchData array via MySQL(GORM).
-func (s *DBdatas) MySQLGetMatchData(limit int, wherekey string, wherevalue string) ([]MatchData, error) {
-	Matches := []MatchData{}
-	if wherekey == "" || wherevalue == "" {
-		s.Gorm.Order("id DESC").Limit(limit).Find(&Matches)
-	} else {
-		s.Gorm.Order("id DESC").Limit(limit).Where(wherekey+" = ?", wherevalue).Find(&Matches)
-	}
-	return Matches, nil
-}
-
-// MySQLGetPlayerStatsData Gets PlayerStatsData array via MySQL(GORM).
-func (s *DBdatas) MySQLGetPlayerStatsData(limit int, wherekey string, wherevalue string) ([]PlayerStatsData, error) {
-	PlayerStatsData := []PlayerStatsData{}
-	s.Gorm.Limit(limit).Where(wherekey+" = ?", wherevalue).Find(&PlayerStatsData)
-	return PlayerStatsData, nil
-}
-
-// MySQLGetMapStatsData Gets MapStatsData array via MySQL(GORM).
-func (s *DBdatas) MySQLGetMapStatsData(limit int, wherekey string, wherevalue string) ([]MapStatsData, error) {
-	MapStatsData := []MapStatsData{}
-	s.Gorm.Limit(limit).Where(wherekey+" = ?", wherevalue).Find(&MapStatsData)
-	return MapStatsData, nil
-}
-
-// MySQLGetGameServerData Gets GameServerData array via MySQL(GORM).
-func (s *DBdatas) MySQLGetGameServerData(limit int, wherekey string, wherevalue string) ([]GameServerData, error) {
-	GameServer := []GameServerData{}
-	s.Gorm.Limit(limit).Where(wherekey+" = ?", wherevalue).Find(&GameServer)
-	return GameServer, nil
-}
-
-// MySQLGetUserData Gets UserData via MySQL(GORM).
-func (s *DBdatas) MySQLGetUserData(limit int, wherekey string, wherevalue string) (UserData, error) {
-	UserData := UserData{}
 	s.Gorm.Limit(limit).Where(wherekey+" = ?", wherevalue).Find(&UserData)
 	return UserData, nil
 }

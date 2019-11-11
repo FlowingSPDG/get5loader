@@ -311,32 +311,21 @@ func (t *TeamData) GetVSMatchResult(matchid int) (string, error) {
 	var otherteam TeamData
 	myscore := 0
 	otherteamscore := 0
-
-	matches, err := SQLAccess.MySQLGetMatchData(1, "id", strconv.Itoa(matchid))
-	if err != nil {
-		return "", err
-	}
-	if int(matches[0].Team1ID) == t.ID {
-		myscore = matches[0].Team1Score
-		otherteamscore = matches[0].Team2Score
-		otherteams, err := SQLAccess.MySQLGetTeamData(1, "id", strconv.Itoa(int(matches[0].Team2ID)))
-		if err != nil {
-			return "", err
-		}
-		otherteam = otherteams[0]
+	var match MatchData
+	SQLAccess.Gorm.Where("id = ?", matchid).First(&match)
+	if int(match.Team1ID) == t.ID {
+		myscore = match.Team1Score
+		otherteamscore = match.Team2Score
+		SQLAccess.Gorm.Where("id = ?", match.Team2ID).First(&otherteam)
 	} else {
-		myscore = matches[0].Team2Score
-		otherteamscore = matches[0].Team1Score
-		otherteams, err := SQLAccess.MySQLGetTeamData(1, "id", strconv.Itoa(int(matches[0].Team1ID)))
-		if err != nil {
-			return "", err
-		}
-		otherteam = otherteams[0]
+		myscore = match.Team2Score
+		otherteamscore = match.Team1Score
+		SQLAccess.Gorm.Where("id = ?", match.Team2ID).First(&otherteam)
 	}
 
 	// for a bo1 replace series score with the map score...
-	if matches[0].MaxMaps == 1 {
-		mapstats, err := matches[0].GetMapStat()
+	if match.MaxMaps == 1 {
+		mapstats, err := match.GetMapStat()
 		if err != nil {
 			return "", err
 		}
@@ -344,7 +333,7 @@ func (t *TeamData) GetVSMatchResult(matchid int) (string, error) {
 			return fmt.Sprintf("Pending, vs %s", otherteam.Name), nil // maybe add <a> tag for otherteam.Name ?
 		}
 		mapstat := mapstats[0]
-		if int(matches[0].Team1ID) == t.ID {
+		if int(match.Team1ID) == t.ID {
 			myscore = mapstat.Team1Score
 			otherteamscore = mapstat.Team2Score
 		} else {
@@ -352,7 +341,7 @@ func (t *TeamData) GetVSMatchResult(matchid int) (string, error) {
 			otherteamscore = mapstat.Team1Score
 		}
 	}
-	if matches[0].Live() == true {
+	if match.Live() == true {
 		return fmt.Sprintf("Live, %d:%d vs %s", myscore, otherteamscore, otherteam.Name), nil // maybe add <a> tag for otherteam.Name ?
 	}
 	if myscore < otherteamscore {
@@ -549,17 +538,18 @@ func (m *MatchData) GetCurrentScore(g *gorm.DB) (int, int) {
 // GetTeam1 Get Team1 as "TeamData" struct.
 func (m *MatchData) GetTeam1() (TeamData, error) {
 	var Team = TeamData{}
-	STeam, err := SQLAccess.MySQLGetTeamData(1, "id", strconv.Itoa(int(m.Team1ID)))
-	Team.ID = STeam[0].ID
-	Team.Name = STeam[0].Name
-	Team.Tag = STeam[0].Tag
-	Team.Flag = STeam[0].Flag
-	Team.Logo = STeam[0].Logo
-	Team.AuthsPickle = STeam[0].AuthsPickle
-	Team.PublicTeam = STeam[0].PublicTeam
-	reader := bytes.NewReader(STeam[0].AuthsPickle)
+	var STeam TeamData
+	SQLAccess.Gorm.Where("id = ?", m.Team1ID).First(&STeam)
+	Team.ID = STeam.ID
+	Team.Name = STeam.Name
+	Team.Tag = STeam.Tag
+	Team.Flag = STeam.Flag
+	Team.Logo = STeam.Logo
+	Team.AuthsPickle = STeam.AuthsPickle
+	Team.PublicTeam = STeam.PublicTeam
+	reader := bytes.NewReader(STeam.AuthsPickle)
 	Team.Auths = make([]string, 0)
-	err = stalecucumber.UnpackInto(&Team.Auths).From(stalecucumber.Unpickle(reader))
+	err := stalecucumber.UnpackInto(&Team.Auths).From(stalecucumber.Unpickle(reader))
 	if err != nil {
 		return Team, err
 	}
@@ -569,17 +559,18 @@ func (m *MatchData) GetTeam1() (TeamData, error) {
 // GetTeam2 Get Team2 as "TeamData" struct.
 func (m *MatchData) GetTeam2() (TeamData, error) {
 	var Team = TeamData{}
-	STeam, err := SQLAccess.MySQLGetTeamData(1, "id", strconv.Itoa(int(m.Team2ID)))
-	Team.ID = STeam[0].ID
-	Team.Name = STeam[0].Name
-	Team.Tag = STeam[0].Tag
-	Team.Flag = STeam[0].Flag
-	Team.Logo = STeam[0].Logo
-	Team.AuthsPickle = STeam[0].AuthsPickle
-	Team.PublicTeam = STeam[0].PublicTeam
-	reader := bytes.NewReader(STeam[0].AuthsPickle)
+	var STeam TeamData
+	SQLAccess.Gorm.Where("id = ?", m.Team1ID).First(&STeam)
+	Team.ID = STeam.ID
+	Team.Name = STeam.Name
+	Team.Tag = STeam.Tag
+	Team.Flag = STeam.Flag
+	Team.Logo = STeam.Logo
+	Team.AuthsPickle = STeam.AuthsPickle
+	Team.PublicTeam = STeam.PublicTeam
+	reader := bytes.NewReader(STeam.AuthsPickle)
 	Team.Auths = make([]string, 0)
-	err = stalecucumber.UnpackInto(&Team.Auths).From(stalecucumber.Unpickle(reader))
+	err := stalecucumber.UnpackInto(&Team.Auths).From(stalecucumber.Unpickle(reader))
 	if err != nil {
 		return Team, err
 	}
@@ -637,11 +628,7 @@ func (m *MatchData) GetLoser() (TeamData, error) {
 
 // GetMapStat Gets each map stat data as "MapStatsData" struct array.
 func (m *MatchData) GetMapStat() ([]MapStatsData, error) {
-	var err error
-	m.MapStats, err = SQLAccess.MySQLGetMapStatsData(7, "match_id", strconv.Itoa(int(m.ID)))
-	if err != nil {
-		return m.MapStats, err
-	}
+	SQLAccess.Gorm.Limit(7).Where("match_id = ?", int(m.ID)).Find(&m.MapStats)
 	return m.MapStats, nil
 }
 
@@ -780,7 +767,7 @@ func GetSteamName(steamid uint64) (string, error) {
 
 // MetricsData Struct metrics analysys.
 type MetricsData struct {
-	RegisteredUsers    int  `json:"users"`
+	RegisteredUsers    int `json:"users"`
 	SavedTeams         int `json:"saved_teams"`
 	MatchesCreated     int `json:"matches_created"`
 	CompletedMatches   int `json:"completed_matches"`
