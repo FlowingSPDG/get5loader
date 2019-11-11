@@ -6,7 +6,7 @@
     <div class="panel-body">
       Name: {{displaying_user.name}}<br>
       Steam account: <a :href="GetSteamURL(displaying_user.steam_id)"> {{displaying_user.steam_id}}</a> <br>
-      Teams saved: <a :href="'/teams/'+displaying_user.id"> {{displaying_user.teams.length}}</a> <br>
+      Teams saved: <router-link :to="'/teams/'+displaying_user.id"> {{displaying_user.teams.length}}</router-link> <br>
       Matches created: <router-link :to="'/matches/'+displaying_user.id">{{displaying_user.matches.length}}</router-link> <br>
     </div>
   </div>
