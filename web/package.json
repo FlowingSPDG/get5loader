@@ -13,6 +13,8 @@
   "dependencies": {
     "axios": "^0.19.0",
     "element-ui": "^2.12.0",
+    "mem": "^6.0.0",
+    "os-locale": "^4.0.0",
     "vue": "^2.5.2",
     "vue-axios": "^2.1.5",
     "vue-router": "^3.0.1",
