@@ -1,10 +1,10 @@
 <template>
-<ul class="list-group" v-if="servers">
-  <li class="list-group-item" v-if="servers.length == 0">
-    No servers found.
-  </li>
-
-<el-table :data="servers" style="width: 100%" v-else>
+  <ul class="list-group" v-if="servers">
+    <li class="list-group-item" v-if="servers.length == 0">
+      No servers found.
+    </li>
+  
+    <el-table :data="servers" style="width: 100%" v-else>
       <el-table-column prop="id" label="Server ID" width="180"></el-table-column>
       <el-table-column prop="display_name" label="Display Name" width="180"></el-table-column>
       <el-table-column prop="ip_string" label="IP Address"></el-table-column>
@@ -22,7 +22,7 @@
         </template>
       </el-table-column>
     </el-table>
-</ul>
+  </ul>
 </template>
 
 <script>
@@ -30,7 +30,6 @@ export default {
   name: 'MyServers',
   data () {
     return {
-      user:{},
       servers:[]
     }
   },
