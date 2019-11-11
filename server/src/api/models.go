@@ -31,7 +31,7 @@ type APIGameServerData struct {
 	InUse        bool   `gorm:"column:in_use;DEFAULT NULL" json:"in_use"`
 	IPString     string `gorm:"column:ip_string;DEFAULT NULL" json:"ip_string"`
 	Port         int    `gorm:"column:port;DEFAULT NULL" json:"port"`
-	Display      string `json:"display"`
+	Display      string `gorm:"column:display_name" json:"display_name"`
 	PublicServer bool   `gorm:"column:public_server;DEFAULT NULL" json:"public_server"`
 }
 

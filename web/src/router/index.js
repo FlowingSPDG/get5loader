@@ -6,6 +6,7 @@ import VueAxios from 'vue-axios'
 import Matches from '@/components/Matches'
 import Match from '@/components/Match'
 import MyMatches from '@/components/MyMatches'
+import MyServers from '@/components/Myservers'
 import Metrics from '@/components/Metrics'
 import Team from '@/components/Team'
 import User from '@/components/User'
@@ -29,6 +30,11 @@ export default new Router({
       path: '/matches/:userid',
       name: 'Matches',
       component: Matches
+    },
+    {
+      path: '/myservers',
+      name: 'My Servers',
+      component: MyServers
     },
     {
       path: '/mymatches',
