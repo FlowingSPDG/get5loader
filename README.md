@@ -26,7 +26,7 @@ Shugo **FlowingSPDG** Kawamura
 - ``git clone $GOPATH/src/github.com/FlowingSPDG/get5-web-go``  
 - ``cd $GOPATH/src/github.com/FlowingSPDG/get5-web-go && go get``
 - You're good to GO! edit each .go files to fix/add something nice!
-- You can test your server by ``go run ./main.go``,and build them by ``go build ./main.go``.You may ged binary files for your OS.
+- You can test your server by ``go run ./main.go``,and build them by ``go build ./main.go``.You may get binary files for your OS.
 - To test Vue rendering,``cd ./web/``,``yarn run dev`` and open http://localhost:8081/#.  
 
 
