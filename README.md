@@ -2,7 +2,7 @@ get5-web-go
 ===========================
 **Status: Work-In-Progress!!!**
 
-This is recreation of [get5 web panel](https://github.com/splewis/get5-web) with GOLANG.  
+This is recreation of [get5 web panel](https://github.com/splewis/get5-web) with GOLANG / VueJS.  
 Still Work-In-Progress project. PRs are welcome!
 
 ## Author:
@@ -25,17 +25,14 @@ Shugo **FlowingSPDG** Kawamura
 ## Setup(Developers)
 - ``git clone $GOPATH/src/github.com/FlowingSPDG/get5-web-go``  
 - ``cd $GOPATH/src/github.com/FlowingSPDG/get5-web-go && go get``
-- ``go get -u gorazor``
 - You're good to GO! edit each .go files to fix/add something nice!
-- You can test your build by ``go run ./main.go``,and build them by ``go build ./main.go``.You may ged binary files for your OS.  
-- ``gorazor -prefix github.com\FlowingSPDG\get5-web-go ./templates ./templates`` to compile .gotemplate into .go files. this is nessecery when you changed .gohtml file. **DONT EDIT ./template/\*.go directly!!!**
+- You can test your server by ``go run ./main.go``,and build them by ``go build ./main.go``.You may get binary files for your OS.
+- To test Vue rendering,``cd ./web/``,``yarn run dev`` and open http://localhost:8081/#.  
 
 
 ## Build(get5-web-go itself doesnt work yet!)
 - ``git clone $GOPATH/src/github.com/FlowingSPDG/get5-web-go``  
 - ``cd $GOPATH/src/github.com/FlowingSPDG/get5-web-go && go get``
-- ``go get -u gorazor``
-- ``gorazor -prefix github.com\FlowingSPDG\get5-web-go ./templates ./templates``
 - ``go build -o get5``
 - You'll get `get5` file(depends on your Operating System).  
 I'm planning to release binary-file for people who feel lazy to build. :P
