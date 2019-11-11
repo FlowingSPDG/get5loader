@@ -6,11 +6,11 @@
     <div class="container" v-loading="loading" v-cloak>
 
         <h1>
-            <img :src="get_logo_or_flag_link(team1,team2).team1" /> <a :href="'/team/'+team1.id"> {{team1.name}}</a>
+            <img :src="get_logo_or_flag_link(team1,team2).team1" /> <router-link :to="'/team/'+team1.id"> {{team1.name}}</router-link>
             {{ matchdata.team1_score }}
             {{ score_symbol(matchdata.team1_score, matchdata.team2_score) }}
             {{ matchdata.team2_score }}
-            <img :src="get_logo_or_flag_link(team1,team2).team2" /> <a :href="'/team/'+team2.id"> {{team2.name}}</a>
+            <img :src="get_logo_or_flag_link(team1,team2).team2" /> <router-link :to="'/team/'+team2.id"> {{team2.name}}</router-link>
 
             <div class="dropdown dropdown-header pull-right" v-if="user.adminaccess == true && matchdata.live && match.pending">
                 <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
