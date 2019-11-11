@@ -85,11 +85,6 @@ func init() {
 	DefaultPage = Cnf.DefaultPage
 }
 
-// HomeHandler HTTP Handler for default page redirecting.
-func HomeHandler(w http.ResponseWriter, r *http.Request) {
-	http.Redirect(w, r, DefaultPage, 302)
-}
-
 // LoginHandler HTTP Handler for /login page.
 func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	opID := steam_go.NewOpenId(r)

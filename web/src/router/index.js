@@ -16,7 +16,7 @@ Vue.use(VueAxios, axios)
 Vue.use(Router)
 
 export default new Router({
-  mode: 'history',
+  mode: 'hash',
   routes: [
     {
       path: '/',

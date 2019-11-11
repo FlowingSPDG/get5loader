@@ -37,6 +37,14 @@ var (
 	SQLAccess db.DBdatas
 )
 
+// 静的ファイルをホスティング
+func ServeStaticFile(entrypoint string) func(w http.ResponseWriter, r *http.Request) {
+	fn := func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, entrypoint)
+	}
+	return http.HandlerFunc(fn)
+}
+
 func init() {
 	c, err := ini.Load("config.ini")
 	if err != nil {
@@ -57,6 +65,9 @@ func init() {
 func main() {
 
 	r := mux.NewRouter()
+	// rootに対してnuxtのindex.htmlを返すように設定する。(ServeFile)
+	entrypoint := "./index.html"
+	r.Path("/").HandlerFunc(ServeStaticFile(entrypoint))
 	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
 
 	//s := r.Host(HOST).Subrouter()
@@ -74,7 +85,6 @@ func main() {
 	r.HandleFunc("/api/v1/user/{userID}/GetUserInfo", api.GetUserInfo).Methods("GET")
 	r.HandleFunc("/api/v1/server/{serverID}/GetServerInfo", api.GetServerInfo).Methods("GET")
 
-	r.HandleFunc("/", db.HomeHandler).Methods("GET")
 	r.HandleFunc("/login", db.LoginHandler).Methods("GET")
 	r.HandleFunc("/logout", db.LogoutHandler).Methods("GET")
 
