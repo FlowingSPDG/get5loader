@@ -3,8 +3,7 @@
 
 <div id="content">
 
-    <div class="container" v-loading="loading" v-cloak>
-
+    <div class="container" v-loading="loading" v-cloak v-if="matchdata">
         <h1>
             <img :src="get_logo_or_flag_link(team1,team2).team1" /> <router-link :to="'/team/'+team1.id"> {{team1.name}}</router-link>
             {{ matchdata.team1_score }}
