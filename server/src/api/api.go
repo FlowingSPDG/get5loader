@@ -23,11 +23,11 @@ func CheckLoggedIn(w http.ResponseWriter, r *http.Request) {
 	response := CheckLoggedInJSON{
 		IsLoggedIn: false,
 	}
-	session, _ := db.SessionStore.Get(r, db.SessionData)
-	if _, ok := session.Values["Loggedin"]; ok {
-		response.IsLoggedIn = session.Values["Loggedin"].(bool)
-		response.SteamID = session.Values["SteamID"].(string)
-		response.UserID = session.Values["UserID"].(int)
+	s := db.Sess.Start(w, r)
+	if s.Get("Loggedin") != nil {
+		response.IsLoggedIn = s.Get("Loggedin").(bool)
+		response.SteamID = s.Get("SteamID").(string)
+		response.UserID = s.Get("UserID").(int)
 	}
 	jsonbyte, err := json.Marshal(response)
 	if err != nil {
