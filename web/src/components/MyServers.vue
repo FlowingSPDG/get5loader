@@ -3,7 +3,7 @@
     <li class="list-group-item" v-if="servers.length == 0">
       No servers found.
     </li>
-  
+
     <el-table :data="servers" style="width: 100%" v-else>
       <el-table-column prop="id" label="Server ID" width="180"></el-table-column>
       <el-table-column prop="display_name" label="Display Name" width="180"></el-table-column>
@@ -30,27 +30,22 @@ export default {
   name: 'MyServers',
   data () {
     return {
-      servers:[]
+      servers: []
     }
   },
-  created () {
-    this.axios
-      .get('/api/v1/CheckLoggedIn')
-      .then((res) => {
-        this.GetUserData(res.data.userid).then((res) => {
-          this.servers = res.servers
-        })
-      })
+  async created () {
+    const res = await this.axios.get('/api/v1/CheckLoggedIn')
+    const user = await this.GetUserData(res.data.userid)
+    this.servers = user.servers
   },
-  methods : {
-    GetUserData: function(userid){
-    return new Promise((resolve, reject) => {
-      this.axios.get(`/api/v1/user/${userid}/GetUserInfo`).then((res) => {
+  methods: {
+    async GetUserData (userid) {
+      return new Promise(async (resolve, reject) => {
+        const res = await this.axios.get(`/api/v1/user/${userid}/GetUserInfo`)
         console.log(res.data)
         resolve(res.data)
       })
-    })
-  },
+    }
   }
 }
 </script>

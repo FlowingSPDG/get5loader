@@ -5,11 +5,11 @@ import App from './App'
 import router from './router'
 
 import VueSession from 'vue-session'
-Vue.use(VueSession)
 
-import ElementUI from 'element-ui';
-import 'element-ui/lib/theme-chalk/index.css';
+import ElementUI from 'element-ui'
+import 'element-ui/lib/theme-chalk/index.css'
 import locale from 'element-ui/lib/locale/lang/ja'
+Vue.use(VueSession)
 Vue.use(ElementUI, {locale})
 
 Vue.config.productionTip = false

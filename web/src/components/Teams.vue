@@ -33,50 +33,44 @@ export default {
   name: 'Teams',
   data () {
     return {
-      user:{},
-      my_matches:false,
-      teams:[],
-      owner:{}
+      user: {},
+      my_matches: false,
+      teams: [],
+      owner: {}
     }
   },
-  created () {
-    this.axios
-      .get('/api/v1/CheckLoggedIn')
-      .then((res) => {
-        this.user = res;
-        this.GetUserData(this.$route.params.userid).then((res) => {
-          this.owner = res
-          this.my_matches = this.$route.params.userid == res.id
-          this.teams = res.teams
-        })
-      })
+  async created () {
+    const res = await this.axios.get('/api/v1/CheckLoggedIn')
+    this.user = res
+    const userdata = await this.GetUserData(this.$route.params.userid)
+    this.owner = userdata
+    this.my_matches = this.$route.params.userid === userdata.id
+    this.teams = userdata.teams
   },
-  methods : {
-    GetUserData: function(userid){
-      return new Promise((resolve, reject) => {
-        this.axios.get(`/api/v1/user/${userid}/GetUserInfo`).then((res) => {
-          console.log(res.data)
-          resolve(res.data)
-        })
+  methods: {
+    async GetUserData (userid) {
+      return new Promise(async (resolve, reject) => {
+        const res = await this.axios.get(`/api/v1/user/${userid}/GetUserInfo`)
+        console.log(res.data)
+        resolve(res.data)
       })
     },
-    get_flag_link : function(team){
-      if(team.flag == ""){
-        return `/static/img/_unknown.png`  
+    get_flag_link: function (team) {
+      if (team.flag === '') {
+        return `/static/img/_unknown.png`
       }
-      //return `<img src="/static/img/valve_flags/${team.flag}"  width="24" height="16">`
+      // return `<img src="/static/img/valve_flags/${team.flag}"  width="24" height="16">`
       return `/static/img/valve_flags/${team.flag}.png`
     },
-    CheckTeamEditable: function(team){
-        return team.user_id == this.user.id
+    CheckTeamEditable: function (team) {
+      return team.user_id === this.user.id
     },
-    CheckTeamDeletable: function(team){
-        return team.user_id == this.user.id
-    },
+    CheckTeamDeletable: function (team) {
+      return team.user_id === this.user.id
+    }
 
   }
 }
-</script>
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->

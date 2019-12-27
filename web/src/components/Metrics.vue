@@ -49,10 +49,9 @@ export default {
       metrics: []
     }
   },
-  created () {
-    this.axios.get('/api/v1/GetMetrics').then(res => {
-      this.metrics.push(res.data)
-    })
+  async created () {
+    const res = await this.axios.get('/api/v1/GetMetrics')
+    this.metrics.push(res.data)
   }
 }
 </script>

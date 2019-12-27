@@ -39,7 +39,7 @@
         <td v-if="my_matches && matchinfo[match.id]">
           <a v-if="(match.pending || match.live)" :href="'/match/'+match.id+'cancel'" class="btn btn-danger btn-xs align-right">Cancel</a>
         </td>
-        <td v-if="!my_matches && matchinfo[match.id]"> 
+        <td v-if="!my_matches && matchinfo[match.id]">
           <router-link :to="'/user/='+matchinfo[match.id].user.id">{{ matchinfo[match.id].user.name }}</router-link>
         </td>
 
@@ -59,85 +59,76 @@ export default {
   data () {
     return {
       user: {
-        isLoggedIn:false,
-        steamid:"",
-        userid:""
+        isLoggedIn: false,
+        steamid: '',
+        userid: ''
       },
-      my_matches:true,
-      all_matches:false, // TODO
-      matches:[],
-      matchinfo:{},
-      match_owner:{ // TODO
-        id:1,
-        name:"hoge"
+      my_matches: true,
+      all_matches: false, // TODO
+      matches: [],
+      matchinfo: {},
+      match_owner: { // TODO
+        id: 1,
+        name: 'hoge'
       },
-      teamdatas:{},
-      userdatas:{},
-      serverdatas:{},
+      teamdatas: {},
+      userdatas: {},
+      serverdatas: {}
     }
   },
-  created () {
-    this.axios
-      .get('/api/v1/CheckLoggedIn')
-      .then((res) => {
-          this.user = res.data
-          this.GetMatches(this.user.userid).then((res) => {
-            console.log(res)
-            for(let i=0;i<res.length;i++){
-                this.GetMatchInfo(res[i].id)
-            }
-        })
-      })
+  async created () {
+    const res = await this.axios.get('/api/v1/CheckLoggedIn')
+    this.user = res.data
+    const matches = await this.GetMatches(this.user.userid)
+    console.log(matches)
+    for (let i = 0; i < matches.length; i++) {
+      this.GetMatchInfo(matches[i].id)
+    }
   },
   methods: {
-    GetMatches: function(userid){
-      return new Promise((resolve, reject) => {
-        if (!userid){
-          this.axios.get('/api/v1/GetMatches').then(res => {
-            this.matches = res.data
-            resolve(res.data)
-          })
-      }
-      else {
-        this.axios.get(`/api/v1/GetMatches?userID=${userid}`).then(res => {
+    async GetMatches (userid) {
+      return new Promise(async (resolve, reject) => {
+        if (!userid) {
+          const res = await this.axios.get('/api/v1/GetMatches')
           this.matches = res.data
           resolve(res.data)
-        })
-      }
-      })
-    },
-    GetTeamData: function(teamid){
-      return new Promise((resolve, reject) => {
-        this.axios.get(`/api/v1/team/${teamid}/GetTeamInfo`).then((res) => {
-          this.$set(this.teamdatas,teamid,res.data)
-          console.log(res.data)
+        } else {
+          const res = await this.axios.get(`/api/v1/GetMatches?userID=${userid}`)
+          this.matches = res.data
           resolve(res.data)
-        })
+        }
       })
     },
-    GetUserData: function(userid){
-      return new Promise((resolve, reject) => {
-        this.axios.get(`/api/v1/user/${userid}/GetUserInfo`).then((res) => {
-          this.$set(this.userdatas,userid,res.data)
-          console.log(res.data)
-          resolve(res.data)
-        })
-      })
-    },
-    GetServerData: function(serverid){
-      return new Promise((resolve, reject) => {
-        this.axios.get(`/api/v1/server/${serverid}/GetServerInfo`).then((res) => {
-          this.$set(this.serverdatas,serverid,res.data)
-          console.log(res.data)
-          resolve(res.data)
-        })
-      })
-    },
-    GetMatchInfo: function(matchid){
-      this.axios.get(`/api/v1/match/${matchid}/GetMatchInfo`).then((res) => {
-        this.$set(this.matchinfo,matchid,res.data)
+    async GetTeamData (teamid) {
+      return new Promise(async (resolve, reject) => {
+        const res = await this.axios.get(`/api/v1/team/${teamid}/GetTeamInfo`)
+        this.$set(this.teamdatas, teamid, res.data)
         console.log(res.data)
-        return(res.data)
+        resolve(res.data)
+      })
+    },
+    async GetUserData (userid) {
+      return new Promise(async (resolve, reject) => {
+        const res = this.axios.get(`/api/v1/user/${userid}/GetUserInfo`)
+        this.$set(this.userdatas, userid, res.data)
+        console.log(res.data)
+        resolve(res.data)
+      })
+    },
+    async GetServerData (serverid) {
+      return new Promise(async (resolve, reject) => {
+        const res = await this.axios.get(`/api/v1/server/${serverid}/GetServerInfo`)
+        this.$set(this.serverdatas, serverid, res.data)
+        console.log(res.data)
+        resolve(res.data)
+      })
+    },
+    async GetMatchInfo (matchid) {
+      return new Promise(async (resolve, reject) => {
+        const res = await this.axios.get(`/api/v1/match/${matchid}/GetMatchInfo`)
+        this.$set(this.matchinfo, matchid, res.data)
+        console.log(res.data)
+        resolve(res.data)
       })
     }
   }
