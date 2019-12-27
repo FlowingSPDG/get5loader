@@ -1,6 +1,7 @@
 package db
 
 import (
+	"time"
 	// "database/sql"
 	"fmt"
 
@@ -11,9 +12,8 @@ import (
 
 	"github.com/go-ini/ini"
 	"github.com/gorilla/mux"
-	"github.com/gorilla/sessions"
+	"github.com/kataras/go-sessions"
 	"github.com/solovev/steam_go"
-
 	"net/http"
 )
 
@@ -42,16 +42,14 @@ type DBdatas struct {
 var (
 	// SteamAPIKey Steam Web API Key for accessing Steam API.
 	SteamAPIKey = ""
-	// SessionStore Session cookie store data.
-	SessionStore = sessions.NewCookieStore([]byte("GET5_GO_SESSIONKEY"))
-	// SessionData Contains Session data.
-	SessionData = "SessionData"
 	// DefaultPage Default page where player access root directly.
 	DefaultPage string
 	// SQLAccess SQL Access Object for MySQL and GORM things
 	SQLAccess DBdatas
 	// Cnf Configration Data
 	Cnf Config
+	// Sess Session
+	Sess *sessions.Sessions
 )
 
 func init() {
@@ -84,11 +82,22 @@ func init() {
 	SteamAPIKey = Cnf.SteamAPIKey
 	DefaultPage = Cnf.DefaultPage
 
-	SessionStore.Options = &sessions.Options{
-		Path:     "/",
-		MaxAge:   3600 * 8, // 8 hours
-		HttpOnly: true,
-	}
+	Sess = sessions.New(sessions.Config{
+		// Cookie string, the session's client cookie name, for example: "mysessionid"
+		//
+		// Defaults to "gosessionid"
+		Cookie: "mysessionid",
+		// it's time.Duration, from the time cookie is created, how long it can be alive?
+		// 0 means no expire.
+		// -1 means expire when browser closes
+		// or set a value, like 2 hours:
+		Expires: time.Hour * 2,
+		// if you want to invalid cookies on different subdomains
+		// of the same host, then enable it
+		DisableSubdomainPersistence: false,
+		// want to be crazy safe? Take a look at the "securecookie" example folder.
+	})
+
 }
 
 // LoginHandler HTTP Handler for /login page.
@@ -109,19 +118,14 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 
 		user := UserData{}
 		user.GetOrCreate(SQLAccess.Gorm, steamid)
-		session, _ := SessionStore.Get(r, SessionData)
-		session.Options = &sessions.Options{MaxAge: 3600 * 8}
+		s := Sess.Start(w, r)
 		// Set some session values.
-		session.Values["Loggedin"] = true
-		session.Values["UserID"] = user.ID // should be get5 id
-		session.Values["Name"] = user.Name
-		session.Values["SteamID"] = steamid
-		// Save it before we write to the response/return from the handler.
-		err = session.Save(r, w)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
+		s.Set("Loggedin", true)
+		s.Set("UserID", user.ID) // should be get5 id
+		s.Set("Name", user.Name)
+		s.Set("SteamID", steamid)
+		s.Set("Loggedin", true)
+
 		// Register to DB if its new player
 		http.Redirect(w, r, "/", 302)
 	}
@@ -132,20 +136,9 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 
 // LogoutHandler HTTP Handler for /logout
 func LogoutHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Printf("LogoutHandler\n")
-	session, _ := SessionStore.Get(r, SessionData)
-	fmt.Printf("OLD Session Values : %v", session.Values)
-	session.Options = &sessions.Options{MaxAge: -1}
-	session.Values = make(map[interface{}]interface{})
-	fmt.Printf("NEW Session Values : %v\n", session.Values)
-	err := session.Save(r, w)
-	if err != nil {
-		fmt.Println("Error during saving session")
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-	}
-
-	sess, _ := SessionStore.Get(r, SessionData)
-	fmt.Printf("SAVED Session Values : %v", sess.Values)
+	//fmt.Printf("LogoutHandler\n")
+	s := Sess.Start(w, r)
+	s.Destroy()
 	http.Redirect(w, r, "/", 302)
 }
 
