@@ -10,6 +10,7 @@ import MyServers from '@/components/Myservers'
 import Metrics from '@/components/Metrics'
 import Team from '@/components/Team'
 import Teams from '@/components/Teams'
+import TeamCreate from '@/components/TeamCreate'
 import User from '@/components/User'
 
 Vue.use(VueAxios, axios)
@@ -60,7 +61,7 @@ export default new Router({
     {
       path: '/team/create', // TODO
       name: 'Create Team',
-      component: Team
+      component: TeamCreate
     },
     {
       path: '/team/:teamid',
