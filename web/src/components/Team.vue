@@ -134,81 +134,81 @@ export default {
       return new Promise((resolve, reject) => {
         console.log('get_vs_match_result')
         console.log(match)
-        let my_score
-        let other_team_score
-        let other_team
+        let MyScore
+        let OtherTeamScore
+        let OtherTeam
         if (match.team1.id === this.$route.params.teamid) {
-          my_score = match.team1_score
-          other_team_score = match.team2_score
+          MyScore = match.team1_score
+          OtherTeamScore = match.team2_score
           this.GetTeamData(match.team2.id).then((res) => {
-            other_team = res
+            OtherTeam = res
             // for a bo1 replace series score with the map score
             if (match.max_maps === 1) {
               if (match.map_stats.length === 1) {
                 if (match.team1_id === self.id) {
-                  my_score = match.map_stats[0].team1_score
-                  other_team_score = match.map_stats[0].team2_score
+                  MyScore = match.map_stats[0].team1_score
+                  OtherTeamScore = match.map_stats[0].team2_score
                 } else {
-                  my_score = match.map_stats[0].team2_score
-                  other_team_score = match.map_stats[0].team1_score
+                  MyScore = match.map_stats[0].team2_score
+                  OtherTeamScore = match.map_stats[0].team1_score
                 }
               }
             }
-            console.log('other_team')
-            console.log(other_team)
+            console.log('OtherTeam')
+            console.log(OtherTeam)
             if (match.live) {
-              let r = `Live, ${my_score}:${other_team_score} vs ${other_team.name}`
+              let r = `Live, ${MyScore}:${OtherTeamScore} vs ${OtherTeam.name}`
               console.log(r)
               resolve(r)
             }
-            if (my_score < other_team_score) {
-              let r = `Lost ${my_score}:${other_team_score} vs ${other_team.name}`
+            if (MyScore < OtherTeamScore) {
+              let r = `Lost ${MyScore}:${OtherTeamScore} vs ${OtherTeam.name}`
               console.log(r)
               resolve(r)
-            } else if (my_score > other_team_score) {
-              let r = `Won ${my_score}:${other_team_score} vs ${other_team.name}`
+            } else if (MyScore > OtherTeamScore) {
+              let r = `Won ${MyScore}:${OtherTeamScore} vs ${OtherTeam.name}`
               console.log(r)
               resolve(r)
             } else {
-              let r = `Tied ${other_team_score}:${my_score} vs ${other_team.name}`
+              let r = `Tied ${OtherTeamScore}:${MyScore} vs ${OtherTeam.name}`
               console.log(r)
               resolve(r)
             }
           })
         } else {
-          my_score = match.team2_score
-          other_team_score = match.team1_score
+          MyScore = match.team2_score
+          OtherTeamScore = match.team1_score
           this.GetTeamData(match.team1.id).then((res) => {
-            other_team = res
+            OtherTeam = res
             // for a bo1 replace series score with the map score
             if (match.max_maps === 1) {
               if (match.map_stats.length === 1) {
                 if (match.team1_id === self.id) {
-                  my_score = match.map_stats[0].team1_score
-                  other_team_score = match.map_stats[0].team2_score
+                  MyScore = match.map_stats[0].team1_score
+                  OtherTeamScore = match.map_stats[0].team2_score
                 } else {
-                  my_score = match.map_stats[0].team2_score
-                  other_team_score = match.map_stats[0].team1_score
+                  MyScore = match.map_stats[0].team2_score
+                  OtherTeamScore = match.map_stats[0].team1_score
                 }
               }
             }
-            console.log('other_team')
-            console.log(other_team)
+            console.log('OtherTeam')
+            console.log(OtherTeam)
             if (match.live) {
-              let r = `Live, ${my_score}:${other_team_score} vs ${other_team.name}`
+              let r = `Live, ${MyScore}:${OtherTeamScore} vs ${OtherTeam.name}`
               console.log(r)
               resolve(r)
             }
-            if (my_score < other_team_score) {
-              let r = `Lost ${my_score}:${other_team_score} vs ${other_team.name}`
+            if (MyScore < OtherTeamScore) {
+              let r = `Lost ${MyScore}:${OtherTeamScore} vs ${OtherTeam.name}`
               console.log(r)
               resolve(r)
-            } else if (my_score > other_team_score) {
-              let r = `Won ${my_score}:${other_team_score} vs ${other_team.name}`
+            } else if (MyScore > OtherTeamScore) {
+              let r = `Won ${MyScore}:${OtherTeamScore} vs ${OtherTeam.name}`
               console.log(r)
               resolve(r)
             } else {
-              let r = `Tied ${other_team_score}:${my_score} vs ${other_team.name}`
+              let r = `Tied ${OtherTeamScore}:${MyScore} vs ${OtherTeam.name}`
               console.log(r)
               resolve(r)
             }
