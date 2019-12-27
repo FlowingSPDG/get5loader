@@ -97,25 +97,24 @@
                         <td></td>
                         <td></td>
                         <td></td>
-                        
+
                         <tr v-for="player in matchdata.team1_player_stats[map_stats.id]" :key="player.id">
                             <td v-if="player.roundsplayed"> <a :href="GetSteamURL(player.steam_id)"> {{ player.name }} </a></td>
                             <td v-if="player.roundsplayed" class="text-center"> {{ player.kills }} </td>
                             <td v-if="player.roundsplayed" class="text-center"> {{ player.deaths }} </td>
                             <td v-if="player.roundsplayed" class="text-center"> {{ player.assists }} </td>
                             <td v-if="player.roundsplayed" class="text-center"> {{ player.flashbang_assists }} </td>
-                        
+
                             <td v-if="player.roundsplayed" class="text-center"> {{ player.v1 }} </td>
                             <td v-if="player.roundsplayed" class="text-center"> {{ player.v2 }} </td>
                             <td v-if="player.roundsplayed" class="text-center"> {{ player.v3 }} </td>
-                        
+
                             <td v-if="player.roundsplayed" class="text-center"> {{ player.rating }} </td>
                             <td v-if="player.roundsplayed" class="text-center"> {{ player.fpr }} </td>
                             <td v-if="player.roundsplayed" class="text-center"> {{ player.adr }} </td>
                             <td v-if="player.roundsplayed" class="text-center"> {{ player.hsp }} </td>
                         </tr>
-                        
-                        
+
                         <td> <b>{{ team2.name }}</b> </td>
                         <td></td>
                         <td></td>
@@ -128,18 +127,18 @@
                         <td></td>
                         <td></td>
                         <td></td>
-                        
+
                         <tr v-for="player in matchdata.team2_player_stats[map_stats.id]" :key="player.id">
                             <td v-if="player.roundsplayed"> <a :href="GetSteamURL(player.steam_id)"> {{ player.name }} </a></td>
                             <td v-if="player.roundsplayed" class="text-center"> {{ player.kills }} </td>
                             <td v-if="player.roundsplayed" class="text-center"> {{ player.deaths }} </td>
                             <td v-if="player.roundsplayed" class="text-center"> {{ player.assists }} </td>
                             <td v-if="player.roundsplayed" class="text-center"> {{ player.flashbang_assists }} </td>
-                        
+
                             <td v-if="player.roundsplayed" class="text-center"> {{ player.v1 }} </td>
                             <td v-if="player.roundsplayed" class="text-center"> {{ player.v2 }} </td>
                             <td v-if="player.roundsplayed" class="text-center"> {{ player.v3 }} </td>
-                        
+
                             <td v-if="player.roundsplayed" class="text-center"> {{ player.rating }} </td>
                             <td v-if="player.roundsplayed" class="text-center"> {{ player.fpr }} </td>
                             <td v-if="player.roundsplayed" class="text-center"> {{ player.adr }} </td>
@@ -195,251 +194,247 @@ export default {
   name: 'Match',
   data () {
     return {
-        loading:true,
-        matchdata:{
-            id:0,
-            user_id:0,
-            team1: {
-                "id":0,
-                "user_id":0,
-                "name":"LOADING...",
-                "tag":"",
-                "flag":"",
-                "logo":"",
-                "steamids":[],
-                "public_team":false
-                },
-            team2: {
-                "id":0,
-                "user_id":0,
-                "name":"LOADING...",
-                "tag":"",
-                "flag":"",
-                "logo":"",
-                "steamids":[],
-                "public_team":false
-                },
-            winner:0,
-            cancelled:false,
-            start_time:"",
-            end_time:"",
-            max_maps:0,
-            title:"",
-            skip_veto:false,
-            veto_mappool:[],
-            team1_score:0,
-            team2_score:0,
-            team1_string:"",
-            team2_string:"",
-            forfeit:false,
-            map_stats:{},
-            team1_player_stats:[],
-            team2_player_stats:[],
-            server:{
-                id: 0,
-		        user_id: 0,
-		        in_use: false,
-		        ip_string: "",
-		        port: 0,
-		        display: "",
-		        public_server: false
-            },
-            user:{
-                id: 0,
-		        steam_id: "",
-		        name: "",
-		        admin: false,
-		        servers: null,
-		        teams: null,
-                matches: null
-            },
-            pending:false,
-            live:false,
-            status:""
+      loading: true,
+      matchdata: {
+        id: 0,
+        user_id: 0,
+        team1: {
+          'id': 0,
+          'user_id': 0,
+          'name': 'LOADING...',
+          'tag': '',
+          'flag': '',
+          'logo': '',
+          'steamids': [],
+          'public_team': false
+        },
+        team2: {
+          'id': 0,
+          'user_id': 0,
+          'name': 'LOADING...',
+          'tag': '',
+          'flag': '',
+          'logo': '',
+          'steamids': [],
+          'public_team': false
+        },
+        winner: 0,
+        cancelled: false,
+        start_time: '',
+        end_time: '',
+        max_maps: 0,
+        title: '',
+        skip_veto: false,
+        veto_mappool: [],
+        team1_score: 0,
+        team2_score: 0,
+        team1_string: '',
+        team2_string: '',
+        forfeit: false,
+        map_stats: {},
+        team1_player_stats: [],
+        team2_player_stats: [],
+        server: {
+          id: 0,
+          user_id: 0,
+          in_use: false,
+          ip_string: '',
+          port: 0,
+          display: '',
+          public_server: false
         },
         user: {
-          isLoggedIn:false,
-          adminaccess:false,
-          steamid:"",
-          userid:""
+          id: 0,
+          steam_id: '',
+          name: '',
+          admin: false,
+          servers: null,
+          teams: null,
+          matches: null
         },
-        team1:{
-            "id": 0,
-	        "user_id": 0,
-	        "name":"LOADING...",
-	        "tag": "",
-	        "flag": "",
-	        "logo": "",
-	        "steamids": [],
-	        "public_team": false
-        },
-        team2:{
-            "id": 0,
-	        "user_id": 0,
-	        "name":"LOADING...",
-	        "tag": "",
-	        "flag": "",
-	        "logo": "",
-	        "steamids": [],
-	        "public_team": false
-        },
+        pending: false,
+        live: false,
+        status: ''
+      },
+      user: {
+        isLoggedIn: false,
+        adminaccess: false,
+        steamid: '',
+        userid: ''
+      },
+      team1: {
+        'id': 0,
+        'user_id': 0,
+        'name': 'LOADING...',
+        'tag': '',
+        'flag': '',
+        'logo': '',
+        'steamids': [],
+        'public_team': false
+      },
+      team2: {
+        'id': 0,
+        'user_id': 0,
+        'name': 'LOADING...',
+        'tag': '',
+        'flag': '',
+        'logo': '',
+        'steamids': [],
+        'public_team': false
+      }
     }
   },
-  created () {
-    this.GetMatchData(this.$route.params.matchid).then((res)=>{
-        console.log("GetMatchData")
-        console.log(res)
-        for (let i=0;i<res.map_stats.length;i++){
-            console.log("GetPlayerStats")
-            this.GetPlayerStats(res.id,res.map_stats[i].id)
-        }
-        console.log("GetTeam1Data")
-        this.GetTeam1Data(res.team1.id)
-        console.log("GetTeam2Data")
-        this.GetTeam2Data(res.team2.id)
-        this.loading = false;
-    })
-    this.axios
-      .get('/api/v1/CheckLoggedIn')
-      .then((res) => {
-          console.log(res.data)
-          this.user = res.data
-          //this.Editable = this.CheckTeamEditable(this.$route.params.teamid,this.user.userid) // TODO
-      })
+  async created () {
+    let res = await this.GetMatchData(this.$route.params.matchid)
+    console.log('GetMatchData')
+    console.log(res)
+    for (let i = 0; i < res.map_stats.length; i++) {
+      console.log('GetPlayerStats')
+      this.GetPlayerStats(res.id, res.map_stats[i].id)
+    }
+    console.log('GetTeam1Data')
+    await this.GetTeam1Data(res.team1.id)
+    console.log('GetTeam2Data')
+    await this.GetTeam2Data(res.team2.id)
+    this.loading = false
+    let data = await this.axios.get('/api/v1/CheckLoggedIn')
+    console.log(data)
+    this.user = data
+    // this.Editable = this.CheckTeamEditable(this.$route.params.teamid,this.user.userid) // TODO
   },
   methods: {
-    GetTeam1Data: function(team1id){
-     return new Promise((resolve, reject) => {
-      this.axios.get(`/api/v1/team/${team1id}/GetTeamInfo`).then((res) => {
-        this.team1 = res.data
-        resolve(res.data)
+    GetTeam1Data: function (team1id) {
+      return new Promise((resolve, reject) => {
+        this.axios.get(`/api/v1/team/${team1id}/GetTeamInfo`).then((res) => {
+          this.team1 = res.data
+          resolve(res.data)
+        })
       })
-     })
     },
-    GetTeam2Data: function(team2id){
-     return new Promise((resolve, reject) => {
-      this.axios.get(`/api/v1/team/${team2id}/GetTeamInfo`).then((res) => {
-        this.team2 = res.data
-        resolve(res.data)
+    GetTeam2Data: function (team2id) {
+      return new Promise((resolve, reject) => {
+        this.axios.get(`/api/v1/team/${team2id}/GetTeamInfo`).then((res) => {
+          this.team2 = res.data
+          resolve(res.data)
+        })
       })
-     })
     },
-    GetMatchData: function(matchid){
-     return new Promise((resolve, reject) => {
-      this.axios.get(`/api/v1/match/${matchid}/GetMatchInfo`).then((res) => {
-        this.matchdata = res.data
-        resolve(res.data)
+    GetMatchData: function (matchid) {
+      return new Promise((resolve, reject) => {
+        this.axios.get(`/api/v1/match/${matchid}/GetMatchInfo`).then((res) => {
+          this.matchdata = res.data
+          resolve(res.data)
+        })
       })
-     })
     },
-    GetMapStat: function(matchid){
-     return new Promise((resolve, reject) => {
-      this.axios.get(`/api/v1/match/${matchid}/GetMatchInfo`).then((res) => {
-        this.matchdata.map_stats.push(res.data)
-        console.log(res.data)
-        resolve(res.data)
+    GetMapStat: function (matchid) {
+      return new Promise((resolve, reject) => {
+        this.axios.get(`/api/v1/match/${matchid}/GetMatchInfo`).then((res) => {
+          this.matchdata.map_stats.push(res.data)
+          console.log(res.data)
+          resolve(res.data)
+        })
       })
-     })
     },
-    GetPlayerStats: function(matchid,mapid){
-     return new Promise((resolve, reject) => {
-      this.axios.get(`/api/v1/match/${matchid}/GetPlayerStatInfo?mapID=${mapid}`).then((res) => {
-        console.log(res.data)
-        if(!this.matchdata.team1_player_stats){
-          this.matchdata.team1_player_stats = {}
-          this.matchdata.team1_player_stats[mapid] = []
-        }
-        if(!this.matchdata.team2_player_stats){
-          this.matchdata.team2_player_stats = {}
-          this.matchdata.team2_player_stats[mapid] = []
-        }
+    GetPlayerStats: function (matchid, mapid) {
+      return new Promise((resolve, reject) => {
+        this.axios.get(`/api/v1/match/${matchid}/GetPlayerStatInfo?mapID=${mapid}`).then((res) => {
+          console.log(res.data)
+          if (!this.matchdata.team1_player_stats) {
+            this.matchdata.team1_player_stats = {}
+            this.matchdata.team1_player_stats[mapid] = []
+          }
+          if (!this.matchdata.team2_player_stats) {
+            this.matchdata.team2_player_stats = {}
+            this.matchdata.team2_player_stats[mapid] = []
+          }
 
-        let team1stats = res.data.filter(player => player.team_id == this.matchdata.team1.id)
-        let team2stats = res.data.filter(player => player.team_id == this.matchdata.team2.id)
+          let team1stats = res.data.filter(player => player.team_id == this.matchdata.team1.id)
+          let team2stats = res.data.filter(player => player.team_id == this.matchdata.team2.id)
 
-        for(let i=0;i<team1stats.length;i++){
-            this.$set(this.matchdata.team1_player_stats, mapid, team1stats);
-        }
-        for(let i=0;i<team2stats.length;i++){
-            this.$set(this.matchdata.team2_player_stats, mapid, team2stats);
-        }
-        resolve(res.data)
+          for (let i = 0; i < team1stats.length; i++) {
+            this.$set(this.matchdata.team1_player_stats, mapid, team1stats)
+          }
+          for (let i = 0; i < team2stats.length; i++) {
+            this.$set(this.matchdata.team2_player_stats, mapid, team2stats)
+          }
+          resolve(res.data)
+        })
       })
-     })
     },
-    GetSteamURL: function(steamid){
-        return `https://steamcommunity.com/profiles/${steamid}`
+    GetSteamURL: function (steamid) {
+      return `https://steamcommunity.com/profiles/${steamid}`
     },
-    get_logo_or_flag_link: function(team1,team2){ // get_logo_or_flag_link(team1)
-        if (team1.logo && team2.logo){
-            return {
-                team1:get_logo_link(team1),
-                team2:get_logo_link(team2)
-            }
-        } else {
-            return {
-                team1:this.get_flag_link(team1),
-                team2:this.get_flag_link(team2)
-            }
+    get_logo_or_flag_link: function (team1, team2) { // get_logo_or_flag_link(team1)
+      if (team1.logo && team2.logo) {
+        return {
+          team1: get_logo_link(team1),
+          team2: get_logo_link(team2)
         }
-    },
-    get_logo_html : function(team){
-        // TODO...
-    },
-    get_flag_link : function(team){
-        if(team.flag == ""){
-          return `/static/img/_unknown.png`  
+      } else {
+        return {
+          team1: this.get_flag_link(team1),
+          team2: this.get_flag_link(team2)
         }
-        //return `<img src="/static/img/valve_flags/${team.flag}"  width="24" height="16">`
-        return `/static/img/valve_flags/${team.flag}.png`
+      }
     },
-    score_symbol: function(score1,score2){
-        if ( score1 > score2){
-            return ">"
-        } else {
+    get_logo_html: function (team) {
+      // TODO...
+    },
+    get_flag_link: function (team) {
+      if (team.flag == '') {
+        return `/static/img/_unknown.png`
+      }
+      // return `<img src="/static/img/valve_flags/${team.flag}"  width="24" height="16">`
+      return `/static/img/valve_flags/${team.flag}.png`
+    },
+    score_symbol: function (score1, score2) {
+      if (score1 > score2) {
+        return '>'
+      } else {
 
-        }if ( score1 < score2){
-            return "<"
-        } else{
-            return "=="
-        }
+      } if (score1 < score2) {
+        return '<'
+      } else {
+        return '=='
+      }
     },
-    get_loser : function(matchdata){ // returns loser's teamname
-        if (matchdata.team1_score > matchdata.team2_score){
-            return matchdata.team2.name
-        } else if (matchdata.team1_score < matchdata.team2_score){
-            return matchdata.team1.name
-        } else {
-            return ""
-        }
+    get_loser: function (matchdata) { // returns loser's teamname
+      if (matchdata.team1_score > matchdata.team2_score) {
+        return matchdata.team2.name
+      } else if (matchdata.team1_score < matchdata.team2_score) {
+        return matchdata.team1.name
+      } else {
+        return ''
+      }
     },
-    GetKDR : function(playerstat){
-        if (playerstat.deaths == 0) {
-	    	return playerstat.kills
-	    }
-	    return playerstat.kills / playerstat.deaths
+    GetKDR: function (playerstat) {
+      if (playerstat.deaths == 0) {
+        return playerstat.kills
+      }
+      return playerstat.kills / playerstat.deaths
     },
-    GetHSP : function(playerstat){
-        if (playerstat.deaths == 0) {
-		    return playerstat.kills
-	    }
-	    return playerstat.headshot_kills / playerstat.kills * 100
+    GetHSP: function (playerstat) {
+      if (playerstat.deaths == 0) {
+        return playerstat.kills
+      }
+      return playerstat.headshot_kills / playerstat.kills * 100
     },
-    GetADR : function(playerstat){
-        if (playerstat.roundsplayed == 0) {
-    		return 0.0
-    	}
-    	return playerstat.damage / playerstat.roundsplayed
+    GetADR: function (playerstat) {
+      if (playerstat.roundsplayed == 0) {
+        return 0.0
+      }
+      return playerstat.damage / playerstat.roundsplayed
     },
-    GetFPR : function(playerstat){
-        if (playerstat.roundsplayed == 0) {
-    		return 0.0
-    	}
-    	return playerstat.kills / playerstat.roundsplayed
+    GetFPR: function (playerstat) {
+      if (playerstat.roundsplayed == 0) {
+        return 0.0
+      }
+      return playerstat.kills / playerstat.roundsplayed
     },
-    SendRCON: function(command){
-        //TODO
-        /*
+    SendRCON: function (command) {
+      // TODO
+      /*
         this.$notify.info({
           title: 'Info',
           message: 'This is an info message'

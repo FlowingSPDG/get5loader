@@ -55,44 +55,44 @@ export default {
   name: 'matches',
   data () {
     return {
-      user:{},
-      loadingmore:false,
-      loaded:0,
-      loading:{},
-      flag_loading:{},
-      my_matches:false,
-      all_matches:true,
-      matches:[],
-      matchinfo:{},
-      match_owner:{},
-      teamdatas:{},
-      userdatas:{},
-      serverdatas:{},
+      user: {},
+      loadingmore: false,
+      loaded: 0,
+      loading: {},
+      flag_loading: {},
+      my_matches: false,
+      all_matches: true,
+      matches: [],
+      matchinfo: {},
+      match_owner: {},
+      teamdatas: {},
+      userdatas: {},
+      serverdatas: {}
     }
   },
   created () {
     this.Init()
   },
   watch: {
-    $route(to, from) {
+    $route (to, from) {
       this.Init()
-    },
+    }
   },
   methods: {
-    Init:function(){
-      this.user={}
-      this.loadingmore=false
-      this.loaded=0
-      this.loading={}
-      this.flag_loading={}
-      this.my_matches=false
-      this.all_matches=true
-      this.matches=[]
-      this.matchinfo={}
-      this.match_owner={}
-      this.teamdatas={}
-      this.userdatas={}
-      this.serverdatas={}
+    Init: function () {
+      this.user = {}
+      this.loadingmore = false
+      this.loaded = 0
+      this.loading = {}
+      this.flag_loading = {}
+      this.my_matches = false
+      this.all_matches = true
+      this.matches = []
+      this.matchinfo = {}
+      this.match_owner = {}
+      this.teamdatas = {}
+      this.userdatas = {}
+      this.serverdatas = {}
       return new Promise((resolve, reject) => {
         this.matches = []
         if (this.$route.params.userid) {
@@ -102,7 +102,7 @@ export default {
             .then((res) => {
               this.user = res.data
               this.my_matches = this.$route.params.userid == this.user.userid
-              this.GetMatches(this.$route.params.userid);
+              this.GetMatches(this.$route.params.userid)
               this.GetUserData(this.$route.params.userid).then((res) => {
                 this.match_owner = res
                 resolve()
@@ -117,95 +117,94 @@ export default {
               this.GetMatches().then(() => {
                 resolve()
               })
-            })      
+            })
         }
-        this.activeIndex = this.$route.name;
+        this.activeIndex = this.$route.name
       })
     },
-    GetMatches: function(userid){
+    GetMatches: function (userid) {
       let self = this
       self.loadingmore = true
-      console.log("GetMatches")
+      console.log('GetMatches')
       return new Promise((resolve, reject) => {
-        if (userid){
+        if (userid) {
           this.axios.get(`/api/v1/GetMatches?userID=${userid}`).then(res => {
-            self.loaded = self.loaded+res.data.length;
-            for(let i=0;i<res.data.length;i++){
+            self.loaded = self.loaded + res.data.length
+            for (let i = 0; i < res.data.length; i++) {
               this.matches.push(res.data[i])
-              self.$set(self.loading,[res.data[i].id],true)
+              self.$set(self.loading, [res.data[i].id], true)
               this.GetMatchInfo(res.data[i].id).then(() => {
-                self.$set(self.loading,[res.data[i].id],false)
+                self.$set(self.loading, [res.data[i].id], false)
               })
-              if (i+1 == res.data.length ){
-                console.log("resolved")
+              if (i + 1 == res.data.length) {
+                console.log('resolved')
+                self.loadingmore = false
+                resolve(res.data)
+              }
+            }
+          })
+        } else {
+          this.axios.get(`/api/v1/GetMatches?offset=${this.loaded + 1}`).then(res => {
+            self.loaded = self.loaded + res.data.length
+            for (let i = 0; i < res.data.length; i++) {
+              this.matches.push(res.data[i])
+              self.$set(self.loading, [res.data[i].id], true)
+              this.GetMatchInfo(res.data[i].id).then(() => {
+                self.$set(self.loading, [res.data[i].id], false)
+              })
+              if (i + 1 == res.data.length) {
+                console.log('resolved')
                 self.loadingmore = false
                 resolve(res.data)
               }
             }
           })
         }
-      else {
-        this.axios.get(`/api/v1/GetMatches?offset=${this.loaded+1}`).then(res => {
-          self.loaded = self.loaded+res.data.length;
-          for(let i=0;i<res.data.length;i++){
-              this.matches.push(res.data[i])
-              self.$set(self.loading,[res.data[i].id],true)
-              this.GetMatchInfo(res.data[i].id).then(() => {
-                self.$set(self.loading,[res.data[i].id],false)
-              })
-              if (i+1 == res.data.length ){
-                console.log("resolved")
-                self.loadingmore = false
-                resolve(res.data)
-              }
-            }
-        })
-      }
       })
     },
-    GetTeamData: function(teamid){
+    GetTeamData: function (teamid) {
       return new Promise((resolve, reject) => {
         this.axios.get(`/api/v1/team/${teamid}/GetTeamInfo`).then((res) => {
-          this.$set(this.teamdatas,teamid,res.data)
+          this.$set(this.teamdatas, teamid, res.data)
           console.log(res.data)
           resolve(res.data)
         })
       })
     },
-    GetUserData: function(userid){
+    GetUserData: function (userid) {
       return new Promise((resolve, reject) => {
         this.axios.get(`/api/v1/user/${userid}/GetUserInfo`).then((res) => {
-          this.$set(this.userdatas,userid,res.data)
+          this.$set(this.userdatas, userid, res.data)
           console.log(res.data)
           resolve(res.data)
         })
       })
     },
-    GetServerData: function(serverid){
+    GetServerData: function (serverid) {
       return new Promise((resolve, reject) => {
         this.axios.get(`/api/v1/server/${serverid}/GetServerInfo`).then((res) => {
-          this.$set(this.serverdatas,serverid,res.data)
+          this.$set(this.serverdatas, serverid, res.data)
           console.log(res.data)
           resolve(res.data)
         })
       })
     },
-    GetMatchInfo: function(matchid){
+    GetMatchInfo: function (matchid) {
       return new Promise((resolve, reject) => {
-      this.axios.get(`/api/v1/match/${matchid}/GetMatchInfo`).then((res) => {
-        this.$set(this.matchinfo,matchid,res.data)
-        console.log(res.data)
-        resolve(res.data)
-      })
+        this.axios.get(`/api/v1/match/${matchid}/GetMatchInfo`).then((res) => {
+          this.$set(this.matchinfo, matchid, res.data)
+          console.log(res.data)
+          resolve(res.data)
+        })
       })
     },
-    get_flag_link : function(team){
-        if(team.flag == ""){
-          return `/static/img/_unknown.png`  
-        }
-        //return `<img src="/static/img/valve_flags/${team.flag}"  width="24" height="16">`
-        return `/static/img/valve_flags/${team.flag}.png`
-    },
+    get_flag_link: function (team) {
+      if (team.flag == '') {
+        return `/static/img/_unknown.png`
+      }
+      // return `<img src="/static/img/valve_flags/${team.flag}"  width="24" height="16">`
+      return `/static/img/valve_flags/${team.flag}.png`
+    }
   }
 }
 </script>
