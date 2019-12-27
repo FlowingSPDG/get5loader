@@ -27,8 +27,8 @@
                         <el-menu-item index="team_create" id="matches" :route="{ path:'/team/create' }" v-if="user.isLoggedIn">Create a Team</el-menu-item>
                         <el-menu-item index="myservers" id="myservers" :route="{ path:'/myservers' }" v-if="user.isLoggedIn">My Servers</el-menu-item>
                         <el-menu-item index="server_create" id="server_create" :route="{ path:'/server/create' }" v-if="user.isLoggedIn">Add a Server</el-menu-item>
-                        <el-menu-item index="logout" id="logout" v-if="user.isLoggedIn"> <a href='/api/logout' v-if="user.isLoggedIn">Logout</a> </el-menu-item>
-                        <el-menu-item index="login" id="login" v-if="!user.isLoggedIn"> <a href='/api/login' v-if="!user.isLoggedIn"> <img src="/static/img/login_small.png" height="18" /></a> </el-menu-item>
+                        <el-menu-item index="logout" id="logout" v-if="user.isLoggedIn"> <a href='/api/v1/logout' v-if="user.isLoggedIn">Logout</a> </el-menu-item>
+                        <el-menu-item index="login" id="login" v-if="!user.isLoggedIn"> <a href='/api/v1/login' v-if="!user.isLoggedIn"> <img src="/static/img/login_small.png" height="18" /></a> </el-menu-item>
                     </el-menu>
                 </div>
             </div>
@@ -48,27 +48,24 @@
 <script>
 import axios from 'axios'
 export default {
-    name: 'App',
-    data() {
-        return {
-            activeIndex: '',
-            user: {
-                isLoggedIn:false,
-                adminaccess:false,
-                steamid:"",
-                userid:""
-            }, // should be object from JSON response
-            COMMIT_STRING: "COMMIT NUMBER HERE"
-        }
-    },
-    mounted () {
-        this.activeIndex = this.$route.name;
-        axios
-            .get('/api/v1/CheckLoggedIn')
-            .then((res) => {
-                console.log(res.data)
-                this.user = res.data
-            })
+  name: 'App',
+  data () {
+    return {
+      activeIndex: '',
+      user: {
+        isLoggedIn: false,
+        adminaccess: false,
+        steamid: '',
+        userid: ''
+      }, // should be object from JSON response
+      COMMIT_STRING: 'COMMIT NUMBER HERE'
+    }
+  },
+  async mounted () {
+    this.activeIndex = this.$route.name
+    const res = await axios.get('/api/v1/CheckLoggedIn')
+    console.log(res.data)
+    this.user = res.data
   }
 }
 </script>

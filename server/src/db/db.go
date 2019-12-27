@@ -79,10 +79,16 @@ func init() {
 	if err != nil {
 		panic(err)
 	}
-	DB.LogMode(true)
+	DB.LogMode(false)
 	SQLAccess.Gorm = DB
 	SteamAPIKey = Cnf.SteamAPIKey
 	DefaultPage = Cnf.DefaultPage
+
+	SessionStore.Options = &sessions.Options{
+		Path:     "/",
+		MaxAge:   3600 * 8, // 8 hours
+		HttpOnly: true,
+	}
 }
 
 // LoginHandler HTTP Handler for /login page.
@@ -104,7 +110,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		user := UserData{}
 		user.GetOrCreate(SQLAccess.Gorm, steamid)
 		session, _ := SessionStore.Get(r, SessionData)
-		session.Options = &sessions.Options{MaxAge: 0}
+		session.Options = &sessions.Options{MaxAge: 3600 * 8}
 		// Set some session values.
 		session.Values["Loggedin"] = true
 		session.Values["UserID"] = user.ID // should be get5 id
@@ -116,7 +122,6 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-
 		// Register to DB if its new player
 		http.Redirect(w, r, "/", 302)
 	}
@@ -127,15 +132,20 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 
 // LogoutHandler HTTP Handler for /logout
 func LogoutHandler(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r) //パスパラメータ取得
-	fmt.Printf("LogoutHandler\nvars : %v", vars)
+	fmt.Printf("LogoutHandler\n")
 	session, _ := SessionStore.Get(r, SessionData)
-	session.Options.MaxAge = -1
+	fmt.Printf("OLD Session Values : %v", session.Values)
+	session.Options = &sessions.Options{MaxAge: -1}
+	session.Values = make(map[interface{}]interface{})
+	fmt.Printf("NEW Session Values : %v\n", session.Values)
 	err := session.Save(r, w)
 	if err != nil {
+		fmt.Println("Error during saving session")
 		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
 	}
+
+	sess, _ := SessionStore.Get(r, SessionData)
+	fmt.Printf("SAVED Session Values : %v", sess.Values)
 	http.Redirect(w, r, "/", 302)
 }
 
