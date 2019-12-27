@@ -303,63 +303,58 @@ export default {
     // this.Editable = this.CheckTeamEditable(this.$route.params.teamid,this.user.userid) // TODO
   },
   methods: {
-    GetTeam1Data: function (team1id) {
-      return new Promise((resolve, reject) => {
-        this.axios.get(`/api/v1/team/${team1id}/GetTeamInfo`).then((res) => {
-          this.team1 = res.data
-          resolve(res.data)
-        })
+    async GetTeam1Data (team1id) {
+      return new Promise(async (resolve, reject) => {
+        const res = await this.axios.get(`/api/v1/team/${team1id}/GetTeamInfo`)
+        this.team1 = res.data
+        resolve(res.data)
       })
     },
-    GetTeam2Data: function (team2id) {
-      return new Promise((resolve, reject) => {
-        this.axios.get(`/api/v1/team/${team2id}/GetTeamInfo`).then((res) => {
-          this.team2 = res.data
-          resolve(res.data)
-        })
+    async GetTeam2Data (team2id) {
+      return new Promise(async (resolve, reject) => {
+        const res = await this.axios.get(`/api/v1/team/${team2id}/GetTeamInfo`)
+        this.team2 = res.data
+        resolve(res.data)
       })
     },
-    GetMatchData: function (matchid) {
-      return new Promise((resolve, reject) => {
-        this.axios.get(`/api/v1/match/${matchid}/GetMatchInfo`).then((res) => {
-          this.matchdata = res.data
-          resolve(res.data)
-        })
+    async GetMatchData (matchid) {
+      return new Promise(async (resolve, reject) => {
+        const res = await this.axios.get(`/api/v1/match/${matchid}/GetMatchInfo`)
+        this.matchdata = res.data
+        resolve(res.data)
       })
     },
-    GetMapStat: function (matchid) {
-      return new Promise((resolve, reject) => {
-        this.axios.get(`/api/v1/match/${matchid}/GetMatchInfo`).then((res) => {
-          this.matchdata.map_stats.push(res.data)
-          console.log(res.data)
-          resolve(res.data)
-        })
+    async GetMapStat (matchid) {
+      return new Promise(async (resolve, reject) => {
+        const res = await this.axios.get(`/api/v1/match/${matchid}/GetMatchInfo`)
+        this.matchdata.map_stats.push(res.data)
+        console.log(res.data)
+        resolve(res.data)
       })
     },
-    GetPlayerStats: function (matchid, mapid) {
-      return new Promise((resolve, reject) => {
-        this.axios.get(`/api/v1/match/${matchid}/GetPlayerStatInfo?mapID=${mapid}`).then((res) => {
-          console.log(res.data)
-          if (!this.matchdata.team1_player_stats) {
-            this.matchdata.team1_player_stats = {}
-            this.matchdata.team1_player_stats[mapid] = []
-          }
-          if (!this.matchdata.team2_player_stats) {
-            this.matchdata.team2_player_stats = {}
-            this.matchdata.team2_player_stats[mapid] = []
-          }
+    async GetPlayerStats (matchid, mapid) {
+      return new Promise(async (resolve, reject) => {
+        const res = await this.axios.get(`/api/v1/match/${matchid}/GetPlayerStatInfo?mapID=${mapid}`)
+        console.log(res.data)
+        if (!this.matchdata.team1_player_stats) {
+          this.matchdata.team1_player_stats = {}
+          this.matchdata.team1_player_stats[mapid] = []
+        }
+        if (!this.matchdata.team2_player_stats) {
+          this.matchdata.team2_player_stats = {}
+          this.matchdata.team2_player_stats[mapid] = []
+        }
 
-          let team1stats = res.data.filter(player => player.team_id == this.matchdata.team1.id)
-          let team2stats = res.data.filter(player => player.team_id == this.matchdata.team2.id)
+        let team1stats = res.data.filter(player => player.team_id === this.matchdata.team1.id)
+        let team2stats = res.data.filter(player => player.team_id === this.matchdata.team2.id)
 
-          for (let i = 0; i < team1stats.length; i++) {
-            this.$set(this.matchdata.team1_player_stats, mapid, team1stats)
-          }
-          for (let i = 0; i < team2stats.length; i++) {
-            this.$set(this.matchdata.team2_player_stats, mapid, team2stats)
-          }
-          resolve(res.data)
-        })
+        for (let i = 0; i < team1stats.length; i++) {
+          this.$set(this.matchdata.team1_player_stats, mapid, team1stats)
+        }
+        for (let i = 0; i < team2stats.length; i++) {
+          this.$set(this.matchdata.team2_player_stats, mapid, team2stats)
+        }
+        resolve(res.data)
       })
     },
     GetSteamURL: function (steamid) {
@@ -368,8 +363,8 @@ export default {
     get_logo_or_flag_link: function (team1, team2) { // get_logo_or_flag_link(team1)
       if (team1.logo && team2.logo) {
         return {
-          team1: get_logo_link(team1),
-          team2: get_logo_link(team2)
+          // team1: get_logo_link(team1),
+          // team2: get_logo_link(team2)
         }
       } else {
         return {
@@ -382,7 +377,7 @@ export default {
       // TODO...
     },
     get_flag_link: function (team) {
-      if (team.flag == '') {
+      if (team.flag === '') {
         return `/static/img/_unknown.png`
       }
       // return `<img src="/static/img/valve_flags/${team.flag}"  width="24" height="16">`
@@ -409,25 +404,25 @@ export default {
       }
     },
     GetKDR: function (playerstat) {
-      if (playerstat.deaths == 0) {
+      if (playerstat.deaths === 0) {
         return playerstat.kills
       }
       return playerstat.kills / playerstat.deaths
     },
     GetHSP: function (playerstat) {
-      if (playerstat.deaths == 0) {
+      if (playerstat.deaths === 0) {
         return playerstat.kills
       }
       return playerstat.headshot_kills / playerstat.kills * 100
     },
     GetADR: function (playerstat) {
-      if (playerstat.roundsplayed == 0) {
+      if (playerstat.roundsplayed === 0) {
         return 0.0
       }
       return playerstat.damage / playerstat.roundsplayed
     },
     GetFPR: function (playerstat) {
-      if (playerstat.roundsplayed == 0) {
+      if (playerstat.roundsplayed === 0) {
         return 0.0
       }
       return playerstat.kills / playerstat.roundsplayed

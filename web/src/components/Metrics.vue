@@ -46,14 +46,14 @@ export default {
   name: 'Metrics',
   data () {
     return {
-      metrics:[]
+      metrics: []
     }
   },
   created () {
     this.axios.get('/api/v1/GetMetrics').then(res => {
       this.metrics.push(res.data)
     })
-  },
+  }
 }
 </script>
 
