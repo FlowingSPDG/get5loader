@@ -19,7 +19,7 @@ Shugo **FlowingSPDG** Kawamura
 - MySQL
 
 ## Requirements(Developers):
-- GO v1.13.3
+- GO v1.13.5
 - original get5-web DB
 
 ## Setup(Developers)
