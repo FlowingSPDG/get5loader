@@ -1,8 +1,10 @@
 package api
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
+	"github.com/hydrogen18/stalecucumber"
 	"net/http"
 	"strconv"
 	"strings"
@@ -419,4 +421,62 @@ func GetSteamName(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 	}
 	w.Write([]byte(steamname))
+}
+
+func CreateTeam(w http.ResponseWriter, r *http.Request) {
+	fmt.Printf("CreateTeam\n")
+	var IsLoggedIn = false
+	s := db.Sess.Start(w, r)
+	if s.Get("Loggedin") != nil {
+		IsLoggedIn = s.Get("Loggedin").(bool)
+	}
+	fmt.Println(IsLoggedIn)
+	if IsLoggedIn {
+		Team := db.TeamData{}
+		TeamTemp := db.TeamData{}
+		err := json.NewDecoder(r.Body).Decode(&TeamTemp)
+		if err != nil {
+			fmt.Println("failed to decode JSON")
+			http.Error(w, "JSON Format invalid", http.StatusBadRequest)
+		}
+		if TeamTemp.Name == "" {
+			fmt.Println("failed to decode Team Name")
+			http.Error(w, "JSON Format invalid", http.StatusBadRequest)
+		}
+		buf := new(bytes.Buffer)
+		_, err = stalecucumber.NewPickler(buf).Pickle(TeamTemp.Auths)
+		if err != nil {
+			http.Error(w, "Internal ERROR", http.StatusInternalServerError)
+		}
+		Team.UserID = s.Get("UserID").(int)
+		Team.Name = TeamTemp.Name
+		Team.Tag = TeamTemp.Tag
+		Team.Flag = TeamTemp.Flag
+		Team.Logo = TeamTemp.Logo
+		Team.AuthsPickle = buf.Bytes()
+		Team.PublicTeam = TeamTemp.PublicTeam
+		db.SQLAccess.Gorm.Create(&Team)
+		w.WriteHeader(http.StatusOK)
+		res := SimpleJSONResponse{
+			Response: "OK",
+		}
+		jsonbyte, err := json.Marshal(res)
+		if err != nil {
+			http.Error(w, "Internal ERROR", http.StatusInternalServerError)
+		}
+		w.Header().Set("Content-Type", "application/json")
+		w.Write(jsonbyte)
+	} else {
+		w.WriteHeader(http.StatusUnauthorized)
+		res := SimpleJSONResponse{
+			Errorcode:    http.StatusUnauthorized,
+			Errormessage: "Forbidden",
+		}
+		jsonbyte, err := json.Marshal(res)
+		if err != nil {
+			http.Error(w, "Internal ERROR", http.StatusInternalServerError)
+		}
+		w.Header().Set("Content-Type", "application/json")
+		w.Write(jsonbyte)
+	}
 }

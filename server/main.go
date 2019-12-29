@@ -72,16 +72,18 @@ func main() {
 
 	//s := r.Host(HOST).Subrouter()
 
+	r.HandleFunc("/api/v1/GetMatches", api.GetMatches).Methods("GET")
+	r.HandleFunc("/api/v1/GetMetrics", api.GetMetrics).Methods("GET")
+	r.HandleFunc("/api/v1/GetSteamName", api.GetSteamName).Methods("GET")
+
 	r.HandleFunc("/api/v1/CheckLoggedIn", api.CheckLoggedIn).Methods("GET")
 	r.HandleFunc("/api/v1/match/{matchID}/GetMatchInfo", api.GetMatchInfo).Methods("GET")
 	r.HandleFunc("/api/v1/match/{matchID}/GetPlayerStatInfo", api.GetPlayerStatInfo).Methods("GET")
 	r.HandleFunc("/api/v1/match/{matchID}/GetStatusString", api.GetStatusString).Methods("GET")
-	r.HandleFunc("/api/v1/GetMatches", api.GetMatches).Methods("GET")
-	r.HandleFunc("/api/v1/GetMetrics", api.GetMetrics).Methods("GET")
-	r.HandleFunc("/api/v1/GetSteamName", api.GetSteamName).Methods("GET")
 	r.HandleFunc("/api/v1/team/{teamID}/GetTeamInfo", api.GetTeamInfo).Methods("GET")
 	r.HandleFunc("/api/v1/team/{teamID}/GetRecentMatches", api.GetRecentMatches).Methods("GET")
 	r.HandleFunc("/api/v1/team/{teamID}/CheckUserCanEdit", api.CheckUserCanEdit).Methods("GET")
+	r.HandleFunc("/api/v1/team/create", api.CreateTeam).Methods("POST")
 	r.HandleFunc("/api/v1/user/{userID}/GetUserInfo", api.GetUserInfo).Methods("GET")
 	r.HandleFunc("/api/v1/server/{serverID}/GetServerInfo", api.GetServerInfo).Methods("GET")
 
@@ -112,7 +114,6 @@ func main() {
 		r.HandleFunc("/matches/{userID}", get5.MatchesWithIDHandler) // ?
 		r.HandleFunc("/mymatches", get5.MyMatchesHandler)            // ?
 
-		r.HandleFunc("/team/create", get5.TeamCreateHandler)              // GET/POST
 		r.HandleFunc("/team/{teamID}", get5.TeamHandler).Methods("GET")   // GET
 		r.HandleFunc("/team/{teamID}/edit", get5.TeamEditHandler)         // GET/POST
 		r.HandleFunc("/team/{teamID}/delete", get5.TeamDeleteHandler)     // ?

@@ -176,11 +176,12 @@ type TeamData struct {
 	Flag        string            `gorm:"column:flag" json:"flag"`
 	Logo        string            `gorm:"column:logo" json:"logo"`
 	AuthsPickle []byte            `gorm:"column:auths" json:"-"`
-	Auths       []string          `json:"auths"` // converts pickle []byte to []string
+	Auths       []string          `gorm:"-" json:"auths"` // converts pickle []byte to []string
 	Players     []PlayerStatsData `gorm:"-" json:"-"`
 	PublicTeam  bool              `gorm:"column:public_team" json:"public_team"`
 
-	User UserData `gorm:"ASSOCIATION_FOREIGNKEY:user_id" json:"-"`
+	// User UserData `gorm:"ASSOCIATION_FOREIGNKEY:user_id" json:"-"`
+	User UserData `gorm:"-" json:"-"`
 }
 
 // TableName declairation for GORM
