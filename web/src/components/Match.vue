@@ -292,10 +292,8 @@ export default {
       console.log('GetPlayerStats')
       this.GetPlayerStats(res.id, res.map_stats[i].id)
     }
-    console.log('GetTeam1Data')
-    await this.GetTeam1Data(res.team1.id)
-    console.log('GetTeam2Data')
-    await this.GetTeam2Data(res.team2.id)
+    this.GetTeam1Data(res.team1.id)
+    this.GetTeam2Data(res.team2.id)
     this.loading = false
     let data = await this.axios.get('/api/v1/CheckLoggedIn')
     console.log(data)

@@ -64,10 +64,10 @@ export default {
     }
   },
   async created () {
-    const teamdata = await this.GetTeamData(this.$route.params.teamid)
-    this.team = teamdata
-    const matches = await this.GetRecentMatches(this.$route.params.teamid)
-    this.matches = matches
+    const teamdataPromise = this.GetTeamData(this.$route.params.teamid)
+    const matchesPromise = this.GetRecentMatches(this.$route.params.teamid)
+    this.team = await teamdataPromise
+    this.matches = await matchesPromise
     for (let i = 0; i < this.matches.length; i++) {
       if (!this.matchdata) {
         this.matchdata = []
