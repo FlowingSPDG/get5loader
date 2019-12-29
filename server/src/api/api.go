@@ -432,20 +432,30 @@ func CreateTeam(w http.ResponseWriter, r *http.Request) {
 	}
 	fmt.Println(IsLoggedIn)
 	if IsLoggedIn {
-		team := db.TeamData{}
-		err := json.NewDecoder(r.Body).Decode(&team)
+		Team := db.TeamData{}
+		TeamTemp := db.TeamData{}
+		err := json.NewDecoder(r.Body).Decode(&TeamTemp)
 		if err != nil {
 			fmt.Println("failed to decode JSON")
 			http.Error(w, "JSON Format invalid", http.StatusBadRequest)
 		}
+		if TeamTemp.Name == "" {
+			fmt.Println("failed to decode Team Name")
+			http.Error(w, "JSON Format invalid", http.StatusBadRequest)
+		}
 		buf := new(bytes.Buffer)
-		_, err = stalecucumber.NewPickler(buf).Pickle(team.Auths)
+		_, err = stalecucumber.NewPickler(buf).Pickle(TeamTemp.Auths)
 		if err != nil {
 			http.Error(w, "Internal ERROR", http.StatusInternalServerError)
 		}
-		team.AuthsPickle = buf.Bytes()
-		team.UserID = s.Get("UserID").(int)
-		db.SQLAccess.Gorm.Create(&team)
+		Team.UserID = s.Get("UserID").(int)
+		Team.Name = TeamTemp.Name
+		Team.Tag = TeamTemp.Tag
+		Team.Flag = TeamTemp.Flag
+		Team.Logo = TeamTemp.Logo
+		Team.AuthsPickle = buf.Bytes()
+		Team.PublicTeam = TeamTemp.PublicTeam
+		db.SQLAccess.Gorm.Create(&Team)
 		w.WriteHeader(http.StatusOK)
 		res := SimpleJSONResponse{
 			Response: "OK",

@@ -1,22 +1,22 @@
 <template>
 <div id="container">
 <div id="content">
-  <el-form ref="form" :model="form" label-position="left" label-width="120px">
-  <el-form-item label="Team Name" style="width: 653px;">
+  <el-form ref="form" :model="form" :rules="rules" label-position="left" label-width="120px">
+  <el-form-item label="Team Name" style="width: 653px;" prop="name">
     <el-input v-model="form.name"></el-input>
   </el-form-item>
 
-  <el-form-item label="Team Tag" style="width: 653px;">
+  <el-form-item label="Team Tag" style="width: 653px;" prop="tag">
     <el-input v-model="form.tag"></el-input>
   </el-form-item>
 
-  <el-form-item label="Logo Name" style="width: 653px;">
+  <el-form-item label="Logo Name" style="width: 653px;" prop="logo_name">
     <el-select v-model="form.logo_name" placeholder="None" style="width: 653px;">
       <el-option selected value="">None</el-option>
     </el-select>
   </el-form-item>
 
-  <el-form-item label="Country Flag" style="width: 653px;">
+  <el-form-item label="Country Flag" style="width: 653px;" prop="flag">
     <el-select v-model="form.flag" placeholder="None" style="width: 653px;">
       <el-option selected value="">None</el-option><br>
       <el-option label="Algeria" value="dz">Algeria - DZ</el-option><br>
@@ -93,25 +93,25 @@
     </el-select>
   </el-form-item>
 
-  <el-form-item label="Player 1" style="width: 653px;">
+  <el-form-item label="Player 1" style="width: 653px;" prop="auths[0]">
     <el-input v-model="form.auths[0]"></el-input>
   </el-form-item>
-  <el-form-item label="Player 2" style="width: 653px;">
+  <el-form-item label="Player 2" style="width: 653px;" prop="auths[1]">
     <el-input v-model="form.auths[1]"></el-input>
   </el-form-item>
-  <el-form-item label="Player 3" style="width: 653px;">
+  <el-form-item label="Player 3" style="width: 653px;" prop="auths[2]">
     <el-input v-model="form.auths[2]"></el-input>
   </el-form-item>
-  <el-form-item label="Player 4" style="width: 653px;">
+  <el-form-item label="Player 4" style="width: 653px;" prop="auths[3]">
     <el-input v-model="form.auths[3]"></el-input>
   </el-form-item>
-  <el-form-item label="Player 5" style="width: 653px;">
+  <el-form-item label="Player 5" style="width: 653px;" prop="auths[4]">
     <el-input v-model="form.auths[4]"></el-input>
   </el-form-item>
-  <el-form-item label="Player 6" style="width: 653px;">
+  <el-form-item label="Player 6" style="width: 653px;" prop="auths[5]">
     <el-input v-model="form.auths[5]"></el-input>
   </el-form-item>
-  <el-form-item label="Player 7" style="width: 653px;">
+  <el-form-item label="Player 7" style="width: 653px;" prop="auths[6]">
     <el-input v-model="form.auths[6]"></el-input>
   </el-form-item>
 
@@ -178,7 +178,33 @@ export default {
         flag: '',
         logo: '',
         auths: [],
-        public_tean: false
+        public_team: false
+      },
+      rules: {
+        name: [
+          { required: true, trigger: 'change', min: 5, max: 30, message: 'Length should be 5 to 30' }
+        ],
+        tag: [
+          { required: false, message: 'Please input team tag', trigger: 'change' }
+        ],
+        flag: [
+          { required: false, message: 'Please select country flag', trigger: 'change' }
+        ],
+        logo: [
+          { required: true, message: 'Please pick a logo', trigger: 'change' }
+        ],
+        auths: [
+          { required: true, message: 'Please input your team members steamid', trigger: 'blur' },
+          { required: true, message: 'Please input your team members steamid', trigger: 'blur' },
+          { required: true, message: 'Please input your team members steamid', trigger: 'blur' },
+          { required: true, message: 'Please input your team members steamid', trigger: 'blur' },
+          { required: true, message: 'Please input your team members steamid', trigger: 'blur' },
+          { required: false, message: 'Please input your team members steamid', trigger: 'blur' },
+          { required: false, message: 'Please input your team members steamid', trigger: 'blur' }
+        ],
+        public_team: [
+          { required: false, message: 'Please select team publicity', trigger: 'change' }
+        ]
       },
       edit: false // TODO
     }
@@ -190,10 +216,17 @@ export default {
     async RegisterTeam () {
       const json = JSON.stringify(this.form)
       try {
-        await this.axios.post('/api/v1/team/create', json)
-        this.$message({
-          message: 'Successfully submitted data.',
-          type: 'success'
+        this.$refs['form'].validate(async (valid) => {
+          if (valid) {
+            await this.axios.post('/api/v1/team/create', json)
+            this.$message({
+              message: 'Successfully submitted data.',
+              type: 'success'
+            })
+            this.form = {}
+          } else {
+            this.$message.error('Please fill form')
+          }
         })
       } catch (err) {
         this.$message.error('Failed to submit team data...')
