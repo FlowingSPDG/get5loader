@@ -1,8 +1,10 @@
 package api
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
+	"github.com/hydrogen18/stalecucumber"
 	"net/http"
 	"strconv"
 	"strings"
@@ -419,4 +421,56 @@ func GetSteamName(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 	}
 	w.Write([]byte(steamname))
+}
+
+func CreateTeam(w http.ResponseWriter, r *http.Request) {
+	fmt.Printf("CreateTeam\n")
+	var IsLoggedIn = false
+	s := db.Sess.Start(w, r)
+	if s.Get("Loggedin") != nil {
+		IsLoggedIn = s.Get("Loggedin").(bool)
+	}
+	fmt.Println(IsLoggedIn)
+	//if IsLoggedIn {
+	team := db.TeamData{}
+	err := json.NewDecoder(r.Body).Decode(&team)
+	if err != nil {
+		fmt.Println("failed to decode JSON")
+		http.Error(w, "JSON Format invalid", http.StatusBadRequest)
+	}
+	buf := new(bytes.Buffer)
+	_, err = stalecucumber.NewPickler(buf).Pickle(team.Auths)
+	if err != nil {
+		http.Error(w, "Internal ERROR", http.StatusInternalServerError)
+	}
+	team.AuthsPickle = buf.Bytes()
+	team.ID = 0
+	team.UserID = 0
+	fmt.Printf("team : %v\n", team)
+	db.SQLAccess.Gorm.Create(&team) // TODO
+	w.WriteHeader(http.StatusOK)
+	res := SimpleJSONResponse{
+		Response: "OK",
+	}
+	jsonbyte, err := json.Marshal(res)
+	if err != nil {
+		http.Error(w, "Internal ERROR", http.StatusInternalServerError)
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(jsonbyte)
+	//
+	/*} else {
+		w.WriteHeader(http.StatusUnauthorized)
+		res := SimpleJSONResponse{
+			Errorcode:    http.StatusUnauthorized,
+			Errormessage: "Forbidden",
+		}
+		jsonbyte, err := json.Marshal(res)
+		if err != nil {
+			http.Error(w, "Internal ERROR", http.StatusInternalServerError)
+		}
+		w.Header().Set("Content-Type", "application/json")
+		w.Write(jsonbyte)
+	}
+	*/
 }
