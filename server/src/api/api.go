@@ -431,33 +431,32 @@ func CreateTeam(w http.ResponseWriter, r *http.Request) {
 		IsLoggedIn = s.Get("Loggedin").(bool)
 	}
 	fmt.Println(IsLoggedIn)
-	//if IsLoggedIn {
-	team := db.TeamData{}
-	err := json.NewDecoder(r.Body).Decode(&team)
-	if err != nil {
-		fmt.Println("failed to decode JSON")
-		http.Error(w, "JSON Format invalid", http.StatusBadRequest)
-	}
-	buf := new(bytes.Buffer)
-	_, err = stalecucumber.NewPickler(buf).Pickle(team.Auths)
-	if err != nil {
-		http.Error(w, "Internal ERROR", http.StatusInternalServerError)
-	}
-	team.AuthsPickle = buf.Bytes()
-	fmt.Printf("team : %v\n", team)
-	db.SQLAccess.Gorm.Create(&team) // TODO
-	w.WriteHeader(http.StatusOK)
-	res := SimpleJSONResponse{
-		Response: "OK",
-	}
-	jsonbyte, err := json.Marshal(res)
-	if err != nil {
-		http.Error(w, "Internal ERROR", http.StatusInternalServerError)
-	}
-	w.Header().Set("Content-Type", "application/json")
-	w.Write(jsonbyte)
-	//
-	/*} else {
+	if IsLoggedIn {
+		team := db.TeamData{}
+		err := json.NewDecoder(r.Body).Decode(&team)
+		if err != nil {
+			fmt.Println("failed to decode JSON")
+			http.Error(w, "JSON Format invalid", http.StatusBadRequest)
+		}
+		buf := new(bytes.Buffer)
+		_, err = stalecucumber.NewPickler(buf).Pickle(team.Auths)
+		if err != nil {
+			http.Error(w, "Internal ERROR", http.StatusInternalServerError)
+		}
+		team.AuthsPickle = buf.Bytes()
+		team.UserID = s.Get("UserID").(int)
+		db.SQLAccess.Gorm.Create(&team)
+		w.WriteHeader(http.StatusOK)
+		res := SimpleJSONResponse{
+			Response: "OK",
+		}
+		jsonbyte, err := json.Marshal(res)
+		if err != nil {
+			http.Error(w, "Internal ERROR", http.StatusInternalServerError)
+		}
+		w.Header().Set("Content-Type", "application/json")
+		w.Write(jsonbyte)
+	} else {
 		w.WriteHeader(http.StatusUnauthorized)
 		res := SimpleJSONResponse{
 			Errorcode:    http.StatusUnauthorized,
@@ -470,5 +469,4 @@ func CreateTeam(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		w.Write(jsonbyte)
 	}
-	*/
 }

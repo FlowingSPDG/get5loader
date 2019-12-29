@@ -1,105 +1,130 @@
 <template>
+<div id="container">
 <div id="content">
-  <form role="form" action="" method="post" class="form-horizontal">
+  <el-form ref="form" :model="form" label-position="left" label-width="120px">
+  <el-form-item label="Team Name" style="width: 653px;">
+    <el-input v-model="form.name"></el-input>
+  </el-form-item>
 
-    <!--{{ form.csrf_token }} -->
+  <el-form-item label="Team Tag" style="width: 653px;">
+    <el-input v-model="form.tag"></el-input>
+  </el-form-item>
 
-    <div class="form-group">
-    <label class="col-sm-2 control-label" for="name">Team Name</label>
-      <div class="col-sm-7">
-        <input class="form-control" id="name" name="name" placeholder="Team name" type="text" value="">
-      </div>
-    </div>
+  <el-form-item label="Logo Name" style="width: 653px;">
+    <el-select v-model="form.logo_name" placeholder="None" style="width: 653px;">
+      <el-option selected value="">None</el-option>
+    </el-select>
+  </el-form-item>
 
-    <div class="form-group">
-    <label class="col-sm-2 control-label" for="tag">Team Tag</label>
-      <div class="col-sm-7">
-        <input class="form-control" id="tag" name="tag" placeholder="Team tag" type="text" value="">
-      </div>
-    </div>
+  <el-form-item label="Country Flag" style="width: 653px;">
+    <el-select v-model="form.flag" placeholder="None" style="width: 653px;">
+      <el-option selected value="">None</el-option><br>
+      <el-option label="Algeria" value="dz">Algeria - DZ</el-option><br>
+      <el-option label="Argentina" value="ar">Argentina - AR</el-option><br>
+      <el-option label="Australia" value="au">Australia - AU</el-option><br>
+      <el-option label="Austria" value="at">Austria - AT</el-option><br>
+      <el-option label="Belarus" value="by">Belarus - BY</el-option><br>
+      <el-option label="Belgium" value="be">Belgium - BE</el-option><br>
+      <el-option label="Brazil" value="br">Brazil - BR</el-option><br>
+      <el-option label="Bulgaria" value="bg">Bulgaria - BG</el-option><br>
+      <el-option label="Canada" value="ca">Canada - CA</el-option><br>
+      <el-option label="Chile" value="cl">Chile - CL</el-option><br>
+      <el-option label="China" value="cn">China - CN</el-option><br>
+      <el-option label="Cocos Islands" value="cc">Cocos Islands - CC</el-option><br>
+      <el-option label="Croatia" value="hr">Croatia - HR</el-option><br>
+      <el-option label="Czech Republic" value="cz">Czech Republic - CZ</el-option><br>
+      <el-option label="Denmark" value="dk">Denmark - DK</el-option><br>
+      <el-option label="Estonia" value="ee">Estonia - EE</el-option><br>
+      <el-option label="European Union" value="eu">European Union - EU</el-option><br>
+      <el-option label="Finland" value="fi">Finland - FI</el-option><br>
+      <el-option label="France" value="fr">France - FR</el-option><br>
+      <el-option label="Germany" value="de">Germany - DE</el-option><br>
+      <el-option label="Greece" value="gr">Greece - GR</el-option><br>
+      <el-option label="Guadeloupe" value="gp">Guadeloupe - GP</el-option><br>
+      <el-option label="Hong Kong" value="hk">Hong Kong - HK</el-option><br>
+      <el-option label="Hungary" value="hu">Hungary - HU</el-option><br>
+      <el-option label="Iceland" value="is">Iceland - IS</el-option><br>
+      <el-option label="India" value="in">India - IN</el-option><br>
+      <el-option label="Indonesia" value="id">Indonesia - ID</el-option><br>
+      <el-option label="Iran" value="ir">Iran - IR</el-option><br>
+      <el-option label="Ireland" value="ie">Ireland - IE</el-option><br>
+      <el-option label="Israel" value="il">Israel - IL</el-option><br>
+      <el-option label="Italy" value="it">Italy - IT</el-option><br>
+      <el-option label="Japan" value="jp">Japan - JP</el-option><br>
+      <el-option label="Kazahkstan" value="kz">Kazahkstan - KZ</el-option><br>
+      <el-option label="Latvia" value="lv">Latvia - LV</el-option><br>
+      <el-option label="Libya" value="ly">Libya - LY</el-option><br>
+      <el-option label="Liechtenstein" value="lt">Liechtenstein - LT</el-option><br>
+      <el-option label="Luxembourg" value="lu">Luxembourg - LU</el-option><br>
+      <el-option label="Macao" value="mo">Macao - MO</el-option><br>
+      <el-option label="Macedonia" value="mk">Macedonia - MK</el-option><br>
+      <el-option label="Malaysia" value="my">Malaysia - MY</el-option><br>
+      <el-option label="Mexico" value="mx">Mexico - MX</el-option><br>
+      <el-option label="Netherlands" value="nl">Netherlands - NL</el-option><br>
+      <el-option label="New Zealand" value="nz">New Zealand - NZ</el-option><br>
+      <el-option label="Norway" value="no">Norway - NO</el-option><br>
+      <el-option label="Pakistan" value="pk">Pakistan - PK</el-option><br>
+      <el-option label="Peru" value="pe">Peru - PE</el-option><br>
+      <el-option label="Phillippines" value="ph">Phillippines - PH</el-option><br>
+      <el-option label="Poland" value="pl">Poland - PL</el-option><br>
+      <el-option label="Portugal" value="pt">Portugal - PT</el-option><br>
+      <el-option label="Reunion" value="re">Reunion - RE</el-option><br>
+      <el-option label="Romania" value="ro">Romania - RO</el-option><br>
+      <el-option label="Russia" value="ru">Russia - RU</el-option><br>
+      <el-option label="Saudi Arabia" value="sa">Saudi Arabia - SA</el-option><br>
+      <el-option label="Serbia" value="rs">Serbia - RS</el-option><br>
+      <el-option label="Singapore" value="sg">Singapore - SG</el-option><br>
+      <el-option label="Slovenia" value="si">Slovenia - SI</el-option><br>
+      <el-option label="Slovokia" value="sk">Slovokia - SK</el-option><br>
+      <el-option label="South Africa" value="za">South Africa - ZA</el-option><br>
+      <el-option label="South Korea" value="kr">South Korea - KR</el-option><br>
+      <el-option label="Spain" value="es">Spain - ES</el-option><br>
+      <el-option label="Sweden" value="se">Sweden - SE</el-option><br>
+      <el-option label="Switzerland" value="ch">Switzerland - CH</el-option><br>
+      <el-option label="Taiwan" value="tw">Taiwan - TW</el-option><br>
+      <el-option label="Thailand" value="th">Thailand - TH</el-option><br>
+      <el-option label="Turkey" value="tr">Turkey - TR</el-option><br>
+      <el-option label="Ukraine" value="ua">Ukraine - UA</el-option><br>
+      <el-option label="United Arab Emirates" value="ae">United Arab Emirates - AE</el-option><br>
+      <el-option label="United Kingdom" value="gb">United Kingdom - GB</el-option><br>
+      <el-option label="United States" value="us">United States - US</el-option><br>
+      <el-option label="Venezuela" value="ve">Venezuela - VE</el-option><br>
+      <el-option label="Vietnam" value="vn">Vietnam - VN</el-option><br>
+    </el-select>
+  </el-form-item>
 
-    <div class="form-group">
-    <label class="col-sm-2 control-label" for="logo">Logo Name</label>
-      <div class="col-sm-7">
-        <select class="form-control input-sm" id="logo" name="logo"><option selected value="">None</option></select>
-      </div>
-    </div>
+  <el-form-item label="Player 1" style="width: 653px;">
+    <el-input v-model="form.auths[0]"></el-input>
+  </el-form-item>
+  <el-form-item label="Player 2" style="width: 653px;">
+    <el-input v-model="form.auths[1]"></el-input>
+  </el-form-item>
+  <el-form-item label="Player 3" style="width: 653px;">
+    <el-input v-model="form.auths[2]"></el-input>
+  </el-form-item>
+  <el-form-item label="Player 4" style="width: 653px;">
+    <el-input v-model="form.auths[3]"></el-input>
+  </el-form-item>
+  <el-form-item label="Player 5" style="width: 653px;">
+    <el-input v-model="form.auths[4]"></el-input>
+  </el-form-item>
+  <el-form-item label="Player 6" style="width: 653px;">
+    <el-input v-model="form.auths[5]"></el-input>
+  </el-form-item>
+  <el-form-item label="Player 7" style="width: 653px;">
+    <el-input v-model="form.auths[6]"></el-input>
+  </el-form-item>
 
-    <div class="form-group">
-      <label class="col-sm-2 control-label" for="country_flag">Country Flag</label>
-        <div class="col-sm-7">
-          <select class="form-control input-sm" id="country_flag" name="country_flag"><option selected value="">None</option><option value="dz">Algeria - DZ</option><option value="ar">Argentina - AR</option><option value="au">Australia - AU</option><option value="at">Austria - AT</option><option value="by">Belarus - BY</option><option value="be">Belgium - BE</option><option value="br">Brazil - BR</option><option value="bg">Bulgaria - BG</option><option value="ca">Canada - CA</option><option value="cl">Chile - CL</option><option value="cn">China - CN</option><option value="cc">Cocos Islands - CC</option><option value="hr">Croatia - HR</option><option value="cz">Czech Republic - CZ</option><option value="dk">Denmark - DK</option><option value="ee">Estonia - EE</option><option value="eu">European Union - EU</option><option value="fi">Finland - FI</option><option value="fr">France - FR</option><option value="de">Germany - DE</option><option value="gr">Greece - GR</option><option value="gp">Guadeloupe - GP</option><option value="hk">Hong Kong - HK</option><option value="hu">Hungary - HU</option><option value="is">Iceland - IS</option><option value="in">India - IN</option><option value="id">Indonesia - ID</option><option value="ir">Iran - IR</option><option value="ie">Ireland - IE</option><option value="il">Israel - IL</option><option value="it">Italy - IT</option><option value="jp">Japan - JP</option><option value="kz">Kazahkstan - KZ</option><option value="lv">Latvia - LV</option><option value="ly">Libya - LY</option><option value="lt">Liechtenstein - LT</option><option value="lu">Luxembourg - LU</option><option value="mo">Macao - MO</option><option value="mk">Macedonia - MK</option><option value="my">Malaysia - MY</option><option value="mx">Mexico - MX</option><option value="nl">Netherlands - NL</option><option value="nz">New Zealand - NZ</option><option value="no">Norway - NO</option><option value="pk">Pakistan - PK</option><option value="pe">Peru - PE</option><option value="ph">Phillippines - PH</option><option value="pl">Poland - PL</option><option value="pt">Portugal - PT</option><option value="re">Reunion - RE</option><option value="ro">Romania - RO</option><option value="ru">Russia - RU</option><option value="sa">Saudi Arabia - SA</option><option value="rs">Serbia - RS</option><option value="sg">Singapore - SG</option><option value="si">Slovenia - SI</option><option value="sk">Slovokia - SK</option><option value="za">South Africa - ZA</option><option value="kr">South Korea - KR</option><option value="es">Spain - ES</option><option value="se">Sweden - SE</option><option value="ch">Switzerland - CH</option><option value="tw">Taiwan - TW</option><option value="th">Thailand - TH</option><option value="tr">Turkey - TR</option><option value="ua">Ukraine - UA</option><option value="ae">United Arab Emirates - AE</option><option value="gb">United Kingdom - GB</option><option value="us">United States - US</option><option value="ve">Venezuela - VE</option><option value="vn">Vietnam - VN</option></select>
-        </div>
-    </div>
+  <el-form-item label="Public Team" style="width: 653px;">
+    <el-switch v-model="form.public_team"></el-switch>
+  </el-form-item>
 
-    <div class="form-group">
-    <label class="col-sm-2 control-label" for="auth1">Player 1</label>
-      <div class="col-sm-7">
-        <input class="form-control" id="auth1" name="auth1" placeholder="Any steamid format" type="text" value="">
-      </div>
-    </div>
+  <el-form-item style="width: 653px;">
+    <el-button type="primary" @click="RegisterTeam">Create</el-button>
+  </el-form-item>
+</el-form>
 
-    <div class="form-group">
-    <label class="col-sm-2 control-label" for="auth2">Player 2</label>
-      <div class="col-sm-7">
-        <input class="form-control" id="auth2" name="auth2" type="text" value="">
-      </div>
-    </div>
-
-    <div class="form-group">
-    <label class="col-sm-2 control-label" for="auth3">Player 3</label>
-      <div class="col-sm-7">
-        <input class="form-control" id="auth3" name="auth3" type="text" value="">
-      </div>
-    </div>
-
-    <div class="form-group">
-    <label class="col-sm-2 control-label" for="auth4">Player 4</label>
-      <div class="col-sm-7">
-        <input class="form-control" id="auth4" name="auth4" type="text" value="">
-      </div>
-    </div>
-
-    <div class="form-group">
-    <label class="col-sm-2 control-label" for="auth5">Player 5</label>
-      <div class="col-sm-7">
-        <input class="form-control" id="auth5" name="auth5" type="text" value="">
-      </div>
-    </div>
-
-    <div class="form-group">
-    <label class="col-sm-2 control-label" for="auth6">Player 6</label>
-      <div class="col-sm-7">
-        <input class="form-control" id="auth6" name="auth6" type="text" value="">
-      </div>
-    </div>
-
-    <div class="form-group">
-    <label class="col-sm-2 control-label" for="auth7">Player 7</label>
-      <div class="col-sm-7">
-        <input class="form-control" id="auth7" name="auth7" type="text" value="">
-      </div>
-    </div>
-
-    <div class="form-group" v-if="user.adminaccess == true">
-      <label class="col-sm-2 control-label" for="public_team">Public Team</label>
-      <div class="col-sm-offset-1">
-        <input id="public_team" name="public_team" type="checkbox" value="y">
-      </div>
-    </div>
-
-    <div class="input submit col-sm-offset-1" v-if="edit">
-      <input type="submit" class="btn btn-primary" value="Update Team">
-    </div>
-
-    <div class="input submit col-sm-offset-1" v-else>
-      <input type="submit" class="btn btn-primary" value="Create Team">
-    </div>
-
-    <br>
-
-  </form>
-
+</div>
 </div>
 </template>
 
@@ -147,6 +172,14 @@ export default {
         teams: null,
         matches: null
       },
+      form: {
+        name: '',
+        tag: '',
+        flag: '',
+        logo: '',
+        auths: [],
+        public_tean: false
+      },
       edit: false // TODO
     }
   },
@@ -155,7 +188,17 @@ export default {
   },
   methods: {
     async RegisterTeam () {
-      // TODO
+      const json = JSON.stringify(this.form)
+      try {
+        await this.axios.post('/api/v1/team/create', json)
+        this.$message({
+          message: 'Successfully submitted data.',
+          type: 'success'
+        })
+      } catch (err) {
+        this.$message.error('Failed to submit team data...')
+        console.error(err)
+      }
     }
   }
 }
@@ -181,5 +224,12 @@ li {
 
 a {
     color: #42b983;
+}
+
+#container {
+  padding-left: 500px;
+  margin-right: auto;
+  margin-left: auto;
+  align-content: center;
 }
 </style>
