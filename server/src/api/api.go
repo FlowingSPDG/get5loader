@@ -444,8 +444,6 @@ func CreateTeam(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Internal ERROR", http.StatusInternalServerError)
 	}
 	team.AuthsPickle = buf.Bytes()
-	team.ID = 0
-	team.UserID = 0
 	fmt.Printf("team : %v\n", team)
 	db.SQLAccess.Gorm.Create(&team) // TODO
 	w.WriteHeader(http.StatusOK)
