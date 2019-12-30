@@ -10,7 +10,6 @@ import (
 	"github.com/go-ini/ini"
 	"github.com/gorilla/mux"
 	_ "github.com/hydrogen18/stalecucumber"
-	_ "github.com/sipin/gorazor/gorazor"
 	_ "github.com/solovev/steam_go"
 )
 
@@ -37,7 +36,7 @@ var (
 	SQLAccess db.DBdatas
 )
 
-// 静的ファイルをホスティング
+// ServeStaticFile Host static files
 func ServeStaticFile(entrypoint string) func(w http.ResponseWriter, r *http.Request) {
 	fn := func(w http.ResponseWriter, r *http.Request) {
 		http.ServeFile(w, r, entrypoint)

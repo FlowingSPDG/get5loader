@@ -18,3 +18,4 @@ config.ini
 get5-web-go
 __debug_bin
 .vscode/launch.json
+build/*/*
