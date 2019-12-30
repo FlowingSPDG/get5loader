@@ -9,6 +9,11 @@ DIST_DIR=build
 SERVER_DIR=server
 WEB_DIR=web
 GAME_DIR=game_plugin
+OS_Linux=linux
+OS_Windows=windows
+OS_Mac=darwin
+ARCH_386=386
+ARCH_AMD64=amd64
 
 test:
 	$(GOTEST) -v ./...
@@ -32,22 +37,22 @@ deps:
 # Cross compile for go
 build-all: build-prepare build-web clean
 	@cd ./server && gox \
-	-os="windows darwin linux" \
-	-arch="386 amd64" \
+	-os="$(OS_Windows) $(OS_Mac) $(OS_Linux)" \
+	-arch="$(ARCH_386) $(ARCH_AMD64)" \
 	--output "../$(DIST_DIR)/$(BINARY_NAME)_{{.OS}}_{{.Arch}}/$(BINARY_NAME)"
-	@cp -R ./web/build/ ./$(DIST_DIR)/$(BINARY_NAME)_linux_386/static
-	@cp -R ./web/build/ ./$(DIST_DIR)/$(BINARY_NAME)_linux_amd64/static
-	@cp -R ./web/build/ ./$(DIST_DIR)/$(BINARY_NAME)_windows_386/static
-	@cp -R ./web/build/ ./$(DIST_DIR)/$(BINARY_NAME)_windows_amd64/static
-	@cp -R ./web/build/ ./$(DIST_DIR)/$(BINARY_NAME)_darwin_386/static
-	@cp -R ./web/build/ ./$(DIST_DIR)/$(BINARY_NAME)_darwin_amd64/static
+	@cp -R ./web/build/ ./$(DIST_DIR)/$(BINARY_NAME)_$(OS_Linux)_$(ARCH_386)/static
+	@cp -R ./web/build/ ./$(DIST_DIR)/$(BINARY_NAME)_$(OS_Linux)_$(ARCH_AMD64)/static
+	@cp -R ./web/build/ ./$(DIST_DIR)/$(BINARY_NAME)_$(OS_Windows)_$(ARCH_386)/static
+	@cp -R ./web/build/ ./$(DIST_DIR)/$(BINARY_NAME)_$(OS_Windows)_$(ARCH_AMD64)/static
+	@cp -R ./web/build/ ./$(DIST_DIR)/$(BINARY_NAME)_$(OS_Mac)_$(ARCH_386)/static
+	@cp -R ./web/build/ ./$(DIST_DIR)/$(BINARY_NAME)_$(OS_Mac)_$(ARCH_AMD64)/static
 
-	@cp ./server/config.ini.template ./$(DIST_DIR)/$(BINARY_NAME)_linux_386/config.ini.template
-	@cp ./server/config.ini.template ./$(DIST_DIR)/$(BINARY_NAME)_linux_amd64/config.ini.template
-	@cp ./server/config.ini.template ./$(DIST_DIR)/$(BINARY_NAME)_windows_386/config.ini.template
-	@cp ./server/config.ini.template ./$(DIST_DIR)/$(BINARY_NAME)_windows_amd64/config.ini.template
-	@cp ./server/config.ini.template ./$(DIST_DIR)/$(BINARY_NAME)_darwin_386/config.ini.template
-	@cp ./server/config.ini.template ./$(DIST_DIR)/$(BINARY_NAME)_darwin_amd64/config.ini.template
+	@cp ./server/config.ini.template ./$(DIST_DIR)/$(BINARY_NAME)_$(OS_Linux)_$(ARCH_386)/config.ini.template
+	@cp ./server/config.ini.template ./$(DIST_DIR)/$(BINARY_NAME)_$(OS_Linux)_$(ARCH_AMD64)/config.ini.template
+	@cp ./server/config.ini.template ./$(DIST_DIR)/$(BINARY_NAME)_$(OS_Windows)_$(ARCH_386)/config.ini.template
+	@cp ./server/config.ini.template ./$(DIST_DIR)/$(BINARY_NAME)_$(OS_Windows)_$(ARCH_AMD64)/config.ini.template
+	@cp ./server/config.ini.template ./$(DIST_DIR)/$(BINARY_NAME)_$(OS_Mac)_$(ARCH_386)/config.ini.template
+	@cp ./server/config.ini.template ./$(DIST_DIR)/$(BINARY_NAME)_$(OS_Mac)_$(ARCH_AMD64)/config.ini.template
 	
 build-prepare:
 	@cd ./server && $(GOGET) github.com/mitchellh/gox
@@ -55,52 +60,52 @@ build-prepare:
 	@cd ./server && $(GOGET) github.com/FlowingSPDG/get5-web-go/server
 build-linux: build-prepare build-web
 	@cd ./server && gox \
-	-os="linux" \
-	-arch="386 amd64" \
+	-os="$(OS_Linux)" \
+	-arch="$(ARCH_386) $(ARCH_AMD64)" \
 	--output "../$(DIST_DIR)/$(BINARY_NAME)_{{.OS}}_{{.Arch}}/$(BINARY_NAME)"
-	@cp -R ./web/build/ ./$(DIST_DIR)/$(BINARY_NAME)_linux_386/static
-	@cp -R ./web/build/ ./$(DIST_DIR)/$(BINARY_NAME)_linux_amd64/static
-	@cp ./server/config.ini.template ./$(DIST_DIR)/$(BINARY_NAME)_linux_386/config.ini.template
-	@cp ./server/config.ini.template ./$(DIST_DIR)/$(BINARY_NAME)_linux_amd64/config.ini.template
+	@cp -R ./web/build/ ./$(DIST_DIR)/$(BINARY_NAME)_$(OS_Linux)_$(ARCH_386)/static
+	@cp -R ./web/build/ ./$(DIST_DIR)/$(BINARY_NAME)_$(OS_Linux)_$(ARCH_AMD64)/static
+	@cp ./server/config.ini.template ./$(DIST_DIR)/$(BINARY_NAME)_$(OS_Linux)_$(ARCH_386)/config.ini.template
+	@cp ./server/config.ini.template ./$(DIST_DIR)/$(BINARY_NAME)_$(OS_Linux)_$(ARCH_AMD64)/config.ini.template
 build-linux-server-only: build-prepare 
 	@cd ./server && gox \
-	-os="linux" \
-	-arch="386 amd64" \
+	-os="$(OS_Linux)" \
+	-arch="$(ARCH_386) $(ARCH_AMD64)" \
 	--output "../$(DIST_DIR)/$(BINARY_NAME)_{{.OS}}_{{.Arch}}/$(BINARY_NAME)"
-	@cp ./server/config.ini.template ./$(DIST_DIR)/$(BINARY_NAME)_linux_386/config.ini.template
-	@cp ./server/config.ini.template ./$(DIST_DIR)/$(BINARY_NAME)_linux_amd64/config.ini.template
+	@cp ./server/config.ini.template ./$(DIST_DIR)/$(BINARY_NAME)_$(OS_Linux)_$(ARCH_386)/config.ini.template
+	@cp ./server/config.ini.template ./$(DIST_DIR)/$(BINARY_NAME)_$(OS_Linux)_$(ARCH_AMD64)/config.ini.template
 build-windows: build-prepare build-web
 	@cd ./server && gox \
-	-os="windows" \
-	-arch="386 amd64" \
+	-os="$(OS_Windows)" \
+	-arch="$(ARCH_386) $(ARCH_AMD64)" \
 	--output "../$(DIST_DIR)/$(BINARY_NAME)_{{.OS}}_{{.Arch}}/$(BINARY_NAME)"
-	@cp -R ./web/build/ ./$(DIST_DIR)/$(BINARY_NAME)_windows_386/static
-	@cp -R ./web/build/ ./$(DIST_DIR)/$(BINARY_NAME)_windows_amd64/static
-	@cp ./server/config.ini.template ./$(DIST_DIR)/$(BINARY_NAME)_windows_386/config.ini.template
-	@cp ./server/config.ini.template ./$(DIST_DIR)/$(BINARY_NAME)_windows_amd64/config.ini.template
+	@cp -R ./web/build/ ./$(DIST_DIR)/$(BINARY_NAME)_$(OS_Windows)_$(ARCH_386)/static
+	@cp -R ./web/build/ ./$(DIST_DIR)/$(BINARY_NAME)_$(OS_Windows)_$(ARCH_AMD64)/static
+	@cp ./server/config.ini.template ./$(DIST_DIR)/$(BINARY_NAME)_$(OS_Windows)_$(ARCH_386)/config.ini.template
+	@cp ./server/config.ini.template ./$(DIST_DIR)/$(BINARY_NAME)_$(OS_Windows)_$(ARCH_AMD64)/config.ini.template
 build-windows-server-only: build-prepare
 	@cd ./server && gox \
-	-os="windows" \
-	-arch="386 amd64" \
+	-os="$(OS_Windows)" \
+	-arch="$(ARCH_386) $(ARCH_AMD64)" \
 	--output "../$(DIST_DIR)/$(BINARY_NAME)_{{.OS}}_{{.Arch}}/$(BINARY_NAME)"
-	@cp ./server/config.ini.template ./$(DIST_DIR)/$(BINARY_NAME)_windows_386/config.ini.template
-	@cp ./server/config.ini.template ./$(DIST_DIR)/$(BINARY_NAME)_windows_amd64/config.ini.template
+	@cp ./server/config.ini.template ./$(DIST_DIR)/$(BINARY_NAME)_$(OS_Windows)_$(ARCH_386)/config.ini.template
+	@cp ./server/config.ini.template ./$(DIST_DIR)/$(BINARY_NAME)_$(OS_Windows)_$(ARCH_AMD64)/config.ini.template
 build-mac: build-prepare build-web
 	@cd ./server && gox \
-	-os="darwin" \
-	-arch="386 amd64" \
+	-os="$(OS_Mac)" \
+	-arch="$(ARCH_386) $(ARCH_AMD64)" \
 	--output "../$(DIST_DIR)/$(BINARY_NAME)_{{.OS}}_{{.Arch}}/$(BINARY_NAME)"
-	@cp -R ./web/build/ ./$(DIST_DIR)/$(BINARY_NAME)_darwin_386/static
-	@cp -R ./web/build/ ./$(DIST_DIR)/$(BINARY_NAME)_darwin_amd64/static
-	@cp ./server/config.ini.template ./$(DIST_DIR)/$(BINARY_NAME)_darwin_386/config.ini.template
-	@cp ./server/config.ini.template ./$(DIST_DIR)/$(BINARY_NAME)_darwin_amd64/config.ini.template
+	@cp -R ./web/build/ ./$(DIST_DIR)/$(BINARY_NAME)_$(OS_Mac)_$(ARCH_386)/static
+	@cp -R ./web/build/ ./$(DIST_DIR)/$(BINARY_NAME)_$(OS_Mac)_$(ARCH_AMD64)/static
+	@cp ./server/config.ini.template ./$(DIST_DIR)/$(BINARY_NAME)_$(OS_Mac)_$(ARCH_386)/config.ini.template
+	@cp ./server/config.ini.template ./$(DIST_DIR)/$(BINARY_NAME)_$(OS_Mac)_$(ARCH_AMD64)/config.ini.template
 build-mac-server-only: build-prepare
 	@cd ./server && gox \
-	-os="darwin" \
-	-arch="386 amd64" \
+	-os="$(OS_Mac)" \
+	-arch="$(ARCH_386) $(ARCH_AMD64)" \
 	--output "../$(DIST_DIR)/$(BINARY_NAME)_{{.OS}}_{{.Arch}}/$(BINARY_NAME)"
-	@cp ./server/config.ini.template ./$(DIST_DIR)/$(BINARY_NAME)_darwin_386/config.ini.template
-	@cp ./server/config.ini.template ./$(DIST_DIR)/$(BINARY_NAME)_darwin_amd64/config.ini.template
+	@cp ./server/config.ini.template ./$(DIST_DIR)/$(BINARY_NAME)_$(OS_Mac)_$(ARCH_386)/config.ini.template
+	@cp ./server/config.ini.template ./$(DIST_DIR)/$(BINARY_NAME)_$(OS_Mac)_$(ARCH_AMD64)/config.ini.template
 build-web:
 	@cd ./web && yarn run build
 
