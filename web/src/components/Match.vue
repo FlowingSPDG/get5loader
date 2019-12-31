@@ -84,7 +84,7 @@
                             <th class="text-center"><acronym title="Headshot percentage">HSP</acronym></th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody v-if="matchdata.team1_player_stats">
                         <td> <b>{{ team1.name }}</b> </td>
                         <td></td>
                         <td></td>
