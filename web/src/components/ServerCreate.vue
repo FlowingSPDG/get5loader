@@ -120,12 +120,24 @@ export default {
       try {
         this.$refs['form'].validate(async (valid) => {
           if (valid) {
-            await this.axios.post('/api/v1/server/create', json)
-            this.$message({
-              message: 'Successfully submitted data.',
-              type: 'success'
-            })
-            this.form = {}
+            try {
+              let res = await this.axios.post('/api/v1/server/create', json)
+              console.log(res)
+              if (res.status !== 200) {
+                throw new Error(res.data.errormessage)
+              }
+              this.form = {}
+              this.$message({
+                message: 'Successfully submitted data.',
+                type: 'success'
+              })
+            } catch (err) {
+              console.error(err)
+              this.$message({
+                message: err,
+                type: 'error'
+              })
+            }
           } else {
             this.$message.error('Please fill form')
           }

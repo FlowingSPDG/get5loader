@@ -12,6 +12,7 @@ import (
 	"github.com/gorilla/mux"
 
 	"github.com/FlowingSPDG/get5-web-go/server/src/db"
+	"github.com/FlowingSPDG/get5-web-go/server/src/util"
 )
 
 type CheckLoggedInJSON struct {
@@ -505,17 +506,34 @@ func CreateServer(w http.ResponseWriter, r *http.Request) {
 		Server.Port = ServerTemp.Port
 		Server.RconPassword = ServerTemp.RconPassword
 		Server.PublicServer = ServerTemp.PublicServer
-		db.SQLAccess.Gorm.Create(&Server)
-		w.WriteHeader(http.StatusOK)
-		res := SimpleJSONResponse{
-			Response: "OK",
+		success, errstr := util.CheckServerAvailability(&Server)
+		if success {
+			db.SQLAccess.Gorm.Create(&Server)
+			w.WriteHeader(http.StatusOK)
+			res := SimpleJSONResponse{
+				Response: "OK",
+			}
+			jsonbyte, err := json.Marshal(res)
+			if err != nil {
+				http.Error(w, "Internal ERROR", http.StatusInternalServerError)
+			}
+			w.Header().Set("Content-Type", "application/json")
+			w.Write(jsonbyte)
+		} else {
+			res := SimpleJSONResponse{
+				Response:     "error",
+				Errorcode:    500,
+				Errormessage: errstr,
+			}
+			jsonbyte, err := json.Marshal(res)
+			if err != nil {
+				http.Error(w, "Internal ERROR", http.StatusInternalServerError)
+			}
+			w.WriteHeader(http.StatusInternalServerError)
+			w.Header().Set("Content-Type", "application/json")
+			w.Write(jsonbyte)
 		}
-		jsonbyte, err := json.Marshal(res)
-		if err != nil {
-			http.Error(w, "Internal ERROR", http.StatusInternalServerError)
-		}
-		w.Header().Set("Content-Type", "application/json")
-		w.Write(jsonbyte)
+
 	} else {
 		w.WriteHeader(http.StatusUnauthorized)
 		res := SimpleJSONResponse{
