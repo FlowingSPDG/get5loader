@@ -33,7 +33,7 @@ deps:
 	github.com/kataras/go-sessions \
 	github.com/Acidic9/steam \
 	github.com/kidoman/go-steam
-	@yarn
+	@cd ./web && yarn
 # Cross compile for go
 build-all: build-prepare build-web clean
 	@cd ./server && gox \
