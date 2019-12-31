@@ -85,6 +85,7 @@ func main() {
 	r.HandleFunc("/api/v1/team/create", api.CreateTeam).Methods("POST")
 	r.HandleFunc("/api/v1/user/{userID}/GetUserInfo", api.GetUserInfo).Methods("GET")
 	r.HandleFunc("/api/v1/server/{serverID}/GetServerInfo", api.GetServerInfo).Methods("GET")
+	r.HandleFunc("/api/v1/server/create", api.CreateServer).Methods("POST")
 
 	r.HandleFunc("/login", db.LoginHandler).Methods("GET")
 	r.HandleFunc("/logout", db.LogoutHandler).Methods("GET")
@@ -119,7 +120,6 @@ func main() {
 		r.HandleFunc("/teams/{userID}", get5.TeamsHandler).Methods("GET") // GET
 		r.HandleFunc("/myteams", get5.MyTeamsHandler).Methods("GET")      // GET
 
-		r.HandleFunc("/server/create", get5.ServerCreateHandler)                           // GET/POST
 		r.HandleFunc("/server/{serverid}/edit", get5.ServerEditHandler)                    // GET/POST
 		r.HandleFunc("/server/{serverid}/delete", get5.ServerDeleteHandler).Methods("GET") // GET
 		r.HandleFunc("/myservers", get5.MyServersHandler)                                  // ?
