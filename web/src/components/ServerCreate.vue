@@ -131,9 +131,10 @@ export default {
             console.log(res)
             this.form = {}
             this.$message({
-              message: 'Successfully submitted data.',
+              message: 'Successfully registered server.',
               type: 'success'
             })
+            this.$router.push('/matches')
           } catch (err) {
             console.log(err.response)
             this.$message.error(err.response.data.errormessage)
