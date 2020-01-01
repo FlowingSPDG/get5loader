@@ -676,6 +676,8 @@ func CreateMatch(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "Internal SRCDS ERROR", http.StatusInternalServerError)
 			return
 		}
+		db.SQLAccess.Gorm.Model(&Match.Server).Update("in_use", true)
+		db.SQLAccess.Gorm.Create(&Match)
 
 		res := SimpleJSONResponse{
 			Response: "ok",
