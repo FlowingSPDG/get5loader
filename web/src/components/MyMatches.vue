@@ -35,7 +35,7 @@
           {{ matchinfo[match.id].status }}
         </td>
 
-        <td v-if="my_matches && matchinfo[match.id].server">{{ matchinfo[match.id].server.display }} </td>
+        <td v-if="my_matches && matchinfo[match.id]">{{ matchinfo[match.id].server.display }} </td>
         <td v-if="my_matches && matchinfo[match.id]">
           <a v-if="(match.pending || match.live)" :href="'/match/'+match.id+'cancel'" class="btn btn-danger btn-xs align-right">Cancel</a>
         </td>
