@@ -107,14 +107,14 @@ func (u *UserData) GetTeams(limit int) []TeamData {
 
 // GameServerData Struct for game_server table.
 type GameServerData struct {
-	ID           int    `gorm:"primary_key;column:id;AUTO_INCREMENT;NOT NULL"`
-	UserID       int    `gorm:"column:user_id;DEFAULT NULL"`
-	InUse        bool   `gorm:"column:in_use;DEFAULT NULL"`
-	IPString     string `gorm:"column:ip_string;DEFAULT NULL"`
-	Port         int    `gorm:"column:port;DEFAULT NULL"`
-	RconPassword string `gorm:"column:rcon_password;DEFAULT NULL"`
-	DisplayName  string `gorm:"column:display_name;DEFAULT NULL"`
-	PublicServer bool   `gorm:"column:public_server;DEFAULT NULL"`
+	ID           int    `gorm:"primary_key;column:id;AUTO_INCREMENT;NOT NULL" json:"id"`
+	UserID       int    `gorm:"column:user_id;DEFAULT NULL" json:"user_id"`
+	InUse        bool   `gorm:"column:in_use;DEFAULT NULL" json:"in_use"`
+	IPString     string `gorm:"column:ip_string;DEFAULT NULL" json:"ip_string"`
+	Port         int    `gorm:"column:port;DEFAULT NULL" json:"port"`
+	RconPassword string `gorm:"column:rcon_password;DEFAULT NULL" json:"rcon_password"`
+	DisplayName  string `gorm:"column:display_name;DEFAULT NULL" json:"display_name"`
+	PublicServer bool   `gorm:"column:public_server;DEFAULT NULL" json:"public_server"`
 
 	User UserData `gorm:"ASSOCIATION_FOREIGNKEY:user_id"`
 }

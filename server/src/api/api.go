@@ -12,6 +12,7 @@ import (
 	"github.com/gorilla/mux"
 
 	"github.com/FlowingSPDG/get5-web-go/server/src/db"
+	"github.com/FlowingSPDG/get5-web-go/server/src/util"
 )
 
 type CheckLoggedInJSON struct {
@@ -430,7 +431,6 @@ func CreateTeam(w http.ResponseWriter, r *http.Request) {
 	if s.Get("Loggedin") != nil {
 		IsLoggedIn = s.Get("Loggedin").(bool)
 	}
-	fmt.Println(IsLoggedIn)
 	if IsLoggedIn {
 		Team := db.TeamData{}
 		TeamTemp := db.TeamData{}
@@ -466,6 +466,74 @@ func CreateTeam(w http.ResponseWriter, r *http.Request) {
 		}
 		w.Header().Set("Content-Type", "application/json")
 		w.Write(jsonbyte)
+	} else {
+		w.WriteHeader(http.StatusUnauthorized)
+		res := SimpleJSONResponse{
+			Errorcode:    http.StatusUnauthorized,
+			Errormessage: "Forbidden",
+		}
+		jsonbyte, err := json.Marshal(res)
+		if err != nil {
+			http.Error(w, "Internal ERROR", http.StatusInternalServerError)
+		}
+		w.Header().Set("Content-Type", "application/json")
+		w.Write(jsonbyte)
+	}
+}
+
+func CreateServer(w http.ResponseWriter, r *http.Request) {
+	fmt.Printf("CreateServer\n")
+	var IsLoggedIn = false
+	s := db.Sess.Start(w, r)
+	if s.Get("Loggedin") != nil {
+		IsLoggedIn = s.Get("Loggedin").(bool)
+	}
+	if IsLoggedIn {
+		Server := db.GameServerData{}
+		ServerTemp := db.GameServerData{}
+		err := json.NewDecoder(r.Body).Decode(&ServerTemp)
+		if err != nil {
+			fmt.Println("failed to decode JSON")
+			http.Error(w, "JSON Format invalid", http.StatusBadRequest)
+		}
+		if ServerTemp.DisplayName == "" || ServerTemp.IPString == "" || ServerTemp.RconPassword == "" {
+			fmt.Println("failed to decode Server Name")
+			http.Error(w, "JSON Format invalid", http.StatusBadRequest)
+		}
+		Server.UserID = s.Get("UserID").(int)
+		Server.DisplayName = ServerTemp.DisplayName
+		Server.IPString = ServerTemp.IPString
+		Server.Port = ServerTemp.Port
+		Server.RconPassword = ServerTemp.RconPassword
+		Server.PublicServer = ServerTemp.PublicServer
+		success, errstr := util.CheckServerAvailability(&Server)
+		if success {
+			db.SQLAccess.Gorm.Create(&Server)
+			w.WriteHeader(http.StatusOK)
+			res := SimpleJSONResponse{
+				Response: "OK",
+			}
+			jsonbyte, err := json.Marshal(res)
+			if err != nil {
+				http.Error(w, "Internal ERROR", http.StatusInternalServerError)
+			}
+			w.Header().Set("Content-Type", "application/json")
+			w.Write(jsonbyte)
+		} else {
+			res := SimpleJSONResponse{
+				Response:     "error",
+				Errorcode:    500,
+				Errormessage: errstr,
+			}
+			jsonbyte, err := json.Marshal(res)
+			if err != nil {
+				http.Error(w, "Internal ERROR", http.StatusInternalServerError)
+			}
+			w.WriteHeader(http.StatusInternalServerError)
+			w.Header().Set("Content-Type", "application/json")
+			w.Write(jsonbyte)
+		}
+
 	} else {
 		w.WriteHeader(http.StatusUnauthorized)
 		res := SimpleJSONResponse{
