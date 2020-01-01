@@ -63,6 +63,8 @@ func init() {
 
 func main() {
 
+	defer SQLAccess.Gorm.Close()
+
 	r := mux.NewRouter()
 	// rootに対してnuxtのindex.htmlを返すように設定する。(ServeFile)
 	entrypoint := "./index.html"
