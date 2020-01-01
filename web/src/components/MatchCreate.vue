@@ -26,6 +26,12 @@
                 <el-input v-model="form.match_title"></el-input>
             </el-form-item>
 
+            <el-form-item label="Map pool" style="width: 653px;" prop="series_type">
+                <el-radio-group v-model="form.series_type">
+                    <el-radio v-for="(option, index) in series_type" :label="option.type" :key="index"></el-radio>
+                </el-radio-group>
+            </el-form-item>
+
             <el-form-item label="Map pool" style="width: 653px;" prop="veto_mappool">
                 <el-checkbox-group v-model="form.veto_mappool">
                     <el-checkbox v-for="(map, index) in mappool" :label="map.system" :key="index"></el-checkbox>
@@ -118,6 +124,32 @@ export default {
           formal: 'Cache'
         }
       ],
+      series_type: [
+        {
+          type: 'bo1-preset',
+          desc: 'Bo1 with preset map'
+        },
+        {
+          type: 'bo1',
+          desc: 'Bo1 with map vetoes'
+        },
+        {
+          type: 'bo2',
+          desc: 'Bo2 with map vetoes'
+        },
+        {
+          type: 'bo3',
+          desc: 'Bo3 with map vetoes'
+        },
+        {
+          type: 'bo5',
+          desc: 'Bo5 with map vetoes'
+        },
+        {
+          type: 'bo7',
+          desc: 'Bo7 with map vetoes'
+        }
+      ],
       form: {
         server_id: 0,
         team1_id: 0,
@@ -125,7 +157,8 @@ export default {
         max_maps: 0,
         title: '',
         skip_veto: false,
-        veto_mappool: []
+        veto_mappool: [],
+        series_type: 'bo1'
       },
       rules: {
         server_id: [{
@@ -142,11 +175,6 @@ export default {
           required: true,
           trigger: 'change',
           message: 'Please chose team2 id'
-        }],
-        max_maps: [{
-          required: true,
-          trigger: 'change',
-          message: 'Please chose max maps number'
         }],
         title: [{
           required: true,
@@ -175,6 +203,35 @@ export default {
       this.form.team1_id = parseInt(this.form.team1_id, 10)
       this.form.team2_id = parseInt(this.form.team2_id, 10)
       this.form.server_id = parseInt(this.form.server_id, 10)
+      if (this.form.team1_id === this.form.team2_id) {
+        this.$message.error('Teams cannot be equal')
+        return
+      }
+      switch (this.form.series_type) {
+        case 'bo1-preset':
+          this.form.max_maps = 1
+          this.form.skip_veto = true
+          if (this.form.veto_mappool.length !== 1) {
+            this.$message.error('You must have exactly 1 map selected to do a bo1 with a preset map')
+            return
+          }
+          break
+        case 'bo1':
+          this.form.max_maps = 1
+          break
+        case 'bo2':
+          this.form.max_maps = 3
+          break
+        case 'bo3':
+          this.form.max_maps = 3
+          break
+        case 'bo5':
+          this.form.max_maps = 5
+          break
+        case 'bo7':
+          this.form.max_maps = 7
+          break
+      }
       const json = JSON.stringify(this.form)
       this.$refs['form'].validate(async (valid) => {
         if (valid) {
