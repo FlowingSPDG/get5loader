@@ -442,7 +442,7 @@ func GetTeamList(w http.ResponseWriter, r *http.Request) {
 func GetServerList(w http.ResponseWriter, r *http.Request) {
 	fmt.Printf("GetServerList\n")
 	Servers := []APIGameServerData{}
-	db.SQLAccess.Gorm.Where("public_server = 1").Find(&Servers)
+	db.SQLAccess.Gorm.Where("public_server = true AND in_use = false").Find(&Servers)
 	jsonbyte, err := json.Marshal(Servers)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
