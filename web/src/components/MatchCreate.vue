@@ -3,11 +3,16 @@
     <div id="content">
         <el-form ref="form" :model="form" :rules="rules" label-position="left" label-width="120px">
             <el-form-item label="Server" style="width: 653px;" prop="display_name">
-                <el-input v-model="form.server_id"></el-input><router-link class="btn btn-primary" to="/server/create" >Create a Server</router-link>
+                <el-select v-model="form.server_id">
+                    <el-option v-for="(server, index) in servers" :label="server.display_name" :key="index" :value="server.id"></el-option>
+                </el-select>
+                <router-link class="btn btn-primary" to="/server/create">Create a Server</router-link>
             </el-form-item>
 
             <el-form-item label="Team 1" style="width: 653px;" prop="team1_id">
-                <el-input v-model="form.team1_id"></el-input>
+                <el-select v-model="form.team1_id">
+                    <el-option v-for="(team, index) in teams" :label="team.name" :key="index" :value="team.id"></el-option>
+                </el-select>
             </el-form-item>
 
             <el-form-item v-if="match_text_option" label="Team 1 title text" style="width: 653px;" prop="team1_string">
@@ -15,7 +20,9 @@
             </el-form-item>
 
             <el-form-item label="Team2" style="width: 653px;" prop="team2_id">
-                <el-input v-model="form.team2_id"></el-input>
+                <el-select v-model="form.team2_id">
+                    <el-option v-for="(team, index) in teams" :label="team.name" :key="index" :value="team.id"></el-option>
+                </el-select>
             </el-form-item>
 
             <el-form-item v-if="match_text_option" label="Team 2 title text" style="width: 653px;" prop="team2_string">
@@ -90,6 +97,8 @@ export default {
         teams: null,
         matches: null
       },
+      servers: [],
+      teams: [],
       mappool: [
         {
           system: 'de_dust2',
@@ -197,6 +206,8 @@ export default {
   },
   async created () {
     this.user = await this.axios.get('/api/v1/CheckLoggedIn')
+    this.servers = await this.GetServers()
+    this.teams = await this.GetTeams()
   },
   methods: {
     async RegisterMatch () {
@@ -256,6 +267,18 @@ export default {
         } else {
           this.$message.error('Please fill form')
         }
+      })
+    },
+    async GetTeams () {
+      return new Promise(async (resolve, reject) => {
+        const res = await this.axios.get('/api/v1/GetTeamList')
+        resolve(res.data)
+      })
+    },
+    async GetServers () {
+      return new Promise(async (resolve, reject) => {
+        const res = await this.axios.get('/api/v1/GetServerList')
+        resolve(res.data)
       })
     }
   }
