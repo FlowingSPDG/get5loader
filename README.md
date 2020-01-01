@@ -9,7 +9,7 @@ Still Work-In-Progress project. PRs are welcome!
 Shugo **FlowingSPDG** Kawamura
 
 ## WHY:
-1. Python2.7,which is used in original get5-web, ~~will be no longer supported after end of 2019. very soon!!~~ is not supported anymore!!  
+1. Python2.7,which is used in original get5-web, ~~will be no longer supported after end of 2019.~~ is not supported anymore!!  
 2. Current get5-web needs so many steps to launch(DB migration,python install,pip package management and venv,etc...). this webpanel may need fewer steps to launch.
 3. GOLANG has better performance than Python in some case
 4. To support local file-DB insted of MySQL DB for better performance and easy to deploy(this would be optional).
