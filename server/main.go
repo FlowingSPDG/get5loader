@@ -76,6 +76,8 @@ func main() {
 	r.HandleFunc("/api/v1/GetMatches", api.GetMatches).Methods("GET")
 	r.HandleFunc("/api/v1/GetMetrics", api.GetMetrics).Methods("GET")
 	r.HandleFunc("/api/v1/GetSteamName", api.GetSteamName).Methods("GET")
+	r.HandleFunc("/api/v1/GetTeamList", api.GetTeamList).Methods("GET")
+	r.HandleFunc("/api/v1/GetServerList", api.GetServerList).Methods("GET")
 
 	r.HandleFunc("/api/v1/CheckLoggedIn", api.CheckLoggedIn).Methods("GET")
 	r.HandleFunc("/api/v1/match/{matchID}/GetMatchInfo", api.GetMatchInfo).Methods("GET")

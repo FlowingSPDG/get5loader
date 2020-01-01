@@ -1,10 +1,8 @@
 package api
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/hydrogen18/stalecucumber"
 	"net/http"
 	"strconv"
 	"strings"
@@ -424,6 +422,35 @@ func GetSteamName(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte(steamname))
 }
 
+// GetTeamList Returns registered team list in JSON.
+func GetTeamList(w http.ResponseWriter, r *http.Request) {
+	fmt.Printf("GetTeamList\n")
+	Teams := []db.TeamData{}
+	db.SQLAccess.Gorm.Where("public_team = 1").Find(&Teams)
+	for i := 0; i < len(Teams); i++ {
+		Teams[i].GetPlayers()
+	}
+	jsonbyte, err := json.Marshal(Teams)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(jsonbyte)
+}
+
+// GetServerList Returns registered public server list in JSON
+func GetServerList(w http.ResponseWriter, r *http.Request) {
+	fmt.Printf("GetServerList\n")
+	Servers := []APIGameServerData{}
+	db.SQLAccess.Gorm.Where("public_server = 1").Find(&Servers)
+	jsonbyte, err := json.Marshal(Servers)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(jsonbyte)
+}
+
 func CreateTeam(w http.ResponseWriter, r *http.Request) {
 	fmt.Printf("CreateTeam\n")
 	var IsLoggedIn = false
@@ -445,18 +472,16 @@ func CreateTeam(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "JSON Format invalid", http.StatusBadRequest)
 			return
 		}
-		buf := new(bytes.Buffer)
-		_, err = stalecucumber.NewPickler(buf).Pickle(TeamTemp.Auths)
-		if err != nil {
-			http.Error(w, "Internal ERROR", http.StatusInternalServerError)
-			return
-		}
 		Team.UserID = s.Get("UserID").(int)
 		Team.Name = TeamTemp.Name
 		Team.Tag = TeamTemp.Tag
 		Team.Flag = TeamTemp.Flag
 		Team.Logo = TeamTemp.Logo
-		Team.AuthsPickle = buf.Bytes()
+		Team.AuthsPickle, err = util.SteamID64sToPickle(TeamTemp.Auths)
+		if err != nil {
+			http.Error(w, "Internal ERROR", http.StatusInternalServerError)
+			return
+		}
 		Team.PublicTeam = TeamTemp.PublicTeam
 		db.SQLAccess.Gorm.Create(&Team)
 		w.WriteHeader(http.StatusOK)
@@ -512,7 +537,7 @@ func CreateServer(w http.ResponseWriter, r *http.Request) {
 		Server.Port = ServerTemp.Port
 		Server.RconPassword = ServerTemp.RconPassword
 		Server.PublicServer = ServerTemp.PublicServer
-		_, err = util.CheckServerAvailability(&Server)
+		_, err = util.CheckServerAvailability(Server.IPString, Server.Port, Server.RconPassword)
 		if err != nil {
 			res := SimpleJSONResponse{
 				Response:     "error",
@@ -617,7 +642,7 @@ func CreateMatch(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "This is not your server!", http.StatusUnauthorized)
 			return
 		}
-		get5res, err := util.CheckServerAvailability(&server) // Returns error if SRCDS is not available
+		get5res, err := util.CheckServerAvailability(server.IPString, server.Port, server.RconPassword) // Returns error if SRCDS is not available
 		if err != nil {
 			res := SimpleJSONResponse{
 				Response:     "error",

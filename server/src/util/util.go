@@ -1,13 +1,13 @@
 package util
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
+	"github.com/hydrogen18/stalecucumber"
 	"net"
 	"os/exec"
 	"strings"
-
-	"github.com/FlowingSPDG/get5-web-go/server/src/db"
 
 	steam "github.com/kidoman/go-steam"
 	"strconv"
@@ -71,8 +71,8 @@ func SendRCON(host string, port int, pass string, cmd string) (string, error) {
 }
 
 // CheckServerConnection Check server pulse by sending "status" command
-func CheckServerConnection(srv *db.GameServerData) bool {
-	_, err := SendRCON(srv.IPString, srv.Port, srv.RconPassword, "status")
+func CheckServerConnection(IPString string, Port int, RconPassword string) bool {
+	_, err := SendRCON(IPString, Port, RconPassword, "status")
 	if err != nil {
 		return false
 	}
@@ -87,9 +87,9 @@ type GET5AvailableDatas struct {
 }
 
 // CheckServerAvailability if server is usable for get5_web
-func CheckServerAvailability(srv *db.GameServerData) (GET5AvailableDatas, error) { // available or error string
+func CheckServerAvailability(IPString string, Port int, RconPassword string) (GET5AvailableDatas, error) { // available or error string
 	var data = GET5AvailableDatas{}
-	resp, err := SendRCON(srv.IPString, srv.Port, srv.RconPassword, "get5_web_avaliable")
+	resp, err := SendRCON(IPString, Port, RconPassword, "get5_web_avaliable")
 	if err != nil {
 		return data, fmt.Errorf("Connect fails")
 	}
@@ -116,4 +116,26 @@ func GetVersion() (string, error) {
 		return "", nil
 	}
 	return string(out), nil
+}
+
+// SteamID64sToPickle Pickles Steamid64 array
+func SteamID64sToPickle(ids []string) ([]byte, error) {
+	res := make([]byte, 0)
+	buf := new(bytes.Buffer)
+	_, err := stalecucumber.NewPickler(buf).Pickle(res)
+	if err != nil {
+		return nil, err
+	}
+	return buf.Bytes(), nil
+}
+
+// PickleToSteamID64s Un-pickles Python array to SteamID64 array
+func PickleToSteamID64s(Pickles []byte) ([]string, error) {
+	reader := bytes.NewReader(Pickles)
+	res := make([]string, 0)
+	err := stalecucumber.UnpackInto(&res).From(stalecucumber.Unpickle(reader))
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
 }

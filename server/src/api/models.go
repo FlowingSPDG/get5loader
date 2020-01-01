@@ -1,9 +1,8 @@
 package api
 
 import (
-	"bytes"
 	"database/sql"
-	"github.com/hydrogen18/stalecucumber"
+	"github.com/FlowingSPDG/get5-web-go/server/src/util"
 	"time"
 )
 
@@ -56,15 +55,13 @@ type APITeamData struct {
 }
 
 // TableName declairation for GORM
-func (u *APITeamData) TableName() string {
+func (t *APITeamData) TableName() string {
 	return "team"
 }
 
 // GetPlayers Gets registered player's steamid64.
 func (t *APITeamData) GetPlayers() ([]string, error) {
-	reader := bytes.NewReader(t.AuthsPickle)
-	var auths []string
-	err := stalecucumber.UnpackInto(&auths).From(stalecucumber.Unpickle(reader))
+	auths, err := util.PickleToSteamID64s(t.AuthsPickle)
 	if err != nil {
 		return auths, err
 	}

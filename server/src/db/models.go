@@ -1,9 +1,9 @@
 package db
 
 import (
-	"bytes"
 	"database/sql"
 	"fmt"
+	"github.com/FlowingSPDG/get5-web-go/server/src/util"
 	"net"
 
 	// "strings"
@@ -11,7 +11,6 @@ import (
 	//"github.com/FlowingSPDG/go-steamapi"
 	"github.com/Acidic9/steam"
 	"github.com/go-ini/ini"
-	"github.com/hydrogen18/stalecucumber"
 	"github.com/jinzhu/gorm"
 	gosteam "github.com/kidoman/go-steam"
 
@@ -235,23 +234,15 @@ func (t *TeamData) CanDelete(userid int) bool {
 	return len(t.GetRecentMatches(10)) == 0
 }
 
-// GetPlayerData Struct for GetPlayers() function.
-type GetPlayerData struct {
-	Auth string
-	//Name string
-}
-
 // GetPlayers Gets registered player's steamid64.
-func (t *TeamData) GetPlayers() ([]GetPlayerData, error) {
-	reader := bytes.NewReader(t.AuthsPickle)
-	var auths []string
-	var results []GetPlayerData
-	err := stalecucumber.UnpackInto(&auths).From(stalecucumber.Unpickle(reader))
+func (t *TeamData) GetPlayers() (*[]string, error) {
+	auths, err := util.PickleToSteamID64s(t.AuthsPickle)
+	var results []string
 	if err != nil {
-		return results, err
+		return &results, err
 	}
 	for i := 0; i < len(auths); i++ {
-		results = append(results, GetPlayerData{Auth: auths[i]})
+		results = append(results, auths[i])
 	}
 	/*for i := 0; i < len(auths); i++ {
 		steamid64, err := strconv.Atoi(auths[i])
@@ -265,8 +256,9 @@ func (t *TeamData) GetPlayers() ([]GetPlayerData, error) {
 		//results = append(results, GetPlayerData{Auth: auths[i], Name: playername})
 		results = append(results, GetPlayerData{Auth: auths[i]})
 	}*/
+	t.Auths = results
 
-	return results, nil
+	return &results, nil
 }
 
 /*
@@ -548,9 +540,8 @@ func (m *MatchData) GetTeam1() (TeamData, error) {
 	Team.Logo = STeam.Logo
 	Team.AuthsPickle = STeam.AuthsPickle
 	Team.PublicTeam = STeam.PublicTeam
-	reader := bytes.NewReader(STeam.AuthsPickle)
-	Team.Auths = make([]string, 0)
-	err := stalecucumber.UnpackInto(&Team.Auths).From(stalecucumber.Unpickle(reader))
+	var err error
+	Team.Auths, err = util.PickleToSteamID64s(STeam.AuthsPickle)
 	if err != nil {
 		return Team, err
 	}
@@ -569,9 +560,8 @@ func (m *MatchData) GetTeam2() (TeamData, error) {
 	Team.Logo = STeam.Logo
 	Team.AuthsPickle = STeam.AuthsPickle
 	Team.PublicTeam = STeam.PublicTeam
-	reader := bytes.NewReader(STeam.AuthsPickle)
-	Team.Auths = make([]string, 0)
-	err := stalecucumber.UnpackInto(&Team.Auths).From(stalecucumber.Unpickle(reader))
+	var err error
+	Team.Auths, err = util.PickleToSteamID64s(STeam.AuthsPickle)
 	if err != nil {
 		return Team, err
 	}
