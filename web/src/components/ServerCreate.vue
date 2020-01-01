@@ -70,6 +70,13 @@
 export default {
   name: 'ServerCreate',
   data () {
+    var ValidateIPaddress = (rule, value, callback) => {
+      if (/^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/.test(value)) {
+        callback()
+      } else {
+        callback(new Error('Please input valid IP'))
+      }
+    }
     return {
       user: {
         id: 0,
@@ -89,7 +96,7 @@ export default {
       },
       rules: {
         ip_string: [
-          { required: true, trigger: 'change', min: 7, max: 15, message: 'Please enter valid IP' }
+          { required: true, trigger: 'change', validator: ValidateIPaddress, message: 'Please enter valid IP' }
         ],
         rcon_password: [
           { required: true, message: 'Please input rcon password', trigger: 'change' }
