@@ -24,7 +24,7 @@
   </el-form-item>
 
   <el-form-item style="width: 653px;" v-if="edit">
-    <el-button type="primary" @click="RegisterServer">UpdateServer</el-button>
+    <el-button type="primary" @click="UpdateServer">UpdateServer</el-button>
   </el-form-item>
 
   <el-form-item style="width: 653px;" v-else>
@@ -117,37 +117,28 @@ export default {
   methods: {
     async RegisterServer () {
       const json = JSON.stringify(this.form)
-      try {
-        this.$refs['form'].validate(async (valid) => {
-          if (valid) {
-            try {
-              let res = await this.axios.post('/api/v1/server/create', json)
-              console.log(res)
-              if (res.status !== 200) {
-                throw new Error(res.data.errormessage)
-              }
-              this.form = {}
-              this.$message({
-                message: 'Successfully submitted data.',
-                type: 'success'
-              })
-            } catch (err) {
-              console.error(err)
-              this.$message({
-                message: err,
-                type: 'error'
-              })
-            }
-          } else {
-            this.$message.error('Please fill form')
+      this.$refs['form'].validate(async (valid) => {
+        if (valid) {
+          try {
+            let res = await this.axios.post('/api/v1/server/create', json)
+            console.log(res)
+            this.form = {}
+            this.$message({
+              message: 'Successfully submitted data.',
+              type: 'success'
+            })
+          } catch (err) {
+            console.log(err.response)
+            this.$message.error(err.response.data.errormessage)
           }
-        })
-      } catch (err) {
-        this.$message.error('Failed to submit team data...')
-        console.error(err)
-      }
+        } else {
+          this.$message.error('Please fill form')
+        }
+      })
     }
-    // UpdateServer(){} // TODO
+  },
+  async UpdateServer () { // TODO
+
   }
 }
 </script>

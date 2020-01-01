@@ -9,8 +9,6 @@ import (
 
 	"github.com/FlowingSPDG/get5-web-go/server/src/db"
 
-	_ "github.com/gorilla/mux"
-	_ "github.com/gorilla/sessions"
 	steam "github.com/kidoman/go-steam"
 	"strconv"
 
@@ -41,8 +39,13 @@ func FormatMapName(mapname string) string {
 	FormattedNames["de_nuke"] = "NUKE"
 	FormattedNames["de_train"] = "Train"
 	FormattedNames["de_inferno"] = "Inferno"
+	FormattedNames["de_cache"] = "Cache"
+	FormattedNames["de_cbble"] = "Cobblestone"
 
-	return FormattedNames["mapname"]
+	if _, ok := FormattedNames[mapname]; ok {
+		return FormattedNames[mapname]
+	}
+	return ""
 }
 
 // SendRCON Sends Remote-Commands to specific IP SRCDS.
@@ -68,7 +71,7 @@ func SendRCON(host string, port int, pass string, cmd string) (string, error) {
 }
 
 // CheckServerConnection Check server pulse by sending "status" command
-func CheckServerConnection(srv db.GameServerData) bool {
+func CheckServerConnection(srv *db.GameServerData) bool {
 	_, err := SendRCON(srv.IPString, srv.Port, srv.RconPassword, "status")
 	if err != nil {
 		return false
@@ -90,9 +93,8 @@ func CheckServerAvailability(srv *db.GameServerData) (bool, string) { // availab
 		return false, "Connect fails"
 	}
 	jsonBytes := ([]byte)(resp)
-	data := new(GET5AvailableDatas)
-
-	if err := json.Unmarshal(jsonBytes, data); err != nil {
+	var data = GET5AvailableDatas{}
+	if err := json.Unmarshal(jsonBytes, &data); err != nil {
 		fmt.Println("JSON Unmarshal error:", err)
 		return false, "Error reading get5_web_avaliable response"
 	}
@@ -106,6 +108,7 @@ func CheckServerAvailability(srv *db.GameServerData) (bool, string) { // availab
 
 }
 
+// GetVersion Gets get5-web-go version from github
 func GetVersion() (string, error) {
 	//root_dir, err := os.Executable()
 	out, err := exec.Command("git", "rev-parse", "--short", "HEAD").Output()
