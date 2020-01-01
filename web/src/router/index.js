@@ -5,6 +5,7 @@ import VueAxios from 'vue-axios'
 
 import Matches from '@/components/Matches'
 import Match from '@/components/Match'
+import MatchCreate from '@/components/MatchCreate'
 import MyMatches from '@/components/MyMatches'
 import MyServers from '@/components/MyServers'
 import Metrics from '@/components/Metrics'
@@ -45,9 +46,9 @@ export default new Router({
       component: MyMatches
     },
     {
-      path: '/match/create', // TODO
+      path: '/match/create',
       name: 'Create Match',
-      component: Matches
+      component: MatchCreate
     },
     {
       path: '/match/:matchid',
@@ -60,7 +61,7 @@ export default new Router({
       component: Metrics
     },
     {
-      path: '/team/create', // TODO
+      path: '/team/create',
       name: 'Create Team',
       component: TeamCreate
     },
@@ -80,7 +81,7 @@ export default new Router({
       component: User
     },
     {
-      path: '/server/create', // TODO
+      path: '/server/create',
       name: 'Create Server',
       component: ServerCreate
     }

@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"database/sql"
 	"fmt"
+	"net"
 
 	// "strings"
 	//"github.com/Philipp15b/go-steam"
@@ -136,10 +137,13 @@ func (g *GameServerData) Create(userid int, displayname string, ipstring string,
 	return g
 }
 
-// SendRcon Sends Remote-Commands to server.
+// SendRCON Sends Remote-Commands to specific IP SRCDS.
 func (g *GameServerData) SendRcon(cmd string) (string, error) {
+	if !checkIP(g.IPString) {
+		return "", fmt.Errorf("Specified IP is not valid")
+	}
 	o := &gosteam.ConnectOptions{RCONPassword: g.RconPassword}
-	rcon, err := gosteam.Connect(g.IPString, o)
+	rcon, err := gosteam.Connect(g.GetHostPort(), o)
 	if err != nil {
 		fmt.Println(err)
 		return "", err
@@ -397,11 +401,11 @@ func (t *TeamData) GetLogoOrFlagHTML(scale float64, otherteam TeamData) string {
 
 // MatchData Struct for match table.
 type MatchData struct {
-	ID            int64         `gorm:"primary_key;column:id" json:"id"`
-	UserID        int64         `gorm:"column:user_id" json:"user_id"`
-	ServerID      int64         `gorm:"column:server_id" json:"-"`
-	Team1ID       int64         `gorm:"column:team1_id" json:"team1_id"`
-	Team2ID       int64         `gorm:"column:team2_id" json:"team2_id"`
+	ID            int           `gorm:"primary_key;column:id" json:"id"`
+	UserID        int           `gorm:"column:user_id" json:"user_id"`
+	ServerID      int           `gorm:"column:server_id" json:"server_id"`
+	Team1ID       int           `gorm:"column:team1_id" json:"team1_id"`
+	Team2ID       int           `gorm:"column:team2_id" json:"team2_id"`
 	Winner        sql.NullInt64 `gorm:"column:winner" json:"winner"`
 	Cancelled     bool          `gorm:"column:cancelled" json:"cancelled"`
 	StartTime     sql.NullTime  `gorm:"column:start_time" json:"start_time"`
@@ -430,7 +434,7 @@ func (m *MatchData) TableName() string {
 }
 
 // Create Register Match information into DB. not implemented yet
-func (m *MatchData) Create(userid int64, team1id int64, team2id int64, team1string string, team2string string, maxmaps int, skipveto bool, title string, vetomappool string, serverid int64) *MatchData {
+func (m *MatchData) Create(userid int, team1id int, team2id int, team1string string, team2string string, maxmaps int, skipveto bool, title string, vetomappool string, serverid int) *MatchData {
 	m.UserID = userid
 	m.Team1ID = team1id
 	m.Team2ID = team2id
@@ -512,7 +516,7 @@ func (m *MatchData) Live() bool {
 
 // GetServer Get match server ID as GameServerData
 func (m *MatchData) GetServer() GameServerData {
-	SQLAccess.Gorm.Where("user_id = ?", m.UserID).First(&m.Server)
+	SQLAccess.Gorm.Where("id = ?", m.ServerID).First(&m.Server)
 	return m.Server
 }
 
@@ -530,11 +534,6 @@ func (m *MatchData) GetCurrentScore(g *gorm.DB) (int, int) {
 	}
 	return m.Team1Score, m.Team2Score
 }
-
-// SendToServer Let gameserver load match configration via RCON. not implemented yet
-/*func (m *MatchData) SendToServer() {
-	// get5_loadmatch_url things
-}*/
 
 // GetTeam1 Get Team1 as "TeamData" struct.
 func (m *MatchData) GetTeam1() (TeamData, error) {
@@ -620,6 +619,20 @@ func (m *MatchData) GetLoser() (TeamData, error) {
 		return loser, nil
 	}
 	return Empty, nil
+}
+
+// SendToServer Send match config to server
+func (m *MatchData) SendToServer() error {
+	if m.ServerID == 0 || m.Server.ID == 0 {
+		return fmt.Errorf("Server not found")
+	}
+	res, err := m.Server.SendRcon(fmt.Sprintf("get5_loadmatch_url %s/api/v1/match/%v/config", Cnf.HOST, m.ID))
+	res, err = m.Server.SendRcon(fmt.Sprintf("get5_web_api_key %s", m.APIKey))
+	fmt.Println(res)
+	if err != nil || res != "" {
+		return err
+	}
+	return nil
 }
 
 // BuildMatchDict No idea.
@@ -790,4 +803,13 @@ func GetMetrics() MetricsData {
 	SQLAccess.Gorm.Table("player_stats").Count(&result.UniquePlayers)
 
 	return result
+}
+
+func checkIP(ip string) bool {
+	trial := net.ParseIP(ip)
+	if trial.To4() == nil {
+		fmt.Printf("%v is not an IPv4 address\n", ip)
+		return false
+	}
+	return true
 }

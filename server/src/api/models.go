@@ -73,8 +73,8 @@ func (t *APITeamData) GetPlayers() ([]string, error) {
 
 // APIMatchData Struct for match table.
 type APIMatchData struct {
-	ID            int64        `gorm:"primary_key;column:id" json:"id"`
-	UserID        int64        `gorm:"column:user_id" json:"user_id"`
+	ID            int          `gorm:"primary_key;column:id" json:"id"`
+	UserID        int          `gorm:"column:user_id" json:"user_id"`
 	Team1         APITeamData  `json:"team1"`
 	Team2         APITeamData  `json:"team2"`
 	Winner        int64        `gorm:"column:winner" json:"winner"`

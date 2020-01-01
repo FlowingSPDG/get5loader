@@ -87,24 +87,24 @@ type GET5AvailableDatas struct {
 }
 
 // CheckServerAvailability if server is usable for get5_web
-func CheckServerAvailability(srv *db.GameServerData) (bool, string) { // available or error string
+func CheckServerAvailability(srv *db.GameServerData) (GET5AvailableDatas, error) { // available or error string
+	var data = GET5AvailableDatas{}
 	resp, err := SendRCON(srv.IPString, srv.Port, srv.RconPassword, "get5_web_avaliable")
 	if err != nil {
-		return false, "Connect fails"
+		return data, fmt.Errorf("Connect fails")
 	}
 	jsonBytes := ([]byte)(resp)
-	var data = GET5AvailableDatas{}
 	if err := json.Unmarshal(jsonBytes, &data); err != nil {
 		fmt.Println("JSON Unmarshal error:", err)
-		return false, "Error reading get5_web_avaliable response"
+		return data, fmt.Errorf("Error reading get5_web_avaliable response")
 	}
 	if strings.Contains(resp, "Unknown command") {
-		return false, "Either get5 or get5_apistats plugin missin"
+		return data, fmt.Errorf("Either get5 or get5_apistats plugin missin")
 	}
 	if data.Gamestate != 0 {
-		return false, "Server already has a get5 match setup"
+		return data, fmt.Errorf("Server already has a get5 match setup")
 	}
-	return true, ""
+	return data, nil
 
 }
 
