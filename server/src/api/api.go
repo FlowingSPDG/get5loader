@@ -663,7 +663,7 @@ func CreateMatch(w http.ResponseWriter, r *http.Request) {
 		Match.MaxMaps = MatchTemp.MaxMaps
 		Match.Title = MatchTemp.Title
 		Match.SkipVeto = MatchTemp.SkipVeto
-		Match.VetoMapPool = MatchTemp.VetoMapPool
+		Match.VetoMapPool = strings.Join(MatchTemp.VetoMapPoolJSON, " ")
 		Match.Team1String = MatchTemp.Team1String
 		Match.Team2String = MatchTemp.Team2String
 		if get5res.PluginVersion == "" {

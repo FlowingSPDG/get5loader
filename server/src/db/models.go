@@ -401,26 +401,27 @@ func (t *TeamData) GetLogoOrFlagHTML(scale float64, otherteam TeamData) string {
 
 // MatchData Struct for match table.
 type MatchData struct {
-	ID            int           `gorm:"primary_key;column:id" json:"id"`
-	UserID        int           `gorm:"column:user_id" json:"user_id"`
-	ServerID      int           `gorm:"column:server_id" json:"server_id"`
-	Team1ID       int           `gorm:"column:team1_id" json:"team1_id"`
-	Team2ID       int           `gorm:"column:team2_id" json:"team2_id"`
-	Winner        sql.NullInt64 `gorm:"column:winner" json:"winner"`
-	Cancelled     bool          `gorm:"column:cancelled" json:"cancelled"`
-	StartTime     sql.NullTime  `gorm:"column:start_time" json:"start_time"`
-	EndTime       sql.NullTime  `gorm:"column:end_time" json:"end_time"`
-	MaxMaps       int           `gorm:"column:max_maps" json:"max_maps"`
-	Title         string        `gorm:"column:title" json:"title"`
-	SkipVeto      bool          `gorm:"column:skip_veto" json:"skip_veto"`
-	APIKey        string        `gorm:"column:api_key" json:"-"`
-	VetoMapPool   string        `gorm:"column:veto_mappool" json:"veto_mappool"`
-	Team1Score    int           `gorm:"column:team1_score" json:"team1_score"`
-	Team2Score    int           `gorm:"column:team2_score" json:"team2_score"`
-	Team1String   string        `gorm:"column:team1_string" json:"team1_string"`
-	Team2String   string        `gorm:"column:team2_string" json:"team2_string"`
-	Forfeit       bool          `gorm:"column:forfeit" json:"forfeit"`
-	PluginVersion string        `gorm:"column:plugin_version" json:"-"`
+	ID              int           `gorm:"primary_key;column:id" json:"id"`
+	UserID          int           `gorm:"column:user_id" json:"user_id"`
+	ServerID        int           `gorm:"column:server_id" json:"server_id"`
+	Team1ID         int           `gorm:"column:team1_id" json:"team1_id"`
+	Team2ID         int           `gorm:"column:team2_id" json:"team2_id"`
+	Winner          sql.NullInt64 `gorm:"column:winner" json:"winner"`
+	Cancelled       bool          `gorm:"column:cancelled" json:"cancelled"`
+	StartTime       sql.NullTime  `gorm:"column:start_time" json:"start_time"`
+	EndTime         sql.NullTime  `gorm:"column:end_time" json:"end_time"`
+	MaxMaps         int           `gorm:"column:max_maps" json:"max_maps"`
+	Title           string        `gorm:"column:title" json:"title"`
+	SkipVeto        bool          `gorm:"column:skip_veto" json:"skip_veto"`
+	APIKey          string        `gorm:"column:api_key" json:"-"`
+	VetoMapPool     string        `gorm:"column:veto_mappool"`
+	VetoMapPoolJSON []string      `gorm:"-" json:"veto_mappool"`
+	Team1Score      int           `gorm:"column:team1_score" json:"team1_score"`
+	Team2Score      int           `gorm:"column:team2_score" json:"team2_score"`
+	Team1String     string        `gorm:"column:team1_string" json:"team1_string"`
+	Team2String     string        `gorm:"column:team2_string" json:"team2_string"`
+	Forfeit         bool          `gorm:"column:forfeit" json:"forfeit"`
+	PluginVersion   string        `gorm:"column:plugin_version" json:"-"`
 
 	MapStats []MapStatsData `json:"-"`
 	Server   GameServerData `json:"-"`

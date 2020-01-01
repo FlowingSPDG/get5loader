@@ -172,8 +172,6 @@ export default {
   },
   methods: {
     async RegisterMatch () {
-      let MapPoolBak = this.form.veto_mappool
-      this.form.veto_mappool = this.form.veto_mappool.join(',')
       this.form.team1_id = parseInt(this.form.team1_id, 10)
       this.form.team2_id = parseInt(this.form.team2_id, 10)
       this.form.server_id = parseInt(this.form.server_id, 10)
@@ -191,7 +189,6 @@ export default {
             })
             this.$router.push('/mymatches')
           } catch (err) {
-            this.form.veto_mappool = MapPoolBak // falling back to array if request fails
             console.log(err.response)
             if (typeof err.response.data === 'string') {
               this.$message.error(err.response.data)
