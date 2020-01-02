@@ -24,9 +24,9 @@ deps:
 	git submodule update
 	@$(GOGET) -v \
 	github.com/FlowingSPDG/get5-web-go/server \
-	github.com/FlowingSPDG/get5-web-go/src/api \
-	github.com/FlowingSPDG/get5-web-go/src/db \
-	github.com/FlowingSPDG/get5-web-go/src/util \
+	github.com/FlowingSPDG/get5-web-go/server/src/api \
+	github.com/FlowingSPDG/get5-web-go/server/src/db \
+	github.com/FlowingSPDG/get5-web-go/server/src/util \
 	github.com/mitchellh/gox \
 	github.com/go-ini/ini \
 	github.com/gorilla/mux \
