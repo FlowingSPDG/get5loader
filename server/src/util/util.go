@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/hydrogen18/stalecucumber"
+	"math/rand"
 	"net"
 	"os/exec"
 	"strings"
@@ -138,4 +139,14 @@ func PickleToSteamID64s(Pickles []byte) ([]string, error) {
 		return nil, err
 	}
 	return res, nil
+}
+
+// RandString Generates random string
+func RandString(n int) string {
+	const rs2Letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890"
+	b := make([]byte, n)
+	for i := range b {
+		b[i] = rs2Letters[rand.Intn(len(rs2Letters))]
+	}
+	return string(b)
 }

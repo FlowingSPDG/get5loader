@@ -6,7 +6,7 @@ import (
 	"github.com/FlowingSPDG/get5-web-go/server/src/util"
 	"net"
 
-	// "strings"
+	"strings"
 	//"github.com/Philipp15b/go-steam"
 	//"github.com/FlowingSPDG/go-steamapi"
 	"github.com/Acidic9/steam"
@@ -427,17 +427,58 @@ func (m *MatchData) TableName() string {
 }
 
 // Create Register Match information into DB. not implemented yet
-func (m *MatchData) Create(userid int, team1id int, team2id int, team1string string, team2string string, maxmaps int, skipveto bool, title string, vetomappool string, serverid int) *MatchData {
+func (m *MatchData) Create(userid int, team1id int, team2id int, team1string string, team2string string, maxmaps int, skipveto bool, title string, vetomappool []string, serverid int) (*MatchData, error) {
+	user := UserData{
+		ID: userid,
+	}
+	SQLAccess.Gorm.First(&user)
+	if team1id == 0 || team2id == 0 || serverid == 0 {
+		return nil, fmt.Errorf("TeamID or ServerID is empty!")
+	}
+	server := GameServerData{}
+	server.ID = serverid
+	SQLAccess.Gorm.First(&server)
+	// returns error if user wasnt owned server,or not an admin.
+	if userid != server.UserID && !user.Admin && !server.PublicServer {
+		return nil, fmt.Errorf("This is not your server!")
+	}
+
+	get5res, err := util.CheckServerAvailability(server.IPString, server.Port, server.RconPassword) // Returns error if SRCDS is not available
+	if err != nil {
+		return nil, err
+	}
+
+	MatchOnServer := MatchData{
+		ServerID:  serverid,
+		Cancelled: false,
+	}
+	SQLAccess.Gorm.Where("EndTime = ?", "NULL").First(&MatchOnServer)
+	if MatchOnServer.ID != 0 {
+		return nil, fmt.Errorf("Match %v is already using this server", MatchOnServer.ID)
+	}
 	m.UserID = userid
+	m.ServerID = serverid
+	m.GetServer()
 	m.Team1ID = team1id
 	m.Team2ID = team2id
-	m.SkipVeto = skipveto
-	m.Title = title
-	m.VetoMapPool = vetomappool // array...?
-	m.ServerID = serverid
 	m.MaxMaps = maxmaps
-	m.APIKey = "" //random?
-	return m      // TODO
+	m.Title = title
+	m.SkipVeto = skipveto
+	m.VetoMapPool = strings.Join(vetomappool, " ")
+	m.Team1String = team1string
+	m.Team2String = team2string
+	if get5res.PluginVersion == "" {
+		get5res.PluginVersion = "unknown"
+	}
+	m.PluginVersion = get5res.PluginVersion
+	m.APIKey = util.RandString(24)
+	err = m.SendToServer()
+	if err != nil {
+		return nil, err
+	}
+	SQLAccess.Gorm.Model(&server).Update("in_use", true)
+	SQLAccess.Gorm.Create(&m)
+	return m, nil // TODO
 }
 
 // GetStatusString Get match status as string. for gorazor template

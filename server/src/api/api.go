@@ -3,6 +3,7 @@ package api
 import (
 	"encoding/json"
 	"fmt"
+
 	"net/http"
 	"strconv"
 	"strings"
@@ -593,13 +594,8 @@ func CreateMatch(w http.ResponseWriter, r *http.Request) {
 	}
 	if IsLoggedIn {
 		userid := s.Get("UserID").(int)
-		User := db.UserData{
-			ID: userid,
-		}
-		db.SQLAccess.Gorm.First(&User)
-		Match := db.MatchData{}
-		MatchTemp := db.MatchData{}
-
+		var MatchTemp = db.MatchData{}
+		var Match = db.MatchData{}
 		// Returns error if JSON is not valid...
 		err := json.NewDecoder(r.Body).Decode(&MatchTemp)
 		if err != nil {
@@ -618,92 +614,11 @@ func CreateMatch(w http.ResponseWriter, r *http.Request) {
 			w.Write(jsonbyte)
 			return
 		}
-		if MatchTemp.Team1ID == 0 || MatchTemp.Team2ID == 0 || MatchTemp.ServerID == 0 {
-			fmt.Println("failed to decode Match,lack of informations")
-			res := SimpleJSONResponse{
-				Response:     "error",
-				Errorcode:    http.StatusBadRequest,
-				Errormessage: "JSON Format invalid",
-			}
-			jsonbyte, err := json.Marshal(res)
-			if err != nil {
-				http.Error(w, "Internal ERROR", http.StatusInternalServerError)
-			}
-			w.WriteHeader(http.StatusInternalServerError)
-			w.Header().Set("Content-Type", "application/json")
-			w.Write(jsonbyte)
-			return
-		}
-		server := db.GameServerData{}
-		server.ID = MatchTemp.ServerID
-		db.SQLAccess.Gorm.First(&server)
-		// returns error if user wasnt owned server,or not an admin.
-		if userid != MatchTemp.ServerID && !User.Admin && !server.PublicServer {
-			http.Error(w, "This is not your server!", http.StatusUnauthorized)
-			return
-		}
-		get5res, err := util.CheckServerAvailability(server.IPString, server.Port, server.RconPassword) // Returns error if SRCDS is not available
+		_, err = Match.Create(userid, MatchTemp.Team1ID, MatchTemp.Team2ID, MatchTemp.Team1String, MatchTemp.Team2String, MatchTemp.MaxMaps, MatchTemp.SkipVeto, MatchTemp.Title, MatchTemp.VetoMapPoolJSON, MatchTemp.ServerID)
 		if err != nil {
-			res := SimpleJSONResponse{
-				Response:     "error",
-				Errorcode:    500,
-				Errormessage: err.Error(),
-			}
-			jsonbyte, err := json.Marshal(res)
-			if err != nil {
-				http.Error(w, "Internal ERROR", http.StatusInternalServerError)
-			}
-			w.WriteHeader(http.StatusInternalServerError)
-			w.Header().Set("Content-Type", "application/json")
-			w.Write(jsonbyte)
+			http.Error(w, "Internal ERROR", http.StatusInternalServerError)
 			return
 		}
-
-		MatchOnServer := db.MatchData{
-			ServerID:  MatchTemp.ServerID,
-			Cancelled: false,
-		}
-		db.SQLAccess.Gorm.Where("EndTime = ?", "NULL").First(&MatchOnServer)
-		if MatchOnServer.ID != 0 {
-			res := SimpleJSONResponse{
-				Response:     "error",
-				Errorcode:    500,
-				Errormessage: fmt.Sprintf("Match %v is already using this server", MatchOnServer.ID),
-			}
-			jsonbyte, err := json.Marshal(res)
-			if err != nil {
-				http.Error(w, "Internal ERROR", http.StatusInternalServerError)
-			}
-			w.WriteHeader(http.StatusInternalServerError)
-			w.Header().Set("Content-Type", "application/json")
-			w.Write(jsonbyte)
-			return
-		}
-
-		Match.UserID = userid
-		Match.ServerID = MatchTemp.ServerID
-		Match.GetServer()
-		Match.Team1ID = MatchTemp.Team1ID
-		Match.Team2ID = MatchTemp.Team2ID
-		Match.MaxMaps = MatchTemp.MaxMaps
-		Match.Title = MatchTemp.Title
-		Match.SkipVeto = MatchTemp.SkipVeto
-		Match.VetoMapPool = strings.Join(MatchTemp.VetoMapPoolJSON, " ")
-		Match.Team1String = MatchTemp.Team1String
-		Match.Team2String = MatchTemp.Team2String
-		if get5res.PluginVersion == "" {
-			get5res.PluginVersion = "unknown"
-		}
-		Match.PluginVersion = get5res.PluginVersion
-		err = Match.SendToServer()
-		if err != nil {
-			fmt.Println(err)
-			http.Error(w, "Internal SRCDS ERROR", http.StatusInternalServerError)
-			return
-		}
-		db.SQLAccess.Gorm.Model(&Match.Server).Update("in_use", true)
-		db.SQLAccess.Gorm.Create(&Match)
-
 		res := SimpleJSONResponse{
 			Response: "ok",
 		}
