@@ -21,6 +21,7 @@ clean:
 	$(GOCLEAN)
 	rm -rf $(DIST_DIR)/*
 deps:
+	git submodule update
 	@$(GOGET) -v \
 	github.com/FlowingSPDG/get5-web-go/server \
 	github.com/mitchellh/gox \
