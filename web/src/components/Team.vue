@@ -107,7 +107,7 @@ export default {
         const res = await this.axios.get(`/api/v1/GetSteamName?steamID=${steamid}`)
         console.log(res.data)
         console.log(self.team)
-        self.players.push({steamid: steamid, name: res.data})
+        self.players.push({ steamid: steamid, name: res.data })
         resolve(res.data)
       })
     },
