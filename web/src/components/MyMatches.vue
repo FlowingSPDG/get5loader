@@ -19,7 +19,7 @@
     <tbody>
 
       <tr v-for="(match, index) in matches" :key="index" align="left">
-        <td v-if="match"><a :href="'/match/'+match.id">{{match.id}}</a></td>
+        <td v-if="match"><router-link :to="'/match/'+match.id">{{match.id}}</router-link></td>
 
         <td v-if="matchinfo[match.id]">
           <img :src="get_flag_link(matchinfo[match.id].team1)" />
