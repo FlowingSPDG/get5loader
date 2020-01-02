@@ -121,9 +121,8 @@ func GetVersion() (string, error) {
 
 // SteamID64sToPickle Pickles Steamid64 array
 func SteamID64sToPickle(ids []string) ([]byte, error) {
-	res := make([]byte, 0)
 	buf := new(bytes.Buffer)
-	_, err := stalecucumber.NewPickler(buf).Pickle(res)
+	_, err := stalecucumber.NewPickler(buf).Pickle(ids)
 	if err != nil {
 		return nil, err
 	}
