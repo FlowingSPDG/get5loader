@@ -11,7 +11,6 @@ import (
 	"github.com/gorilla/mux"
 
 	"github.com/FlowingSPDG/get5-web-go/server/src/db"
-	"github.com/FlowingSPDG/get5-web-go/server/src/util"
 )
 
 type CheckLoggedInJSON struct {
@@ -460,31 +459,21 @@ func CreateTeam(w http.ResponseWriter, r *http.Request) {
 		IsLoggedIn = s.Get("Loggedin").(bool)
 	}
 	if IsLoggedIn {
+		userid := s.Get("UserID").(int)
 		Team := db.TeamData{}
 		TeamTemp := db.TeamData{}
 		err := json.NewDecoder(r.Body).Decode(&TeamTemp)
 		if err != nil {
-			fmt.Println("failed to decode JSON")
+			fmt.Println("Failed to decode JSON")
 			http.Error(w, "JSON Format invalid", http.StatusBadRequest)
 			return
 		}
-		if TeamTemp.Name == "" {
-			fmt.Println("failed to decode Team Name")
-			http.Error(w, "JSON Format invalid", http.StatusBadRequest)
-			return
-		}
-		Team.UserID = s.Get("UserID").(int)
-		Team.Name = TeamTemp.Name
-		Team.Tag = TeamTemp.Tag
-		Team.Flag = TeamTemp.Flag
-		Team.Logo = TeamTemp.Logo
-		Team.AuthsPickle, err = util.SteamID64sToPickle(TeamTemp.Auths)
+		_, err = Team.Create(userid, TeamTemp.Name, TeamTemp.Tag, TeamTemp.Flag, TeamTemp.Logo, TeamTemp.Auths, TeamTemp.PublicTeam)
 		if err != nil {
-			http.Error(w, "Internal ERROR", http.StatusInternalServerError)
+			fmt.Println("Failed to create team")
+			http.Error(w, "Failed to create team", http.StatusInternalServerError)
 			return
 		}
-		Team.PublicTeam = TeamTemp.PublicTeam
-		db.SQLAccess.Gorm.Create(&Team)
 		w.WriteHeader(http.StatusOK)
 		res := SimpleJSONResponse{
 			Response: "OK",
@@ -519,54 +508,31 @@ func CreateServer(w http.ResponseWriter, r *http.Request) {
 		IsLoggedIn = s.Get("Loggedin").(bool)
 	}
 	if IsLoggedIn {
+		userid := s.Get("UserID").(int)
 		Server := db.GameServerData{}
 		ServerTemp := db.GameServerData{}
 		err := json.NewDecoder(r.Body).Decode(&ServerTemp)
 		if err != nil {
-			fmt.Println("failed to decode JSON")
+			fmt.Println("Failed to decode JSON")
 			http.Error(w, "JSON Format invalid", http.StatusBadRequest)
 			return
 		}
-		if ServerTemp.DisplayName == "" || ServerTemp.IPString == "" || ServerTemp.RconPassword == "" {
-			fmt.Println("failed to decode Server Name")
-			http.Error(w, "JSON Format invalid", http.StatusBadRequest)
-			return
-		}
-		Server.UserID = s.Get("UserID").(int)
-		Server.DisplayName = ServerTemp.DisplayName
-		Server.IPString = ServerTemp.IPString
-		Server.Port = ServerTemp.Port
-		Server.RconPassword = ServerTemp.RconPassword
-		Server.PublicServer = ServerTemp.PublicServer
-		_, err = util.CheckServerAvailability(Server.IPString, Server.Port, Server.RconPassword)
+		_, err = Server.Create(userid, ServerTemp.DisplayName, ServerTemp.IPString, ServerTemp.Port, ServerTemp.RconPassword, ServerTemp.PublicServer)
 		if err != nil {
-			res := SimpleJSONResponse{
-				Response:     "error",
-				Errorcode:    500,
-				Errormessage: err.Error(),
-			}
-			jsonbyte, err := json.Marshal(res)
-			if err != nil {
-				http.Error(w, "Internal ERROR", http.StatusInternalServerError)
-				return
-			}
-			w.WriteHeader(http.StatusInternalServerError)
-			w.Header().Set("Content-Type", "application/json")
-			w.Write(jsonbyte)
-		} else {
-			db.SQLAccess.Gorm.Create(&Server)
-			w.WriteHeader(http.StatusOK)
-			res := SimpleJSONResponse{
-				Response: "OK",
-			}
-			jsonbyte, err := json.Marshal(res)
-			if err != nil {
-				http.Error(w, "Internal ERROR", http.StatusInternalServerError)
-				return
-			}
-			w.Header().Set("Content-Type", "application/json")
-			w.Write(jsonbyte)
+			http.Error(w, "Failed to create server", http.StatusBadRequest)
+			return
 		}
+		w.WriteHeader(http.StatusOK)
+		res := SimpleJSONResponse{
+			Response: "OK",
+		}
+		jsonbyte, err := json.Marshal(res)
+		if err != nil {
+			http.Error(w, "Internal ERROR", http.StatusInternalServerError)
+			return
+		}
+		w.Header().Set("Content-Type", "application/json")
+		w.Write(jsonbyte)
 
 	} else {
 		w.WriteHeader(http.StatusUnauthorized)

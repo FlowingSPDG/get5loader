@@ -124,16 +124,24 @@ func (g *GameServerData) TableName() string {
 	return "game_server"
 }
 
-// Create Register GameServer into DB. not implemented yet.
-func (g *GameServerData) Create(userid int, displayname string, ipstring string, port int, rconpassword string, publicserver bool) *GameServerData {
+// Create Register GameServer into DB.
+func (g *GameServerData) Create(userid int, displayname string, ipstring string, port int, rconpassword string, publicserver bool) (*GameServerData, error) {
+	if ipstring == "" || rconpassword == "" {
+		return nil, fmt.Errorf("IPaddress or RCON empty...")
+	}
 	g.UserID = userid
 	g.DisplayName = displayname
 	g.IPString = ipstring
 	g.Port = port
 	g.RconPassword = rconpassword
 	g.PublicServer = publicserver
-	// ADD TO DB TODO
-	return g
+
+	_, err := util.CheckServerAvailability(g.IPString, g.Port, g.RconPassword)
+	if err != nil {
+		return nil, err
+	}
+	SQLAccess.Gorm.Create(&g)
+	return g, nil
 }
 
 // SendRCON Sends Remote-Commands to specific IP SRCDS.
@@ -192,17 +200,25 @@ func (t *TeamData) TableName() string {
 	return "team"
 }
 
-// Create Register Team information into DB. not implemented.
-func (t *TeamData) Create(userid int, name string, tag string, flag string, logo string, auths []byte, publicteam bool) *TeamData {
+// Create Register Team information into DB.
+func (t *TeamData) Create(userid int, name string, tag string, flag string, logo string, auths []string, publicteam bool) (*TeamData, error) {
+	if name == "" {
+		return nil, fmt.Errorf("Team name cannot be empty!")
+	}
 	t.UserID = userid
 	t.Name = name
 	t.Tag = tag
 	t.Flag = flag
 	t.Logo = logo
-	t.AuthsPickle = auths // should convert into pickle. TODO
 	t.PublicTeam = publicteam
-	// should register into DB. TODO
-	return t
+	var err error
+	t.AuthsPickle, err = util.SteamID64sToPickle(auths)
+	if err != nil {
+		return nil, err
+	}
+	fmt.Println(t.AuthsPickle)
+	SQLAccess.Gorm.Create(&t)
+	return t, nil
 }
 
 // SetData Modify team data.
@@ -426,7 +442,7 @@ func (m *MatchData) TableName() string {
 	return "match"
 }
 
-// Create Register Match information into DB. not implemented yet
+// Create Register Match information into DB.
 func (m *MatchData) Create(userid int, team1id int, team2id int, team1string string, team2string string, maxmaps int, skipveto bool, title string, vetomappool []string, serverid int) (*MatchData, error) {
 	user := UserData{
 		ID: userid,
