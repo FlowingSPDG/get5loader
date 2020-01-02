@@ -22,7 +22,7 @@ clean:
 	rm -rf $(DIST_DIR)/*
 deps:
 	git submodule update
-	@$(GOGET) -v \
+	@$(GOGET) -v -u \
 	github.com/FlowingSPDG/get5-web-go/server \
 	github.com/FlowingSPDG/get5-web-go/server/src/api \
 	github.com/FlowingSPDG/get5-web-go/server/src/db \
