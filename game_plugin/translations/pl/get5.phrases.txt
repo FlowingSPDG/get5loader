@@ -1,0 +1,251 @@
+"Phrases"
+{
+    "ReadyToVetoInfoMessage"
+    {
+        "pl"            "Napisz {GREEN}!ready {NORMAL}kiedy Twoja drużyna będzie gotowa do głosowania."
+    }
+    "WaitingForCastersReadyInfoMessage"
+    {
+        "pl"            "Czekamy na komentatorów na wpisanie {GREEN}!ready {NORMAL}aby zacząć rozgrywkę."
+    }
+    "ReadyToRestoreBackupInfoMessage"
+    {
+        "pl"            "Napisz {GREEN}!ready {NORMAL}kiedy Twoja drużyna będzie gotowa do wczytania meczu."
+    }
+    "ReadyToKnifeInfoMessage"
+    {
+        "pl"            "Napisz {GREEN}!ready {NORMAL}kiedy Twoja drużyna będzie gotowa do rundy nożowej."
+    }
+    "ReadyToStartInfoMessage"
+    {
+        "pl"            "Napisz {GREEN}!ready {NORMAL}kiedy Twoja drużyna będzie gotowa."
+    }
+    "WaitingForEnemySwapInfoMessage"
+    {
+        "pl"            "{1} wygralo runde nożową. Oczekiwanie na !stay lub !swap."
+    }
+    "WaitingForGOTVBrodcastEndingInfoMessage"
+    {
+        "pl"            "Mapa zostanie zmieniona gdy transmisja GOTV zostanie zakończona."
+    }
+    "NoMatchSetupInfoMessage"
+    {
+        "pl"			"Brak ustawień meczu"
+    }
+    "YourAreNotAPlayerInfoMessage"
+    {
+        "pl"            "Nie jesteś graczem w tym meczu"
+    }
+    "TeamIsFullInfoMessage"
+    {
+        "pl"            "Twoja drużyna jest pełna"
+    }
+    "TeamForfeitInfoMessage"
+    {
+        "pl"            "{1} nie bylo gotowe w wymaganym czasie i mecz został oddany na korzyść drużyny przeciwnej."
+    }
+    "MinutesToForfeitMessage"
+    {
+        "pl"            "{1} ma {2} minuty aby być gotowym do meczu albo mecz zostanie oddany na korzyść drużyny przeciwnej."
+    }
+    "SecondsToForfeitInfoMessage"
+    {
+        "pl"            "{1} ma {2} sekund aby być gotowym do meczu albo mecz zostanie oddany na korzyść drużyny przeciwnej."
+    }
+    "10SecondsToForfeitInfoMessage"
+    {
+        "pl"            "{1} ma 10 sekund aby być gotowym do meczu albo mecz zostanie oddany na korzyść drużyny przeciwnej."
+    }
+    "PausePeriodSuffix"
+    {
+        "pl"            "na tę połowę"
+    }
+    "MaxPausesUsedInfoMessage"
+    {
+        "pl"            "Twoja drużyna użyła już maksymalnie {1} pauzy{2}."
+    }
+    "MaxPausesTimeUsedInfoMessage"
+    {
+        "pl"            "Twoja drużyna użyła już maksymalnie {1} sekund czasu pauzy{2}."
+    }
+    "MatchPausedByTeamMessage"
+    {
+        "pl"            "{1} zatrzymało mecz."
+    }
+    "PauseTimeExpiration10SecInfoMessage"
+    {
+        "pl"            "{1} kończy się czas pauzy, wznowienie rozgrywki nastąpi za 10 sekund."
+    }
+    "PauseTimeExpirationInfoMessage"
+    {
+        "pl"            "{1} zostało {2} sekund pauzy{3}."
+    }
+    "PauseRunoutInfoMessage"
+    {
+        "pl"            "{1} skończył się czas pauzy, wznawianie rozgrywki."
+    }
+    "MatchUnpauseInfoMessage"
+    {
+        "pl"            "{1:N} odpauzowało mecz."
+    }
+    "WaitingForUnpauseInfoMessage"
+    {
+        "pl"            "{1} chce wznowić rozgrywkę, oczekiwanie na {2} na wpisanie !unpause."
+    }
+    "PausesLeftInfoMessage"
+    {
+        "pl"            "{1} pozostały {2} pauzy{3}."
+    }
+    "OnePauseLeftInfoMessage"
+    {
+        "pl"            "{1} pozostała {2} pauza{3}."
+    }
+    "TeamFailToReadyMinPlayerCheck"
+    {
+        "pl"            "Musi być conajmniej {1}graczy na serwerze aby móc być gotowym."
+    }
+    "TeamReadyToVetoInfoMessage"
+    {
+        "pl"            "{1} jest gotowe do głosowania."
+    }
+    "TeamReadyToRestoreBackupInfoMessage"
+    {
+        "pl"            "{1} jest gotowe do przywrócenia meczu."
+    }
+    "TeamReadyToKnifeInfoMessage"
+    {
+        "pl"            "{1} jest gotowe do nożówki za strony."
+    }
+    "TeamReadyToBeginInfoMessage"
+    {
+        "pl"            "{1} jest gotowe do rozpoczęcia meczu."
+    }
+    "TeamNotReadyInfoMessage"
+    {
+        "pl"            "{1} anulowali swoją gotowość."
+    }
+    "AdminForceReadyInfoMessage"
+    {
+        "pl"            "Administrator wymusił gotowość na wszystkich drużynach."
+    }
+    "AdminForceEndInfoMessage"
+    {
+        "pl"            "Administrator zakończył mecz."
+    }
+    "AdminForcePauseInfoMessage"
+    {
+        "pl"            "Administrator zatrzymał mecz."
+    }
+    "AdminForceUnPauseInfoMessage"
+    {
+        "pl"            "Administrator wznowił mecz."
+    }
+    "TeamWantsToReloadLastRoundInfoMessage"
+    {
+        "pl"            "{1} chce zatrzymać mecz i wczytać poprzednią rundę, oczekiwanie na potwierdzenie przez {2} i wpisanie !stop."
+    }
+    "TeamWinningSeriesInfoMessage"
+    {
+        "pl"            "{1}{NORMAL} wygrywa {2}-{3}"
+    }
+    "SeriesTiedInfoMessage"
+    {
+        "pl"            "Drużyny remisują {1}-{2}"
+    }
+    "NextSeriesMapInfoMessage"
+    {
+        "pl"            "Następna mapa w meczu to {GREEN}{1}"
+    }
+    "TeamWonMatchInfoMessage"
+    {
+        "pl"            "{1} wygrało mapę."
+    }
+    "TeamsSplitSeriesBO2InfoMessage"
+    {
+        "pl"            "{1} i {2} zremisowali spotkanie 1-1."
+    }
+    "TeamWonSeriesInfoMessage"
+    {
+        "pl"            "{1} wygrało spotkanie {2}-{3}."
+    }
+    "MatchFinishedInfoMessage"
+    {
+        "pl"            "Mecz został zakończony"
+    }
+    "CurrentScoreInfoMessage"
+    {
+        "pl"            "{LIGHT_GREEN}{1} {GREEN}{2} {NORMAL}- {GREEN}{3} {LIGHT_GREEN}{4}"
+    }
+    "BackupLoadedInfoMessage"
+    {
+        "pl"            "Pomyślnie wczytano kopię meczu {1}"
+    }
+    "MatchBeginInSecondsInfoMessage"
+    {
+        "pl"            "Mecz rozpocznie się za {1} sekund."
+    }
+    "MatchIsLiveInfoMessage"
+    {
+        "pl"            "Mecz jest {GREEN}LIVE"
+    }
+    "KnifeIn5SecInfoMessage"
+    {
+        "pl"            "Runda nożowa rozpocznie się za 5 sekund."
+    }
+    "KnifeInfoMessage"
+    {
+        "pl"            "Nozówka!"
+    }
+    "TeamDecidedToStayInfoMessage"
+    {
+        "pl"            "{1} zdecydowało na pozostanie w aktualnych drużynach."
+    }
+    "TeamDecidedToSwapInfoMessage"
+    {
+        "pl"            "{1} zdecydowało na zamianę drużyn."
+    }
+    "TeamLostTimeToDecideInfoMessage"
+    {
+        "pl"            "{1} drużyny zostały w aktualnych drużynach, ponieważ żadna decyzja nie została podjęta."
+    }
+    "ChangingMapInfoMessage"
+    {
+        "pl"            "Zmiana mapy na {GREEN}{1}..."
+    }
+    "MapDecidedInfoMessage"
+    {
+        "pl"            "Wybrano następujące mapy:"
+    }
+    "MapIsInfoMessage"
+    {
+        "pl"            "Mapa {1}: {GREEN}{2}"
+    }
+    "TeamPickedMapInfoMessage"
+    {
+        "pl"            "{1} wybrało {GREEN}{2} {NORMAL}jako mapę {3}"
+    }
+    "TeamSelectSideInfoMessage"
+    {
+        "pl"            "{1} wybrało stronę {GREEN}{2} {NORMAL}na {3}"
+    }
+    "TeamVetoedMapInfoMessage"
+    {
+        "pl"            "{1} odrzuciło {LIGHT_RED}{2}"
+    }
+    "CaptainLeftOnVetoInfoMessage"
+    {
+        "pl"            "Kapitan opuścił serwer, głosowanie zostało wstrzymane."
+    }
+    "ReadyToResumeVetoInfoMessage"
+    {
+        "pl"            "Napisz {GREEN}!ready {NORMAL}kiedy Twoja drużyna będzie gotowa do wznowienia głosowania."
+    }
+    "MatchConfigLoadedInfoMessage"
+    {
+        "pl"            "Załadowano ustawawienia meczu."
+    }
+    "MoveToCoachInfoMessage"
+    {
+        "pl"            "Ponieważ Twoja drużyna jest pełna, zostałeś przeniesiony na stanowisko coach'a."
+    }
+}
