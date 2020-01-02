@@ -231,7 +231,7 @@ export default {
         team1_string: '',
         team2_string: '',
         forfeit: false,
-        map_stats: {},
+        map_stats: [],
         team1_player_stats: [],
         team2_player_stats: [],
         server: {
