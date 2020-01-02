@@ -29,7 +29,7 @@ Shugo [**FlowingSPDG**](http://github.com/FlowingSPDG) Kawamura
 - ``cd $GOPATH/src/github.com/FlowingSPDG/get5-web-go && make deps``
 - You're good to GO! edit each .go files to fix/add something nice!
 - You can test your server by ``go run ./main.go``,and build them by ``make build-all``.You may get binary files.
-- To test Vue rendering,``cd ./web/``,``yarn run dev`` and open http://localhost:8081/#.  
+- To test Vue rendering,``cd ./web/``,``yarn run serve`` and open http://localhost:8081/#.  
 
 
 ## Build(get5-web-go itself doesnt work yet!)
