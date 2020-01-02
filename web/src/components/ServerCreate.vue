@@ -116,8 +116,8 @@ export default {
       dangerouslyUseHTMLString: true,
       message: `Make sure your server is running and has the get5 server plugins installed first.<br>See <a href="https://github.com/splewis/get5/wiki/Step-by-step-installation-guide">the get5 wiki</a> for help installing the get5 and get5_apistats plugins.`,
       type: 'info',
-      duration: 0,
-      showClose: false
+      duration: 1000 * 10,
+      showClose: true
     })
     this.user = await this.axios.get('/api/v1/CheckLoggedIn')
   },

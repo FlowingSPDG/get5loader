@@ -63,6 +63,8 @@ func init() {
 
 func main() {
 
+	defer SQLAccess.Gorm.Close()
+
 	r := mux.NewRouter()
 	// rootに対してnuxtのindex.htmlを返すように設定する。(ServeFile)
 	entrypoint := "./index.html"
@@ -74,11 +76,14 @@ func main() {
 	r.HandleFunc("/api/v1/GetMatches", api.GetMatches).Methods("GET")
 	r.HandleFunc("/api/v1/GetMetrics", api.GetMetrics).Methods("GET")
 	r.HandleFunc("/api/v1/GetSteamName", api.GetSteamName).Methods("GET")
+	r.HandleFunc("/api/v1/GetTeamList", api.GetTeamList).Methods("GET")
+	r.HandleFunc("/api/v1/GetServerList", api.GetServerList).Methods("GET")
 
 	r.HandleFunc("/api/v1/CheckLoggedIn", api.CheckLoggedIn).Methods("GET")
 	r.HandleFunc("/api/v1/match/{matchID}/GetMatchInfo", api.GetMatchInfo).Methods("GET")
 	r.HandleFunc("/api/v1/match/{matchID}/GetPlayerStatInfo", api.GetPlayerStatInfo).Methods("GET")
 	r.HandleFunc("/api/v1/match/{matchID}/GetStatusString", api.GetStatusString).Methods("GET")
+	r.HandleFunc("/api/v1/match/create", api.CreateMatch).Methods("POST")
 	r.HandleFunc("/api/v1/team/{teamID}/GetTeamInfo", api.GetTeamInfo).Methods("GET")
 	r.HandleFunc("/api/v1/team/{teamID}/GetRecentMatches", api.GetRecentMatches).Methods("GET")
 	r.HandleFunc("/api/v1/team/{teamID}/CheckUserCanEdit", api.CheckUserCanEdit).Methods("GET")

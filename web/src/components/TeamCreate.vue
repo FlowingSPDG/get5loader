@@ -195,10 +195,10 @@ export default {
         ],
         auths: [
           { required: true, message: 'Please input your team members steamid', trigger: 'blur' },
-          { required: true, message: 'Please input your team members steamid', trigger: 'blur' },
-          { required: true, message: 'Please input your team members steamid', trigger: 'blur' },
-          { required: true, message: 'Please input your team members steamid', trigger: 'blur' },
-          { required: true, message: 'Please input your team members steamid', trigger: 'blur' },
+          { required: false, message: 'Please input your team members steamid', trigger: 'blur' },
+          { required: false, message: 'Please input your team members steamid', trigger: 'blur' },
+          { required: false, message: 'Please input your team members steamid', trigger: 'blur' },
+          { required: false, message: 'Please input your team members steamid', trigger: 'blur' },
           { required: false, message: 'Please input your team members steamid', trigger: 'blur' },
           { required: false, message: 'Please input your team members steamid', trigger: 'blur' }
         ],
@@ -215,23 +215,25 @@ export default {
   methods: {
     async RegisterTeam () {
       const json = JSON.stringify(this.form)
-      try {
-        this.$refs['form'].validate(async (valid) => {
-          if (valid) {
-            await this.axios.post('/api/v1/team/create', json)
+      this.$refs['form'].validate(async (valid) => {
+        if (valid) {
+          try {
+            let res = await this.axios.post('/api/v1/team/create', json)
+            console.log(res)
+            this.form = {}
             this.$message({
-              message: 'Successfully submitted data.',
+              message: 'Successfully registered team.',
               type: 'success'
             })
-            this.form = {}
-          } else {
-            this.$message.error('Please fill form')
+            this.$router.push('/myteams')
+          } catch (err) {
+            console.log(err.response)
+            this.$message.error(err.response.data.errormessage)
           }
-        })
-      } catch (err) {
-        this.$message.error('Failed to submit team data...')
-        console.error(err)
-      }
+        } else {
+          this.$message.error('Please fill form')
+        }
+      })
     }
   }
 }

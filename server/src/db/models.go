@@ -1,16 +1,16 @@
 package db
 
 import (
-	"bytes"
 	"database/sql"
 	"fmt"
+	"github.com/FlowingSPDG/get5-web-go/server/src/util"
+	"net"
 
-	// "strings"
+	"strings"
 	//"github.com/Philipp15b/go-steam"
 	//"github.com/FlowingSPDG/go-steamapi"
 	"github.com/Acidic9/steam"
 	"github.com/go-ini/ini"
-	"github.com/hydrogen18/stalecucumber"
 	"github.com/jinzhu/gorm"
 	gosteam "github.com/kidoman/go-steam"
 
@@ -124,22 +124,33 @@ func (g *GameServerData) TableName() string {
 	return "game_server"
 }
 
-// Create Register GameServer into DB. not implemented yet.
-func (g *GameServerData) Create(userid int, displayname string, ipstring string, port int, rconpassword string, publicserver bool) *GameServerData {
+// Create Register GameServer into DB.
+func (g *GameServerData) Create(userid int, displayname string, ipstring string, port int, rconpassword string, publicserver bool) (*GameServerData, error) {
+	if ipstring == "" || rconpassword == "" {
+		return nil, fmt.Errorf("IPaddress or RCON empty...")
+	}
 	g.UserID = userid
 	g.DisplayName = displayname
 	g.IPString = ipstring
 	g.Port = port
 	g.RconPassword = rconpassword
 	g.PublicServer = publicserver
-	// ADD TO DB TODO
-	return g
+
+	_, err := util.CheckServerAvailability(g.IPString, g.Port, g.RconPassword)
+	if err != nil {
+		return nil, err
+	}
+	SQLAccess.Gorm.Create(&g)
+	return g, nil
 }
 
-// SendRcon Sends Remote-Commands to server.
+// SendRCON Sends Remote-Commands to specific IP SRCDS.
 func (g *GameServerData) SendRcon(cmd string) (string, error) {
+	if !checkIP(g.IPString) {
+		return "", fmt.Errorf("Specified IP is not valid")
+	}
 	o := &gosteam.ConnectOptions{RCONPassword: g.RconPassword}
-	rcon, err := gosteam.Connect(g.IPString, o)
+	rcon, err := gosteam.Connect(g.GetHostPort(), o)
 	if err != nil {
 		fmt.Println(err)
 		return "", err
@@ -189,17 +200,25 @@ func (t *TeamData) TableName() string {
 	return "team"
 }
 
-// Create Register Team information into DB. not implemented.
-func (t *TeamData) Create(userid int, name string, tag string, flag string, logo string, auths []byte, publicteam bool) *TeamData {
+// Create Register Team information into DB.
+func (t *TeamData) Create(userid int, name string, tag string, flag string, logo string, auths []string, publicteam bool) (*TeamData, error) {
+	if name == "" {
+		return nil, fmt.Errorf("Team name cannot be empty!")
+	}
 	t.UserID = userid
 	t.Name = name
 	t.Tag = tag
 	t.Flag = flag
 	t.Logo = logo
-	t.AuthsPickle = auths // should convert into pickle. TODO
 	t.PublicTeam = publicteam
-	// should register into DB. TODO
-	return t
+	var err error
+	t.AuthsPickle, err = util.SteamID64sToPickle(auths)
+	if err != nil {
+		return nil, err
+	}
+	fmt.Println(t.AuthsPickle)
+	SQLAccess.Gorm.Create(&t)
+	return t, nil
 }
 
 // SetData Modify team data.
@@ -231,23 +250,15 @@ func (t *TeamData) CanDelete(userid int) bool {
 	return len(t.GetRecentMatches(10)) == 0
 }
 
-// GetPlayerData Struct for GetPlayers() function.
-type GetPlayerData struct {
-	Auth string
-	//Name string
-}
-
 // GetPlayers Gets registered player's steamid64.
-func (t *TeamData) GetPlayers() ([]GetPlayerData, error) {
-	reader := bytes.NewReader(t.AuthsPickle)
-	var auths []string
-	var results []GetPlayerData
-	err := stalecucumber.UnpackInto(&auths).From(stalecucumber.Unpickle(reader))
+func (t *TeamData) GetPlayers() (*[]string, error) {
+	auths, err := util.PickleToSteamID64s(t.AuthsPickle)
+	var results []string
 	if err != nil {
-		return results, err
+		return &results, err
 	}
 	for i := 0; i < len(auths); i++ {
-		results = append(results, GetPlayerData{Auth: auths[i]})
+		results = append(results, auths[i])
 	}
 	/*for i := 0; i < len(auths); i++ {
 		steamid64, err := strconv.Atoi(auths[i])
@@ -261,8 +272,9 @@ func (t *TeamData) GetPlayers() ([]GetPlayerData, error) {
 		//results = append(results, GetPlayerData{Auth: auths[i], Name: playername})
 		results = append(results, GetPlayerData{Auth: auths[i]})
 	}*/
+	t.Auths = results
 
-	return results, nil
+	return &results, nil
 }
 
 /*
@@ -397,26 +409,27 @@ func (t *TeamData) GetLogoOrFlagHTML(scale float64, otherteam TeamData) string {
 
 // MatchData Struct for match table.
 type MatchData struct {
-	ID            int64         `gorm:"primary_key;column:id" json:"id"`
-	UserID        int64         `gorm:"column:user_id" json:"user_id"`
-	ServerID      int64         `gorm:"column:server_id" json:"-"`
-	Team1ID       int64         `gorm:"column:team1_id" json:"team1_id"`
-	Team2ID       int64         `gorm:"column:team2_id" json:"team2_id"`
-	Winner        sql.NullInt64 `gorm:"column:winner" json:"winner"`
-	Cancelled     bool          `gorm:"column:cancelled" json:"cancelled"`
-	StartTime     sql.NullTime  `gorm:"column:start_time" json:"start_time"`
-	EndTime       sql.NullTime  `gorm:"column:end_time" json:"end_time"`
-	MaxMaps       int           `gorm:"column:max_maps" json:"max_maps"`
-	Title         string        `gorm:"column:title" json:"title"`
-	SkipVeto      bool          `gorm:"column:skip_veto" json:"skip_veto"`
-	APIKey        string        `gorm:"column:api_key" json:"-"`
-	VetoMapPool   string        `gorm:"column:veto_mappool" json:"veto_mappool"`
-	Team1Score    int           `gorm:"column:team1_score" json:"team1_score"`
-	Team2Score    int           `gorm:"column:team2_score" json:"team2_score"`
-	Team1String   string        `gorm:"column:team1_string" json:"team1_string"`
-	Team2String   string        `gorm:"column:team2_string" json:"team2_string"`
-	Forfeit       bool          `gorm:"column:forfeit" json:"forfeit"`
-	PluginVersion string        `gorm:"column:plugin_version" json:"-"`
+	ID              int           `gorm:"primary_key;column:id" json:"id"`
+	UserID          int           `gorm:"column:user_id" json:"user_id"`
+	ServerID        int           `gorm:"column:server_id" json:"server_id"`
+	Team1ID         int           `gorm:"column:team1_id" json:"team1_id"`
+	Team2ID         int           `gorm:"column:team2_id" json:"team2_id"`
+	Winner          sql.NullInt64 `gorm:"column:winner" json:"winner"`
+	Cancelled       bool          `gorm:"column:cancelled" json:"cancelled"`
+	StartTime       sql.NullTime  `gorm:"column:start_time" json:"start_time"`
+	EndTime         sql.NullTime  `gorm:"column:end_time" json:"end_time"`
+	MaxMaps         int           `gorm:"column:max_maps" json:"max_maps"`
+	Title           string        `gorm:"column:title" json:"title"`
+	SkipVeto        bool          `gorm:"column:skip_veto" json:"skip_veto"`
+	APIKey          string        `gorm:"column:api_key" json:"-"`
+	VetoMapPool     string        `gorm:"column:veto_mappool"`
+	VetoMapPoolJSON []string      `gorm:"-" json:"veto_mappool"`
+	Team1Score      int           `gorm:"column:team1_score" json:"team1_score"`
+	Team2Score      int           `gorm:"column:team2_score" json:"team2_score"`
+	Team1String     string        `gorm:"column:team1_string" json:"team1_string"`
+	Team2String     string        `gorm:"column:team2_string" json:"team2_string"`
+	Forfeit         bool          `gorm:"column:forfeit" json:"forfeit"`
+	PluginVersion   string        `gorm:"column:plugin_version" json:"-"`
 
 	MapStats []MapStatsData `json:"-"`
 	Server   GameServerData `json:"-"`
@@ -429,18 +442,59 @@ func (m *MatchData) TableName() string {
 	return "match"
 }
 
-// Create Register Match information into DB. not implemented yet
-func (m *MatchData) Create(userid int64, team1id int64, team2id int64, team1string string, team2string string, maxmaps int, skipveto bool, title string, vetomappool string, serverid int64) *MatchData {
+// Create Register Match information into DB.
+func (m *MatchData) Create(userid int, team1id int, team2id int, team1string string, team2string string, maxmaps int, skipveto bool, title string, vetomappool []string, serverid int) (*MatchData, error) {
+	user := UserData{
+		ID: userid,
+	}
+	SQLAccess.Gorm.First(&user)
+	if team1id == 0 || team2id == 0 || serverid == 0 {
+		return nil, fmt.Errorf("TeamID or ServerID is empty!")
+	}
+	server := GameServerData{}
+	server.ID = serverid
+	SQLAccess.Gorm.First(&server)
+	// returns error if user wasnt owned server,or not an admin.
+	if userid != server.UserID && !user.Admin && !server.PublicServer {
+		return nil, fmt.Errorf("This is not your server!")
+	}
+
+	get5res, err := util.CheckServerAvailability(server.IPString, server.Port, server.RconPassword) // Returns error if SRCDS is not available
+	if err != nil {
+		return nil, err
+	}
+
+	MatchOnServer := MatchData{
+		ServerID:  serverid,
+		Cancelled: false,
+	}
+	SQLAccess.Gorm.Where("EndTime = ?", "NULL").First(&MatchOnServer)
+	if MatchOnServer.ID != 0 {
+		return nil, fmt.Errorf("Match %v is already using this server", MatchOnServer.ID)
+	}
 	m.UserID = userid
+	m.ServerID = serverid
+	m.GetServer()
 	m.Team1ID = team1id
 	m.Team2ID = team2id
-	m.SkipVeto = skipveto
-	m.Title = title
-	m.VetoMapPool = vetomappool // array...?
-	m.ServerID = serverid
 	m.MaxMaps = maxmaps
-	m.APIKey = "" //random?
-	return m      // TODO
+	m.Title = title
+	m.SkipVeto = skipveto
+	m.VetoMapPool = strings.Join(vetomappool, " ")
+	m.Team1String = team1string
+	m.Team2String = team2string
+	if get5res.PluginVersion == "" {
+		get5res.PluginVersion = "unknown"
+	}
+	m.PluginVersion = get5res.PluginVersion
+	m.APIKey = util.RandString(24)
+	err = m.SendToServer()
+	if err != nil {
+		return nil, err
+	}
+	SQLAccess.Gorm.Model(&server).Update("in_use", true)
+	SQLAccess.Gorm.Create(&m)
+	return m, nil // TODO
 }
 
 // GetStatusString Get match status as string. for gorazor template
@@ -512,7 +566,7 @@ func (m *MatchData) Live() bool {
 
 // GetServer Get match server ID as GameServerData
 func (m *MatchData) GetServer() GameServerData {
-	SQLAccess.Gorm.Where("user_id = ?", m.UserID).First(&m.Server)
+	SQLAccess.Gorm.Where("id = ?", m.ServerID).First(&m.Server)
 	return m.Server
 }
 
@@ -531,11 +585,6 @@ func (m *MatchData) GetCurrentScore(g *gorm.DB) (int, int) {
 	return m.Team1Score, m.Team2Score
 }
 
-// SendToServer Let gameserver load match configration via RCON. not implemented yet
-/*func (m *MatchData) SendToServer() {
-	// get5_loadmatch_url things
-}*/
-
 // GetTeam1 Get Team1 as "TeamData" struct.
 func (m *MatchData) GetTeam1() (TeamData, error) {
 	var Team = TeamData{}
@@ -548,9 +597,8 @@ func (m *MatchData) GetTeam1() (TeamData, error) {
 	Team.Logo = STeam.Logo
 	Team.AuthsPickle = STeam.AuthsPickle
 	Team.PublicTeam = STeam.PublicTeam
-	reader := bytes.NewReader(STeam.AuthsPickle)
-	Team.Auths = make([]string, 0)
-	err := stalecucumber.UnpackInto(&Team.Auths).From(stalecucumber.Unpickle(reader))
+	var err error
+	Team.Auths, err = util.PickleToSteamID64s(STeam.AuthsPickle)
 	if err != nil {
 		return Team, err
 	}
@@ -569,9 +617,8 @@ func (m *MatchData) GetTeam2() (TeamData, error) {
 	Team.Logo = STeam.Logo
 	Team.AuthsPickle = STeam.AuthsPickle
 	Team.PublicTeam = STeam.PublicTeam
-	reader := bytes.NewReader(STeam.AuthsPickle)
-	Team.Auths = make([]string, 0)
-	err := stalecucumber.UnpackInto(&Team.Auths).From(stalecucumber.Unpickle(reader))
+	var err error
+	Team.Auths, err = util.PickleToSteamID64s(STeam.AuthsPickle)
 	if err != nil {
 		return Team, err
 	}
@@ -620,6 +667,20 @@ func (m *MatchData) GetLoser() (TeamData, error) {
 		return loser, nil
 	}
 	return Empty, nil
+}
+
+// SendToServer Send match config to server
+func (m *MatchData) SendToServer() error {
+	if m.ServerID == 0 || m.Server.ID == 0 {
+		return fmt.Errorf("Server not found")
+	}
+	res, err := m.Server.SendRcon(fmt.Sprintf("get5_loadmatch_url %s/api/v1/match/%v/config", Cnf.HOST, m.ID))
+	res, err = m.Server.SendRcon(fmt.Sprintf("get5_web_api_key %s", m.APIKey))
+	fmt.Println(res)
+	if err != nil || res != "" {
+		return err
+	}
+	return nil
 }
 
 // BuildMatchDict No idea.
@@ -790,4 +851,13 @@ func GetMetrics() MetricsData {
 	SQLAccess.Gorm.Table("player_stats").Count(&result.UniquePlayers)
 
 	return result
+}
+
+func checkIP(ip string) bool {
+	trial := net.ParseIP(ip)
+	if trial.To4() == nil {
+		fmt.Printf("%v is not an IPv4 address\n", ip)
+		return false
+	}
+	return true
 }

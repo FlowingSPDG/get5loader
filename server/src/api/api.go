@@ -1,10 +1,9 @@
 package api
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/hydrogen18/stalecucumber"
+
 	"net/http"
 	"strconv"
 	"strings"
@@ -12,7 +11,6 @@ import (
 	"github.com/gorilla/mux"
 
 	"github.com/FlowingSPDG/get5-web-go/server/src/db"
-	"github.com/FlowingSPDG/get5-web-go/server/src/util"
 )
 
 type CheckLoggedInJSON struct {
@@ -424,6 +422,35 @@ func GetSteamName(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte(steamname))
 }
 
+// GetTeamList Returns registered team list in JSON.
+func GetTeamList(w http.ResponseWriter, r *http.Request) {
+	fmt.Printf("GetTeamList\n")
+	Teams := []db.TeamData{}
+	db.SQLAccess.Gorm.Where("public_team = 1").Find(&Teams)
+	for i := 0; i < len(Teams); i++ {
+		Teams[i].GetPlayers()
+	}
+	jsonbyte, err := json.Marshal(Teams)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(jsonbyte)
+}
+
+// GetServerList Returns registered public server list in JSON
+func GetServerList(w http.ResponseWriter, r *http.Request) {
+	fmt.Printf("GetServerList\n")
+	Servers := []APIGameServerData{}
+	db.SQLAccess.Gorm.Where("public_server = true AND in_use = false").Find(&Servers)
+	jsonbyte, err := json.Marshal(Servers)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(jsonbyte)
+}
+
 func CreateTeam(w http.ResponseWriter, r *http.Request) {
 	fmt.Printf("CreateTeam\n")
 	var IsLoggedIn = false
@@ -432,30 +459,21 @@ func CreateTeam(w http.ResponseWriter, r *http.Request) {
 		IsLoggedIn = s.Get("Loggedin").(bool)
 	}
 	if IsLoggedIn {
+		userid := s.Get("UserID").(int)
 		Team := db.TeamData{}
 		TeamTemp := db.TeamData{}
 		err := json.NewDecoder(r.Body).Decode(&TeamTemp)
 		if err != nil {
-			fmt.Println("failed to decode JSON")
+			fmt.Println("Failed to decode JSON")
 			http.Error(w, "JSON Format invalid", http.StatusBadRequest)
+			return
 		}
-		if TeamTemp.Name == "" {
-			fmt.Println("failed to decode Team Name")
-			http.Error(w, "JSON Format invalid", http.StatusBadRequest)
-		}
-		buf := new(bytes.Buffer)
-		_, err = stalecucumber.NewPickler(buf).Pickle(TeamTemp.Auths)
+		_, err = Team.Create(userid, TeamTemp.Name, TeamTemp.Tag, TeamTemp.Flag, TeamTemp.Logo, TeamTemp.Auths, TeamTemp.PublicTeam)
 		if err != nil {
-			http.Error(w, "Internal ERROR", http.StatusInternalServerError)
+			fmt.Println("Failed to create team")
+			http.Error(w, "Failed to create team", http.StatusInternalServerError)
+			return
 		}
-		Team.UserID = s.Get("UserID").(int)
-		Team.Name = TeamTemp.Name
-		Team.Tag = TeamTemp.Tag
-		Team.Flag = TeamTemp.Flag
-		Team.Logo = TeamTemp.Logo
-		Team.AuthsPickle = buf.Bytes()
-		Team.PublicTeam = TeamTemp.PublicTeam
-		db.SQLAccess.Gorm.Create(&Team)
 		w.WriteHeader(http.StatusOK)
 		res := SimpleJSONResponse{
 			Response: "OK",
@@ -463,6 +481,7 @@ func CreateTeam(w http.ResponseWriter, r *http.Request) {
 		jsonbyte, err := json.Marshal(res)
 		if err != nil {
 			http.Error(w, "Internal ERROR", http.StatusInternalServerError)
+			return
 		}
 		w.Header().Set("Content-Type", "application/json")
 		w.Write(jsonbyte)
@@ -489,41 +508,68 @@ func CreateServer(w http.ResponseWriter, r *http.Request) {
 		IsLoggedIn = s.Get("Loggedin").(bool)
 	}
 	if IsLoggedIn {
+		userid := s.Get("UserID").(int)
 		Server := db.GameServerData{}
 		ServerTemp := db.GameServerData{}
 		err := json.NewDecoder(r.Body).Decode(&ServerTemp)
 		if err != nil {
-			fmt.Println("failed to decode JSON")
+			fmt.Println("Failed to decode JSON")
 			http.Error(w, "JSON Format invalid", http.StatusBadRequest)
+			return
 		}
-		if ServerTemp.DisplayName == "" || ServerTemp.IPString == "" || ServerTemp.RconPassword == "" {
-			fmt.Println("failed to decode Server Name")
-			http.Error(w, "JSON Format invalid", http.StatusBadRequest)
+		_, err = Server.Create(userid, ServerTemp.DisplayName, ServerTemp.IPString, ServerTemp.Port, ServerTemp.RconPassword, ServerTemp.PublicServer)
+		if err != nil {
+			http.Error(w, "Failed to create server", http.StatusBadRequest)
+			return
 		}
-		Server.UserID = s.Get("UserID").(int)
-		Server.DisplayName = ServerTemp.DisplayName
-		Server.IPString = ServerTemp.IPString
-		Server.Port = ServerTemp.Port
-		Server.RconPassword = ServerTemp.RconPassword
-		Server.PublicServer = ServerTemp.PublicServer
-		success, errstr := util.CheckServerAvailability(&Server)
-		if success {
-			db.SQLAccess.Gorm.Create(&Server)
-			w.WriteHeader(http.StatusOK)
-			res := SimpleJSONResponse{
-				Response: "OK",
-			}
-			jsonbyte, err := json.Marshal(res)
-			if err != nil {
-				http.Error(w, "Internal ERROR", http.StatusInternalServerError)
-			}
-			w.Header().Set("Content-Type", "application/json")
-			w.Write(jsonbyte)
-		} else {
+		w.WriteHeader(http.StatusOK)
+		res := SimpleJSONResponse{
+			Response: "OK",
+		}
+		jsonbyte, err := json.Marshal(res)
+		if err != nil {
+			http.Error(w, "Internal ERROR", http.StatusInternalServerError)
+			return
+		}
+		w.Header().Set("Content-Type", "application/json")
+		w.Write(jsonbyte)
+
+	} else {
+		w.WriteHeader(http.StatusUnauthorized)
+		res := SimpleJSONResponse{
+			Errorcode:    http.StatusUnauthorized,
+			Errormessage: "Forbidden",
+		}
+		jsonbyte, err := json.Marshal(res)
+		if err != nil {
+			http.Error(w, "Internal ERROR", http.StatusInternalServerError)
+			return
+		}
+		w.Header().Set("Content-Type", "application/json")
+		w.Write(jsonbyte)
+	}
+}
+
+// CreateMatch Registers match info
+func CreateMatch(w http.ResponseWriter, r *http.Request) {
+	fmt.Printf("CreateMatch\n")
+	var IsLoggedIn = false
+	s := db.Sess.Start(w, r)
+	if s.Get("Loggedin") != nil {
+		IsLoggedIn = s.Get("Loggedin").(bool)
+	}
+	if IsLoggedIn {
+		userid := s.Get("UserID").(int)
+		var MatchTemp = db.MatchData{}
+		var Match = db.MatchData{}
+		// Returns error if JSON is not valid...
+		err := json.NewDecoder(r.Body).Decode(&MatchTemp)
+		if err != nil {
+			fmt.Println("failed to decode Match, Format incorrect")
 			res := SimpleJSONResponse{
 				Response:     "error",
-				Errorcode:    500,
-				Errormessage: errstr,
+				Errorcode:    http.StatusBadRequest,
+				Errormessage: "JSON Format invalid",
 			}
 			jsonbyte, err := json.Marshal(res)
 			if err != nil {
@@ -532,7 +578,24 @@ func CreateServer(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusInternalServerError)
 			w.Header().Set("Content-Type", "application/json")
 			w.Write(jsonbyte)
+			return
 		}
+		_, err = Match.Create(userid, MatchTemp.Team1ID, MatchTemp.Team2ID, MatchTemp.Team1String, MatchTemp.Team2String, MatchTemp.MaxMaps, MatchTemp.SkipVeto, MatchTemp.Title, MatchTemp.VetoMapPoolJSON, MatchTemp.ServerID)
+		if err != nil {
+			http.Error(w, "Internal ERROR", http.StatusInternalServerError)
+			return
+		}
+		res := SimpleJSONResponse{
+			Response: "ok",
+		}
+		jsonbyte, err := json.Marshal(res)
+		if err != nil {
+			http.Error(w, "Internal ERROR", http.StatusInternalServerError)
+			return
+		}
+		w.WriteHeader(http.StatusOK)
+		w.Header().Set("Content-Type", "application/json")
+		w.Write(jsonbyte)
 
 	} else {
 		w.WriteHeader(http.StatusUnauthorized)

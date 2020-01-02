@@ -1,13 +1,14 @@
 package util
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
+	"github.com/hydrogen18/stalecucumber"
+	"math/rand"
 	"net"
 	"os/exec"
 	"strings"
-
-	"github.com/FlowingSPDG/get5-web-go/server/src/db"
 
 	steam "github.com/kidoman/go-steam"
 	"strconv"
@@ -71,8 +72,8 @@ func SendRCON(host string, port int, pass string, cmd string) (string, error) {
 }
 
 // CheckServerConnection Check server pulse by sending "status" command
-func CheckServerConnection(srv *db.GameServerData) bool {
-	_, err := SendRCON(srv.IPString, srv.Port, srv.RconPassword, "status")
+func CheckServerConnection(IPString string, Port int, RconPassword string) bool {
+	_, err := SendRCON(IPString, Port, RconPassword, "status")
 	if err != nil {
 		return false
 	}
@@ -87,24 +88,24 @@ type GET5AvailableDatas struct {
 }
 
 // CheckServerAvailability if server is usable for get5_web
-func CheckServerAvailability(srv *db.GameServerData) (bool, string) { // available or error string
-	resp, err := SendRCON(srv.IPString, srv.Port, srv.RconPassword, "get5_web_avaliable")
+func CheckServerAvailability(IPString string, Port int, RconPassword string) (GET5AvailableDatas, error) { // available or error string
+	var data = GET5AvailableDatas{}
+	resp, err := SendRCON(IPString, Port, RconPassword, "get5_web_avaliable")
 	if err != nil {
-		return false, "Connect fails"
+		return data, fmt.Errorf("Connect fails")
 	}
 	jsonBytes := ([]byte)(resp)
-	var data = GET5AvailableDatas{}
 	if err := json.Unmarshal(jsonBytes, &data); err != nil {
 		fmt.Println("JSON Unmarshal error:", err)
-		return false, "Error reading get5_web_avaliable response"
+		return data, fmt.Errorf("Error reading get5_web_avaliable response")
 	}
 	if strings.Contains(resp, "Unknown command") {
-		return false, "Either get5 or get5_apistats plugin missin"
+		return data, fmt.Errorf("Either get5 or get5_apistats plugin missin")
 	}
 	if data.Gamestate != 0 {
-		return false, "Server already has a get5 match setup"
+		return data, fmt.Errorf("Server already has a get5 match setup")
 	}
-	return true, ""
+	return data, nil
 
 }
 
@@ -116,4 +117,35 @@ func GetVersion() (string, error) {
 		return "", nil
 	}
 	return string(out), nil
+}
+
+// SteamID64sToPickle Pickles Steamid64 array
+func SteamID64sToPickle(ids []string) ([]byte, error) {
+	buf := new(bytes.Buffer)
+	_, err := stalecucumber.NewPickler(buf).Pickle(ids)
+	if err != nil {
+		return nil, err
+	}
+	return buf.Bytes(), nil
+}
+
+// PickleToSteamID64s Un-pickles Python array to SteamID64 array
+func PickleToSteamID64s(Pickles []byte) ([]string, error) {
+	reader := bytes.NewReader(Pickles)
+	res := make([]string, 0)
+	err := stalecucumber.UnpackInto(&res).From(stalecucumber.Unpickle(reader))
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
+}
+
+// RandString Generates random string
+func RandString(n int) string {
+	const rs2Letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890"
+	b := make([]byte, n)
+	for i := range b {
+		b[i] = rs2Letters[rand.Intn(len(rs2Letters))]
+	}
+	return string(b)
 }
