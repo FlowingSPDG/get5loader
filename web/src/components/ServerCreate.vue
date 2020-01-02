@@ -128,7 +128,6 @@ export default {
         if (valid) {
           try {
             let res = await this.axios.post('/api/v1/server/create', json)
-            console.log(res)
             this.form = {}
             this.$message({
               message: 'Successfully registered server.',
@@ -136,7 +135,6 @@ export default {
             })
             this.$router.push('/matches')
           } catch (err) {
-            console.log(err.response)
             this.$message.error(err.response.data.errormessage)
           }
         } else {

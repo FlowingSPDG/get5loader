@@ -79,7 +79,6 @@ export default {
       this.GetSteamName(this.team.steamids[i])
     }
     const loggedin = await this.axios.get('/api/v1/CheckLoggedIn')
-    console.log(loggedin.data)
     this.user = loggedin.data
     this.Editable = this.CheckTeamEditable(this.user.userid)
   },
@@ -87,7 +86,6 @@ export default {
     async GetTeamData (teamid) {
       return new Promise(async (resolve, reject) => {
         const res = await this.axios.get(`/api/v1/team/${teamid}/GetTeamInfo`)
-        console.log(res.data)
         resolve(res.data)
       })
     },
@@ -105,9 +103,7 @@ export default {
       }
       return new Promise(async (resolve, reject) => {
         const res = await this.axios.get(`/api/v1/GetSteamName?steamID=${steamid}`)
-        console.log(res.data)
-        console.log(self.team)
-        self.players.push({steamid: steamid, name: res.data})
+        self.players.push({ steamid: steamid, name: res.data })
         resolve(res.data)
       })
     },
@@ -116,15 +112,13 @@ export default {
     },
     get_flag_link: function (team) {
       if (team.flag === '') {
-        return `/static/img/_unknown.png`
+        return `/img/_unknown.png`
       }
-      // return `<img src="/static/img/valve_flags/${team.flag}"  width="24" height="16">`
-      return `/static/img/valve_flags/${team.flag}.png`
+      // return `<img src="/img/valve_flags/${team.flag}"  width="24" height="16">`
+      return `/img/valve_flags/${team.flag}.png`
     },
     async get_vs_match_result (match) {
       return new Promise(async (resolve, reject) => {
-        console.log('get_vs_match_result')
-        console.log(match)
         let MyScore
         let OtherTeamScore
         let OtherTeam
@@ -144,24 +138,18 @@ export default {
               }
             }
           }
-          console.log('OtherTeam')
-          console.log(OtherTeam)
           if (match.live) {
             let r = `Live, ${MyScore}:${OtherTeamScore} vs ${OtherTeam.name}`
-            console.log(r)
             resolve(r)
           }
           if (MyScore < OtherTeamScore) {
             let r = `Lost ${MyScore}:${OtherTeamScore} vs ${OtherTeam.name}`
-            console.log(r)
             resolve(r)
           } else if (MyScore > OtherTeamScore) {
             let r = `Won ${MyScore}:${OtherTeamScore} vs ${OtherTeam.name}`
-            console.log(r)
             resolve(r)
           } else {
             let r = `Tied ${OtherTeamScore}:${MyScore} vs ${OtherTeam.name}`
-            console.log(r)
             resolve(r)
           }
         } else {
@@ -180,24 +168,18 @@ export default {
               }
             }
           }
-          console.log('OtherTeam')
-          console.log(OtherTeam)
           if (match.live) {
             let r = `Live, ${MyScore}:${OtherTeamScore} vs ${OtherTeam.name}`
-            console.log(r)
             resolve(r)
           }
           if (MyScore < OtherTeamScore) {
             let r = `Lost ${MyScore}:${OtherTeamScore} vs ${OtherTeam.name}`
-            console.log(r)
             resolve(r)
           } else if (MyScore > OtherTeamScore) {
             let r = `Won ${MyScore}:${OtherTeamScore} vs ${OtherTeam.name}`
-            console.log(r)
             resolve(r)
           } else {
             let r = `Tied ${OtherTeamScore}:${MyScore} vs ${OtherTeam.name}`
-            console.log(r)
             resolve(r)
           }
         }

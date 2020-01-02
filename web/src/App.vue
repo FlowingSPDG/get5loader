@@ -28,7 +28,7 @@
                         <el-menu-item index="myservers" id="myservers" :route="{ path:'/myservers' }" v-if="user.isLoggedIn">My Servers</el-menu-item>
                         <el-menu-item index="server_create" id="server_create" :route="{ path:'/server/create' }" v-if="user.isLoggedIn">Add a Server</el-menu-item>
                         <el-menu-item index="logout" id="logout" v-if="user.isLoggedIn"> <a href='/api/v1/logout' v-if="user.isLoggedIn">Logout</a> </el-menu-item>
-                        <el-menu-item index="login" id="login" v-if="!user.isLoggedIn"> <a href='/api/v1/login' v-if="!user.isLoggedIn"> <img src="/static/img/login_small.png" height="18" /></a> </el-menu-item>
+                        <el-menu-item index="login" id="login" v-if="!user.isLoggedIn"> <a href='/api/v1/login' v-if="!user.isLoggedIn"> <img src="/img/login_small.png" height="18" /></a> </el-menu-item>
                     </el-menu>
                 </div>
             </div>
@@ -64,7 +64,6 @@ export default {
   async mounted () {
     this.activeIndex = this.$route.name
     const res = await axios.get('/api/v1/CheckLoggedIn')
-    console.log(res.data)
     this.user = res.data
   }
 }

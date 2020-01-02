@@ -286,9 +286,7 @@ export default {
   },
   async created () {
     this.matchdata = await this.GetMatchData(this.$route.params.matchid)
-    console.log('GetMatchData')
     for (let i = 0; i < this.matchdata.map_stats.length; i++) {
-      console.log('GetPlayerStats')
       this.GetPlayerStats(this.matchdata.id, this.matchdata.map_stats[i].id)
     }
     let team1Promise = this.GetTeam1Data(this.matchdata.team1.id)
@@ -297,7 +295,6 @@ export default {
     this.team2 = await team2Promise
     this.loading = false
     let data = await this.axios.get('/api/v1/CheckLoggedIn')
-    console.log(data)
     this.user = data
     // this.Editable = this.CheckTeamEditable(this.$route.params.teamid,this.user.userid) // TODO
   },
@@ -324,14 +321,12 @@ export default {
       return new Promise(async (resolve, reject) => {
         const res = await this.axios.get(`/api/v1/match/${matchid}/GetMatchInfo`)
         this.matchdata.map_stats.push(res.data)
-        console.log(res.data)
         resolve(res.data)
       })
     },
     async GetPlayerStats (matchid, mapid) {
       return new Promise(async (resolve, reject) => {
         const res = await this.axios.get(`/api/v1/match/${matchid}/GetPlayerStatInfo?mapID=${mapid}`)
-        console.log(res.data)
         if (!this.matchdata.team1_player_stats) {
           this.matchdata.team1_player_stats = {}
           this.matchdata.team1_player_stats[mapid] = []
@@ -374,10 +369,10 @@ export default {
     },
     get_flag_link: function (team) {
       if (team.flag === '') {
-        return `/static/img/_unknown.png`
+        return `/img/_unknown.png`
       }
-      // return `<img src="/static/img/valve_flags/${team.flag}"  width="24" height="16">`
-      return `/static/img/valve_flags/${team.flag}.png`
+      // return `<img src="/img/valve_flags/${team.flag}"  width="24" height="16">`
+      return `/img/valve_flags/${team.flag}.png`
     },
     score_symbol: function (score1, score2) {
       if (score1 > score2) {

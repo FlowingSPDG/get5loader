@@ -247,9 +247,7 @@ export default {
       this.$refs['form'].validate(async (valid) => {
         if (valid) {
           try {
-            console.log(json)
             let res = await this.axios.post('/api/v1/match/create', json)
-            console.log(res)
             this.form = {}
             this.$message({
               message: 'Successfully registered match.',
@@ -257,7 +255,6 @@ export default {
             })
             this.$router.push('/mymatches')
           } catch (err) {
-            console.log(err.response)
             if (typeof err.response.data === 'string') {
               this.$message.error(err.response.data)
             } else if (typeof err.response.data === 'object') {

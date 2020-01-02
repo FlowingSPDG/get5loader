@@ -55,21 +55,17 @@ export default {
     async GetUserData (userid) {
       return new Promise(async (resolve, reject) => {
         const res = await this.axios.get(`/api/v1/user/${userid}/GetUserInfo`)
-        console.log(res.data)
         resolve(res.data)
       })
     },
     async GetTeamData (teamid) {
       return new Promise(async (resolve, reject) => {
         const res = await this.axios.get(`/api/v1/team/${teamid}/GetTeamInfo`)
-        console.log(res.data)
         resolve(res.data)
       })
     },
     async get_vs_match_result (match) {
       return new Promise(async (resolve, reject) => {
-        console.log('get_vs_match_result')
-        console.log(match)
         let MyScore
         let OtherTeamScore
         let OtherTeam
@@ -89,24 +85,18 @@ export default {
               }
             }
           }
-          console.log('OtherTeam')
-          console.log(OtherTeam)
           if (match.live) {
             let r = `Live, ${MyScore}:${OtherTeamScore} vs ${OtherTeam.name}`
-            console.log(r)
             resolve(r)
           }
           if (MyScore < OtherTeamScore) {
             let r = `Lost ${MyScore}:${OtherTeamScore} vs ${OtherTeam.name}`
-            console.log(r)
             resolve(r)
           } else if (MyScore > OtherTeamScore) {
             let r = `Won ${MyScore}:${OtherTeamScore} vs ${OtherTeam.name}`
-            console.log(r)
             resolve(r)
           } else {
             let r = `Tied ${OtherTeamScore}:${MyScore} vs ${OtherTeam.name}`
-            console.log(r)
             resolve(r)
           }
         } else {
@@ -125,24 +115,18 @@ export default {
               }
             }
           }
-          console.log('OtherTeam')
-          console.log(OtherTeam)
           if (match.live) {
             let r = `Live, ${MyScore}:${OtherTeamScore} vs ${OtherTeam.name}`
-            console.log(r)
             resolve(r)
           }
           if (MyScore < OtherTeamScore) {
             let r = `Lost ${MyScore}:${OtherTeamScore} vs ${OtherTeam.name}`
-            console.log(r)
             resolve(r)
           } else if (MyScore > OtherTeamScore) {
             let r = `Won ${MyScore}:${OtherTeamScore} vs ${OtherTeam.name}`
-            console.log(r)
             resolve(r)
           } else {
             let r = `Tied ${OtherTeamScore}:${MyScore} vs ${OtherTeam.name}`
-            console.log(r)
             resolve(r)
           }
         }
