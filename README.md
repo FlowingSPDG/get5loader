@@ -2,24 +2,25 @@ get5-web-go
 ===========================
 **Status: Work-In-Progress!!!**
 
-This is recreation of [get5 web panel](https://github.com/splewis/get5-web) with GOLANG / Vue.  
+This is recreation of [get5 web panel](https://github.com/splewis/get5-web) with GOLANG API and Vue Front-end.  
 Still Work-In-Progress project. PRs are welcome!
 
-## Author:
-Shugo **FlowingSPDG** Kawamura
+## Author
+Shugo [**FlowingSPDG**](http://github.com/FlowingSPDG) Kawamura
 
-## WHY:
+## WHY
 1. Python2.7,which is used in original get5-web, ~~will be no longer supported after end of 2019.~~ is not supported anymore!!  
-2. Current get5-web needs so many steps to launch(DB migration,python install,pip package management and venv,etc...). this webpanel may need fewer steps to launch.
+2. Current get5-web needs so many steps to launch(DB migration,python2.7 install,pip package management and venv,etc...). this webpanel may need fewer steps to launch.
 3. GOLANG has better performance than Python in some case
 4. To support local file-DB insted of MySQL DB for better performance and easy to deploy(this would be optional).
 5. To support SPA and better UI/UX design
+6. To support get5 HTTP API for developers
 
-## Requirements:
+## Requirements
 - Open port 8081 to access web-panel and accept RCON connection
 - MySQL
 
-## Requirements(Developers):
+## Requirements(Developers)
 - GO v1.13.5
 - original get5-web DB
 
