@@ -1,11 +1,13 @@
 module.exports = {
   publicPath: './',
   devServer: {
+    port: 8081,
+    disableHostCheck: true,
     proxy: {
       '^/api': {
-        target: 'http://localhost:8082',
+        target: 'http://localhost:8080',
         ws: true,
-        changeOrigin: true
+        changeOrigin: false
       }
     }
   }
