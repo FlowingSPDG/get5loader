@@ -285,15 +285,16 @@ export default {
     }
   },
   async created () {
-    let res = await this.GetMatchData(this.$route.params.matchid)
+    this.matchdata = await this.GetMatchData(this.$route.params.matchid)
     console.log('GetMatchData')
-    console.log(res)
-    for (let i = 0; i < res.map_stats.length; i++) {
+    for (let i = 0; i < this.matchdata.map_stats.length; i++) {
       console.log('GetPlayerStats')
-      this.GetPlayerStats(res.id, res.map_stats[i].id)
+      this.GetPlayerStats(this.matchdata.id, this.matchdata.map_stats[i].id)
     }
-    this.GetTeam1Data(res.team1.id)
-    this.GetTeam2Data(res.team2.id)
+    let team1Promise = this.GetTeam1Data(this.matchdata.team1.id)
+    let team2Promise = this.GetTeam2Data(this.matchdata.team2.id)
+    this.team1 = await team1Promise
+    this.team2 = await team2Promise
     this.loading = false
     let data = await this.axios.get('/api/v1/CheckLoggedIn')
     console.log(data)
@@ -304,21 +305,18 @@ export default {
     async GetTeam1Data (team1id) {
       return new Promise(async (resolve, reject) => {
         const res = await this.axios.get(`/api/v1/team/${team1id}/GetTeamInfo`)
-        this.team1 = res.data
         resolve(res.data)
       })
     },
     async GetTeam2Data (team2id) {
       return new Promise(async (resolve, reject) => {
         const res = await this.axios.get(`/api/v1/team/${team2id}/GetTeamInfo`)
-        this.team2 = res.data
         resolve(res.data)
       })
     },
     async GetMatchData (matchid) {
       return new Promise(async (resolve, reject) => {
         const res = await this.axios.get(`/api/v1/match/${matchid}/GetMatchInfo`)
-        this.matchdata = res.data
         resolve(res.data)
       })
     },
