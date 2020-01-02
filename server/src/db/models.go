@@ -140,11 +140,12 @@ func (g *GameServerData) Create(userid int, displayname string, ipstring string,
 	if err != nil {
 		return nil, err
 	}
+
 	SQLAccess.Gorm.Create(&g)
 	return g, nil
 }
 
-// SendRCON Sends Remote-Commands to specific IP SRCDS.
+// SendRcon Sends Remote-Commands to specific IP SRCDS.
 func (g *GameServerData) SendRcon(cmd string) (string, error) {
 	if !checkIP(g.IPString) {
 		return "", fmt.Errorf("Specified IP is not valid")
