@@ -51,16 +51,15 @@ export default {
     async GetUserData (userid) {
       return new Promise(async (resolve, reject) => {
         const res = await this.axios.get(`/api/v1/user/${userid}/GetUserInfo`)
-        console.log(res.data)
         resolve(res.data)
       })
     },
     get_flag_link: function (team) {
       if (team.flag === '') {
-        return `/static/img/_unknown.png`
+        return `/img/_unknown.png`
       }
-      // return `<img src="/static/img/valve_flags/${team.flag}"  width="24" height="16">`
-      return `/static/img/valve_flags/${team.flag}.png`
+      // return `<img src="/img/valve_flags/${team.flag}"  width="24" height="16">`
+      return `/img/valve_flags/${team.flag}.png`
     },
     CheckTeamEditable: function (team) {
       return team.user_id === this.user.id

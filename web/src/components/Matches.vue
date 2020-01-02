@@ -117,7 +117,6 @@ export default {
     async GetMatches (userid) {
       let self = this
       self.loadingmore = true
-      console.log('GetMatches')
       return new Promise(async (resolve, reject) => {
         if (userid) {
           const res = await this.axios.get(`/api/v1/GetMatches?userID=${userid}`)
@@ -128,7 +127,6 @@ export default {
             this.GetMatchInfo(res.data[i].id)
             self.$set(self.loading, [res.data[i].id], false)
             if (i + 1 === res.data.length) {
-              console.log('resolved')
               self.loadingmore = false
               resolve(res.data)
             }
@@ -142,7 +140,6 @@ export default {
             this.GetMatchInfo(res.data[i].id)
             self.$set(self.loading, [res.data[i].id], false)
             if (i + 1 === res.data.length) {
-              console.log('resolved')
               self.loadingmore = false
               resolve(res.data)
             }
@@ -154,7 +151,6 @@ export default {
       return new Promise(async (resolve, reject) => {
         const res = await this.axios.get(`/api/v1/team/${teamid}/GetTeamInfo`)
         this.$set(this.teamdatas, teamid, res.data)
-        console.log(res.data)
         resolve(res.data)
       })
     },
@@ -162,7 +158,6 @@ export default {
       return new Promise(async (resolve, reject) => {
         const res = await this.axios.get(`/api/v1/user/${userid}/GetUserInfo`)
         this.$set(this.userdatas, userid, res.data)
-        console.log(res.data)
         resolve(res.data)
       })
     },
@@ -170,7 +165,6 @@ export default {
       return new Promise(async (resolve, reject) => {
         const res = await this.axios.get(`/api/v1/server/${serverid}/GetServerInfo`)
         this.$set(this.serverdatas, serverid, res.data)
-        console.log(res.data)
         resolve(res.data)
       })
     },
@@ -178,7 +172,6 @@ export default {
       return new Promise(async (resolve, reject) => {
         const res = await this.axios.get(`/api/v1/match/${matchid}/GetMatchInfo`)
         this.$set(this.matchinfo, matchid, res.data)
-        console.log(res.data)
         resolve(res.data)
       })
     },
@@ -186,7 +179,7 @@ export default {
       if (team.flag === '') {
         return `/img/_unknown.png`
       }
-      // return `<img src="/static/img/valve_flags/${team.flag}"  width="24" height="16">`
+      // return `<img src="/img/valve_flags/${team.flag}"  width="24" height="16">`
       return `/img/valve_flags/${team.flag}.png`
     }
   }

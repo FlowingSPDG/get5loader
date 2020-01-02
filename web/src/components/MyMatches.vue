@@ -80,7 +80,6 @@ export default {
     const res = await this.axios.get('/api/v1/CheckLoggedIn')
     this.user = res.data
     const matches = await this.GetMatches(this.user.userid)
-    console.log(matches)
     for (let i = 0; i < matches.length; i++) {
       this.GetMatchInfo(matches[i].id)
     }
@@ -103,7 +102,6 @@ export default {
       return new Promise(async (resolve, reject) => {
         const res = await this.axios.get(`/api/v1/team/${teamid}/GetTeamInfo`)
         this.$set(this.teamdatas, teamid, res.data)
-        console.log(res.data)
         resolve(res.data)
       })
     },
@@ -111,7 +109,6 @@ export default {
       return new Promise(async (resolve, reject) => {
         const res = this.axios.get(`/api/v1/user/${userid}/GetUserInfo`)
         this.$set(this.userdatas, userid, res.data)
-        console.log(res.data)
         resolve(res.data)
       })
     },
@@ -119,7 +116,6 @@ export default {
       return new Promise(async (resolve, reject) => {
         const res = await this.axios.get(`/api/v1/server/${serverid}/GetServerInfo`)
         this.$set(this.serverdatas, serverid, res.data)
-        console.log(res.data)
         resolve(res.data)
       })
     },
@@ -127,16 +123,15 @@ export default {
       return new Promise(async (resolve, reject) => {
         const res = await this.axios.get(`/api/v1/match/${matchid}/GetMatchInfo`)
         this.$set(this.matchinfo, matchid, res.data)
-        console.log(res.data)
         resolve(res.data)
       })
     },
     get_flag_link: function (team) {
       if (team.flag === '') {
-        return `/static/img/_unknown.png`
+        return `/img/_unknown.png`
       }
-      // return `<img src="/static/img/valve_flags/${team.flag}"  width="24" height="16">`
-      return `/static/img/valve_flags/${team.flag}.png`
+      // return `<img src="/img/valve_flags/${team.flag}"  width="24" height="16">`
+      return `/img/valve_flags/${team.flag}.png`
     }
   }
 }

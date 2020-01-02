@@ -42,7 +42,6 @@ export default {
     async GetUserData (userid) {
       return new Promise(async (resolve, reject) => {
         const res = await this.axios.get(`/api/v1/user/${userid}/GetUserInfo`)
-        console.log(res.data)
         resolve(res.data)
       })
     }

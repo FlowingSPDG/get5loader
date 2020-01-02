@@ -368,28 +368,6 @@ func (t *TeamData) GetVSMatchResult(matchid int) (string, error) {
 
 }
 
-// GetFlagHTML Get team's flag as a HTML string. for gorazor template
-func (t *TeamData) GetFlagHTML(scale float64) string {
-	if t.Flag == "" {
-		return ""
-	}
-	width := 32.0 * scale
-	height := 21.0 * scale
-	html := fmt.Sprintf(`<img src="%s%s%s"  width="%f" height="%f">`, "../static/img/valve_flags/", t.Flag, ".png", width, height)
-	return html
-}
-
-// GetLogoHTML Get team's Logo as a HTML string. for gorazor template
-func (t *TeamData) GetLogoHTML(scale float64) string {
-	if t.Logo == "" {
-		return ""
-	}
-	width := 32 * scale
-	height := 32 * scale
-	html := fmt.Sprintf(`<img src="%s"  width="%f" height="%f">`, t.Logo, width, height)
-	return html
-}
-
 // GetURL Get URL of team page.
 func (t *TeamData) GetURL() string {
 	return fmt.Sprintf("http://%s/team/%d", Cnf.HOST, t.ID)
@@ -398,14 +376,6 @@ func (t *TeamData) GetURL() string {
 // GetNameURLHtml Get team page and name as a-tag. for gorazor template
 func (t *TeamData) GetNameURLHtml() string {
 	return fmt.Sprintf(`<a href="%s">%s</a>`, t.GetURL(), t.Name)
-}
-
-// GetLogoOrFlagHTML Get team logo or flag as a HTML.
-func (t *TeamData) GetLogoOrFlagHTML(scale float64, otherteam TeamData) string {
-	if t.Logo == "" && otherteam.Logo != "" { // or otherteam is empty...
-		return t.GetLogoHTML(scale)
-	}
-	return t.GetFlagHTML(scale)
 }
 
 // MatchData Struct for match table.
