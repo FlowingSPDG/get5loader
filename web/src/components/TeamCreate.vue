@@ -195,10 +195,10 @@ export default {
         ],
         auths: [
           { required: true, message: 'Please input your team members steamid', trigger: 'blur' },
-          { required: true, message: 'Please input your team members steamid', trigger: 'blur' },
-          { required: true, message: 'Please input your team members steamid', trigger: 'blur' },
-          { required: true, message: 'Please input your team members steamid', trigger: 'blur' },
-          { required: true, message: 'Please input your team members steamid', trigger: 'blur' },
+          { required: false, message: 'Please input your team members steamid', trigger: 'blur' },
+          { required: false, message: 'Please input your team members steamid', trigger: 'blur' },
+          { required: false, message: 'Please input your team members steamid', trigger: 'blur' },
+          { required: false, message: 'Please input your team members steamid', trigger: 'blur' },
           { required: false, message: 'Please input your team members steamid', trigger: 'blur' },
           { required: false, message: 'Please input your team members steamid', trigger: 'blur' }
         ],
