@@ -78,6 +78,8 @@ func MatchFinishHandler(w http.ResponseWriter, r *http.Request) {
 		} else if winner == "team2" {
 			MatchUpdate.Team1Score = 0
 			MatchUpdate.Team2Score = 1
+		} else { // added,this is not exist in original get5-web
+			MatchUpdate.Cancelled = true
 		}
 	}
 	MatchUpdate.EndTime.Scan(time.Now())
