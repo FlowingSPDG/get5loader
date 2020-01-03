@@ -98,6 +98,11 @@ func main() {
 
 	// GET5 API
 	r.HandleFunc("/api/v1/match/{matchID}/config", api.MatchConfigHandler)
+	r.HandleFunc("/api/v1/match/{matchID}/finish", api.MatchFinishHandler).Methods("POST")                                             // POST
+	r.HandleFunc("/api/v1/match/{matchID}/map/{mapNumber}/start", api.MatchMapStartHandler).Methods("POST")                            // POST
+	r.HandleFunc("/api/v1/match/{matchID}/map/{mapNumber}/update", api.MatchMapUpdateHandler).Methods("POST")                          // POST
+	r.HandleFunc("/api/v1/match/{matchID}/map/{mapNumber}/finish", api.MatchMapFinishHandler).Methods("POST")                          // POST
+	r.HandleFunc("/api/v1/match/{matchID}/map/{mapNumber}/player/{steamid64}/update", api.MatchMapPlayerUpdateHandler).Methods("POST") // POST
 
 	// session handling
 	r.HandleFunc("/login", db.LoginHandler).Methods("GET")
@@ -113,12 +118,6 @@ func main() {
 		r.HandleFunc("/match/{matchID}/adduser", get5.MatchAddUserHandler) // ?
 		//r.HandleFunc("/match/{matchID}/sendconfig", get5.MatchSendConfigHandler) // ?
 		r.HandleFunc("/match/{matchID}/backup", get5.MatchBackupHandler).Methods("GET") // GET
-
-		r.HandleFunc("/match/{matchID}/finish", get5.MatchFinishHandler).Methods("POST")                                             // POST
-		r.HandleFunc("/match/{matchID}/map/{mapNumber}/start", get5.MatchMapStartHandler).Methods("POST")                            // POST
-		r.HandleFunc("/match/{matchID}/map/{mapNumber}/update", get5.MatchMapUpdateHandler).Methods("POST")                          // POST
-		r.HandleFunc("/match/{matchID}/map/{mapNumber}/finish", get5.MatchMapFinishHandler).Methods("POST")                          // POST
-		r.HandleFunc("/match/{matchID}/map/{mapNumber}/player/{steamid64}/update", get5.MatchMapPlayerUpdateHandler).Methods("POST") // POST
 
 		r.HandleFunc("/team/{teamID}", get5.TeamHandler).Methods("GET")   // GET
 		r.HandleFunc("/team/{teamID}/edit", get5.TeamEditHandler)         // GET/POST
