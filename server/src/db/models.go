@@ -627,7 +627,7 @@ func (m *MatchData) GetTeam1() (TeamData, error) {
 func (m *MatchData) GetTeam2() (TeamData, error) {
 	var Team = TeamData{}
 	var STeam TeamData
-	SQLAccess.Gorm.Where("id = ?", m.Team1ID).First(&STeam)
+	SQLAccess.Gorm.Where("id = ?", m.Team2ID).First(&STeam)
 	Team.ID = STeam.ID
 	Team.Name = STeam.Name
 	Team.Tag = STeam.Tag
@@ -704,14 +704,16 @@ func (m *MatchData) SendToServer() error {
 }
 
 // BuildMatchDict Builds match JSON data.
-func (m *MatchData) BuildMatchDict() (MatchConfig, error) {
+func (m *MatchData) BuildMatchDict() (*MatchConfig, error) {
 	SQLAccess.Gorm.Where("id = ?", m.ID).First(&m)
 	m.VetoMapPoolJSON = strings.Split(m.VetoMapPool, " ")
 	team1, err := m.GetTeam1()
 	team2, err := m.GetTeam2()
 	if err != nil {
-		return MatchConfig{}, err
+		return &MatchConfig{}, err
 	}
+	fmt.Printf("team1 : %v\n", team1)
+	fmt.Printf("team2 : %v\n", team2)
 	var cfg = MatchConfig{
 		MatchID: strconv.Itoa(m.ID),
 		//Scrim:false,
@@ -757,7 +759,7 @@ func (m *MatchData) BuildMatchDict() (MatchConfig, error) {
 	cfg.Cvars["get5_web_api_url"] = fmt.Sprintf("http://%v/api/v1/", Cnf.HOST)
 	// cfg.Cvars["hostname"] = fmt.Sprintf("Match Server #1")
 
-	return cfg, nil
+	return &cfg, nil
 }
 
 // GetMapStat Gets each map stat data as "MapStatsData" struct array.
