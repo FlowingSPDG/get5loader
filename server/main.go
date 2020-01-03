@@ -66,10 +66,12 @@ func main() {
 	defer SQLAccess.Gorm.Close()
 
 	r := mux.NewRouter()
-	// rootに対してnuxtのindex.htmlを返すように設定する。(ServeFile)
-	entrypoint := "./index.html"
+	entrypoint := "./static/index.html"
 	r.Path("/").HandlerFunc(ServeStaticFile(entrypoint))
-	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
+	r.PathPrefix("/css").Handler(http.StripPrefix("/css/", http.FileServer(http.Dir("static/css"))))
+	r.PathPrefix("/js").Handler(http.StripPrefix("/js/", http.FileServer(http.Dir("static/js"))))
+	r.PathPrefix("/img").Handler(http.StripPrefix("/img/", http.FileServer(http.Dir("static/img"))))
+	r.PathPrefix("/fonts").Handler(http.StripPrefix("/fonts/", http.FileServer(http.Dir("static/fonts"))))
 
 	//s := r.Host(HOST).Subrouter() // incase if we need vhost thing
 
