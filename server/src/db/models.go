@@ -698,7 +698,7 @@ func (m *MatchData) SendToServer() error {
 	if err != nil || res != "" {
 		return err
 	}
-	SQLAccess.Gorm.Where("id = ?", m.Server.ID).Update("in_use", true)
+	SQLAccess.Gorm.Model(&m.Server).Update("in_use", true)
 	return nil
 }
 
