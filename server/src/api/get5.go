@@ -209,7 +209,7 @@ func MatchMapFinishHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	MapStats := db.MapStatsData{}
-	MapStatsRecord := db.SQLAccess.Gorm.Where("match_id = ? AND map_number", matchid, mapnumber).First(&MapStats)
+	MapStatsRecord := db.SQLAccess.Gorm.Where("match_id = ? AND map_number = ?", matchid, mapnumber).First(&MapStats)
 	MapStatsUpdate := MapStats
 	db.SQLAccess.Gorm.First(&MapStatsUpdate)
 	if !MapStatsRecord.RecordNotFound() {
