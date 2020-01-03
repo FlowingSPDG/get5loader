@@ -378,6 +378,46 @@ func (t *TeamData) GetNameURLHtml() string {
 	return fmt.Sprintf(`<a href="%s">%s</a>`, t.GetURL(), t.Name)
 }
 
+// MatchConfig Match configration for get5 api, based on https://github.com/splewis/get5/blob/master/configs/get5/example_match.json and https://github.com/splewis/get5/blob/3f793ceb3736d78ba6a92f42631d91cb52f0beb4/scripting/get5/matchconfig.sp#L435
+type MatchConfig struct {
+	MatchID              int    `json:"matchid"`
+	Scrim                bool   `json:"scrim"`
+	MatchTitle           string `json:"match_title"`
+	PlayersPerTeam       int    `json:"players_per_team"`
+	MinPlayersToReady    int    `json:"min_players_to_ready"`
+	MinSPectatorsToReady int    `json:"min_spectators_to_ready"`
+	SkipVeto             bool   `json:"skip_veto"`
+	// bo2_series and maps_to_win are deprecated on get5 plugin side. Use num_maps insted
+	// Bo2Series 			   bool   `json:"bo2_series"`
+	// MapsToWin 			   int    `json:"maps_to_win"`
+	NumMaps                    int    `json:"num_maps"`
+	VetoFirst                  string `json:"veto_first"` // team1 || team2
+	SideType                   string `json:"side_type"`  // standard and ?
+	FavoredTeamPercentageText  string `json:"favored_percentage_text"`
+	FavoredTeamPercentageTeam1 int    `json:"favored_percentage_team1"`
+	Spectators                 struct {
+		Name    string   `json:"name"`
+		Players []string `json:"players"`
+	} `json:"spectators"`
+	Team1 struct {
+		Flag    string   `json:"flag"`
+		Name    string   `json:"name"`
+		Tag     string   `json:"tag"`
+		Players []string `json:"players"`
+	} `json:"team1"`
+	Team2 struct {
+		Flag    string   `json:"flag"`
+		Name    string   `json:"name"`
+		Tag     string   `json:"tag"`
+		Players []string `json:"players"`
+	} `json:"team2"`
+
+	Maplist  []string `json:"maplist"`
+	MapSides []string `json:"map_sides"`
+
+	Cvars map[string]string `json:"cvars"`
+}
+
 // MatchData Struct for match table.
 type MatchData struct {
 	ID              int           `gorm:"primary_key;column:id" json:"id"`
@@ -393,7 +433,7 @@ type MatchData struct {
 	Title           string        `gorm:"column:title" json:"title"`
 	SkipVeto        bool          `gorm:"column:skip_veto" json:"skip_veto"`
 	APIKey          string        `gorm:"column:api_key" json:"-"`
-	VetoMapPool     string        `gorm:"column:veto_mappool"`
+	VetoMapPool     string        `gorm:"column:veto_mappool" json:"-"`
 	VetoMapPoolJSON []string      `gorm:"-" json:"veto_mappool"`
 	Team1Score      int           `gorm:"column:team1_score" json:"team1_score"`
 	Team2Score      int           `gorm:"column:team2_score" json:"team2_score"`
@@ -654,10 +694,53 @@ func (m *MatchData) SendToServer() error {
 	return nil
 }
 
-// BuildMatchDict No idea.
-/*func (m *MatchData) BuildMatchDict() TeamData {
-	//return m.UserID //get5 thing??
-}*/
+// BuildMatchDict Builds match JSON data.
+func (m *MatchData) BuildMatchDict() (MatchConfig, error) {
+	SQLAccess.Gorm.Where("id = ?", m.ID).First(&m)
+	m.VetoMapPoolJSON = strings.Split(m.VetoMapPool, " ")
+	fmt.Printf("m : %v\n", m)
+	fmt.Printf("m.VetoMapPool : %v\n", m.VetoMapPool)
+	fmt.Printf("m.VetoMapPoolJSON : %v\n", m.VetoMapPoolJSON)
+	team1, err := m.GetTeam1()
+	team2, err := m.GetTeam2()
+	if err != nil {
+		return MatchConfig{}, err
+	}
+	var cfg = MatchConfig{
+		MatchID: m.ID,
+		//Scrim:false,
+		MatchTitle: m.Title,
+		// PlayersPerTeam: //
+		// MinPlayersToReady: //
+		// MinSPectatorsToReady: //
+		SkipVeto: m.SkipVeto,
+		NumMaps:  m.MaxMaps,
+		// VetoFirst: "team1", //
+		// VetoFirst: "team2", //
+		// SideType: "standard", //
+		// FavoredTeamPercentageText:"", //
+		// FavoredTeamPercentageTeam1 : 50, //
+		Maplist: m.VetoMapPoolJSON,
+		// MapSides: "" // ??
+	}
+	// cfg.Spectators.Name = ""
+	// cfg.Spectators.Players = []
+
+	cfg.Team1.Flag = team1.Flag
+	cfg.Team1.Name = team1.Name
+	cfg.Team1.Tag = team1.Tag
+	cfg.Team1.Players = team1.Auths
+
+	cfg.Team2.Flag = team2.Flag
+	cfg.Team2.Name = team2.Name
+	cfg.Team2.Tag = team2.Tag
+	cfg.Team2.Players = team2.Auths
+
+	cfg.Cvars = make(map[string]string)
+	cfg.Cvars["get5_web_api_url"] = "http://" + Cnf.HOST + "/api/v1/"
+
+	return cfg, nil
+}
 
 // GetMapStat Gets each map stat data as "MapStatsData" struct array.
 func (m *MatchData) GetMapStat() ([]MapStatsData, error) {
