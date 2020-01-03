@@ -6,6 +6,7 @@ import (
 	"github.com/FlowingSPDG/get5-web-go/server/src/db"
 	"github.com/gorilla/mux"
 	"net/http"
+	"time"
 )
 
 // MatchConfigHandler Handler for /api/v1/match/{matchID}/config API.
@@ -29,31 +30,82 @@ func MatchConfigHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write(jsonbyte)
 }
 
-// MatchFinishHandler Handler for /api/v1/match/{matchID}/config API.
-func MatchFinishHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("MatchFinishHandler")
-	fmt.Printf("winner : %s\n", r.FormValue("winner"))
-	fmt.Printf("forfeit : %s\n", r.FormValue("forfeit"))
-
-	vars := mux.Vars(r)
-	matchid := vars["matchID"]
-	var m = db.MatchData{}
-	db.SQLAccess.Gorm.Where("id = ?", matchid).First(&m)
+// MatchAPICheck Checks API is available or not
+func MatchAPICheck(m *db.MatchData, r *http.Request) error {
 	if m.APIKey != r.FormValue("key") {
-		http.Error(w, "Wrong API Key", http.StatusBadRequest)
-		return
+		return fmt.Errorf("Wrong API Key")
 	}
 	if m.Finalized() {
-		http.Error(w, "Match already finalized", http.StatusBadRequest)
+		return fmt.Errorf("Match already finalized")
+	}
+	return nil
+}
+
+// MatchFinishHandler Handler for /api/v1/match/{matchID}/finish API.
+func MatchFinishHandler(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("MatchFinishHandler")
+	vars := mux.Vars(r)
+	matchid := vars["matchID"]
+	winner := r.FormValue("winner")
+	forfeit := r.FormValue("forfeit")
+	fmt.Printf("matchid : %s\n", matchid)
+	fmt.Printf("winner : %s\n", winner)
+	fmt.Printf("forfeit : %s\n", forfeit)
+	var Match = db.MatchData{}
+	db.SQLAccess.Gorm.Where("id = ?", matchid).First(&Match)
+	fmt.Printf("Requested API key : %s\n", r.FormValue("key"))
+	fmt.Printf("Real API key : %s\n", Match.APIKey)
+	var MatchUpdate = Match
+	db.SQLAccess.Gorm.First(&MatchUpdate)
+	err := MatchAPICheck(&Match, r)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	// Finish match here...
+	if winner == "team1" {
+		MatchUpdate.Winner.Scan(MatchUpdate.Team1ID)
+	} else if winner == "team2" {
+		MatchUpdate.Winner.Scan(MatchUpdate.Team2ID)
+	} else {
+		MatchUpdate.Winner.Scan(nil)
+	}
+	if forfeit == "1" {
+		MatchUpdate.Forfeit = true
+		if winner == "team1" {
+			MatchUpdate.Team1Score = 1
+			MatchUpdate.Team2Score = 0
+		} else if winner == "team2" {
+			MatchUpdate.Team1Score = 0
+			MatchUpdate.Team2Score = 1
+		}
+	}
+	MatchUpdate.EndTime.Scan(time.Now())
+	server := MatchUpdate.GetServer()
+	db.SQLAccess.Gorm.Model(&server).Update("in_use = true")
+	db.SQLAccess.Gorm.Model(&Match).Update(&MatchUpdate)
+	db.SQLAccess.Gorm.Save(&MatchUpdate)
+	fmt.Printf("Finished match %v, winner = %v\n", MatchUpdate.ID, winner)
 }
 
 // MatchMapStartHandler Handler for /api/v1/match/{matchID}/map/{mapNumber}/start  API.
 func MatchMapStartHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("MatchMapStartHandler")
-	fmt.Printf("mapname : %s\n", r.FormValue("mapname"))
+	vars := mux.Vars(r)
+	matchid := vars["matchID"]
+	//mapnumber := vars["mapNumber"]
+	mapname := r.FormValue("mapname")
+	fmt.Printf("mapname : %s\n", mapname)
+	var m = db.MatchData{}
+	db.SQLAccess.Gorm.Where("id = ?", matchid).First(&m)
+	err := MatchAPICheck(&m, r)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	if m.StartTime.Value == nil {
+		m.StartTime.Scan(time.Now())
+	}
+
 }
 
 // MatchMapUpdateHandler Handler for /api/v1/match/{matchID}/map/{mapNumber}/update API.
@@ -82,7 +134,7 @@ func MatchMapPlayerUpdateHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Printf("deaths : %s\n", r.FormValue("deaths"))
 	fmt.Printf("flashbang_assists : %s\n", r.FormValue("flashbang_assists"))
 	fmt.Printf("teamkills : %s\n", r.FormValue("teamkills"))
-	fmt.Printf("suicides : %s\n", r.FormValue("suicides"))
+	fmt.Printf("suicides : %s\n", r.FormValue("suicides")) // not working?
 	fmt.Printf("damage : %s\n", r.FormValue("damage"))
 	fmt.Printf("headshot_kills : %s\n", r.FormValue("headshot_kills"))
 	fmt.Printf("roundsplayed : %s\n", r.FormValue("roundsplayed"))
