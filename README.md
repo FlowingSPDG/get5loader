@@ -23,11 +23,12 @@ Shugo [**FlowingSPDG**](http://github.com/FlowingSPDG) Kawamura
 ## Requirements(Developers)
 - GO v1.13.5
 - original get5-web DB
+- Yarn v1.16.0
 
 ## Setup(Developers)
-- ``git clone $GOPATH/src/github.com/FlowingSPDG/get5-web-go`` (you can fork your own)  
+- ``git clone https://github.com/FlowingSPDG/get5-web-go.git $GOPATH/src/github.com/FlowingSPDG/get5-web-go`` (you can fork your own)  
 - ``cd $GOPATH/src/github.com/FlowingSPDG/get5-web-go && make deps``
-- You're good to GO! edit each .go files to fix/add something nice!
+- You're good to GO! edit each `.go` files to fix/add something nice!
 - You can test your server by ``go run ./main.go``,and build them by ``make build-all``.You may get binary files.
 - To test Vue rendering,``cd ./web/``,``yarn run serve`` and open http://localhost:8081/#.  
 
@@ -38,7 +39,7 @@ Shugo [**FlowingSPDG**](http://github.com/FlowingSPDG) Kawamura
 - ``make build-all``
 - You'll get compiled files in ``build`` directly.  
 
-I'm planning to release binary-file for people who feel lazy to build. :P
+I'm planning to [release](https://github.com/FlowingSPDG/get5-web-go/releases) binary-file for people who feel lazy to build. :P
 
 ## Deploy and Launch
 - Copy `config.ini.template` to `config.ini` and edit it for your MySQL DB and SteamAPI keys
