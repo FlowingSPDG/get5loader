@@ -319,8 +319,12 @@ func MatchMapPlayerUpdateHandler(w http.ResponseWriter, r *http.Request) {
 	MapStats := db.MapStatsData{}
 	MapStatsRecord := db.SQLAccess.Gorm.Where("match_id = ? AND map_number = ? ", matchid, mapnumber).First(&MapStats)
 	if !MapStatsRecord.RecordNotFound() {
-		p := db.PlayerStatsData{}
-		p.GetOrCreate(matchid, mapnumber, steamid64)
+		p := &db.PlayerStatsData{}
+		p, err := p.GetOrCreate(matchid, mapnumber, steamid64)
+		if err != nil {
+			http.Error(w, "Failed to solve player stats object", http.StatusNotFound)
+			return
+		}
 		pUpdate := p
 		db.SQLAccess.Gorm.First(&pUpdate)
 
@@ -329,6 +333,7 @@ func MatchMapPlayerUpdateHandler(w http.ResponseWriter, r *http.Request) {
 		} else if FormTeam == "team2" {
 			p.TeamID = m.Team2ID
 		}
+		pUpdate.Name = FormName
 		pUpdate.Kills = FormKills
 		pUpdate.Assists = FormAssists
 		pUpdate.Deaths = FormDeaths
