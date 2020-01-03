@@ -692,12 +692,12 @@ func (m *MatchData) SendToServer() error {
 		return fmt.Errorf("Server not found")
 	}
 	res, err := m.Server.SendRcon(fmt.Sprintf("get5_loadmatch_url %s/api/v1/match/%v/config", Cnf.HOST, m.ID))
-	fmt.Printf("get5_loadmatch_url %s/api/v1/match/%v/config", Cnf.HOST, m.ID)
 	res, err = m.Server.SendRcon(fmt.Sprintf("get5_web_api_key %s", m.APIKey))
 	fmt.Println(res)
 	if err != nil || res != "" {
 		return err
 	}
+	SQLAccess.Gorm.First(&m.Server)
 	SQLAccess.Gorm.Model(&m.Server).Update("in_use", true)
 	return nil
 }
