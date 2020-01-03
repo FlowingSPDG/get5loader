@@ -546,7 +546,7 @@ func MatchDemoUploadHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	mapstats := &db.MapStatsData{}
-	mapstatsRecord := db.SQLAccess.Gorm.Where("match_id = ? AND map_number", matchid, mapNumber).First(&mapstats)
+	mapstatsRecord := db.SQLAccess.Gorm.Where("match_id = ? AND map_number = ?", matchid, mapNumber).First(&mapstats)
 	if !mapstatsRecord.RecordNotFound() {
 		mapstatsRecord.Update("demoFile", DemoFile)
 		return
