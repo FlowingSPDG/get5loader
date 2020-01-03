@@ -111,12 +111,17 @@ func MatchMapStartHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
+	mUpdate := m
+	db.SQLAccess.Gorm.First(&mUpdate)
 	MapStats := &db.MapStatsData{}
 	MapStats, err = MapStats.GetOrCreate(matchid, mapnumber, mapname)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
+	mUpdate.StartTime.Scan(time.Now())
+	db.SQLAccess.Gorm.Model(&m).Update(&mUpdate)
+	db.SQLAccess.Gorm.Save(&mUpdate)
 	fmt.Println(MapStats)
 }
 
