@@ -22,6 +22,7 @@ clean:
 	rm -rf $(DIST_DIR)/*
 deps:
 	git submodule update
+	rm -rf $GOPATH/src/github.com/FlowingSPDG/get5-web-go
 	@$(GOGET) -v -u \
 	github.com/FlowingSPDG/get5-web-go/server \
 	github.com/FlowingSPDG/get5-web-go/server/src/api \
