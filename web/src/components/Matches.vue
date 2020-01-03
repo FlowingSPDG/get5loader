@@ -132,7 +132,7 @@ export default {
             }
           }
         } else {
-          const res = await this.axios.get(`/api/v1/GetMatches?offset=${this.loaded + 1}`)
+          const res = await this.axios.get(`/api/v1/GetMatches?offset=${this.loaded}`)
           self.loaded = self.loaded + res.data.length
           for (let i = 0; i < res.data.length; i++) {
             this.matches.push(res.data[i])
