@@ -15,7 +15,7 @@
   </el-form-item>
 
   <el-form-item label="RCON Password" style="width: 653px;" prop="rcon_password">
-    <el-input v-model="form.rcon_password"></el-input>
+    <el-input type="password"  v-model="form.rcon_password"></el-input>
     <p class="help-block">Your server information will not be exposed to other users.</p>
   </el-form-item>
 
@@ -135,7 +135,11 @@ export default {
             })
             this.$router.push('/matches')
           } catch (err) {
-            this.$message.error(err.response.data.errormessage)
+            if (typeof err.response.data === 'string') {
+              this.$message.error(err.response.data)
+            } else if (typeof err.response.data === 'object') {
+              this.$message.error(err.response.data.errormessage)
+            }
           }
         } else {
           this.$message.error('Please fill form')

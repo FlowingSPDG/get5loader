@@ -226,7 +226,11 @@ export default {
             })
             this.$router.push('/myteams')
           } catch (err) {
-            this.$message.error(err.response.data.errormessage)
+            if (typeof err.response.data === 'string') {
+              this.$message.error(err.response.data)
+            } else if (typeof err.response.data === 'object') {
+              this.$message.error(err.response.data.errormessage)
+            }
           }
         } else {
           this.$message.error('Please fill form')
