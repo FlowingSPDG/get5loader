@@ -65,6 +65,7 @@ build-prepare:
 	@cd ./server && $(GOGET) github.com/mitchellh/gox
 	@cd ./server && $(GOGET) github.com/konsorten/go-windows-terminal-sequences
 	@cd ./server && $(GOGET) github.com/FlowingSPDG/get5-web-go/server
+	@rm -rf ./$(DIST_DIR)/*/static
 build-linux: build-prepare build-web
 	@cd ./server && gox \
 	-os="$(OS_Linux)" \
