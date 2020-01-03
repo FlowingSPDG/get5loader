@@ -717,33 +717,45 @@ func (m *MatchData) BuildMatchDict() (MatchConfig, error) {
 		//Scrim:false,
 		MatchTitle: m.Title,
 		// PlayersPerTeam: //
-		// MinPlayersToReady: //
-		// MinSPectatorsToReady: //
-		SkipVeto: m.SkipVeto,
-		NumMaps:  m.MaxMaps,
-		// VetoFirst: "team1", //
-		// VetoFirst: "team2", //
-		// SideType: "standard", //
+		MinPlayersToReady: 1, // Minimum # of players a team must have to ready
+		// MinSPectatorsToReady: // How many spectators must be ready to begin.
+		SkipVeto: m.SkipVeto, // If set to 1, the maps will be preset using the first maps in the maplist below.
+		NumMaps:  m.MaxMaps,  // Must be an odd number or 2. 1->Bo1, 2->Bo2, 3->Bo3, etc.
+		// VetoFirst: "team1", //  Set to "team1" or "team2" to select who starts the veto. Any other values will default to team1 starting.
+		SideType: "standard", // Either "standard", "always_knife", or "never_knife"
+
+		// These values wrap mp_teamprediction_pct and mp_teamprediction_txt.
+		// You can exclude these if you don't want those cvars set.
 		// FavoredTeamPercentageText:"", //
 		// FavoredTeamPercentageTeam1 : 50, //
+
 		Maplist: m.VetoMapPoolJSON,
 		// MapSides: "" // ??
 	}
-	// cfg.Spectators.Name = ""
-	// cfg.Spectators.Players = []
+	//cfg.Spectators = make(map[string]string)
+	//cfg.Spectators["STEAM_1:1:....."] = ""
 
 	cfg.Team1.Flag = team1.Flag
+	//cfg.Team1.Logo = ""
 	cfg.Team1.Name = team1.Name
 	cfg.Team1.Tag = team1.Tag
+	// Any of the 3 formats (steam2, steam3, steam64 profile) are acceptable.
+	// Note: the "players" section may be skipped if you set get5_check_auths to 0,
+	// but that is not recommended. You can also set player names that will be forced here.
+	// If you don't want to force player names, just use an empty quote "".
 	cfg.Team1.Players = team1.Auths
+	// cfg.Team1.Players = make(map[string]string)
+	// cfg.Team1.Players["STEAM_0:1:52245092"] = "splewis"
 
 	cfg.Team2.Flag = team2.Flag
+	//cfg.Team2.Logo = ""
 	cfg.Team2.Name = team2.Name
 	cfg.Team2.Tag = team2.Tag
 	cfg.Team2.Players = team2.Auths
 
 	cfg.Cvars = make(map[string]string)
 	cfg.Cvars["get5_web_api_url"] = fmt.Sprintf("http://%v/api/v1/", Cnf.HOST)
+	// cfg.Cvars["hostname"] = fmt.Sprintf("Match Server #1")
 
 	return cfg, nil
 }
