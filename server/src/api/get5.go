@@ -120,14 +120,14 @@ func MatchMapStartHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Println(MapStats)
 }
 
-// MatchMapUpdateHandler Handler for /api/v1/match/{matchID}/map/{mapNumber}/update API.
+// MatchMapUpdateHandler Handler for /api/v1/match/{matchID}/map/{mapNumber}/update API. // TODO
 func MatchMapUpdateHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("MatchMapUpdateHandler")
 	fmt.Printf("team1score : %s\n", r.FormValue("team1score"))
 	fmt.Printf("team2score : %s\n", r.FormValue("team2score"))
 }
 
-// MatchMapFinishHandler Handler for /api/v1/match/{matchID}/map/{mapNumber}/finish API.
+// MatchMapFinishHandler Handler for /api/v1/match/{matchID}/map/{mapNumber}/finish API. // TODO
 func MatchMapFinishHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("MatchMapFinishHandler")
 	fmt.Printf("winner : %s\n", r.FormValue("winner"))
@@ -277,6 +277,13 @@ func MatchMapPlayerUpdateHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "firstdeath_ct should be int", http.StatusBadRequest)
 		return
 	}
+	/*
+		Form, err := strconv.Atoi(r.FormValue("tradekill")) // https://github.com/FlowingSPDG/get5-webapi/blob/e41ac0ab3c698ed67dbadcd667e55feef403e074/scripting/get5_apistats.sp#L429
+		if err != nil {
+			http.Error(w, "tradekill should be int", http.StatusBadRequest)
+			return
+		}
+	*/
 
 	fmt.Printf("matchid : %d\n", matchid)
 	fmt.Printf("mapnumber : %d\n", mapnumber)
@@ -366,4 +373,85 @@ func MatchMapPlayerUpdateHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+}
+
+// MatchVetoUpdateHandler Handler for /api/v1/match/{matchID}/vetoUpdate API. // TODO
+func MatchVetoUpdateHandler(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("MatchVetoUpdateHandler")
+	vars := mux.Vars(r)
+	matchid, err := strconv.Atoi(vars["matchID"])
+	if err != nil {
+		http.Error(w, "matchid should be int", http.StatusBadRequest)
+		return
+	}
+
+	FormMap := r.FormValue("map")
+	FormTeamString := r.FormValue("teamString")
+	FormPickOrVeto := r.FormValue("pick_or_veto")
+
+	fmt.Printf("matchid : %d\n", matchid)
+	fmt.Printf("matchid : %s\n", FormMap)
+	fmt.Printf("matchid : %s\n", FormTeamString)
+	fmt.Printf("matchid : %s\n", FormPickOrVeto)
+
+	m := &db.MatchData{}
+	db.SQLAccess.Gorm.Where("id = ?", matchid).First(&m)
+	err = MatchAPICheck(m, r)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	var TeamName string
+	if FormTeamString == "team1" {
+		team := &db.TeamData{}
+		team.ID = m.Team1ID
+		db.SQLAccess.Gorm.First(&team)
+		TeamName = team.Name
+	} else if FormTeamString == "team2" {
+		team := &db.TeamData{}
+		team.ID = m.Team2ID
+		db.SQLAccess.Gorm.First(&team)
+		TeamName = team.Name
+	} else {
+		TeamName = "Decider"
+	}
+	// veto = Veto.create(matchid, teamName, request.values.get('map'), request.values.get('pick_or_veto'))
+	// TODO : Add Veto struct in db/models.go
+	// Register to DB
+	fmt.Printf("Confirmed Map Veto For %s on map %s\n", TeamName, FormMap)
+}
+
+// MatchDemoUploadHandler Handler for /api/v1/match/{matchID}/map/{mapNumber}/demo API. // TODO
+func MatchDemoUploadHandler(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("MatchDemoUploadHandler")
+	vars := mux.Vars(r)
+	matchid, err := strconv.Atoi(vars["matchID"])
+	if err != nil {
+		http.Error(w, "matchid should be int", http.StatusBadRequest)
+		return
+	}
+	mapNumber, err := strconv.Atoi(vars["mapNumber"])
+	if err != nil {
+		http.Error(w, "mapNumber should be int", http.StatusBadRequest)
+		return
+	}
+
+	DemoFile := r.FormValue("demoFile")
+
+	m := &db.MatchData{}
+	db.SQLAccess.Gorm.Where("id = ?", matchid).First(&m)
+	err = MatchAPICheck(m, r)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	mapstats := &db.MapStatsData{}
+	mapstatsRecord := db.SQLAccess.Gorm.Where("match_id = ? AND map_number", matchid, mapNumber).First(&mapstats)
+	if !mapstatsRecord.RecordNotFound() {
+		mapstatsRecord.Update("demoFile", DemoFile)
+		return
+	}
+	http.Error(w, "Failed to find map stats object", http.StatusBadRequest)
+	fmt.Println("Made it through the demo post.")
 }
