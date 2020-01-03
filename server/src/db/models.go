@@ -380,7 +380,7 @@ func (t *TeamData) GetNameURLHtml() string {
 
 // MatchConfig Match configration for get5 api, based on https://github.com/splewis/get5/blob/master/configs/get5/example_match.json and https://github.com/splewis/get5/blob/3f793ceb3736d78ba6a92f42631d91cb52f0beb4/scripting/get5/matchconfig.sp#L435
 type MatchConfig struct {
-	MatchID              int    `json:"matchid"`
+	MatchID              string `json:"matchid"` // NOT int
 	Scrim                bool   `json:"scrim"`
 	MatchTitle           string `json:"match_title"`
 	PlayersPerTeam       int    `json:"players_per_team"`
@@ -712,7 +712,7 @@ func (m *MatchData) BuildMatchDict() (MatchConfig, error) {
 		return MatchConfig{}, err
 	}
 	var cfg = MatchConfig{
-		MatchID: m.ID,
+		MatchID: strconv.Itoa(m.ID),
 		//Scrim:false,
 		MatchTitle: m.Title,
 		// PlayersPerTeam: //

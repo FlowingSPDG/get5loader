@@ -32,6 +32,21 @@ func MatchConfigHandler(w http.ResponseWriter, r *http.Request) {
 // MatchFinishHandler Handler for /api/v1/match/{matchID}/config API.
 func MatchFinishHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("MatchFinishHandler")
+	vars := mux.Vars(r)
+	matchid := vars["matchID"]
+	var m = db.MatchData{}
+	db.SQLAccess.Gorm.Where("id = ?", matchid).First(&m)
+	if m.APIKey != r.FormValue("key") {
+		http.Error(w, "Wrong API Key", http.StatusBadRequest)
+		return
+	}
+	if m.Finalized() {
+		http.Error(w, "Match already finalized", http.StatusBadRequest)
+		return
+	}
+	// r.FormValue["forfeit"]
+	// r.FormValue["winner"]
+	// Finish match here...
 }
 
 // MatchMapStartHandler Handler for /api/v1/match/{matchID}/map/{mapNumber}/start  API.
@@ -52,4 +67,12 @@ func MatchMapFinishHandler(w http.ResponseWriter, r *http.Request) {
 // Handler for /api/v1/match/{matchID}/map/{mapNumber}/player/{steamid64}/update API.
 func MatchMapPlayerUpdateHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("MatchMapPlayerUpdateHandler")
+	vars := mux.Vars(r)
+	matchid := vars["matchID"]
+	var m = db.MatchData{}
+	db.SQLAccess.Gorm.Where("id = ?", matchid).First(&m)
+	if m.APIKey != r.FormValue("key") {
+		http.Error(w, "Wrong API Key", http.StatusBadRequest)
+		return
+	}
 }
