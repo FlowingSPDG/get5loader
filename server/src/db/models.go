@@ -453,6 +453,13 @@ func (m *MatchData) TableName() string {
 	return "match"
 }
 
+// Get Get myself
+func (m *MatchData) Get(id int) *MatchData {
+	m.ID = id
+	SQLAccess.Gorm.First(&m)
+	return m
+}
+
 // Create Register Match information into DB.
 func (m *MatchData) Create(userid int, team1id int, team2id int, team1string string, team2string string, maxmaps int, skipveto bool, title string, vetomappool []string, serverid int) (*MatchData, error) {
 	user := UserData{
@@ -499,12 +506,11 @@ func (m *MatchData) Create(userid int, team1id int, team2id int, team1string str
 	}
 	m.PluginVersion = get5res.PluginVersion
 	m.APIKey = util.RandString(24)
+	SQLAccess.Gorm.Create(&m)
 	err = m.SendToServer()
 	if err != nil {
 		return nil, err
 	}
-	SQLAccess.Gorm.Model(&server).Update("in_use", true)
-	SQLAccess.Gorm.Create(&m)
 	return m, nil // TODO
 }
 
@@ -686,11 +692,13 @@ func (m *MatchData) SendToServer() error {
 		return fmt.Errorf("Server not found")
 	}
 	res, err := m.Server.SendRcon(fmt.Sprintf("get5_loadmatch_url %s/api/v1/match/%v/config", Cnf.HOST, m.ID))
+	fmt.Printf("get5_loadmatch_url %s/api/v1/match/%v/config", Cnf.HOST, m.ID)
 	res, err = m.Server.SendRcon(fmt.Sprintf("get5_web_api_key %s", m.APIKey))
 	fmt.Println(res)
 	if err != nil || res != "" {
 		return err
 	}
+	SQLAccess.Gorm.Where("id = ?", m.Server.ID).Update("in_use", true)
 	return nil
 }
 
@@ -734,7 +742,7 @@ func (m *MatchData) BuildMatchDict() (MatchConfig, error) {
 	cfg.Team2.Players = team2.Auths
 
 	cfg.Cvars = make(map[string]string)
-	cfg.Cvars["get5_web_api_url"] = "http://" + Cnf.HOST + "/api/v1/"
+	cfg.Cvars["get5_web_api_url"] = fmt.Sprintf("http://%v/api/v1/", Cnf.HOST)
 
 	return cfg, nil
 }

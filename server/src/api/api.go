@@ -454,11 +454,21 @@ func GetTeamList(w http.ResponseWriter, r *http.Request) {
 	w.Write(jsonbyte)
 }
 
-// GetServerList Returns registered public server list in JSON
+// GetServerList Returns registered public server and owned list in JSON
 func GetServerList(w http.ResponseWriter, r *http.Request) {
 	fmt.Printf("GetServerList\n")
+	s := db.Sess.Start(w, r)
+	var IsLoggedIn bool
+	if s.Get("Loggedin") != nil {
+		IsLoggedIn = s.Get("Loggedin").(bool)
+	}
 	Servers := []APIGameServerData{}
-	db.SQLAccess.Gorm.Where("public_server = true AND in_use = false").Find(&Servers)
+	if IsLoggedIn {
+		userid := s.Get("UserID").(int)
+		db.SQLAccess.Gorm.Where("public_server = true AND in_use = false").Or("user_id = ? AND in_use = false", userid).Find(&Servers)
+	} else {
+		db.SQLAccess.Gorm.Where("public_server = true AND in_use = false").Find(&Servers)
+	}
 	jsonbyte, err := json.Marshal(Servers)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
