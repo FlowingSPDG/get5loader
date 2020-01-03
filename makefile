@@ -26,9 +26,6 @@ deps:
 	@rm -rf $GOPATH/src/github.com/FlowingSPDG/get5-web-go
 	@$(GOGET) -v -u \
 	github.com/FlowingSPDG/get5-web-go/server \
-	github.com/FlowingSPDG/get5-web-go/server/src/api \
-	github.com/FlowingSPDG/get5-web-go/server/src/db \
-	github.com/FlowingSPDG/get5-web-go/server/src/util \
 	github.com/mitchellh/gox \
 	github.com/go-ini/ini \
 	github.com/gorilla/mux \

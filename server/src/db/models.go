@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/FlowingSPDG/get5-web-go/server/src/util"
 	"net"
+	"time"
 
 	"strings"
 	//"github.com/Philipp15b/go-steam"
@@ -755,15 +756,15 @@ func (m *MatchData) GetMapStat() ([]MapStatsData, error) {
 
 // MapStatsData MapStatsData struct for map_stats table.
 type MapStatsData struct {
-	ID         int          `gorm:"primary_key" gorm:"column:id"`
-	MatchID    int          `gorm:"column:match_id" gorm:"ForeignKey:match_id"`
-	MapNumber  int          `gorm:"column:map_number"`
-	MapName    string       `gorm:"column:map_name"`
-	StartTime  sql.NullTime `gorm:"column:start_time"`
-	EndTime    sql.NullTime `gorm:"column:end_time"`
-	Winner     int          `gorm:"column:winner"`
-	Team1Score int          `gorm:"column:team1_score"`
-	Team2Score int          `gorm:"column:team2_score"`
+	ID         int           `gorm:"primary_key" gorm:"column:id"`
+	MatchID    int           `gorm:"column:match_id" gorm:"ForeignKey:match_id"`
+	MapNumber  int           `gorm:"column:map_number"`
+	MapName    string        `gorm:"column:map_name"`
+	StartTime  sql.NullTime  `gorm:"column:start_time"`
+	EndTime    sql.NullTime  `gorm:"column:end_time"`
+	Winner     sql.NullInt32 `gorm:"column:winner"`
+	Team1Score int           `gorm:"column:team1_score"`
+	Team2Score int           `gorm:"column:team2_score"`
 
 	User UserData `gorm:"ASSOCIATION_FOREIGNKEY:user_id"`
 }
@@ -773,10 +774,33 @@ func (m *MapStatsData) TableName() string {
 	return "map_stats"
 }
 
-// GetOrCreate Get or register mapstats data. not implemented yet
-/*func (m *MapStatsData) GetOrCreate(matchID int,MapNumber int,mapname string){
-
-}*/
+// GetOrCreate Get or register mapstats data.
+func (m *MapStatsData) GetOrCreate(matchID int, MapNumber int, mapname string) (*MapStatsData, error) {
+	Match := MatchData{}
+	MatchRecord := SQLAccess.Gorm.Where("id = ?", matchID).First(&Match)
+	if MatchRecord.RecordNotFound() {
+		return nil, fmt.Errorf("Match not found")
+	}
+	if MapNumber >= Match.MaxMaps {
+		return nil, fmt.Errorf("MapNumber is greater than max map number")
+	}
+	m.MatchID = matchID
+	m.MapNumber = MapNumber
+	m.MapName = mapname
+	MapStatsRecord := SQLAccess.Gorm.Where("match_id = ? AND map_number = ?", matchID, MapNumber).First(&m)
+	if MapStatsRecord.RecordNotFound() {
+		m.MatchID = matchID
+		m.MapNumber = MapNumber
+		m.MapName = mapname
+		m.StartTime.Scan(time.Now())
+		m.Team1Score = 0
+		m.Team2Score = 0
+		SQLAccess.Gorm.Create(&m)
+		fmt.Printf("Created MapStatsData : %v\n", m)
+		return m, nil
+	}
+	return m, nil
+}
 
 // PlayerStatsData Player stats data struct for player_stats table.
 type PlayerStatsData struct {
@@ -794,7 +818,7 @@ type PlayerStatsData struct {
 	Teamkills        int    `gorm:"column:teamkills"`
 	Suicides         int    `gorm:"column:suicides"`
 	HeadshotKills    int    `gorm:"column:headshot_kills"`
-	Damage           int64  `gorm:"column:damage"`
+	Damage           int    `gorm:"column:damage"`
 	BombPlants       int    `gorm:"column:bomb_plants"`
 	BombDefuses      int    `gorm:"column:bomb_defuses"`
 	V1               int    `gorm:"column:v1"`
@@ -821,11 +845,24 @@ func (p *PlayerStatsData) TableName() string {
 }
 
 // GetOrCreate Get or register player stats data into DB.
-/*
-func (p *PlayerStatsData) GetOrCreate() string {
-	return "player_stats"
+func (p *PlayerStatsData) GetOrCreate(matchID int, MapNumber int, steamid string) (*PlayerStatsData, error) {
+	MapStats := &MapStatsData{}
+	MapStatsRecord := SQLAccess.Gorm.Where("match_id = ? AND map_number = ?", matchID, MapNumber).First(&MapStats)
+	if MapStatsRecord.RecordNotFound() {
+		return nil, fmt.Errorf("MapStats not found")
+	}
+	// original get5-web restricts player per map stats length https://github.com/splewis/get5-web/blob/8c1012c9563583353b9486a6590227855547e275/get5/models.py#L558
+	PlayerStats := &PlayerStatsData{}
+	PlayerStatsRecord := SQLAccess.Gorm.Where("steam_id = ? AND match_id = ? AND map_id = ?", steamid, matchID, MapStats.ID).First(&PlayerStats)
+	if PlayerStatsRecord.RecordNotFound() {
+		PlayerStats.MatchID = matchID
+		// PlayerStats.map_number  = MapStats.ID // Not exist..?? https://github.com/splewis/get5-web/blob/8c1012c9563583353b9486a6590227855547e275/get5/models.py#L566
+		PlayerStats.SteamID = steamid
+		PlayerStats.MapID = MapStats.ID
+		SQLAccess.Gorm.Create(&PlayerStats)
+	}
+	return PlayerStats, nil
 }
-*/
 
 // GetSteamURL get player's Steam community URL by their steamid64.
 func (p *PlayerStatsData) GetSteamURL() string {
