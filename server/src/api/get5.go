@@ -84,7 +84,7 @@ func MatchFinishHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	MatchUpdate.EndTime.Scan(time.Now())
 	server := MatchUpdate.GetServer()
-	db.SQLAccess.Gorm.Model(&server).Update("in_use = true")
+	db.SQLAccess.Gorm.Model(&server).Update("in_use = false")
 	db.SQLAccess.Gorm.Model(&Match).Update(&MatchUpdate)
 	db.SQLAccess.Gorm.Save(&MatchUpdate)
 	fmt.Printf("Finished match %v, winner = %v\n", MatchUpdate.ID, winner)
@@ -127,17 +127,109 @@ func MatchMapStartHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Println(MapStats)
 }
 
-// MatchMapUpdateHandler Handler for /api/v1/match/{matchID}/map/{mapNumber}/update API. // TODO
+// MatchMapUpdateHandler Handler for /api/v1/match/{matchID}/map/{mapNumber}/update API.
 func MatchMapUpdateHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("MatchMapUpdateHandler")
-	fmt.Printf("team1score : %s\n", r.FormValue("team1score"))
-	fmt.Printf("team2score : %s\n", r.FormValue("team2score"))
+	vars := mux.Vars(r)
+	matchid, err := strconv.Atoi(vars["matchID"])
+	if err != nil {
+		http.Error(w, "matchID should be int", http.StatusBadRequest)
+		return
+	}
+	mapnumber, err := strconv.Atoi(vars["mapNumber"])
+	if err != nil {
+		http.Error(w, "mapNumber should be int", http.StatusBadRequest)
+		return
+	}
+	team1score, err := strconv.Atoi(r.FormValue("team1score"))
+	if err != nil {
+		http.Error(w, "team1score should be int", http.StatusBadRequest)
+		return
+	}
+	team2score, err := strconv.Atoi(r.FormValue("team2score"))
+	if err != nil {
+		http.Error(w, "team2score should be int", http.StatusBadRequest)
+		return
+	}
+	fmt.Printf("matchid : %d\n", matchid)
+	fmt.Printf("mapnumber : %d\n", mapnumber)
+	fmt.Printf("team1score : %d\n", team1score)
+	fmt.Printf("team1score : %d\n", team1score)
+	fmt.Printf("team2score : %d\n", team2score)
+
+	var m = db.MatchData{}
+	db.SQLAccess.Gorm.Where("id = ?", matchid).First(&m)
+	err = MatchAPICheck(&m, r)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	MapStats := db.MapStatsData{}
+	MapStatsRecord := db.SQLAccess.Gorm.Where("match_id = ? AND map_number", matchid, mapnumber).First(&MapStats)
+	MapStatsUpdate := MapStats
+	db.SQLAccess.Gorm.First(&MapStatsUpdate)
+	if !MapStatsRecord.RecordNotFound() {
+		if team1score != -1 && team2score != -1 {
+			MapStatsUpdate.Team1Score = team1score
+			MapStatsUpdate.Team2Score = team2score
+			db.SQLAccess.Gorm.Model(&MapStats).Update(&MapStatsUpdate)
+			db.SQLAccess.Gorm.Save(&MapStatsUpdate)
+		}
+	} else {
+		http.Error(w, "Failed to find map stats object", http.StatusBadRequest)
+		return
+	}
 }
 
 // MatchMapFinishHandler Handler for /api/v1/match/{matchID}/map/{mapNumber}/finish API. // TODO
 func MatchMapFinishHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("MatchMapFinishHandler")
-	fmt.Printf("winner : %s\n", r.FormValue("winner"))
+	vars := mux.Vars(r)
+	matchid, err := strconv.Atoi(vars["matchID"])
+	if err != nil {
+		http.Error(w, "matchID should be int", http.StatusBadRequest)
+		return
+	}
+	mapnumber, err := strconv.Atoi(vars["mapNumber"])
+	if err != nil {
+		http.Error(w, "mapNumber should be int", http.StatusBadRequest)
+		return
+	}
+	winner := r.FormValue("winner")
+	fmt.Printf("matchid : %d\n", matchid)
+	fmt.Printf("mapnumber : %d\n", mapnumber)
+	fmt.Printf("winner : %s\n", winner)
+
+	var m = db.MatchData{}
+	db.SQLAccess.Gorm.Where("id = ?", matchid).First(&m)
+	err = MatchAPICheck(&m, r)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	MapStats := db.MapStatsData{}
+	MapStatsRecord := db.SQLAccess.Gorm.Where("match_id = ? AND map_number", matchid, mapnumber).First(&MapStats)
+	MapStatsUpdate := MapStats
+	db.SQLAccess.Gorm.First(&MapStatsUpdate)
+	if !MapStatsRecord.RecordNotFound() {
+		MapStatsUpdate.EndTime.Scan(time.Now())
+		if winner == "team1" {
+			MapStatsUpdate.Winner.Scan(m.Team1ID)
+			m.Team1Score++
+		} else if winner == "team2" {
+			MapStatsUpdate.Winner.Scan(m.Team2ID)
+			m.Team2Score++
+		} else {
+			MapStatsUpdate.Winner.Scan(nil)
+		}
+		db.SQLAccess.Gorm.Model(&MapStats).Update(&MapStatsUpdate)
+		db.SQLAccess.Gorm.Save(&MapStatsUpdate)
+	} else {
+		http.Error(w, "Failed to find map stats object", http.StatusBadRequest)
+		return
+	}
+
 }
 
 // MatchMapPlayerUpdateHandler Handler for /api/v1/match/{matchID}/map/{mapNumber}/player/{steamid64}/update API.
