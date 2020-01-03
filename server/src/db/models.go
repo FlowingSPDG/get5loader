@@ -698,9 +698,6 @@ func (m *MatchData) SendToServer() error {
 func (m *MatchData) BuildMatchDict() (MatchConfig, error) {
 	SQLAccess.Gorm.Where("id = ?", m.ID).First(&m)
 	m.VetoMapPoolJSON = strings.Split(m.VetoMapPool, " ")
-	fmt.Printf("m : %v\n", m)
-	fmt.Printf("m.VetoMapPool : %v\n", m.VetoMapPool)
-	fmt.Printf("m.VetoMapPoolJSON : %v\n", m.VetoMapPoolJSON)
 	team1, err := m.GetTeam1()
 	team2, err := m.GetTeam2()
 	if err != nil {
