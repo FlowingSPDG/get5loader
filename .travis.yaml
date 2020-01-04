@@ -1,0 +1,19 @@
+language: go
+go: 
+
+language: go,node_js
+node_js:
+  - "node"
+dist: trusty
+sudo: false
+cache: yarn
+go:
+  - "1.13.5"
+install:
+ - make deps
+branches:
+  only:
+    - master
+
+script:
+ - make build-all
