@@ -717,8 +717,8 @@ func (m *MatchData) BuildMatchDict() (*MatchConfig, error) {
 	var cfg = MatchConfig{
 		MatchID: strconv.Itoa(m.ID),
 		//Scrim:false,
-		MatchTitle: m.Title,
-		// PlayersPerTeam: //
+		MatchTitle:        m.Title,
+		PlayersPerTeam:    1, // 0 broke Veto commencing section
 		MinPlayersToReady: 1, // Minimum # of players a team must have to ready
 		// MinSPectatorsToReady: // How many spectators must be ready to begin.
 		SkipVeto: m.SkipVeto, // If set to 1, the maps will be preset using the first maps in the maplist below.
