@@ -907,7 +907,7 @@ func (p *PlayerStatsData) GetKDR() float64 {
 // GetHSP Returns player's HSP(HeadShot Percentage).
 func (p *PlayerStatsData) GetHSP() float64 {
 	if p.Kills == 0 {
-		return float64(p.Kills)
+		return 0.0
 	}
 	return float64(p.HeadshotKills) / float64(p.Kills) * 100
 }
