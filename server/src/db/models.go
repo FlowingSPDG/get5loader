@@ -426,7 +426,7 @@ type MatchData struct {
 	ServerID        int           `gorm:"column:server_id" json:"server_id"`
 	Team1ID         int           `gorm:"column:team1_id" json:"team1_id"`
 	Team2ID         int           `gorm:"column:team2_id" json:"team2_id"`
-	Winner          sql.NullInt64 `gorm:"column:winner" json:"winner"`
+	Winner          sql.NullInt32 `gorm:"column:winner" json:"winner"`
 	Cancelled       bool          `gorm:"column:cancelled" json:"cancelled"`
 	StartTime       sql.NullTime  `gorm:"column:start_time" json:"start_time"`
 	EndTime         sql.NullTime  `gorm:"column:end_time" json:"end_time"`
@@ -527,7 +527,7 @@ func (m *MatchData) GetStatusString(ShowWinner bool) (string, error) {
 		minscore := math.Min(float64(teams1core), float64(team2score))
 		maxscore := math.Max(float64(teams1core), float64(team2score))
 		ScoreString := fmt.Sprintf("%d:%d", int(maxscore), int(minscore))
-		winner, _ := m.Winner.Value()
+		winner := int(m.Winner.Int32)
 		if !ShowWinner {
 			return "Finished", nil
 		} else if winner == m.Team1ID {
