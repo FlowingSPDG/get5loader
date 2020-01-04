@@ -121,16 +121,11 @@ func main() {
 		//r.HandleFunc("/match/{matchID}/sendconfig", get5.MatchSendConfigHandler) // ?
 		r.HandleFunc("/match/{matchID}/backup", get5.MatchBackupHandler).Methods("GET") // GET
 
-		r.HandleFunc("/team/{teamID}", get5.TeamHandler).Methods("GET")   // GET
 		r.HandleFunc("/team/{teamID}/edit", get5.TeamEditHandler)         // GET/POST
 		r.HandleFunc("/team/{teamID}/delete", get5.TeamDeleteHandler)     // ?
-		r.HandleFunc("/teams/{userID}", get5.TeamsHandler).Methods("GET") // GET
-		r.HandleFunc("/myteams", get5.MyTeamsHandler).Methods("GET")      // GET
 
 		r.HandleFunc("/server/{serverid}/edit", get5.ServerEditHandler)                    // GET/POST
 		r.HandleFunc("/server/{serverid}/delete", get5.ServerDeleteHandler).Methods("GET") // GET
-
-		r.HandleFunc("/user/{userID}", get5.UserHandler)
 	*/
 
 	r.Methods("GET", "POST")
