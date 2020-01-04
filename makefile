@@ -43,7 +43,12 @@ build-all: build-prepare build-web clean
 	-os="$(OS_Windows) $(OS_Mac) $(OS_Linux)" \
 	-arch="$(ARCH_386) $(ARCH_AMD64)" \
 	--output "../$(DIST_DIR)/$(BINARY_NAME)_{{.OS}}_{{.Arch}}/$(BINARY_NAME)"
-	@mkdir ./$(DIST_DIR)/$(BINARY_NAME)_$(OS_Linux)_$(ARCH_386)/static
+	@mkdir -p ./$(DIST_DIR)/$(BINARY_NAME)_$(OS_Linux)_$(ARCH_386)/static
+	@mkdir -p ./$(DIST_DIR)/$(BINARY_NAME)_$(OS_Linux)_$(ARCH_AMD64)/static
+	@mkdir -p ./$(DIST_DIR)/$(BINARY_NAME)_$(OS_Windows)_$(ARCH_386)/static
+	@mkdir -p ./$(DIST_DIR)/$(BINARY_NAME)_$(OS_Windows)_$(ARCH_AMD64)/static
+	@mkdir -p ./$(DIST_DIR)/$(BINARY_NAME)_$(OS_Mac)_$(ARCH_386)/static
+	@mkdir -p ./$(DIST_DIR)/$(BINARY_NAME)_$(OS_Mac)_$(ARCH_AMD64)/static
 	@cp -R ./web/dist/* ./$(DIST_DIR)/$(BINARY_NAME)_$(OS_Linux)_$(ARCH_386)/static
 	@cp -R ./web/dist/* ./$(DIST_DIR)/$(BINARY_NAME)_$(OS_Linux)_$(ARCH_AMD64)/static
 	@cp -R ./web/dist/* ./$(DIST_DIR)/$(BINARY_NAME)_$(OS_Windows)_$(ARCH_386)/static
@@ -68,8 +73,8 @@ build-linux: build-prepare build-web
 	-os="$(OS_Linux)" \
 	-arch="$(ARCH_386) $(ARCH_AMD64)" \
 	--output "../$(DIST_DIR)/$(BINARY_NAME)_{{.OS}}_{{.Arch}}/$(BINARY_NAME)"
-	@mkdir ./$(DIST_DIR)/$(BINARY_NAME)_$(OS_Linux)_$(ARCH_386)/static
-	@mkdir ./$(DIST_DIR)/$(BINARY_NAME)_$(OS_Linux)_$(ARCH_AMD64)/static
+	@mkdir -p ./$(DIST_DIR)/$(BINARY_NAME)_$(OS_Linux)_$(ARCH_386)/static
+	@mkdir -p ./$(DIST_DIR)/$(BINARY_NAME)_$(OS_Linux)_$(ARCH_AMD64)/static
 	@cp -R ./web/dist/* ./$(DIST_DIR)/$(BINARY_NAME)_$(OS_Linux)_$(ARCH_386)/static
 	@cp -R ./web/dist/* ./$(DIST_DIR)/$(BINARY_NAME)_$(OS_Linux)_$(ARCH_AMD64)/static
 	@cp ./server/config.ini.template ./$(DIST_DIR)/$(BINARY_NAME)_$(OS_Linux)_$(ARCH_386)/config.ini.template
@@ -86,8 +91,8 @@ build-windows: build-prepare build-web
 	-os="$(OS_Windows)" \
 	-arch="$(ARCH_386) $(ARCH_AMD64)" \
 	--output "../$(DIST_DIR)/$(BINARY_NAME)_{{.OS}}_{{.Arch}}/$(BINARY_NAME)"
-	@mkdir ./$(DIST_DIR)/$(BINARY_NAME)_$(OS_Linux)_$(ARCH_386)/static
-	@mkdir ./$(DIST_DIR)/$(BINARY_NAME)_$(OS_Linux)_$(ARCH_AMD64)/static
+	@mkdir -p ./$(DIST_DIR)/$(BINARY_NAME)_$(OS_Linux)_$(ARCH_386)/static
+	@mkdir -p ./$(DIST_DIR)/$(BINARY_NAME)_$(OS_Linux)_$(ARCH_AMD64)/static
 	@cp -R ./web/dist/* ./$(DIST_DIR)/$(BINARY_NAME)_$(OS_Windows)_$(ARCH_386)/static
 	@cp -R ./web/dist/* ./$(DIST_DIR)/$(BINARY_NAME)_$(OS_Windows)_$(ARCH_AMD64)/static
 	@cp ./server/config.ini.template ./$(DIST_DIR)/$(BINARY_NAME)_$(OS_Windows)_$(ARCH_386)/config.ini.template
@@ -104,8 +109,8 @@ build-mac: build-prepare build-web
 	-os="$(OS_Mac)" \
 	-arch="$(ARCH_386) $(ARCH_AMD64)" \
 	--output "../$(DIST_DIR)/$(BINARY_NAME)_{{.OS}}_{{.Arch}}/$(BINARY_NAME)"
-	@mkdir ./$(DIST_DIR)/$(BINARY_NAME)_$(OS_Linux)_$(ARCH_386)/static
-	@mkdir ./$(DIST_DIR)/$(BINARY_NAME)_$(OS_Linux)_$(ARCH_AMD64)/static
+	@mkdir -p ./$(DIST_DIR)/$(BINARY_NAME)_$(OS_Linux)_$(ARCH_386)/static
+	@mkdir -p ./$(DIST_DIR)/$(BINARY_NAME)_$(OS_Linux)_$(ARCH_AMD64)/static
 	@cp -R ./web/dist/* ./$(DIST_DIR)/$(BINARY_NAME)_$(OS_Mac)_$(ARCH_386)/static
 	@cp -R ./web/dist/* ./$(DIST_DIR)/$(BINARY_NAME)_$(OS_Mac)_$(ARCH_AMD64)/static
 	@cp ./server/config.ini.template ./$(DIST_DIR)/$(BINARY_NAME)_$(OS_Mac)_$(ARCH_386)/config.ini.template
