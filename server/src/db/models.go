@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/FlowingSPDG/get5-web-go/server/src/util"
 	"net"
+	"time"
 
 	"strings"
 	//"github.com/Philipp15b/go-steam"
@@ -378,6 +379,46 @@ func (t *TeamData) GetNameURLHtml() string {
 	return fmt.Sprintf(`<a href="%s">%s</a>`, t.GetURL(), t.Name)
 }
 
+// MatchConfig Match configration for get5 api, based on https://github.com/splewis/get5/blob/master/configs/get5/example_match.json and https://github.com/splewis/get5/blob/3f793ceb3736d78ba6a92f42631d91cb52f0beb4/scripting/get5/matchconfig.sp#L435
+type MatchConfig struct {
+	MatchID              string `json:"matchid"` // NOT int
+	Scrim                bool   `json:"scrim"`
+	MatchTitle           string `json:"match_title"`
+	PlayersPerTeam       int    `json:"players_per_team"`
+	MinPlayersToReady    int    `json:"min_players_to_ready"`
+	MinSPectatorsToReady int    `json:"min_spectators_to_ready"`
+	SkipVeto             bool   `json:"skip_veto"`
+	// bo2_series and maps_to_win are deprecated on get5 plugin side. Use num_maps insted
+	// Bo2Series 			   bool   `json:"bo2_series"`
+	// MapsToWin 			   int    `json:"maps_to_win"`
+	NumMaps                    int    `json:"num_maps"`
+	VetoFirst                  string `json:"veto_first"` // team1 || team2
+	SideType                   string `json:"side_type"`  // standard and ?
+	FavoredTeamPercentageText  string `json:"favored_percentage_text"`
+	FavoredTeamPercentageTeam1 int    `json:"favored_percentage_team1"`
+	Spectators                 struct {
+		Name    string   `json:"name"`
+		Players []string `json:"players"`
+	} `json:"spectators"`
+	Team1 struct {
+		Flag    string   `json:"flag"`
+		Name    string   `json:"name"`
+		Tag     string   `json:"tag"`
+		Players []string `json:"players"`
+	} `json:"team1"`
+	Team2 struct {
+		Flag    string   `json:"flag"`
+		Name    string   `json:"name"`
+		Tag     string   `json:"tag"`
+		Players []string `json:"players"`
+	} `json:"team2"`
+
+	Maplist  []string `json:"maplist"`
+	MapSides []string `json:"map_sides"`
+
+	Cvars map[string]string `json:"cvars"`
+}
+
 // MatchData Struct for match table.
 type MatchData struct {
 	ID              int           `gorm:"primary_key;column:id" json:"id"`
@@ -385,7 +426,7 @@ type MatchData struct {
 	ServerID        int           `gorm:"column:server_id" json:"server_id"`
 	Team1ID         int           `gorm:"column:team1_id" json:"team1_id"`
 	Team2ID         int           `gorm:"column:team2_id" json:"team2_id"`
-	Winner          sql.NullInt64 `gorm:"column:winner" json:"winner"`
+	Winner          sql.NullInt32 `gorm:"column:winner" json:"winner"`
 	Cancelled       bool          `gorm:"column:cancelled" json:"cancelled"`
 	StartTime       sql.NullTime  `gorm:"column:start_time" json:"start_time"`
 	EndTime         sql.NullTime  `gorm:"column:end_time" json:"end_time"`
@@ -393,7 +434,7 @@ type MatchData struct {
 	Title           string        `gorm:"column:title" json:"title"`
 	SkipVeto        bool          `gorm:"column:skip_veto" json:"skip_veto"`
 	APIKey          string        `gorm:"column:api_key" json:"-"`
-	VetoMapPool     string        `gorm:"column:veto_mappool"`
+	VetoMapPool     string        `gorm:"column:veto_mappool" json:"-"`
 	VetoMapPoolJSON []string      `gorm:"-" json:"veto_mappool"`
 	Team1Score      int           `gorm:"column:team1_score" json:"team1_score"`
 	Team2Score      int           `gorm:"column:team2_score" json:"team2_score"`
@@ -411,6 +452,13 @@ type MatchData struct {
 // TableName declairation for GORM
 func (m *MatchData) TableName() string {
 	return "match"
+}
+
+// Get Get myself
+func (m *MatchData) Get(id int) *MatchData {
+	m.ID = id
+	SQLAccess.Gorm.First(&m)
+	return m
 }
 
 // Create Register Match information into DB.
@@ -459,12 +507,11 @@ func (m *MatchData) Create(userid int, team1id int, team2id int, team1string str
 	}
 	m.PluginVersion = get5res.PluginVersion
 	m.APIKey = util.RandString(24)
+	SQLAccess.Gorm.Create(&m)
 	err = m.SendToServer()
 	if err != nil {
 		return nil, err
 	}
-	SQLAccess.Gorm.Model(&server).Update("in_use", true)
-	SQLAccess.Gorm.Create(&m)
 	return m, nil // TODO
 }
 
@@ -480,7 +527,7 @@ func (m *MatchData) GetStatusString(ShowWinner bool) (string, error) {
 		minscore := math.Min(float64(teams1core), float64(team2score))
 		maxscore := math.Max(float64(teams1core), float64(team2score))
 		ScoreString := fmt.Sprintf("%d:%d", int(maxscore), int(minscore))
-		winner, _ := m.Winner.Value()
+		winner := int(m.Winner.Int32)
 		if !ShowWinner {
 			return "Finished", nil
 		} else if winner == m.Team1ID {
@@ -580,7 +627,7 @@ func (m *MatchData) GetTeam1() (TeamData, error) {
 func (m *MatchData) GetTeam2() (TeamData, error) {
 	var Team = TeamData{}
 	var STeam TeamData
-	SQLAccess.Gorm.Where("id = ?", m.Team1ID).First(&STeam)
+	SQLAccess.Gorm.Where("id = ?", m.Team2ID).First(&STeam)
 	Team.ID = STeam.ID
 	Team.Name = STeam.Name
 	Team.Tag = STeam.Tag
@@ -651,13 +698,69 @@ func (m *MatchData) SendToServer() error {
 	if err != nil || res != "" {
 		return err
 	}
+	SQLAccess.Gorm.First(&m.Server)
+	SQLAccess.Gorm.Model(&m.Server).Update("in_use", true)
 	return nil
 }
 
-// BuildMatchDict No idea.
-/*func (m *MatchData) BuildMatchDict() TeamData {
-	//return m.UserID //get5 thing??
-}*/
+// BuildMatchDict Builds match JSON data.
+func (m *MatchData) BuildMatchDict() (*MatchConfig, error) {
+	SQLAccess.Gorm.Where("id = ?", m.ID).First(&m)
+	m.VetoMapPoolJSON = strings.Split(m.VetoMapPool, " ")
+	team1, err := m.GetTeam1()
+	team2, err := m.GetTeam2()
+	if err != nil {
+		return &MatchConfig{}, err
+	}
+	fmt.Printf("team1 : %v\n", team1)
+	fmt.Printf("team2 : %v\n", team2)
+	var cfg = MatchConfig{
+		MatchID: strconv.Itoa(m.ID),
+		//Scrim:false,
+		MatchTitle:        m.Title,
+		PlayersPerTeam:    1, // 0 broke Veto commencing section
+		MinPlayersToReady: 1, // Minimum # of players a team must have to ready
+		// MinSPectatorsToReady: // How many spectators must be ready to begin.
+		SkipVeto: m.SkipVeto, // If set to 1, the maps will be preset using the first maps in the maplist below.
+		NumMaps:  m.MaxMaps,  // Must be an odd number or 2. 1->Bo1, 2->Bo2, 3->Bo3, etc.
+		// VetoFirst: "team1", //  Set to "team1" or "team2" to select who starts the veto. Any other values will default to team1 starting.
+		SideType: "standard", // Either "standard", "always_knife", or "never_knife"
+
+		// These values wrap mp_teamprediction_pct and mp_teamprediction_txt.
+		// You can exclude these if you don't want those cvars set.
+		// FavoredTeamPercentageText:"", //
+		// FavoredTeamPercentageTeam1 : 50, //
+
+		Maplist: m.VetoMapPoolJSON,
+		// MapSides: "" // ??
+	}
+	//cfg.Spectators = make(map[string]string)
+	//cfg.Spectators["STEAM_1:1:....."] = ""
+
+	cfg.Team1.Flag = team1.Flag
+	//cfg.Team1.Logo = ""
+	cfg.Team1.Name = team1.Name
+	cfg.Team1.Tag = team1.Tag
+	// Any of the 3 formats (steam2, steam3, steam64 profile) are acceptable.
+	// Note: the "players" section may be skipped if you set get5_check_auths to 0,
+	// but that is not recommended. You can also set player names that will be forced here.
+	// If you don't want to force player names, just use an empty quote "".
+	cfg.Team1.Players = team1.Auths
+	// cfg.Team1.Players = make(map[string]string)
+	// cfg.Team1.Players["STEAM_0:1:52245092"] = "splewis"
+
+	cfg.Team2.Flag = team2.Flag
+	//cfg.Team2.Logo = ""
+	cfg.Team2.Name = team2.Name
+	cfg.Team2.Tag = team2.Tag
+	cfg.Team2.Players = team2.Auths
+
+	cfg.Cvars = make(map[string]string)
+	cfg.Cvars["get5_web_api_url"] = fmt.Sprintf("http://%v/api/v1/", Cnf.HOST)
+	// cfg.Cvars["hostname"] = fmt.Sprintf("Match Server #1")
+
+	return &cfg, nil
+}
 
 // GetMapStat Gets each map stat data as "MapStatsData" struct array.
 func (m *MatchData) GetMapStat() ([]MapStatsData, error) {
@@ -667,15 +770,15 @@ func (m *MatchData) GetMapStat() ([]MapStatsData, error) {
 
 // MapStatsData MapStatsData struct for map_stats table.
 type MapStatsData struct {
-	ID         int          `gorm:"primary_key" gorm:"column:id"`
-	MatchID    int          `gorm:"column:match_id" gorm:"ForeignKey:match_id"`
-	MapNumber  int          `gorm:"column:map_number"`
-	MapName    string       `gorm:"column:map_name"`
-	StartTime  sql.NullTime `gorm:"column:start_time"`
-	EndTime    sql.NullTime `gorm:"column:end_time"`
-	Winner     int          `gorm:"column:winner"`
-	Team1Score int          `gorm:"column:team1_score"`
-	Team2Score int          `gorm:"column:team2_score"`
+	ID         int           `gorm:"primary_key" gorm:"column:id"`
+	MatchID    int           `gorm:"column:match_id" gorm:"ForeignKey:match_id"`
+	MapNumber  int           `gorm:"column:map_number"`
+	MapName    string        `gorm:"column:map_name"`
+	StartTime  sql.NullTime  `gorm:"column:start_time"`
+	EndTime    sql.NullTime  `gorm:"column:end_time"`
+	Winner     sql.NullInt32 `gorm:"column:winner"`
+	Team1Score int           `gorm:"column:team1_score"`
+	Team2Score int           `gorm:"column:team2_score"`
 
 	User UserData `gorm:"ASSOCIATION_FOREIGNKEY:user_id"`
 }
@@ -685,10 +788,33 @@ func (m *MapStatsData) TableName() string {
 	return "map_stats"
 }
 
-// GetOrCreate Get or register mapstats data. not implemented yet
-/*func (m *MapStatsData) GetOrCreate(matchID int,MapNumber int,mapname string){
-
-}*/
+// GetOrCreate Get or register mapstats data.
+func (m *MapStatsData) GetOrCreate(matchID int, MapNumber int, mapname string) (*MapStatsData, error) {
+	Match := MatchData{}
+	MatchRecord := SQLAccess.Gorm.Where("id = ?", matchID).First(&Match)
+	if MatchRecord.RecordNotFound() {
+		return nil, fmt.Errorf("Match not found")
+	}
+	if MapNumber >= Match.MaxMaps {
+		return nil, fmt.Errorf("MapNumber is greater than max map number")
+	}
+	m.MatchID = matchID
+	m.MapNumber = MapNumber
+	m.MapName = mapname
+	MapStatsRecord := SQLAccess.Gorm.Where("match_id = ? AND map_number = ?", matchID, MapNumber).First(&m)
+	if MapStatsRecord.RecordNotFound() {
+		m.MatchID = matchID
+		m.MapNumber = MapNumber
+		m.MapName = mapname
+		m.StartTime.Scan(time.Now())
+		m.Team1Score = 0
+		m.Team2Score = 0
+		SQLAccess.Gorm.Create(&m)
+		fmt.Printf("Created MapStatsData : %v\n", m)
+		return m, nil
+	}
+	return m, nil
+}
 
 // PlayerStatsData Player stats data struct for player_stats table.
 type PlayerStatsData struct {
@@ -706,7 +832,7 @@ type PlayerStatsData struct {
 	Teamkills        int    `gorm:"column:teamkills"`
 	Suicides         int    `gorm:"column:suicides"`
 	HeadshotKills    int    `gorm:"column:headshot_kills"`
-	Damage           int64  `gorm:"column:damage"`
+	Damage           int    `gorm:"column:damage"`
 	BombPlants       int    `gorm:"column:bomb_plants"`
 	BombDefuses      int    `gorm:"column:bomb_defuses"`
 	V1               int    `gorm:"column:v1"`
@@ -733,11 +859,24 @@ func (p *PlayerStatsData) TableName() string {
 }
 
 // GetOrCreate Get or register player stats data into DB.
-/*
-func (p *PlayerStatsData) GetOrCreate() string {
-	return "player_stats"
+func (p *PlayerStatsData) GetOrCreate(matchID int, MapNumber int, steamid string) (*PlayerStatsData, error) {
+	MapStats := &MapStatsData{}
+	MapStatsRecord := SQLAccess.Gorm.Where("match_id = ? AND map_number = ?", matchID, MapNumber).First(&MapStats)
+	if MapStatsRecord.RecordNotFound() {
+		return nil, fmt.Errorf("MapStats not found")
+	}
+	// original get5-web restricts player per map stats length https://github.com/splewis/get5-web/blob/8c1012c9563583353b9486a6590227855547e275/get5/models.py#L558
+	PlayerStats := &PlayerStatsData{}
+	PlayerStatsRecord := SQLAccess.Gorm.Where("steam_id = ? AND match_id = ? AND map_id = ?", steamid, matchID, MapStats.ID).First(&PlayerStats)
+	if PlayerStatsRecord.RecordNotFound() {
+		PlayerStats.MatchID = matchID
+		// PlayerStats.map_number  = MapStats.ID // Not exist..?? https://github.com/splewis/get5-web/blob/8c1012c9563583353b9486a6590227855547e275/get5/models.py#L566
+		PlayerStats.SteamID = steamid
+		PlayerStats.MapID = MapStats.ID
+		SQLAccess.Gorm.Create(&PlayerStats)
+	}
+	return PlayerStats, nil
 }
-*/
 
 // GetSteamURL get player's Steam community URL by their steamid64.
 func (p *PlayerStatsData) GetSteamURL() string {
@@ -767,8 +906,8 @@ func (p *PlayerStatsData) GetKDR() float64 {
 
 // GetHSP Returns player's HSP(HeadShot Percentage).
 func (p *PlayerStatsData) GetHSP() float64 {
-	if p.Deaths == 0 {
-		return float64(p.Kills)
+	if p.Kills == 0 {
+		return math.NaN()
 	}
 	return float64(p.HeadshotKills) / float64(p.Kills) * 100
 }

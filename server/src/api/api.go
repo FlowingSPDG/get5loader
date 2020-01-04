@@ -33,6 +33,7 @@ func CheckLoggedIn(w http.ResponseWriter, r *http.Request) {
 	jsonbyte, err := json.Marshal(response)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
+		return
 	}
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(jsonbyte)
@@ -106,6 +107,7 @@ func GetMatchInfo(w http.ResponseWriter, r *http.Request) {
 	jsonbyte, err := json.Marshal(response)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
+		return
 	}
 	fmt.Println(string(jsonbyte))
 	w.Header().Set("Content-Type", "application/json")
@@ -131,6 +133,7 @@ func GetPlayerStatInfo(w http.ResponseWriter, r *http.Request) {
 	jsonbyte, err := json.Marshal(response)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
+		return
 	}
 	fmt.Println(string(jsonbyte))
 	w.Header().Set("Content-Type", "application/json")
@@ -216,6 +219,7 @@ func GetUserInfo(w http.ResponseWriter, r *http.Request) {
 	jsonbyte, err := json.Marshal(response)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
+		return
 	}
 	fmt.Println(string(jsonbyte))
 	w.Header().Set("Content-Type", "application/json")
@@ -231,6 +235,7 @@ func GetServerInfo(w http.ResponseWriter, r *http.Request) {
 	jsonbyte, err := json.Marshal(response)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
+		return
 	}
 	fmt.Println(string(jsonbyte))
 	w.Header().Set("Content-Type", "application/json")
@@ -247,6 +252,7 @@ func GetStatusString(w http.ResponseWriter, r *http.Request) {
 	status, err := response.GetStatusString(true)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
+		return
 	}
 	w.Write([]byte(status))
 }
@@ -268,6 +274,7 @@ func GetMatches(w http.ResponseWriter, r *http.Request) {
 	jsonbyte, err := json.Marshal(response)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
+		return
 	}
 	fmt.Println(string(jsonbyte))
 	w.Header().Set("Content-Type", "application/json")
@@ -283,6 +290,7 @@ func GetTeamInfo(w http.ResponseWriter, r *http.Request) {
 	steamids, err := response.GetPlayers()
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
+		return
 	}
 	for i := 0; i < len(steamids); i++ {
 		response.SteamIDs = append(response.SteamIDs, steamids[i])
@@ -290,6 +298,7 @@ func GetTeamInfo(w http.ResponseWriter, r *http.Request) {
 	jsonbyte, err := json.Marshal(response)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
+		return
 	}
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(jsonbyte)
@@ -367,6 +376,7 @@ func GetRecentMatches(w http.ResponseWriter, r *http.Request) {
 	jsonbyte, err := json.Marshal(response)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
+		return
 	}
 	fmt.Println(string(jsonbyte))
 	w.Header().Set("Content-Type", "application/json")
@@ -385,11 +395,13 @@ func CheckUserCanEdit(w http.ResponseWriter, r *http.Request) {
 	userid, err := strconv.Atoi(useridstr)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
+		return
 	}
 	res.Response = strconv.FormatBool(team.CanEdit(userid))
 	jsonbyte, err := json.Marshal(res)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
+		return
 	}
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(jsonbyte)
@@ -401,6 +413,7 @@ func GetMetrics(w http.ResponseWriter, r *http.Request) {
 	jsonbyte, err := json.Marshal(Metrics)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
+		return
 	}
 	fmt.Println(string(jsonbyte))
 	w.Header().Set("Content-Type", "application/json")
@@ -414,10 +427,12 @@ func GetSteamName(w http.ResponseWriter, r *http.Request) {
 	steamid64, err := strconv.Atoi(steamid)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
+		return
 	}
 	steamname, err := db.GetSteamName(uint64(steamid64))
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
+		return
 	}
 	w.Write([]byte(steamname))
 }
@@ -433,19 +448,31 @@ func GetTeamList(w http.ResponseWriter, r *http.Request) {
 	jsonbyte, err := json.Marshal(Teams)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
+		return
 	}
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(jsonbyte)
 }
 
-// GetServerList Returns registered public server list in JSON
+// GetServerList Returns registered public server and owned list in JSON
 func GetServerList(w http.ResponseWriter, r *http.Request) {
 	fmt.Printf("GetServerList\n")
+	s := db.Sess.Start(w, r)
+	var IsLoggedIn bool
+	if s.Get("Loggedin") != nil {
+		IsLoggedIn = s.Get("Loggedin").(bool)
+	}
 	Servers := []APIGameServerData{}
-	db.SQLAccess.Gorm.Where("public_server = true AND in_use = false").Find(&Servers)
+	if IsLoggedIn {
+		userid := s.Get("UserID").(int)
+		db.SQLAccess.Gorm.Where("public_server = true AND in_use = false").Or("user_id = ? AND in_use = false", userid).Find(&Servers)
+	} else {
+		db.SQLAccess.Gorm.Where("public_server = true AND in_use = false").Find(&Servers)
+	}
 	jsonbyte, err := json.Marshal(Servers)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
+		return
 	}
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(jsonbyte)
@@ -494,6 +521,7 @@ func CreateTeam(w http.ResponseWriter, r *http.Request) {
 		jsonbyte, err := json.Marshal(res)
 		if err != nil {
 			http.Error(w, "Internal ERROR", http.StatusInternalServerError)
+			return
 		}
 		w.Header().Set("Content-Type", "application/json")
 		w.Write(jsonbyte)

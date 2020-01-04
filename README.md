@@ -18,11 +18,13 @@ Shugo [**FlowingSPDG**](http://github.com/FlowingSPDG) Kawamura
 
 ## Requirements
 - Open port 8081 to access web-panel and accept RCON connection
+- CSGO Server with GET5 v0.7.1
 - MySQL
 
 ## Requirements(Developers)
 - GO v1.13.5
 - original get5-web DB
+- CSGO Server with GET5 v0.7.1
 - Yarn v1.16.0
 
 ## Setup(Developers)
