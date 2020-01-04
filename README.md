@@ -24,8 +24,8 @@ Shugo [**FlowingSPDG**](http://github.com/FlowingSPDG) Kawamura
 API Server will send rcon command to load match config(``get5_loadmatch_url <webserver>/match/<matchid>/config``) Then game server loads match and wait for players.
 
 ## ScreenShots
-![Matches](/screenshots/Matches.png?raw=true "Matches list page")
-![Match Stats Page](/screenshots/Match.png?raw=true "Match Stats Page")
+![Matches](/screenshots/Matches.PNG?raw=true "Matches list page")
+![Match Stats Page](/screenshots/Match.PNG?raw=true "Match Stats Page")
 
 ## Requirements
 - Open port 8081 to access web-panel and accept RCON connection
