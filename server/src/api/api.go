@@ -1180,3 +1180,99 @@ func MatchRconHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Please log in", http.StatusUnauthorized)
 	}
 }
+
+// MatchPauseHandler Handler for /api/v1/match/{matchID}/rcon API.
+func MatchPauseHandler(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("MatchPauseHandler")
+	var IsLoggedIn = false
+	var IsAdmin = false
+	s := db.Sess.Start(w, r)
+	if s.Get("Loggedin") != nil {
+		IsLoggedIn = s.Get("Loggedin").(bool)
+		IsAdmin = s.Get("Admin").(bool)
+	}
+	if IsLoggedIn && IsAdmin {
+		vars := mux.Vars(r)
+		matchid, err := strconv.Atoi(vars["matchID"])
+		if err != nil {
+			http.Error(w, "matchid should be int", http.StatusBadRequest)
+			return
+		}
+		Match := db.MatchData{}
+		rec := db.SQLAccess.Gorm.Where("id = ?", matchid).First(&Match)
+		if rec.RecordNotFound() {
+			http.Error(w, "Failed to find match", http.StatusNotFound)
+		}
+
+		Server := db.GameServerData{}
+		rec = db.SQLAccess.Gorm.Where("id = ?", Match.ServerID).First(&Server)
+		if rec.RecordNotFound() {
+			http.Error(w, "Failed to find server", http.StatusNotFound)
+		}
+		_, err = Server.SendRcon("sm_pause")
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Failed to send pause command : %s", err), http.StatusInternalServerError)
+		}
+		JSONres := SimpleJSONResponse{
+			Response: "ok",
+		}
+		jsonbyte, err := json.Marshal(JSONres)
+		if err != nil {
+			http.Error(w, "Internal ERROR", http.StatusInternalServerError)
+			return
+		}
+		w.WriteHeader(http.StatusOK)
+		w.Header().Set("Content-Type", "application/json")
+		w.Write(jsonbyte)
+	} else {
+		http.Error(w, "Please log in", http.StatusUnauthorized)
+	}
+}
+
+// MatchUnpauseHandler Handler for /api/v1/match/{matchID}/rcon API.
+func MatchUnpauseHandler(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("MatchUnpauseHandler")
+	var IsLoggedIn = false
+	var IsAdmin = false
+	s := db.Sess.Start(w, r)
+	if s.Get("Loggedin") != nil {
+		IsLoggedIn = s.Get("Loggedin").(bool)
+		IsAdmin = s.Get("Admin").(bool)
+	}
+	if IsLoggedIn && IsAdmin {
+		vars := mux.Vars(r)
+		matchid, err := strconv.Atoi(vars["matchID"])
+		if err != nil {
+			http.Error(w, "matchid should be int", http.StatusBadRequest)
+			return
+		}
+		Match := db.MatchData{}
+		rec := db.SQLAccess.Gorm.Where("id = ?", matchid).First(&Match)
+		if rec.RecordNotFound() {
+			http.Error(w, "Failed to find match", http.StatusNotFound)
+		}
+
+		Server := db.GameServerData{}
+		rec = db.SQLAccess.Gorm.Where("id = ?", Match.ServerID).First(&Server)
+		if rec.RecordNotFound() {
+			http.Error(w, "Failed to find server", http.StatusNotFound)
+		}
+		_, err = Server.SendRcon("sm_unpause")
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Failed to send unpause  command : %s", err), http.StatusInternalServerError)
+		}
+		JSONres := SimpleJSONResponse{
+			Response: "ok",
+		}
+		jsonbyte, err := json.Marshal(JSONres)
+		if err != nil {
+			http.Error(w, "Internal ERROR", http.StatusInternalServerError)
+			return
+		}
+		w.WriteHeader(http.StatusOK)
+		w.Header().Set("Content-Type", "application/json")
+		w.Write(jsonbyte)
+	} else {
+		http.Error(w, "Please log in", http.StatusUnauthorized)
+	}
+}

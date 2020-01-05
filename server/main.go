@@ -111,6 +111,13 @@ func main() {
 	r.HandleFunc("/api/v1/match/{matchID}/map/{mapNumber}/finish", api.MatchMapFinishHandler).Methods("POST")
 	r.HandleFunc("/api/v1/match/{matchID}/map/{mapNumber}/player/{steamid64}/update", api.MatchMapPlayerUpdateHandler).Methods("POST")
 	r.HandleFunc("/api/v1/match/{matchID}/cancel", api.MatchCancelHandler).Methods("POST")
+	//r.HandleFunc("/api/v1/match/{matchID}/rcon", api.MatchRconHandler).Methods("POST")
+	r.HandleFunc("/api/v1/match/{matchID}/pause", api.MatchPauseHandler)
+	r.HandleFunc("/api/v1/match/{matchID}/unpause", api.MatchUnpauseHandler) // ?
+	//r.HandleFunc("/api/v1/match/{matchID}/adduser", api.MatchAddUserHandler) // ?
+	//r.HandleFunc("/api/v1/match/{matchID}/sendconfig", api.MatchSendConfigHandler) // ?
+	//r.HandleFunc("/api/v1/match/{matchID}/backup", api.MatchBackupHandler).Methods("GET") // GET
+
 	//r.HandleFunc("/api/v1/match/{matchID}/vetoUpdate", api.MatchVetoUpdateHandler).Methods("POST") // TODO
 	//r.HandleFunc("/api/v1/match/{matchID}/map/{mapNumber}/demo", api.MatchDemoUploadHandler).Methods("POST") // TODO
 
@@ -120,14 +127,6 @@ func main() {
 
 	r.HandleFunc("/api/v1/login", db.LoginHandler).Methods("GET")
 	r.HandleFunc("/api/v1/logout", db.LogoutHandler).Methods("GET")
-	/*
-		r.HandleFunc("/api/v1/match/{matchID}/rcon", api.MatchRconHandler)       // ?
-		r.HandleFunc("/api/v1/match/{matchID}/pause", api.MatchPauseHandler)     // ?
-		r.HandleFunc("/api/v1/match/{matchID}/unpause", api.MatchUnpauseHandler) // ?
-		r.HandleFunc("/api/v1/match/{matchID}/adduser", api.MatchAddUserHandler) // ?
-		//r.HandleFunc("/api/v1/match/{matchID}/sendconfig", api.MatchSendConfigHandler) // ?
-		r.HandleFunc("/api/v1/match/{matchID}/backup", api.MatchBackupHandler).Methods("GET") // GET
-	*/
 
 	r.Methods("GET", "POST", "DELETE")
 	http.Handle("/", r)
