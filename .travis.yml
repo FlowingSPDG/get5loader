@@ -1,8 +1,4 @@
 language: go,node_js
-node_js:
-  - "10.18.0"
-go:
-  - 1.13.5
 dist: xenial
 sudo: false
 cache: yarn
@@ -16,7 +12,19 @@ branches:
     - master
 notifications:
   email: false
-before_install:
-  - go version
-script:
- - make build-all
+matrix:
+  include:
+    - language: go
+      go: 1.13.5
+      before_install:
+        - make deps
+      script:
+        - make build-linux
+        - make build-mac
+        - make build-windows
+    - language: node_js
+      node_js: 10.18.0
+      before_install:
+        - make deps
+      script:
+        - make build-web
