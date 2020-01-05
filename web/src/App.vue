@@ -39,7 +39,7 @@
         <div>
             Powered by <a href="http://steampowered.com">Steam</a> -
             <router-link id="metrics" to="/metrics" >Stats</router-link>
-            <div v-if="COMMIT_STRING">- Version <a href="https://github.com/FlowingSPDG/get5-web-go">{{ COMMIT_STRING }}+</a></div>
+            <div v-if="version">- Version <a href="https://github.com/FlowingSPDG/get5-web-go">{{ version }}</a></div>
         </div>
     </div>
 </div>
@@ -51,20 +51,25 @@ export default {
   name: 'App',
   data () {
     return {
+      version: '',
       activeIndex: '',
       user: {
         isLoggedIn: false,
         adminaccess: false,
         steamid: '',
         userid: ''
-      }, // should be object from JSON response
-      COMMIT_STRING: 'COMMIT NUMBER HERE'
+      } // should be object from JSON response
     }
   },
   async mounted () {
     this.activeIndex = this.$route.name
-    const res = await axios.get('/api/v1/CheckLoggedIn')
-    this.user = res.data
+    let LoggedIn = await axios.get('/api/v1/CheckLoggedIn')
+    this.user = LoggedIn.data
+    let Version = await axios.get('/api/v1/GetVersion')
+    this.version = Version.data.version
+  },
+  methods: {
+
   }
 }
 </script>

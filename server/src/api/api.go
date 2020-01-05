@@ -13,12 +13,38 @@ import (
 	"github.com/FlowingSPDG/get5-web-go/server/src/db"
 )
 
+const (
+	// VERSION get5-web-go Version
+	VERSION = "0.1.0"
+)
+
 // CheckLoggedInJSON Struct type for /api/v1/CheckLoggedIn API.
 type CheckLoggedInJSON struct {
 	IsLoggedIn bool   `json:"isLoggedIn"`
 	IsAdmin    bool   `json:"isAdmin"`
 	SteamID    string `json:"steamid"`
 	UserID     int    `json:"userid"`
+}
+
+// GetVersionJSON Struct type for /api/v1/GetVersion API Response.
+type GetVersionJSON struct {
+	Version string `json:"version"`
+}
+
+// GetVersion handler for /api/v1/GetVersion API.
+func GetVersion(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("CheckLoggedIn")
+	response := GetVersionJSON{
+		Version: VERSION,
+	}
+	jsonbyte, err := json.Marshal(response)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(jsonbyte)
 }
 
 // CheckLoggedIn handler for /api/v1/CheckLoggedIn API.

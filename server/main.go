@@ -23,11 +23,6 @@ type Config struct {
 	HOST        string
 }
 
-const (
-	// VERSION get5-web-go Version
-	VERSION = "v0.1.0"
-)
-
 var (
 	// StaticDir Directly where serves static files
 	StaticDir = "./static"
@@ -84,6 +79,7 @@ func main() {
 	r.HandleFunc("/api/v1/GetSteamName", api.GetSteamName).Methods("GET")
 	r.HandleFunc("/api/v1/GetTeamList", api.GetTeamList).Methods("GET")
 	r.HandleFunc("/api/v1/GetServerList", api.GetServerList).Methods("GET")
+	r.HandleFunc("/api/v1/GetVersion", api.GetVersion).Methods("GET")
 
 	// API for front(Vue)
 	r.HandleFunc("/api/v1/CheckLoggedIn", api.CheckLoggedIn).Methods("GET")
