@@ -2,7 +2,6 @@ language: go,node_js
 dist: xenial
 sudo: false
 cache: yarn
-install: false
 git:
   depth: 1
 branches:
