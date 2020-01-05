@@ -1082,3 +1082,101 @@ func CreateMatch(w http.ResponseWriter, r *http.Request) {
 		w.Write(jsonbyte)
 	}
 }
+
+// MatchCancelHandler Handler for /api/v1/match/{matchID}/cancel API.
+func MatchCancelHandler(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("MatchCancelHandler")
+	var IsLoggedIn = false
+	var IsAdmin = false
+	s := db.Sess.Start(w, r)
+	if s.Get("Loggedin") != nil {
+		IsLoggedIn = s.Get("Loggedin").(bool)
+		IsAdmin = s.Get("Admin").(bool)
+	}
+	if IsLoggedIn && IsAdmin {
+		vars := mux.Vars(r)
+		matchid, err := strconv.Atoi(vars["matchID"])
+		if err != nil {
+			http.Error(w, "matchid should be int", http.StatusBadRequest)
+			return
+		}
+		Match := db.MatchData{}
+		rec := db.SQLAccess.Gorm.Where("id = ?", matchid).First(&Match)
+		if rec.RecordNotFound() {
+			http.Error(w, "Failed to find match", http.StatusNotFound)
+		}
+		MatchUpdate := Match
+		db.SQLAccess.Gorm.First(&MatchUpdate)
+		MatchUpdate.Cancelled = true
+		db.SQLAccess.Gorm.Model(&Match).Update(&MatchUpdate)
+		db.SQLAccess.Gorm.Save(&MatchUpdate)
+
+		Server := db.GameServerData{}
+		db.SQLAccess.Gorm.Where("id = ?", Match.ServerID).First(&Server)
+		ServerUpdate := Server
+		db.SQLAccess.Gorm.First(&ServerUpdate)
+		ServerUpdate.InUse = false
+		db.SQLAccess.Gorm.Model(&Server).Update(&ServerUpdate)
+		db.SQLAccess.Gorm.Save(&ServerUpdate)
+
+		_, err = Server.SendRcon("get5_endmatch")
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Failed to cancel match: %v", err), http.StatusNotFound)
+		}
+	} else {
+		http.Error(w, "Please log in", http.StatusUnauthorized)
+	}
+}
+
+// MatchRconHandler Handler for /api/v1/match/{matchID}/rcon API.
+func MatchRconHandler(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("MatchRconHandler")
+	var IsLoggedIn = false
+	var IsAdmin = false
+	s := db.Sess.Start(w, r)
+	if s.Get("Loggedin") != nil {
+		IsLoggedIn = s.Get("Loggedin").(bool)
+		IsAdmin = s.Get("Admin").(bool)
+	}
+	if IsLoggedIn && IsAdmin {
+		vars := mux.Vars(r)
+		matchid, err := strconv.Atoi(vars["matchID"])
+		if err != nil {
+			http.Error(w, "matchid should be int", http.StatusBadRequest)
+			return
+		}
+		command := r.FormValue("command")
+		Match := db.MatchData{}
+		rec := db.SQLAccess.Gorm.Where("id = ?", matchid).First(&Match)
+		if rec.RecordNotFound() {
+			http.Error(w, "Failed to find match", http.StatusNotFound)
+		}
+
+		Server := db.GameServerData{}
+		rec = db.SQLAccess.Gorm.Where("id = ?", Match.ServerID).First(&Server)
+		if rec.RecordNotFound() {
+			http.Error(w, "Failed to find server", http.StatusNotFound)
+		}
+		RconRes := "No output"
+		res, err := Server.SendRcon(command)
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Failed to send command : %s", err), http.StatusInternalServerError)
+		}
+		if res != "" {
+			RconRes = res
+		}
+		JSONres := SimpleJSONResponse{
+			Response: RconRes,
+		}
+		jsonbyte, err := json.Marshal(JSONres)
+		if err != nil {
+			http.Error(w, "Internal ERROR", http.StatusInternalServerError)
+			return
+		}
+		w.WriteHeader(http.StatusOK)
+		w.Header().Set("Content-Type", "application/json")
+		w.Write(jsonbyte)
+	} else {
+		http.Error(w, "Please log in", http.StatusUnauthorized)
+	}
+}
