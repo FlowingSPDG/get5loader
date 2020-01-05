@@ -20,9 +20,12 @@ test:
 clean:
 	$(GOCLEAN)
 	rm -rf $(DIST_DIR)/*
-deps:
-	@yarn global add @vue/cli
+deps: deps-web deps-go
 	@git submodule update
+deps-web:
+	@yarn global add @vue/cli
+	@cd ./web && yarn
+deps-go:
 	@rm -rf $GOPATH/src/github.com/FlowingSPDG/get5-web-go
 	@$(GOGET) -v -u \
 	github.com/FlowingSPDG/get5-web-go/server \
@@ -36,7 +39,6 @@ deps:
 	github.com/kataras/go-sessions \
 	github.com/Acidic9/steam \
 	github.com/kidoman/go-steam
-	@cd ./web && yarn
 # Cross compile for go
 build-all: build-prepare build-web clean
 	@cd ./server && gox \
@@ -91,8 +93,8 @@ build-windows: build-prepare build-web
 	-os="$(OS_Windows)" \
 	-arch="$(ARCH_386) $(ARCH_AMD64)" \
 	--output "../$(DIST_DIR)/$(BINARY_NAME)_{{.OS}}_{{.Arch}}/$(BINARY_NAME)"
-	@mkdir -p ./$(DIST_DIR)/$(BINARY_NAME)_$(OS_Linux)_$(ARCH_386)/static
-	@mkdir -p ./$(DIST_DIR)/$(BINARY_NAME)_$(OS_Linux)_$(ARCH_AMD64)/static
+	@mkdir -p ./$(DIST_DIR)/$(BINARY_NAME)_$(OS_Windows)_$(ARCH_386)/static
+	@mkdir -p ./$(DIST_DIR)/$(BINARY_NAME)_$(OS_Windows)_$(ARCH_AMD64)/static
 	@cp -R ./web/dist/* ./$(DIST_DIR)/$(BINARY_NAME)_$(OS_Windows)_$(ARCH_386)/static
 	@cp -R ./web/dist/* ./$(DIST_DIR)/$(BINARY_NAME)_$(OS_Windows)_$(ARCH_AMD64)/static
 	@cp ./server/config.ini.template ./$(DIST_DIR)/$(BINARY_NAME)_$(OS_Windows)_$(ARCH_386)/config.ini.template
@@ -109,8 +111,8 @@ build-mac: build-prepare build-web
 	-os="$(OS_Mac)" \
 	-arch="$(ARCH_386) $(ARCH_AMD64)" \
 	--output "../$(DIST_DIR)/$(BINARY_NAME)_{{.OS}}_{{.Arch}}/$(BINARY_NAME)"
-	@mkdir -p ./$(DIST_DIR)/$(BINARY_NAME)_$(OS_Linux)_$(ARCH_386)/static
-	@mkdir -p ./$(DIST_DIR)/$(BINARY_NAME)_$(OS_Linux)_$(ARCH_AMD64)/static
+	@mkdir -p ./$(DIST_DIR)/$(BINARY_NAME)_$(OS_Mac)_$(ARCH_386)/static
+	@mkdir -p ./$(DIST_DIR)/$(BINARY_NAME)_$(OS_Mac)_$(ARCH_AMD64)/static
 	@cp -R ./web/dist/* ./$(DIST_DIR)/$(BINARY_NAME)_$(OS_Mac)_$(ARCH_386)/static
 	@cp -R ./web/dist/* ./$(DIST_DIR)/$(BINARY_NAME)_$(OS_Mac)_$(ARCH_AMD64)/static
 	@cp ./server/config.ini.template ./$(DIST_DIR)/$(BINARY_NAME)_$(OS_Mac)_$(ARCH_386)/config.ini.template
