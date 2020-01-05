@@ -146,16 +146,48 @@ func (g *GameServerData) Create(userid int, displayname string, ipstring string,
 	return g, nil
 }
 
+// CanEdit Check if server is editable for user or not.
+func (g *GameServerData) CanEdit(userid int) bool {
+	if g.UserID == 0 {
+		SQLAccess.Gorm.Where("id = ?", g.ID).First(&g)
+	}
+	if userid == 0 {
+		return false
+	}
+	return g.UserID == userid
+}
+
+// CanDelete Check if server is deletable for user or not.
+func (g *GameServerData) CanDelete(userid int) bool {
+	return g.CanEdit(userid)
+}
+
 // Edit Edits GameServer information.
 func (g *GameServerData) Edit() (*GameServerData, error) {
 	if g.ID == 0 {
 		return nil, fmt.Errorf("ID not valid")
 	}
-	SQLAccess.Gorm.Where("id = ?", g.ID).First(&g)
+	rec := SQLAccess.Gorm.Where("id = ?", g.ID).First(&g)
+	if rec.RecordNotFound() {
+		return g, fmt.Errorf("Server not found")
+	}
 	var gUpdate = *g
 	SQLAccess.Gorm.Model(&g).Update(&gUpdate)
 	SQLAccess.Gorm.Save(&gUpdate)
 	return g, nil
+}
+
+// Delete Deletes GameServer information.
+func (g *GameServerData) Delete() error {
+	if g.ID == 0 {
+		return fmt.Errorf("ID not valid")
+	}
+	rec := SQLAccess.Gorm.Where("id = ?", g.ID).First(&g)
+	if rec.RecordNotFound() {
+		return fmt.Errorf("Server not found")
+	}
+	SQLAccess.Gorm.Delete(&g)
+	return nil
 }
 
 // SendRcon Sends Remote-Commands to specific IP SRCDS.

@@ -100,8 +100,8 @@ func main() {
 	r.HandleFunc("/api/v1/user/{userID}/GetUserInfo", api.GetUserInfo).Methods("GET")
 	r.HandleFunc("/api/v1/server/{serverID}/GetServerInfo", api.GetServerInfo).Methods("GET")
 	r.HandleFunc("/api/v1/server/create", api.CreateServer).Methods("POST")
-	r.HandleFunc("/api/v1/server/{serverid}/edit", api.EditServer).Methods("POST")
-	r.HandleFunc("/api/v1/server/{serverid}/delete", api.DeleteServer).Methods("POST")
+	r.HandleFunc("/api/v1/server/{serverID}/edit", api.EditServer).Methods("POST")
+	r.HandleFunc("/api/v1/server/{serverID}/delete", api.DeleteServer).Methods("DELETE")
 
 	// GET5 API
 	r.HandleFunc("/api/v1/match/{matchID}/config", api.MatchConfigHandler)

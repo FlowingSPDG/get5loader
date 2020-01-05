@@ -17,8 +17,8 @@
       </el-table-column>
       <el-table-column>
         <template slot-scope="scope">
-          <a :href="'/server/'+scope.row.id+'/edit'" class="btn btn-primary btn-xs">Edit</a>
-          <a :href="'/server/'+scope.row.id+'/delete'" class="btn btn-danger btn-xs" v-if="!scope.row.in_use">Delete</a>
+          <router-link :to="'/server/'+scope.row.id+'/edit'" class="btn btn-primary btn-xs">Edit</router-link>
+          <button @click="DeleteTeam(scope.row.id)" class="btn btn-danger btn-xs" v-if="!scope.row.in_use">Delete</button>
         </template>
       </el-table-column>
     </el-table>
@@ -30,13 +30,15 @@ export default {
   name: 'MyServers',
   data () {
     return {
-      servers: []
+      servers: [],
+      user: {}
     }
   },
   async created () {
-    const res = await this.axios.get('/api/v1/CheckLoggedIn')
-    const user = await this.GetUserData(res.data.userid)
-    this.servers = user.servers
+    let res = await this.axios.get('/api/v1/CheckLoggedIn')
+    this.user = res.data
+    let servers = await this.GetUserData(res.data.userid)
+    this.servers = servers.servers
   },
   methods: {
     async GetUserData (userid) {
@@ -44,6 +46,26 @@ export default {
         const res = await this.axios.get(`/api/v1/user/${userid}/GetUserInfo`)
         resolve(res.data)
       })
+    },
+    async DeleteTeam (serverid) {
+      try {
+        let res = await this.axios.delete(`/api/v1/server/${serverid}/delete`)
+        this.$message({
+          message: 'Successfully deleted server.',
+          type: 'success'
+        })
+        this.$router.push('/myservers')
+      } catch (err) {
+        if (err.response) {
+          if (typeof err.response.data === 'string') {
+            this.$message.error(err.response.data)
+          } else if (typeof err.response.data === 'object') {
+            this.$message.error(err.response.data.errormessage)
+          }
+        } else {
+          console.error(err)
+        }
+      }
     }
   }
 }
