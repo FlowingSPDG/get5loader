@@ -22,7 +22,6 @@ matrix:
     - language: node_js
       node_js: 10.18.0
       before_install:
-        - yarn global add @vue/cli
-        - cd ./web && yarn
+        - make deps-web
       script:
         - make build-web
