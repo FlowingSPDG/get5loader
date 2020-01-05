@@ -3,7 +3,7 @@
   <div class="container">
     <h1 v-cloak>
       <img :src="get_flag_link(team)" /> {{ team.name }} {{ team.logo }}
-      <div class="pull-right" v-if="Editable == true">
+      <div class="pull-right" v-if="Editable">
         <router-link :to="'/team/'+team.id+'/edit'" class="btn btn-primary btn-xs">Edit</router-link>
       </div>
     </h1>
@@ -57,8 +57,8 @@ export default {
       teamdatas: {},
       user: {
         isLoggedIn: false,
-        steamid: '',
-        userid: ''
+        steamid: 0,
+        userid: 0
       },
       Editable: false
     }
@@ -108,7 +108,7 @@ export default {
       })
     },
     CheckTeamEditable: function (userid) {
-      return this.team.user_id === userid
+      return this.team.user_id === ParseInt(userid)
     },
     get_flag_link: function (team) {
       if (team.flag === '') {

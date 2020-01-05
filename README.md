@@ -30,12 +30,12 @@ API Server will send rcon command to load match config(``get5_loadmatch_url <web
 
 ## Requirements
 - Open port 8081 to access web-panel and accept RCON connection
-- CSGO Server with get5 v0.7.1 and get5_apistats
-- MySQL
+- original MySQL get5-web DB
 
 ## Requirements(Developers)
 - GO v1.13.5
-- original get5-web DB
+- NodeJS v10.18.0
+- original MySQL get5-web DB
 - CSGO Server with GET5 v0.7.1
 - Yarn v1.16.0
 
@@ -48,12 +48,19 @@ API Server will send rcon command to load match config(``get5_loadmatch_url <web
 
 
 ## Build(get5-web-go itself doesnt work yet!)
-- ``git clone $GOPATH/src/github.com/FlowingSPDG/get5-web-go``  
-- ``cd $GOPATH/src/github.com/FlowingSPDG/get5-web-go && make deps``
-- ``make build-all``
+- ``cd $GOPATH/src/github.com/FlowingSPDG/get5-web-go && make build-all``
 - You'll get compiled files in ``build`` directly.  
+You can use following scripts as your needs :
+- ``make build-all`` Builds Vue and binaries for all supported platforms
+- ``make build-linux`` Builds Vue and binaries for Linux
+- ``make build-linux-server-only`` Builds binaries for Linux
+- ``make build-mac`` Builds Vue and binaries for Mac(darwin)
+- ``make build-mac-server-only`` Builds binaries for Mac(darwin)
+- ``make build-windows`` Builds Vue and binaries for Windows
+- ``make build-windows-server-only`` Builds binaries for Windows
+- ``make build-web`` Builds Vue frontend
 
-I'm planning to [release](https://github.com/FlowingSPDG/get5-web-go/releases) binary-file for people who feel lazy to build. :P
+I'm planning to [release](https://github.com/FlowingSPDG/get5-web-go/releases) compiled-files for people who feel lazy to build. :P
 
 ## Deploy and Launch
 - Copy `config.ini.template` to `config.ini` and edit it for your MySQL DB and SteamAPI keys

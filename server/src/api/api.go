@@ -441,7 +441,17 @@ func GetSteamName(w http.ResponseWriter, r *http.Request) {
 func GetTeamList(w http.ResponseWriter, r *http.Request) {
 	fmt.Printf("GetTeamList\n")
 	Teams := []db.TeamData{}
-	db.SQLAccess.Gorm.Where("public_team = 1").Find(&Teams)
+	s := db.Sess.Start(w, r)
+	var IsLoggedIn bool
+	if s.Get("Loggedin") != nil {
+		IsLoggedIn = s.Get("Loggedin").(bool)
+	}
+	if IsLoggedIn {
+		userid := s.Get("UserID").(int)
+		db.SQLAccess.Gorm.Where("public_team = 1").Or("user_id = ?", userid).Find(&Teams)
+	} else {
+		db.SQLAccess.Gorm.Where("public_team = 1").Find(&Teams)
+	}
 	for i := 0; i < len(Teams); i++ {
 		Teams[i].GetPlayers()
 	}
@@ -478,6 +488,7 @@ func GetServerList(w http.ResponseWriter, r *http.Request) {
 	w.Write(jsonbyte)
 }
 
+// CreateTeam Registers team info to DB
 func CreateTeam(w http.ResponseWriter, r *http.Request) {
 	fmt.Printf("CreateTeam\n")
 	var IsLoggedIn = false
@@ -499,6 +510,119 @@ func CreateTeam(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			fmt.Println("Failed to create team")
 			http.Error(w, "Failed to create team", http.StatusInternalServerError)
+			return
+		}
+		res := SimpleJSONResponse{
+			Response: "OK",
+		}
+		jsonbyte, err := json.Marshal(res)
+		if err != nil {
+			http.Error(w, "Internal ERROR", http.StatusInternalServerError)
+			return
+		}
+		w.WriteHeader(http.StatusOK)
+		w.Header().Set("Content-Type", "application/json")
+		w.Write(jsonbyte)
+	} else {
+		res := SimpleJSONResponse{
+			Errorcode:    http.StatusUnauthorized,
+			Errormessage: "Forbidden",
+		}
+		jsonbyte, err := json.Marshal(res)
+		if err != nil {
+			http.Error(w, "Internal ERROR", http.StatusInternalServerError)
+			return
+		}
+		w.WriteHeader(http.StatusUnauthorized)
+		w.Header().Set("Content-Type", "application/json")
+		w.Write(jsonbyte)
+	}
+}
+
+// EditTeam Edits team information
+func EditTeam(w http.ResponseWriter, r *http.Request) {
+	fmt.Printf("EditTeam\n")
+	var IsLoggedIn = false
+	s := db.Sess.Start(w, r)
+	if s.Get("Loggedin") != nil {
+		IsLoggedIn = s.Get("Loggedin").(bool)
+	}
+	if IsLoggedIn {
+		userid := s.Get("UserID").(int)
+		vars := mux.Vars(r)
+		teamid, err := strconv.Atoi(vars["teamID"])
+		if err != nil {
+			fmt.Println(err)
+			fmt.Println("teamid should be int")
+			res := SimpleJSONResponse{
+				Response:     "error",
+				Errorcode:    http.StatusBadRequest,
+				Errormessage: "teamid should be int.",
+			}
+			jsonbyte, err := json.Marshal(res)
+			if err != nil {
+				http.Error(w, "Internal ERROR", http.StatusInternalServerError)
+				return
+			}
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusBadRequest)
+			w.Write(jsonbyte)
+			return
+		}
+		Team := db.TeamData{ID: teamid}
+		db.SQLAccess.Gorm.First(&Team)
+		if !Team.CanEdit(userid) {
+			fmt.Println("You dont have permission to edit this server.")
+			res := SimpleJSONResponse{
+				Response:     "error",
+				Errorcode:    http.StatusUnauthorized,
+				Errormessage: "You dont have permission to edit this server.",
+			}
+			jsonbyte, err := json.Marshal(res)
+			if err != nil {
+				http.Error(w, "Internal ERROR", http.StatusInternalServerError)
+				return
+			}
+			w.Header().Set("Content-Type", "application/json")
+			w.Write(jsonbyte)
+			return
+		}
+		err = json.NewDecoder(r.Body).Decode(&Team)
+		if err != nil {
+			fmt.Println("Failed to decode JSON")
+			res := SimpleJSONResponse{
+				Response:     "error",
+				Errorcode:    http.StatusBadRequest,
+				Errormessage: "JSON Format invalid",
+			}
+			jsonbyte, err := json.Marshal(res)
+			if err != nil {
+				http.Error(w, "Internal ERROR", http.StatusInternalServerError)
+				return
+			}
+			w.Header().Set("Content-Type", "application/json")
+			w.Write(jsonbyte)
+			return
+		}
+		Team.ID = teamid
+		Team.UserID = userid
+
+		_, err = Team.Edit()
+		if err != nil {
+			fmt.Printf("Failed to edit team %v\n", teamid)
+			http.Error(w, "", http.StatusInternalServerError)
+			res := SimpleJSONResponse{
+				Response:     "error",
+				Errorcode:    http.StatusInternalServerError,
+				Errormessage: "Failed to edit team",
+			}
+			jsonbyte, err := json.Marshal(res)
+			if err != nil {
+				http.Error(w, "Internal ERROR", http.StatusInternalServerError)
+				return
+			}
+			w.Header().Set("Content-Type", "application/json")
+			w.Write(jsonbyte)
 			return
 		}
 		w.WriteHeader(http.StatusOK)
@@ -528,6 +652,99 @@ func CreateTeam(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// DeleteTeam Deletes team // TODO
+func DeleteTeam(w http.ResponseWriter, r *http.Request) {
+	fmt.Printf("DeleteTeam\n")
+	var IsLoggedIn = false
+	s := db.Sess.Start(w, r)
+	if s.Get("Loggedin") != nil {
+		IsLoggedIn = s.Get("Loggedin").(bool)
+	}
+	if IsLoggedIn {
+		userid := s.Get("UserID").(int)
+		vars := mux.Vars(r)
+		teamID, err := strconv.Atoi(vars["teamID"])
+		if err != nil {
+			fmt.Println("teamID should be int")
+			res := SimpleJSONResponse{
+				Response:     "error",
+				Errorcode:    http.StatusBadRequest,
+				Errormessage: "teamID should be int.",
+			}
+			jsonbyte, err := json.Marshal(res)
+			if err != nil {
+				http.Error(w, "Internal ERROR", http.StatusInternalServerError)
+				return
+			}
+			w.Header().Set("Content-Type", "application/json")
+			w.Write(jsonbyte)
+			return
+		}
+		Team := db.TeamData{ID: teamID}
+
+		if !Team.CanEdit(userid) {
+			fmt.Println("You dont have permission to edit this server.")
+			res := SimpleJSONResponse{
+				Response:     "error",
+				Errorcode:    http.StatusUnauthorized,
+				Errormessage: "You dont have permission to edit this server.",
+			}
+			jsonbyte, err := json.Marshal(res)
+			if err != nil {
+				http.Error(w, "Internal ERROR", http.StatusInternalServerError)
+				return
+			}
+			w.Header().Set("Content-Type", "application/json")
+			w.Write(jsonbyte)
+			return
+		}
+
+		err = Team.Delete()
+		if err != nil {
+			fmt.Printf("Failed to delete team %v\n", teamID)
+			http.Error(w, "", http.StatusInternalServerError)
+			res := SimpleJSONResponse{
+				Response:     "error",
+				Errorcode:    http.StatusInternalServerError,
+				Errormessage: "Failed to delete team",
+			}
+			jsonbyte, err := json.Marshal(res)
+			if err != nil {
+				http.Error(w, "Internal ERROR", http.StatusInternalServerError)
+				return
+			}
+			w.Header().Set("Content-Type", "application/json")
+			w.Write(jsonbyte)
+			return
+		}
+		w.WriteHeader(http.StatusOK)
+		res := SimpleJSONResponse{
+			Response: "OK",
+		}
+		jsonbyte, err := json.Marshal(res)
+		if err != nil {
+			http.Error(w, "Internal ERROR", http.StatusInternalServerError)
+			return
+		}
+		w.Header().Set("Content-Type", "application/json")
+		w.Write(jsonbyte)
+	} else {
+		w.WriteHeader(http.StatusUnauthorized)
+		res := SimpleJSONResponse{
+			Errorcode:    http.StatusUnauthorized,
+			Errormessage: "Forbidden",
+		}
+		jsonbyte, err := json.Marshal(res)
+		if err != nil {
+			http.Error(w, "Internal ERROR", http.StatusInternalServerError)
+			return
+		}
+		w.Header().Set("Content-Type", "application/json")
+		w.Write(jsonbyte)
+	}
+}
+
+// CreateServer Register server to DB
 func CreateServer(w http.ResponseWriter, r *http.Request) {
 	fmt.Printf("CreateServer\n")
 	var IsLoggedIn = false
@@ -576,6 +793,16 @@ func CreateServer(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		w.Write(jsonbyte)
 	}
+}
+
+// EditServer Edits Server information // TODO
+func EditServer(w http.ResponseWriter, r *http.Request) {
+
+}
+
+// DeleteServer Deletes Server information // TODO
+func DeleteServer(w http.ResponseWriter, r *http.Request) {
+
 }
 
 // CreateMatch Registers match info

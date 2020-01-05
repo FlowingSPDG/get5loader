@@ -63,7 +63,18 @@ export default new Router({
     {
       path: '/team/create',
       name: 'Create Team',
-      component: TeamCreate
+      component: TeamCreate,
+      props: {
+        edit: false
+      }
+    },
+    {
+      path: '/team/:teamid/edit',
+      name: 'Edit Team',
+      component: TeamCreate,
+      props: {
+        edit: true
+      }
     },
     {
       path: '/team/:teamid',
