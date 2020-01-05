@@ -62,8 +62,6 @@ export default {
           } else if (typeof err.response.data === 'object') {
             this.$message.error(err.response.data.errormessage)
           }
-        } else {
-          console.error(err)
         }
       }
     }
