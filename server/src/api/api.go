@@ -13,14 +13,17 @@ import (
 	"github.com/FlowingSPDG/get5-web-go/server/src/db"
 )
 
+// CheckLoggedInJSON Struct type for /api/v1/CheckLoggedIn API.
 type CheckLoggedInJSON struct {
 	IsLoggedIn bool   `json:"isLoggedIn"`
+	IsAdmin    bool   `json:"isAdmin"`
 	SteamID    string `json:"steamid"`
 	UserID     int    `json:"userid"`
 }
 
+// CheckLoggedIn handler for /api/v1/CheckLoggedIn API.
 func CheckLoggedIn(w http.ResponseWriter, r *http.Request) {
-	fmt.Printf("CheckLoggedIn\n")
+	fmt.Println("CheckLoggedIn")
 	response := CheckLoggedInJSON{
 		IsLoggedIn: false,
 	}
@@ -29,6 +32,7 @@ func CheckLoggedIn(w http.ResponseWriter, r *http.Request) {
 		response.IsLoggedIn = s.Get("Loggedin").(bool)
 		response.SteamID = s.Get("SteamID").(string)
 		response.UserID = s.Get("UserID").(int)
+		response.IsAdmin = s.Get("Admin").(bool)
 	}
 	jsonbyte, err := json.Marshal(response)
 	if err != nil {

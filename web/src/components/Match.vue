@@ -10,24 +10,19 @@
             {{ score_symbol(matchdata.team1_score, matchdata.team2_score) }}
             {{ matchdata.team2_score }}
             <img :src="get_logo_or_flag_link(team1,team2).team2" /> <router-link :to="'/team/'+team2.id"> {{team2.name}}</router-link>
-
-            <div class="dropdown dropdown-header pull-right" v-if="user.adminaccess == true && matchdata.live && match.pending">
-                <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                    Admin tools
-                    <span class="caret"></span>
-                </button>
-                <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
-                    <li v-if="matchdata.live"><a id="pause" :href="this.$route.path+'/pause'">Pause match</a></li>
-                    <li v-if="matchdata.live"><a id="unpause" :href="this.$route.path+'/unpause'">Unpause match</a></li>
-                    <li><a id="addplayer_team1" href="#">Add player to team1</a></li>
-                    <li><a id="addplayer_team2" href="#">Add player to team2</a></li>
-                    <li><a id="addplayer_spec" href="#">Add player to specator list</a></li>
-                    <li><a id="rcon_command" href="#">Send rcon command</a></li>
-                    <li role="separator" class="divider"></li>
-                    <li><a id="backup_manager" :href="this.$route.path+'/backup'">Load a backup file</a></li>
-                    <li><a :href="this.$route.path+'/cancel'">Cancel match</a></li>
-                </ul>
-            </div>
+              <el-dropdown v-if="AdminToolsAvailable()" @command="handleCommand">
+                <el-button type="primary">Admin tools<i class="el-icon-arrow-down el-icon--right"></i></el-button>
+                <el-dropdown-menu slot="dropdown">
+                  <el-dropdown-item v-if="matchdata.live">Pause match</el-dropdown-item><br>
+                  <el-dropdown-item v-if="matchdata.live">Unpause match</el-dropdown-item><br>
+                  <el-dropdown-item id="addplayer_team1">Add player to team1</el-dropdown-item><br>
+                  <el-dropdown-item id="addplayer_team2">Add player to team2</el-dropdown-item><br>
+                  <el-dropdown-item id="addplayer_spec">Add player to specator list</el-dropdown-item><br>
+                  <el-dropdown-item id="rcon_command">Send rcon command</el-dropdown-item><br>
+                  <el-dropdown-item devided id="backup_manager">Load a backup file</el-dropdown-item><br>
+                  <el-dropdown-item devided command="cancelmatch">Cancel match</el-dropdown-item><br>
+                </el-dropdown-menu>
+              </el-dropdown>
 
         </h1>
 
@@ -294,8 +289,8 @@ export default {
     this.team1 = await team1Promise
     this.team2 = await team2Promise
     this.loading = false
-    let data = await this.axios.get('/api/v1/CheckLoggedIn')
-    this.user = data
+    let res = await this.axios.get('/api/v1/CheckLoggedIn')
+    this.user = res.data
     // this.Editable = this.CheckTeamEditable(this.$route.params.teamid,this.user.userid) // TODO
   },
   methods: {
@@ -426,6 +421,37 @@ export default {
           message: 'This is an info message'
         });
       */
+    },
+    handleCommand: function (command) {
+      if (command === 'cancelmatch') {
+        this.CancelMatch(this.matchdata.id)
+      }
+    },
+    async CancelMatch (matchid) {
+      try {
+        const res = await this.axios.post(`/api/v1/match/${matchid}/cancel`)
+        this.$message({
+          message: 'Successfully deleted server.',
+          type: 'success'
+        })
+        this.$router.push('/mymatches')
+      } catch (err) {
+        if (err.response) {
+          if (typeof err.response.data === 'string') {
+            this.$message.error(err.response.data)
+          } else if (typeof err.response.data === 'object') {
+            this.$message.error(err.response.data.errormessage)
+          }
+        }
+      }
+    },
+    AdminToolsAvailable: function () {
+      if (this.user.isAdmin && this.matchdata.live) {
+        return true
+      } else if (this.user.isAdmin && this.matchdata.pending) {
+        return true
+      }
+      return false
     }
   }
 }
