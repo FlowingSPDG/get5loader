@@ -24,7 +24,7 @@
   </el-form-item>
 
   <el-form-item style="width: 653px;" v-if="edit">
-    <el-button type="primary" @click="UpdateServer">UpdateServer</el-button>
+    <el-button type="primary" @click="UpdateServer">Update</el-button>
   </el-form-item>
 
   <el-form-item style="width: 653px;" v-else>
@@ -69,6 +69,7 @@
 <script>
 export default {
   name: 'ServerCreate',
+  props: ['edit'],
   data () {
     var ValidateIPaddress = (rule, value, callback) => {
       if (/^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/.test(value)) {
@@ -107,8 +108,7 @@ export default {
         public_server: [
           { required: false, message: 'Please check if server is public', trigger: 'change' }
         ]
-      },
-      edit: false // TODO
+      }
     }
   },
   async created () {
@@ -120,6 +120,22 @@ export default {
       showClose: true
     })
     this.user = await this.axios.get('/api/v1/CheckLoggedIn')
+    if (this.edit) {
+      try {
+        let res = await this.axios.get(`api/v1/server/${this.$route.params.serverID}/GetServerInfo`)
+        this.form.ip_string = res.data.ip_string
+        this.form.port = res.data.port
+        this.form.rcon_password = res.data.rcon_password
+        this.form.display_name = res.data.display_name
+        this.form.public_server = res.data.public_server
+      } catch (err) {
+        if (typeof err.response.data === 'string') {
+          this.$message.error(err.response.data)
+        } else if (typeof err.response.data === 'object') {
+          this.$message.error(err.response.data.errormessage)
+        }
+      }
+    }
   },
   methods: {
     async RegisterServer () {
@@ -145,10 +161,33 @@ export default {
           this.$message.error('Please fill form')
         }
       })
+    },
+    async UpdateServer () {
+      const json = JSON.stringify(this.form)
+      this.$refs['form'].validate(async (valid) => {
+        if (valid) {
+          try {
+            let res = await this.axios.post(`/api/v1/server/${this.$route.params.serverID}/edit`, json)
+            this.form = {}
+            this.$message({
+              message: 'Successfully edited server.',
+              type: 'success'
+            })
+            this.$router.push('/myservers')
+          } catch (err) {
+            if (err.response) {
+              if (typeof err.response.data === 'string') {
+                this.$message.error(err.response.data)
+              } else if (typeof err.response.data === 'object') {
+                this.$message.error(err.response.data.errormessage)
+              }
+            }
+          }
+        } else {
+          this.$message.error('Please fill form')
+        }
+      })
     }
-  },
-  async UpdateServer () { // TODO
-
   }
 }
 </script>

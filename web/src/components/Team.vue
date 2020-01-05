@@ -3,8 +3,11 @@
   <div class="container">
     <h1 v-cloak>
       <img :src="get_flag_link(team)" /> {{ team.name }} {{ team.logo }}
-      <div class="pull-right" v-if="Editable == true">
+      <div class="pull-right" v-if="Editable">
         <router-link :to="'/team/'+team.id+'/edit'" class="btn btn-primary btn-xs">Edit</router-link>
+      </div>
+      <div class="pull-right" v-if="Deletable">
+        <button @click="DeleteTeam(team.id)" class="btn btn-primary btn-xs">Delete</button>
       </div>
     </h1>
 
@@ -57,10 +60,11 @@ export default {
       teamdatas: {},
       user: {
         isLoggedIn: false,
-        steamid: '',
-        userid: ''
+        steamid: 0,
+        userid: 0
       },
-      Editable: false
+      Editable: false,
+      Deletable: false
     }
   },
   async created () {
@@ -81,6 +85,7 @@ export default {
     const loggedin = await this.axios.get('/api/v1/CheckLoggedIn')
     this.user = loggedin.data
     this.Editable = this.CheckTeamEditable(this.user.userid)
+    this.Deletable = this.CheckTeamDeletable(this.user.userid)
   },
   methods: {
     async GetTeamData (teamid) {
@@ -108,7 +113,10 @@ export default {
       })
     },
     CheckTeamEditable: function (userid) {
-      return this.team.user_id === userid
+      return this.team.user_id === parseInt(userid)
+    },
+    CheckTeamDeletable: function (userid) {
+      return this.team.user_id === parseInt(userid)
     },
     get_flag_link: function (team) {
       if (team.flag === '') {
@@ -184,6 +192,24 @@ export default {
           }
         }
       })
+    },
+    async DeleteTeam (teamid) {
+      try {
+        let res = await this.axios.delete(`/api/v1/team/${teamid}/delete`)
+        this.$message({
+          message: 'Successfully deleted team.',
+          type: 'success'
+        })
+        this.$router.push('/myteams')
+      } catch (err) {
+        if (err.response) {
+          if (typeof err.response.data === 'string') {
+            this.$message.error(err.response.data)
+          } else if (typeof err.response.data === 'object') {
+            this.$message.error(err.response.data.errormessage)
+          }
+        }
+      }
     }
   }
 }

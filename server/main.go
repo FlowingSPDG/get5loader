@@ -76,7 +76,7 @@ func main() {
 	r.PathPrefix("/img").Handler(http.StripPrefix("/img/", http.FileServer(http.Dir("static/img"))))
 	r.PathPrefix("/fonts").Handler(http.StripPrefix("/fonts/", http.FileServer(http.Dir("static/fonts"))))
 
-	//s := r.Host(HOST).Subrouter() // incase if we need vhost thing
+	//s := r.Host(HOST).Subrouter() // in-case if we need vhost thing
 
 	// misc
 	r.HandleFunc("/api/v1/GetMatches", api.GetMatches).Methods("GET")
@@ -95,9 +95,13 @@ func main() {
 	r.HandleFunc("/api/v1/team/{teamID}/GetRecentMatches", api.GetRecentMatches).Methods("GET")
 	r.HandleFunc("/api/v1/team/{teamID}/CheckUserCanEdit", api.CheckUserCanEdit).Methods("GET")
 	r.HandleFunc("/api/v1/team/create", api.CreateTeam).Methods("POST")
+	r.HandleFunc("/api/v1/team/{teamID}/edit", api.EditTeam).Methods("POST")
+	r.HandleFunc("/api/v1/team/{teamID}/delete", api.DeleteTeam).Methods("DELETE")
 	r.HandleFunc("/api/v1/user/{userID}/GetUserInfo", api.GetUserInfo).Methods("GET")
 	r.HandleFunc("/api/v1/server/{serverID}/GetServerInfo", api.GetServerInfo).Methods("GET")
 	r.HandleFunc("/api/v1/server/create", api.CreateServer).Methods("POST")
+	r.HandleFunc("/api/v1/server/{serverID}/edit", api.EditServer).Methods("POST")
+	r.HandleFunc("/api/v1/server/{serverID}/delete", api.DeleteServer).Methods("DELETE")
 
 	// GET5 API
 	r.HandleFunc("/api/v1/match/{matchID}/config", api.MatchConfigHandler)
@@ -106,8 +110,8 @@ func main() {
 	r.HandleFunc("/api/v1/match/{matchID}/map/{mapNumber}/update", api.MatchMapUpdateHandler).Methods("POST")
 	r.HandleFunc("/api/v1/match/{matchID}/map/{mapNumber}/finish", api.MatchMapFinishHandler).Methods("POST")
 	r.HandleFunc("/api/v1/match/{matchID}/map/{mapNumber}/player/{steamid64}/update", api.MatchMapPlayerUpdateHandler).Methods("POST")
-	//r.HandleFunc("/api/v1/match/{matchID}/vetoUpdate", api.MatchVetoUpdateHandler).Methods("POST")
-	//r.HandleFunc("/api/v1/match/{matchID}/map/{mapNumber}/demo", api.MatchDemoUploadHandler).Methods("POST")
+	//r.HandleFunc("/api/v1/match/{matchID}/vetoUpdate", api.MatchVetoUpdateHandler).Methods("POST") // TODO
+	//r.HandleFunc("/api/v1/match/{matchID}/map/{mapNumber}/demo", api.MatchDemoUploadHandler).Methods("POST") // TODO
 
 	// session handling
 	r.HandleFunc("/login", db.LoginHandler).Methods("GET")
@@ -123,16 +127,10 @@ func main() {
 		r.HandleFunc("/match/{matchID}/adduser", get5.MatchAddUserHandler) // ?
 		//r.HandleFunc("/match/{matchID}/sendconfig", get5.MatchSendConfigHandler) // ?
 		r.HandleFunc("/match/{matchID}/backup", get5.MatchBackupHandler).Methods("GET") // GET
-
-		r.HandleFunc("/team/{teamID}/edit", get5.TeamEditHandler)         // GET/POST
-		r.HandleFunc("/team/{teamID}/delete", get5.TeamDeleteHandler)     // ?
-
-		r.HandleFunc("/server/{serverid}/edit", get5.ServerEditHandler)                    // GET/POST
-		r.HandleFunc("/server/{serverid}/delete", get5.ServerDeleteHandler).Methods("GET") // GET
 	*/
 
-	r.Methods("GET", "POST")
+	r.Methods("GET", "POST", "DELETE")
 	http.Handle("/", r)
-	fmt.Println("RUNNING")
+	fmt.Printf("RUNNING at %v\n", HOST)
 	log.Fatal(http.ListenAndServe(HOST, nil))
 }

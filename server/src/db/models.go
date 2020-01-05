@@ -146,6 +146,47 @@ func (g *GameServerData) Create(userid int, displayname string, ipstring string,
 	return g, nil
 }
 
+// CanEdit Check if server is editable for user or not.
+func (g *GameServerData) CanEdit(userid int) bool {
+	if g.UserID == 0 {
+		SQLAccess.Gorm.Where("id = ?", g.ID).First(&g)
+	}
+	if userid == 0 {
+		return false
+	}
+	return g.UserID == userid
+}
+
+// CanDelete Check if server is deletable for user or not.
+func (g *GameServerData) CanDelete(userid int) bool {
+	return g.CanEdit(userid)
+}
+
+// Edit Edits GameServer information.
+func (g *GameServerData) Edit() (*GameServerData, error) {
+	if g.ID == 0 {
+		return nil, fmt.Errorf("ID not valid")
+	}
+	Server := GameServerData{}
+	SQLAccess.Gorm.Where("id = ?", g.ID).First(&Server)
+	SQLAccess.Gorm.Model(&Server).Update(&g)
+	SQLAccess.Gorm.Save(&g)
+	return g, nil
+}
+
+// Delete Deletes GameServer information.
+func (g *GameServerData) Delete() error {
+	if g.ID == 0 {
+		return fmt.Errorf("ID not valid")
+	}
+	rec := SQLAccess.Gorm.Where("id = ?", g.ID).First(&g)
+	if rec.RecordNotFound() {
+		return fmt.Errorf("Server not found")
+	}
+	SQLAccess.Gorm.Delete(&g)
+	return nil
+}
+
 // SendRcon Sends Remote-Commands to specific IP SRCDS.
 func (g *GameServerData) SendRcon(cmd string) (string, error) {
 	if !checkIP(g.IPString) {
@@ -223,19 +264,35 @@ func (t *TeamData) Create(userid int, name string, tag string, flag string, logo
 	return t, nil
 }
 
-// SetData Modify team data.
-func (t *TeamData) SetData(name string, tag string, flag string, logo string, auths []byte, publicteam bool) *TeamData {
-	t.Name = name
-	t.Tag = tag
-	t.Flag = flag
-	t.Logo = logo
-	t.AuthsPickle = auths // should convert into pickle. TODO
-	t.PublicTeam = publicteam
-	return t
+// Edit Edits TeamData information.
+func (t *TeamData) Edit() (*TeamData, error) {
+	if t.ID == 0 {
+		return nil, fmt.Errorf("ID not valid")
+	}
+	Team := TeamData{}
+	SQLAccess.Gorm.Where("id = ?", t.ID).First(&Team)
+	SQLAccess.Gorm.Model(&Team).Update(&t)
+	SQLAccess.Gorm.Save(&t)
+	return t, nil
+}
+
+// Delete Deletes TeamData information.
+func (t *TeamData) Delete() error {
+	if t.ID == 0 {
+		return fmt.Errorf("ID not valid")
+	}
+	rec := SQLAccess.Gorm.Where("id = ?", t.ID).Delete(&t)
+	if rec.RecordNotFound() {
+		return fmt.Errorf("Team not found")
+	}
+	return nil
 }
 
 // CanEdit Check if server is editable for user or not.
 func (t *TeamData) CanEdit(userid int) bool {
+	if t.UserID == 0 {
+		SQLAccess.Gorm.Where("id = ?", t.ID).First(&t)
+	}
 	if userid == 0 {
 		return false
 	} else if t.UserID == userid {
@@ -249,7 +306,8 @@ func (t *TeamData) CanDelete(userid int) bool {
 	if t.CanEdit(userid) == false {
 		return false
 	}
-	return len(t.GetRecentMatches(10)) == 0
+	// return len(t.GetRecentMatches(10)) == 0 // ?
+	return true
 }
 
 // GetPlayers Gets registered player's steamid64.

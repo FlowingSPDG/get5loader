@@ -63,7 +63,18 @@ export default new Router({
     {
       path: '/team/create',
       name: 'Create Team',
-      component: TeamCreate
+      component: TeamCreate,
+      props: {
+        edit: false
+      }
+    },
+    {
+      path: '/team/:teamid/edit',
+      name: 'Edit Team',
+      component: TeamCreate,
+      props: {
+        edit: true
+      }
     },
     {
       path: '/team/:teamid',
@@ -83,7 +94,18 @@ export default new Router({
     {
       path: '/server/create',
       name: 'Create Server',
-      component: ServerCreate
+      component: ServerCreate,
+      props: {
+        edit: true
+      }
+    },
+    {
+      path: '/server/:serverID/edit',
+      name: 'Edit Server',
+      component: ServerCreate,
+      props: {
+        edit: true
+      }
     }
   ]
 })

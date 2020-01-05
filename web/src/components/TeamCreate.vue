@@ -119,8 +119,11 @@
     <el-switch v-model="form.public_team"></el-switch>
   </el-form-item>
 
-  <el-form-item style="width: 653px;">
+  <el-form-item v-if="!edit" style="width: 653px;">
     <el-button type="primary" @click="RegisterTeam">Create</el-button>
+  </el-form-item>
+  <el-form-item v-if="edit" style="width: 653px;">
+    <el-button type="primary" @click="UpdateTeam">Update</el-button>
   </el-form-item>
 </el-form>
 
@@ -161,6 +164,7 @@
 <script>
 export default {
   name: 'TeamCreate',
+  props: ['edit'],
   data () {
     return {
       user: {
@@ -205,12 +209,28 @@ export default {
         public_team: [
           { required: false, message: 'Please select team publicity', trigger: 'change' }
         ]
-      },
-      edit: false // TODO
+      }
     }
   },
   async created () {
     this.user = await this.axios.get('/api/v1/CheckLoggedIn')
+    if (this.edit) {
+      try {
+        let res = await this.axios.get(`api/v1/team/${this.$route.params.teamid}/GetTeamInfo`)
+        this.form.name = res.data.name
+        this.form.tag = res.data.tag
+        this.form.flag = res.data.flag
+        this.form.logo = res.data.logo
+        this.form.auths = res.data.steamids
+        this.form.public_team = res.data.public_team
+      } catch (err) {
+        if (typeof err.response.data === 'string') {
+          this.$message.error(err.response.data)
+        } else if (typeof err.response.data === 'object') {
+          this.$message.error(err.response.data.errormessage)
+        }
+      }
+    }
   },
   methods: {
     async RegisterTeam () {
@@ -230,6 +250,32 @@ export default {
               this.$message.error(err.response.data)
             } else if (typeof err.response.data === 'object') {
               this.$message.error(err.response.data.errormessage)
+            }
+          }
+        } else {
+          this.$message.error('Please fill form')
+        }
+      })
+    },
+    async UpdateTeam () {
+      const json = JSON.stringify(this.form)
+      this.$refs['form'].validate(async (valid) => {
+        if (valid) {
+          try {
+            let res = await this.axios.post(`/api/v1/team/${this.$route.params.teamid}/edit`, json)
+            this.form = {}
+            this.$message({
+              message: 'Successfully edited team.',
+              type: 'success'
+            })
+            this.$router.push('/myteams')
+          } catch (err) {
+            if (err.response) {
+              if (typeof err.response.data === 'string') {
+                this.$message.error(err.response.data)
+              } else if (typeof err.response.data === 'object') {
+                this.$message.error(err.response.data.errormessage)
+              }
             }
           }
         } else {
