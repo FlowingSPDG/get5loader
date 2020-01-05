@@ -6,12 +6,17 @@ dist: trusty
 sudo: false
 cache: yarn
 go:
-  - "1.13.5"
+  - "1.13.x"
+install: false
+git:
+  depth: 1
 install:
  - make deps
 branches:
   only:
     - master
+notifications:
+  email: false
 
 script:
  - make build-all
