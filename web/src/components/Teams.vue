@@ -19,7 +19,7 @@
       </div>
 
       <div class="pull-right" v-if="CheckTeamEditable(team)">
-        <a :href="'/team/'+team.id+'/edit'" class="btn btn-primary btn-xs">Edit</a>
+        <router-link :to="'/team/'+team.id+'/edit'" class="btn btn-primary btn-xs">Edit</router-link>
       </div>
 
     </li>
@@ -66,6 +66,26 @@ export default {
     },
     CheckTeamDeletable: function (team) {
       return team.user_id === this.user.id
+    },
+    async DeleteTeam (teamid) {
+      try {
+        let res = await this.axios.delete(`/api/v1/team/${teamid}/delete`)
+        this.$message({
+          message: 'Successfully deleted team.',
+          type: 'success'
+        })
+        this.$router.push('/myteams')
+      } catch (err) {
+        if (err.response) {
+          if (typeof err.response.data === 'string') {
+            this.$message.error(err.response.data)
+          } else if (typeof err.response.data === 'object') {
+            this.$message.error(err.response.data.errormessage)
+          }
+        } else {
+          console.error(err)
+        }
+      }
     }
 
   }

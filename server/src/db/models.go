@@ -262,6 +262,9 @@ func (t *TeamData) Delete() error {
 
 // CanEdit Check if server is editable for user or not.
 func (t *TeamData) CanEdit(userid int) bool {
+	if t.UserID == 0 {
+		SQLAccess.Gorm.Where("id = ?", t.ID).First(&t)
+	}
 	if userid == 0 {
 		return false
 	} else if t.UserID == userid {
@@ -275,7 +278,8 @@ func (t *TeamData) CanDelete(userid int) bool {
 	if t.CanEdit(userid) == false {
 		return false
 	}
-	return len(t.GetRecentMatches(10)) == 0
+	// return len(t.GetRecentMatches(10)) == 0 // ?
+	return true
 }
 
 // GetPlayers Gets registered player's steamid64.

@@ -96,7 +96,7 @@ func main() {
 	r.HandleFunc("/api/v1/team/{teamID}/CheckUserCanEdit", api.CheckUserCanEdit).Methods("GET")
 	r.HandleFunc("/api/v1/team/create", api.CreateTeam).Methods("POST")
 	r.HandleFunc("/api/v1/team/{teamID}/edit", api.EditTeam).Methods("POST")
-	r.HandleFunc("/api/v1/team/{teamID}/delete", api.DeleteTeam).Methods("POST")
+	r.HandleFunc("/api/v1/team/{teamID}/delete", api.DeleteTeam).Methods("DELETE")
 	r.HandleFunc("/api/v1/user/{userID}/GetUserInfo", api.GetUserInfo).Methods("GET")
 	r.HandleFunc("/api/v1/server/{serverID}/GetServerInfo", api.GetServerInfo).Methods("GET")
 	r.HandleFunc("/api/v1/server/create", api.CreateServer).Methods("POST")
@@ -129,7 +129,7 @@ func main() {
 		r.HandleFunc("/match/{matchID}/backup", get5.MatchBackupHandler).Methods("GET") // GET
 	*/
 
-	r.Methods("GET", "POST")
+	r.Methods("GET", "POST", "DELETE")
 	http.Handle("/", r)
 	fmt.Printf("RUNNING at %v\n", HOST)
 	log.Fatal(http.ListenAndServe(HOST, nil))

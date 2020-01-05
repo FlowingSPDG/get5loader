@@ -572,7 +572,7 @@ func EditTeam(w http.ResponseWriter, r *http.Request) {
 		Team := db.TeamData{ID: teamid}
 		db.SQLAccess.Gorm.First(&Team)
 		if !Team.CanEdit(userid) {
-			fmt.Println("You dont have permission to edit this server.")
+			fmt.Println("You do not have permission to edit this server.")
 			res := SimpleJSONResponse{
 				Response:     "error",
 				Errorcode:    http.StatusUnauthorized,
@@ -583,6 +583,7 @@ func EditTeam(w http.ResponseWriter, r *http.Request) {
 				http.Error(w, "Internal ERROR", http.StatusInternalServerError)
 				return
 			}
+			w.WriteHeader(http.StatusUnauthorized)
 			w.Header().Set("Content-Type", "application/json")
 			w.Write(jsonbyte)
 			return
@@ -600,6 +601,7 @@ func EditTeam(w http.ResponseWriter, r *http.Request) {
 				http.Error(w, "Internal ERROR", http.StatusInternalServerError)
 				return
 			}
+			w.WriteHeader(http.StatusBadRequest)
 			w.Header().Set("Content-Type", "application/json")
 			w.Write(jsonbyte)
 			return
@@ -621,6 +623,7 @@ func EditTeam(w http.ResponseWriter, r *http.Request) {
 				http.Error(w, "Internal ERROR", http.StatusInternalServerError)
 				return
 			}
+			w.WriteHeader(http.StatusInternalServerError)
 			w.Header().Set("Content-Type", "application/json")
 			w.Write(jsonbyte)
 			return
@@ -647,6 +650,7 @@ func EditTeam(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "Internal ERROR", http.StatusInternalServerError)
 			return
 		}
+		w.WriteHeader(http.StatusUnauthorized)
 		w.Header().Set("Content-Type", "application/json")
 		w.Write(jsonbyte)
 	}
@@ -676,24 +680,26 @@ func DeleteTeam(w http.ResponseWriter, r *http.Request) {
 				http.Error(w, "Internal ERROR", http.StatusInternalServerError)
 				return
 			}
+			w.WriteHeader(http.StatusBadRequest)
 			w.Header().Set("Content-Type", "application/json")
 			w.Write(jsonbyte)
 			return
 		}
 		Team := db.TeamData{ID: teamID}
 
-		if !Team.CanEdit(userid) {
-			fmt.Println("You dont have permission to edit this server.")
+		if !Team.CanDelete(userid) {
+			fmt.Println("You dont have permission to delete this server.")
 			res := SimpleJSONResponse{
 				Response:     "error",
 				Errorcode:    http.StatusUnauthorized,
-				Errormessage: "You dont have permission to edit this server.",
+				Errormessage: "You dont have permission to delete this server.",
 			}
 			jsonbyte, err := json.Marshal(res)
 			if err != nil {
 				http.Error(w, "Internal ERROR", http.StatusInternalServerError)
 				return
 			}
+			w.WriteHeader(http.StatusUnauthorized)
 			w.Header().Set("Content-Type", "application/json")
 			w.Write(jsonbyte)
 			return
@@ -713,6 +719,7 @@ func DeleteTeam(w http.ResponseWriter, r *http.Request) {
 				http.Error(w, "Internal ERROR", http.StatusInternalServerError)
 				return
 			}
+			w.WriteHeader(http.StatusInternalServerError)
 			w.Header().Set("Content-Type", "application/json")
 			w.Write(jsonbyte)
 			return
@@ -726,6 +733,7 @@ func DeleteTeam(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "Internal ERROR", http.StatusInternalServerError)
 			return
 		}
+		w.WriteHeader(http.StatusInternalServerError)
 		w.Header().Set("Content-Type", "application/json")
 		w.Write(jsonbyte)
 	} else {
@@ -739,6 +747,7 @@ func DeleteTeam(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "Internal ERROR", http.StatusInternalServerError)
 			return
 		}
+		w.WriteHeader(http.StatusUnauthorized)
 		w.Header().Set("Content-Type", "application/json")
 		w.Write(jsonbyte)
 	}
