@@ -5,8 +5,6 @@ cache: yarn
 install: false
 git:
   depth: 1
-install:
- - make deps
 branches:
   only:
     - master
@@ -19,12 +17,13 @@ matrix:
       before_install:
         - make deps
       script:
-        - make build-linux
-        - make build-mac
-        - make build-windows
+        - make build-linux-server-only
+        - make build-mac-server-only
+        - make build-windows-server-only
     - language: node_js
       node_js: 10.18.0
       before_install:
-        - make deps
+        - yarn global add @vue/cli
+        - cd ./web && yarn
       script:
         - make build-web

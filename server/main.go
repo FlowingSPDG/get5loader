@@ -23,6 +23,11 @@ type Config struct {
 	HOST        string
 }
 
+const (
+	// VERSION get5-web-go Version
+	VERSION = "v0.1.0"
+)
+
 var (
 	// StaticDir Directly where serves static files
 	StaticDir = "./static"
