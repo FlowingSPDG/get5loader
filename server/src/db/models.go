@@ -167,13 +167,10 @@ func (g *GameServerData) Edit() (*GameServerData, error) {
 	if g.ID == 0 {
 		return nil, fmt.Errorf("ID not valid")
 	}
-	rec := SQLAccess.Gorm.Where("id = ?", g.ID).First(&g)
-	if rec.RecordNotFound() {
-		return g, fmt.Errorf("Server not found")
-	}
-	var gUpdate = *g
-	SQLAccess.Gorm.Model(&g).Update(&gUpdate)
-	SQLAccess.Gorm.Save(&gUpdate)
+	Server := GameServerData{}
+	SQLAccess.Gorm.Where("id = ?", g.ID).First(&Server)
+	SQLAccess.Gorm.Model(&Server).Update(&g)
+	SQLAccess.Gorm.Save(&g)
 	return g, nil
 }
 
@@ -274,7 +271,6 @@ func (t *TeamData) Edit() (*TeamData, error) {
 	}
 	Team := TeamData{}
 	SQLAccess.Gorm.Where("id = ?", t.ID).First(&Team)
-	fmt.Println(t)
 	SQLAccess.Gorm.Model(&Team).Update(&t)
 	SQLAccess.Gorm.Save(&t)
 	return t, nil

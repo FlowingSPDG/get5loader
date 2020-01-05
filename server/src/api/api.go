@@ -834,8 +834,7 @@ func EditServer(w http.ResponseWriter, r *http.Request) {
 			w.Write(jsonbyte)
 			return
 		}
-		Server := db.TeamData{ID: serverID}
-		db.SQLAccess.Gorm.First(&Server)
+		Server := db.GameServerData{ID: serverID}
 		if !Server.CanEdit(userid) {
 			fmt.Println("You do not have permission to edit this server.")
 			res := SimpleJSONResponse{

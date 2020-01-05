@@ -94,7 +94,18 @@ export default new Router({
     {
       path: '/server/create',
       name: 'Create Server',
-      component: ServerCreate
+      component: ServerCreate,
+      props: {
+        edit: true
+      }
+    },
+    {
+      path: '/server/:serverID/edit',
+      name: 'Edit Server',
+      component: ServerCreate,
+      props: {
+        edit: true
+      }
     }
   ]
 })
