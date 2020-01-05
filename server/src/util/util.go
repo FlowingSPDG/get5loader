@@ -12,13 +12,6 @@ import (
 
 	steam "github.com/kidoman/go-steam"
 	"strconv"
-
-	// a2s "github.com/rumblefrog/go-a2s"
-	_ "github.com/solovev/steam_go"
-	//_ "html/template"
-	_ "net/http"
-	_ "strconv"
-	_ "time"
 )
 
 func checkIP(ip string) bool {

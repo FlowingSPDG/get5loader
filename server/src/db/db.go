@@ -1,14 +1,9 @@
 package db
 
 import (
-	"time"
-	// "database/sql"
 	"fmt"
-
-	_ "github.com/go-sql-driver/mysql"
 	"github.com/jinzhu/gorm"
-
-	// "github.com/jinzhu/gorm/dialects/mysql"
+	"time"
 
 	"github.com/go-ini/ini"
 	"github.com/gorilla/mux"

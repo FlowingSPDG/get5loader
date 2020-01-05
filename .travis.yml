@@ -1,6 +1,4 @@
 language: go
-go: 
-
 language: go,node_js
 node_js:
   - "node"

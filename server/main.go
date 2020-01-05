@@ -9,8 +9,6 @@ import (
 	"github.com/FlowingSPDG/get5-web-go/server/src/db"
 	"github.com/go-ini/ini"
 	"github.com/gorilla/mux"
-	_ "github.com/hydrogen18/stalecucumber"
-	_ "github.com/solovev/steam_go"
 )
 
 // Config Configration Struct for config.ini
