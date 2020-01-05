@@ -1,3 +1,4 @@
+[![Build Status](https://travis-ci.org/FlowingSPDG/get5-web-go.svg?branch=master)](https://travis-ci.org/FlowingSPDG/get5-web-go)  
 get5-web-go
 ===========================
 **Status: Work-In-Progress!!!**
