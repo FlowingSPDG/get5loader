@@ -1,11 +1,11 @@
 language: go,node_js
 node_js:
-  - "node"
-dist: trusty
+  - "10.18.0"
+go:
+  - 1.13.5
+dist: xenial
 sudo: false
 cache: yarn
-go:
-  - "1.13.x"
 install: false
 git:
   depth: 1
