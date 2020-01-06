@@ -641,9 +641,9 @@ func (m *MatchData) Live() bool {
 }
 
 // GetServer Get match server ID as GameServerData
-func (m *MatchData) GetServer() GameServerData {
+func (m *MatchData) GetServer() *GameServerData {
 	SQLAccess.Gorm.Where("id = ?", m.ServerID).First(&m.Server)
-	return m.Server
+	return &m.Server
 }
 
 // GetCurrentScore Returns current match score. returns map-score if match is BO1.
@@ -821,9 +821,9 @@ func (m *MatchData) BuildMatchDict() (*MatchConfig, error) {
 }
 
 // GetMapStat Gets each map stat data as "MapStatsData" struct array.
-func (m *MatchData) GetMapStat() ([]MapStatsData, error) {
+func (m *MatchData) GetMapStat() (*[]MapStatsData, error) {
 	SQLAccess.Gorm.Limit(7).Where("match_id = ?", int(m.ID)).Find(&m.MapStats)
-	return m.MapStats, nil
+	return &m.MapStats, nil
 }
 
 // MapStatsData MapStatsData struct for map_stats table.

@@ -84,7 +84,11 @@ func MatchFinishHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	MatchUpdate.EndTime.Scan(time.Now())
 	server := MatchUpdate.GetServer()
-	db.SQLAccess.Gorm.Model(&server).Update("in_use = false")
+	serverUpdate := server
+	db.SQLAccess.Gorm.First(&serverUpdate)
+	serverUpdate.InUse = false
+	db.SQLAccess.Gorm.Model(&server).Update(&serverUpdate)
+	db.SQLAccess.Gorm.Save(&serverUpdate)
 	db.SQLAccess.Gorm.Model(&Match).Update(&MatchUpdate)
 	db.SQLAccess.Gorm.Save(&MatchUpdate)
 	fmt.Printf("Finished match %v, winner = %v\n", MatchUpdate.ID, winner)
@@ -181,7 +185,7 @@ func MatchMapUpdateHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// MatchMapFinishHandler Handler for /api/v1/match/{matchID}/map/{mapNumber}/finish API. // TODO
+// MatchMapFinishHandler Handler for /api/v1/match/{matchID}/map/{mapNumber}/finish API.
 func MatchMapFinishHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("MatchMapFinishHandler")
 	vars := mux.Vars(r)
