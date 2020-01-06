@@ -10,26 +10,40 @@
             {{ score_symbol(matchdata.team1_score, matchdata.team2_score) }}
             {{ matchdata.team2_score }}
             <img :src="get_logo_or_flag_link(team1,team2).team2" /> <router-link :to="'/team/'+team2.id"> {{team2.name}}</router-link>
-
-            <div class="dropdown dropdown-header pull-right" v-if="user.adminaccess == true && matchdata.live && match.pending">
-                <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                    Admin tools
-                    <span class="caret"></span>
-                </button>
-                <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
-                    <li v-if="matchdata.live"><a id="pause" :href="this.$route.path+'/pause'">Pause match</a></li>
-                    <li v-if="matchdata.live"><a id="unpause" :href="this.$route.path+'/unpause'">Unpause match</a></li>
-                    <li><a id="addplayer_team1" href="#">Add player to team1</a></li>
-                    <li><a id="addplayer_team2" href="#">Add player to team2</a></li>
-                    <li><a id="addplayer_spec" href="#">Add player to specator list</a></li>
-                    <li><a id="rcon_command" href="#">Send rcon command</a></li>
-                    <li role="separator" class="divider"></li>
-                    <li><a id="backup_manager" :href="this.$route.path+'/backup'">Load a backup file</a></li>
-                    <li><a :href="this.$route.path+'/cancel'">Cancel match</a></li>
-                </ul>
-            </div>
-
+              <el-dropdown v-if="AdminToolsAvailable()" @command="handleCommand">
+                <el-button type="primary">Admin tools<i class="el-icon-arrow-down el-icon--right"></i></el-button>
+                <el-dropdown-menu slot="dropdown">
+                  <el-dropdown-item v-if="matchdata.live">Pause match</el-dropdown-item><br>
+                  <el-dropdown-item v-if="matchdata.live">Unpause match</el-dropdown-item><br>
+                  <el-dropdown-item command="AddPlayerToTeam1">Add player to team1</el-dropdown-item><br>
+                  <el-dropdown-item command="AddPlayerToTeam2">Add player to team2</el-dropdown-item><br>
+                  <el-dropdown-item command="AddPlayerToSpec">Add player to specator list</el-dropdown-item><br>
+                  <el-dropdown-item command="rcon_command">Send rcon command</el-dropdown-item><br>
+                  <el-dropdown-item devided command="backup_manager">Load a backup file</el-dropdown-item><br>
+                  <el-dropdown-item devided command="cancelmatch">Cancel match</el-dropdown-item><br>
+                </el-dropdown-menu>
+              </el-dropdown>
         </h1>
+
+        <el-dialog title="Select Backup file" :visible.sync="chose_backup" width="30%">
+          <el-form ref="form" :model="form" label-width="80px">
+            <el-form-item label="Backup Files">
+              <el-select v-model="chosed_backup">
+                <el-option
+                  v-for="(backup,index) in backups"
+                  :key="index"
+                  :label="backup"
+                  :value="backup">
+                </el-option>
+              </el-select>
+            </el-form-item>
+          </el-form>
+
+          <span slot="footer" class="dialog-footer">
+            <el-button @click="chose_backup = !chose_backup">Cancel</el-button>
+            <el-button type="primary" @click="SendBackup">Confirm</el-button>
+          </span>
+        </el-dialog>
 
         <br>
         <div class="alert alert-danger" role="alert" v-if="matchdata.cancelled">
@@ -195,6 +209,9 @@ export default {
   data () {
     return {
       loading: true,
+      backups: [],
+      chosed_backup: '',
+      chose_backup: false,
       matchdata: {
         id: 0,
         user_id: 0,
@@ -294,8 +311,8 @@ export default {
     this.team1 = await team1Promise
     this.team2 = await team2Promise
     this.loading = false
-    let data = await this.axios.get('/api/v1/CheckLoggedIn')
-    this.user = data
+    let res = await this.axios.get('/api/v1/CheckLoggedIn')
+    this.user = res.data
     // this.Editable = this.CheckTeamEditable(this.$route.params.teamid,this.user.userid) // TODO
   },
   methods: {
@@ -418,14 +435,188 @@ export default {
       }
       return playerstat.kills / playerstat.roundsplayed
     },
-    SendRCON: function (command) {
-      // TODO
-      /*
-        this.$notify.info({
-          title: 'Info',
-          message: 'This is an info message'
-        });
-      */
+    handleCommand: function (command) {
+      switch (command) {
+        case 'cancelmatch':
+          this.CancelMatch(this.matchdata.id)
+          break
+        case 'AddPlayerToTeam1':
+          this.AddPlayerToTeam1()
+          break
+        case 'AddPlayerToTeam2':
+          this.AddPlayerToTeam2()
+          break
+        case 'AddPlayerToSpec':
+          this.AddPlayerToSpec()
+          break
+        case 'rcon_command':
+          this.SendRCON()
+          break
+        case 'backup_manager':
+          this.GetBackupList()
+          break
+        default:
+          this.$message.error('Unknown command occured!')
+      }
+    },
+    async CancelMatch (matchid) {
+      try {
+        const res = await this.axios.post(`/api/v1/match/${matchid}/cancel`)
+        this.$message({
+          message: 'Successfully cancelled match.',
+          type: 'success'
+        })
+        this.$router.push('/mymatches')
+      } catch (err) {
+        if (typeof err === 'object' && err.response) {
+          if (typeof err.response.data === 'string') {
+            this.$message.error(err.response.data)
+          } else if (typeof err.response.data === 'object') {
+            this.$message.error(err.response.data.errormessage)
+          }
+        } else if (typeof err === 'string') {
+          this.$message.error(err)
+        }
+      }
+    },
+    AdminToolsAvailable: function () {
+      if (this.user.isAdmin && this.matchdata.live) {
+        return true
+      } else if (this.user.isAdmin && this.matchdata.pending) {
+        return true
+      }
+      return false
+    },
+    async AddPlayerToTeam1 () {
+      let steamid = await this.$prompt(`Please enter a SteamID to add to ${this.team1.name}`, 'Tip', {
+        confirmButtonText: 'OK',
+        cancelButtonText: 'Cancel',
+        // inputPattern: /[\w!#$%&'*+/=?^_`{|}~-]+(?:\.[\w!#$%&'*+/=?^_`{|}~-]+)*@(?:[\w](?:[\w-]*[\w])?\.)+[\w](?:[\w-]*[\w])?/,
+        inputErrorMessage: 'Invalid SteamID'
+      })
+      try {
+        const res = await this.axios.post(`/api/v1/match/${this.matchdata.id}/adduser?team=team1&auth=${steamid.value}`)
+        this.$message({
+          message: 'Successfully added player.',
+          type: 'success'
+        })
+        this.$router.push(`/match/${this.matchdata.id}`)
+      } catch (err) {
+        if (typeof err === 'object' && err.response) {
+          if (typeof err.response.data === 'string') {
+            this.$message.error(err.response.data)
+          } else if (typeof err.response.data === 'object') {
+            this.$message.error(err.response.data.errormessage)
+          }
+        } else if (typeof err === 'string') {
+          this.$message.error(err)
+        }
+      }
+    },
+    async AddPlayerToTeam2 () {
+      let steamid = await this.$prompt(`Please enter a SteamID to add to ${this.team2.name}`, 'Tip', {
+        confirmButtonText: 'OK',
+        cancelButtonText: 'Cancel',
+        // inputPattern: /[\w!#$%&'*+/=?^_`{|}~-]+(?:\.[\w!#$%&'*+/=?^_`{|}~-]+)*@(?:[\w](?:[\w-]*[\w])?\.)+[\w](?:[\w-]*[\w])?/,
+        inputErrorMessage: 'Invalid SteamID'
+      })
+      try {
+        const res = await this.axios.post(`/api/v1/match/${this.matchdata.id}/adduser?team=team2&auth=${steamid.value}`)
+        this.$message({
+          message: 'Successfully added player.',
+          type: 'success'
+        })
+        this.$router.push(`/match/${this.matchdata.id}`)
+      } catch (err) {
+        if (typeof err === 'object' && err.response) {
+          if (typeof err.response.data === 'string') {
+            this.$message.error(err.response.data)
+          } else if (typeof err.response.data === 'object') {
+            this.$message.error(err.response.data.errormessage)
+          }
+        } else if (typeof err === 'string') {
+          this.$message.error(err)
+        }
+      }
+    },
+    async AddPlayerToSpec () {
+      let steamid = await this.$prompt(`Please enter a SteamID to add to Spectators`, 'Tip', {
+        confirmButtonText: 'OK',
+        cancelButtonText: 'Cancel',
+        // inputPattern: /[\w!#$%&'*+/=?^_`{|}~-]+(?:\.[\w!#$%&'*+/=?^_`{|}~-]+)*@(?:[\w](?:[\w-]*[\w])?\.)+[\w](?:[\w-]*[\w])?/,
+        inputErrorMessage: 'Invalid SteamID'
+      })
+      try {
+        const res = await this.axios.post(`/api/v1/match/${this.matchdata.id}/adduser?team=spec&auth=${steamid.value}`)
+        this.$message({
+          message: 'Successfully added player.',
+          type: 'success'
+        })
+        this.$router.push(`/match/${this.matchdata.id}`)
+      } catch (err) {
+        if (typeof err === 'object' && err.response) {
+          if (typeof err.response.data === 'string') {
+            this.$message.error(err.response.data)
+          } else if (typeof err.response.data === 'object') {
+            this.$message.error(err.response.data.errormessage)
+          }
+        } else if (typeof err === 'string') {
+          this.$message.error(err)
+        }
+      }
+    },
+    async SendRCON () {
+      let command = await this.$prompt(`Enter a command to send`, 'Tip', {
+        confirmButtonText: 'OK',
+        cancelButtonText: 'Cancel',
+        // inputPattern: /[\w!#$%&'*+/=?^_`{|}~-]+(?:\.[\w!#$%&'*+/=?^_`{|}~-]+)*@(?:[\w](?:[\w-]*[\w])?\.)+[\w](?:[\w-]*[\w])?/,
+        inputErrorMessage: 'Invalid command'
+      })
+      try {
+        const res = await this.axios.post(`/api/v1/match/${this.matchdata.id}/rcon?command=${command.value}`)
+        this.$message({
+          message: 'Successfully sent command.',
+          type: 'success'
+        })
+        this.$router.push(`/match/${this.matchdata.id}`)
+      } catch (err) {
+        if (err.response) {
+          if (typeof err.response.data === 'string') {
+            this.$message.error(err.response.data)
+          } else if (typeof err.response.data === 'object') {
+            this.$message.error(err.response.data.errormessage)
+          }
+        }
+      }
+    },
+    async GetBackupList () {
+      try {
+        let backups = await this.axios.get(`/api/v1/match/${this.matchdata.id}/backup`)
+        this.backups = backups.data.files
+        this.chose_backup = true
+      } catch (err) {
+        if (err.response) {
+          if (typeof err.response.data === 'string') {
+            this.$message.error(err.response.data)
+          } else if (typeof err.response.data === 'object') {
+            this.$message.error(err.response.data.errormessage)
+          }
+        }
+      }
+    },
+    async SendBackup () {
+      try {
+        await this.axios.post(`/api/v1/match/${this.matchdata.id}/backup?file=${this.chosed_backup}`)
+        this.chose_backup = false
+      } catch (err) {
+        if (err.response) {
+          if (typeof err.response.data === 'string') {
+            this.$message.error(err.response.data)
+          } else if (typeof err.response.data === 'object') {
+            this.$message.error(err.response.data.errormessage)
+          }
+        }
+      }
     }
   }
 }

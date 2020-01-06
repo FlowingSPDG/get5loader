@@ -24,11 +24,11 @@
   </el-form-item>
 
   <el-form-item style="width: 653px;" v-if="edit">
-    <el-button type="primary" @click="UpdateServer">Update</el-button>
+    <el-button type="primary" v-if="edit" @click="UpdateServer">Update</el-button>
   </el-form-item>
 
   <el-form-item style="width: 653px;" v-else>
-    <el-button type="primary" @click="RegisterServer">Create</el-button>
+    <el-button type="primary" v-if="!edit" @click="RegisterServer">Create</el-button>
   </el-form-item>
 </el-form>
 

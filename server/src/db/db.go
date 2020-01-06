@@ -121,6 +121,10 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		s.Set("Name", user.Name)
 		s.Set("SteamID", steamid)
 		s.Set("Loggedin", true)
+		s.Set("Admin", false)
+		if user.Admin {
+			s.Set("Admin", true)
+		}
 
 		// Register to DB if its new player
 		http.Redirect(w, r, "/", 302)

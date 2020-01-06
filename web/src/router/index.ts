@@ -32,7 +32,7 @@ export default new Router({
     },
     {
       path: '/matches/:userid',
-      name: 'Matches',
+      name: 'Matches for user',
       component: Matches
     },
     {
@@ -96,7 +96,7 @@ export default new Router({
       name: 'Create Server',
       component: ServerCreate,
       props: {
-        edit: true
+        edit: false
       }
     },
     {

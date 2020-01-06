@@ -23,11 +23,6 @@ type Config struct {
 	HOST        string
 }
 
-const (
-	// VERSION get5-web-go Version
-	VERSION = "v0.1.0"
-)
-
 var (
 	// StaticDir Directly where serves static files
 	StaticDir = "./static"
@@ -84,6 +79,7 @@ func main() {
 	r.HandleFunc("/api/v1/GetSteamName", api.GetSteamName).Methods("GET")
 	r.HandleFunc("/api/v1/GetTeamList", api.GetTeamList).Methods("GET")
 	r.HandleFunc("/api/v1/GetServerList", api.GetServerList).Methods("GET")
+	r.HandleFunc("/api/v1/GetVersion", api.GetVersion).Methods("GET")
 
 	// API for front(Vue)
 	r.HandleFunc("/api/v1/CheckLoggedIn", api.CheckLoggedIn).Methods("GET")
@@ -110,6 +106,15 @@ func main() {
 	r.HandleFunc("/api/v1/match/{matchID}/map/{mapNumber}/update", api.MatchMapUpdateHandler).Methods("POST")
 	r.HandleFunc("/api/v1/match/{matchID}/map/{mapNumber}/finish", api.MatchMapFinishHandler).Methods("POST")
 	r.HandleFunc("/api/v1/match/{matchID}/map/{mapNumber}/player/{steamid64}/update", api.MatchMapPlayerUpdateHandler).Methods("POST")
+	r.HandleFunc("/api/v1/match/{matchID}/cancel", api.MatchCancelHandler).Methods("POST")
+	r.HandleFunc("/api/v1/match/{matchID}/rcon", api.MatchRconHandler).Methods("POST")
+	r.HandleFunc("/api/v1/match/{matchID}/pause", api.MatchPauseHandler)
+	r.HandleFunc("/api/v1/match/{matchID}/unpause", api.MatchUnpauseHandler)
+	r.HandleFunc("/api/v1/match/{matchID}/adduser", api.MatchAddUserHandler)
+	// //r.HandleFunc("/api/v1/match/{matchID}/sendconfig", api.MatchSendConfigHandler) // ? // I won't implement this
+	r.HandleFunc("/api/v1/match/{matchID}/backup", api.MatchListBackupsHandler).Methods("GET")  // GET
+	r.HandleFunc("/api/v1/match/{matchID}/backup", api.MatchLoadBackupsHandler).Methods("POST") // POST
+
 	//r.HandleFunc("/api/v1/match/{matchID}/vetoUpdate", api.MatchVetoUpdateHandler).Methods("POST") // TODO
 	//r.HandleFunc("/api/v1/match/{matchID}/map/{mapNumber}/demo", api.MatchDemoUploadHandler).Methods("POST") // TODO
 
@@ -119,15 +124,6 @@ func main() {
 
 	r.HandleFunc("/api/v1/login", db.LoginHandler).Methods("GET")
 	r.HandleFunc("/api/v1/logout", db.LogoutHandler).Methods("GET")
-	/*
-		r.HandleFunc("/match/{matchID}/cancel", get5.MatchCancelHandler)   // ?
-		r.HandleFunc("/match/{matchID}/rcon", get5.MatchRconHandler)       // ?
-		r.HandleFunc("/match/{matchID}/pause", get5.MatchPauseHandler)     // ?
-		r.HandleFunc("/match/{matchID}/unpause", get5.MatchUnpauseHandler) // ?
-		r.HandleFunc("/match/{matchID}/adduser", get5.MatchAddUserHandler) // ?
-		//r.HandleFunc("/match/{matchID}/sendconfig", get5.MatchSendConfigHandler) // ?
-		r.HandleFunc("/match/{matchID}/backup", get5.MatchBackupHandler).Methods("GET") // GET
-	*/
 
 	r.Methods("GET", "POST", "DELETE")
 	http.Handle("/", r)

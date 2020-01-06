@@ -476,7 +476,7 @@ func MatchMapPlayerUpdateHandler(w http.ResponseWriter, r *http.Request) {
 
 // MatchVetoUpdateHandler Handler for /api/v1/match/{matchID}/vetoUpdate API. // TODO
 func MatchVetoUpdateHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("MatchVetoUpdateHandler")
+	/*fmt.Println("MatchVetoUpdateHandler")
 	vars := mux.Vars(r)
 	matchid, err := strconv.Atoi(vars["matchID"])
 	if err != nil {
@@ -489,9 +489,9 @@ func MatchVetoUpdateHandler(w http.ResponseWriter, r *http.Request) {
 	FormPickOrVeto := r.FormValue("pick_or_veto")
 
 	fmt.Printf("matchid : %d\n", matchid)
-	fmt.Printf("matchid : %s\n", FormMap)
-	fmt.Printf("matchid : %s\n", FormTeamString)
-	fmt.Printf("matchid : %s\n", FormPickOrVeto)
+	fmt.Printf("FormMap : %s\n", FormMap)
+	fmt.Printf("FormTeamString : %s\n", FormTeamString)
+	fmt.Printf("FormPickOrVeto : %s\n", FormPickOrVeto)
 
 	m := &db.MatchData{}
 	db.SQLAccess.Gorm.Where("id = ?", matchid).First(&m)
@@ -517,12 +517,13 @@ func MatchVetoUpdateHandler(w http.ResponseWriter, r *http.Request) {
 	// veto = Veto.create(matchid, teamName, request.values.get('map'), request.values.get('pick_or_veto'))
 	// TODO : Add Veto struct in db/models.go
 	// Register to DB
-	fmt.Printf("Confirmed Map Veto For %s on map %s\n", TeamName, FormMap)
+	fmt.Printf("Confirmed Map Veto For %s on map %s\n", TeamName, FormMap)*/
+	http.Error(w, "Not implemented yet", http.StatusNotImplemented)
 }
 
 // MatchDemoUploadHandler Handler for /api/v1/match/{matchID}/map/{mapNumber}/demo API. // TODO
 func MatchDemoUploadHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("MatchDemoUploadHandler")
+	/*fmt.Println("MatchDemoUploadHandler")
 	vars := mux.Vars(r)
 	matchid, err := strconv.Atoi(vars["matchID"])
 	if err != nil {
@@ -549,8 +550,10 @@ func MatchDemoUploadHandler(w http.ResponseWriter, r *http.Request) {
 	mapstatsRecord := db.SQLAccess.Gorm.Where("match_id = ? AND map_number = ?", matchid, mapNumber).First(&mapstats)
 	if !mapstatsRecord.RecordNotFound() {
 		mapstatsRecord.Update("demoFile", DemoFile)
+		fmt.Println("Made it through the demo post.")
 		return
 	}
 	http.Error(w, "Failed to find map stats object", http.StatusBadRequest)
-	fmt.Println("Made it through the demo post.")
+	*/
+	http.Error(w, "Not implemented yet", http.StatusNotImplemented)
 }
