@@ -1,10 +1,10 @@
 [![Build Status](https://travis-ci.org/FlowingSPDG/get5-web-go.svg?branch=master)](https://travis-ci.org/FlowingSPDG/get5-web-go)  
 get5-web-go
 ===========================
-**Status: Work-In-Progress!!!**
+**Status: Experimental, Not Supported**
 
 This is recreation of [get5 web panel](https://github.com/splewis/get5-web) with Go API and Vue Front-end.  
-Still Work-In-Progress project. PRs are welcome!
+PRs are welcome!
 
 ## Author
 Shugo [**FlowingSPDG**](http://github.com/FlowingSPDG) Kawamura
@@ -47,7 +47,7 @@ API Server will send rcon command to load match config(``get5_loadmatch_url <web
 - To test Vue rendering,``cd ./web/``,``yarn run serve`` and open http://localhost:8081/#.  
 
 
-## Build(get5-web-go itself doesnt work yet!)
+## Build
 - ``cd $GOPATH/src/github.com/FlowingSPDG/get5-web-go && make build-all``
 - You'll get compiled files in ``build`` directly.  
 You can use following scripts as your needs :

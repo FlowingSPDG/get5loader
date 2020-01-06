@@ -570,7 +570,7 @@ func (m *MatchData) Create(userid int, team1id int, team2id int, team1string str
 	if err != nil {
 		return nil, err
 	}
-	return m, nil // TODO
+	return m, nil
 }
 
 // GetStatusString Get match status as string. for gorazor template
@@ -654,7 +654,7 @@ func (m *MatchData) GetCurrentScore(g *gorm.DB) (int, int) {
 	fmt.Println(m.MapStats)
 	if m.MaxMaps == 1 {
 		if len(m.MapStats) == 0 { // check ok?
-			return 0, 0 // TODO
+			return 0, 0
 		}
 		return m.MapStats[0].Team1Score, m.MapStats[0].Team2Score
 	}

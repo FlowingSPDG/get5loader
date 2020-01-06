@@ -687,7 +687,7 @@ func EditTeam(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// DeleteTeam Deletes team // TODO
+// DeleteTeam Deletes team
 func DeleteTeam(w http.ResponseWriter, r *http.Request) {
 	fmt.Printf("DeleteTeam\n")
 	var IsLoggedIn = false
@@ -835,7 +835,7 @@ func CreateServer(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// EditServer Edits Server information // TODO
+// EditServer Edits Server information
 func EditServer(w http.ResponseWriter, r *http.Request) {
 	fmt.Printf("EditServer\n")
 	var IsLoggedIn = false
@@ -951,7 +951,7 @@ func EditServer(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// DeleteServer Deletes Server information // TODO
+// DeleteServer Deletes Server information
 func DeleteServer(w http.ResponseWriter, r *http.Request) {
 	fmt.Printf("DeleteTeam\n")
 	var IsLoggedIn = false
@@ -1371,7 +1371,7 @@ type BackupListJSON struct {
 }
 
 // MatchListBackupsHandler Handler for /api/v1/match/{matchID}/backup API(GET).
-func MatchListBackupsHandler(w http.ResponseWriter, r *http.Request) { // TODO
+func MatchListBackupsHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("MatchListBackupsHandler")
 	var IsLoggedIn = false
 	var IsAdmin = false
@@ -1423,7 +1423,7 @@ func MatchListBackupsHandler(w http.ResponseWriter, r *http.Request) { // TODO
 }
 
 // MatchLoadBackupsHandler Handler for /api/v1/match/{matchID}/backup API(POST).
-func MatchLoadBackupsHandler(w http.ResponseWriter, r *http.Request) { // TODO
+func MatchLoadBackupsHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("MatchLoadBackupsHandler")
 	var IsLoggedIn = false
 	var IsAdmin = false

@@ -176,7 +176,7 @@ func RandString(n int) string {
 }
 
 // AuthToSteamID64 Converts Auth to SteamID64
-func AuthToSteamID64(auth string) (string, error) { // TODO
+func AuthToSteamID64(auth string) (string, error) {
 	auth = strings.TrimSpace(auth)
 	if strings.Contains(auth, "steamcommunity.com/id/") {
 		s := steam.SearchForID(auth, Cnf.SteamAPIKey)
