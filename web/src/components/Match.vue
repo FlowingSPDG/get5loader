@@ -414,7 +414,6 @@ export default {
       return playerstat.kills / playerstat.roundsplayed
     },
     handleCommand: function (command) {
-      console.log(command)
       switch (command) {
         case 'cancelmatch':
           this.CancelMatch(this.matchdata.id)
@@ -522,7 +521,6 @@ export default {
         // inputPattern: /[\w!#$%&'*+/=?^_`{|}~-]+(?:\.[\w!#$%&'*+/=?^_`{|}~-]+)*@(?:[\w](?:[\w-]*[\w])?\.)+[\w](?:[\w-]*[\w])?/,
         inputErrorMessage: 'Invalid SteamID'
       })
-      console.log(steamid)
       try {
         const res = await this.axios.post(`/api/v1/match/${this.matchdata.id}/adduser?team=spec&auth=${steamid.value}`)
         this.$message({
