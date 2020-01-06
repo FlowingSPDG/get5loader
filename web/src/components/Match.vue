@@ -15,11 +15,11 @@
                 <el-dropdown-menu slot="dropdown">
                   <el-dropdown-item v-if="matchdata.live">Pause match</el-dropdown-item><br>
                   <el-dropdown-item v-if="matchdata.live">Unpause match</el-dropdown-item><br>
-                  <el-dropdown-item id="addplayer_team1">Add player to team1</el-dropdown-item><br>
-                  <el-dropdown-item id="addplayer_team2">Add player to team2</el-dropdown-item><br>
-                  <el-dropdown-item id="addplayer_spec">Add player to specator list</el-dropdown-item><br>
-                  <el-dropdown-item id="rcon_command">Send rcon command</el-dropdown-item><br>
-                  <el-dropdown-item devided id="backup_manager">Load a backup file</el-dropdown-item><br>
+                  <el-dropdown-item command="AddPlayerToTeam1">Add player to team1</el-dropdown-item><br>
+                  <el-dropdown-item command="AddPlayerToTeam2">Add player to team2</el-dropdown-item><br>
+                  <el-dropdown-item command="AddPlayerToSpec">Add player to specator list</el-dropdown-item><br>
+                  <el-dropdown-item command="rcon_command">Send rcon command</el-dropdown-item><br>
+                  <el-dropdown-item devided command="backup_manager">Load a backup file</el-dropdown-item><br>
                   <el-dropdown-item devided command="cancelmatch">Cancel match</el-dropdown-item><br>
                 </el-dropdown-menu>
               </el-dropdown>
@@ -413,35 +413,45 @@ export default {
       }
       return playerstat.kills / playerstat.roundsplayed
     },
-    SendRCON: function (command) {
-      // TODO
-      /*
-        this.$notify.info({
-          title: 'Info',
-          message: 'This is an info message'
-        });
-      */
-    },
     handleCommand: function (command) {
-      if (command === 'cancelmatch') {
-        this.CancelMatch(this.matchdata.id)
+      console.log(command)
+      switch (command) {
+        case 'cancelmatch':
+          this.CancelMatch(this.matchdata.id)
+          break
+        case 'AddPlayerToTeam1':
+          this.AddPlayerToTeam1()
+          break
+        case 'AddPlayerToTeam2':
+          this.AddPlayerToTeam2()
+          break
+        case 'AddPlayerToSpec':
+          this.AddPlayerToSpec()
+          break
+        case 'rcon_command':
+          this.SendRCON()
+          break
+        default:
+          this.$message.error('Unknown command occured!')
       }
     },
     async CancelMatch (matchid) {
       try {
         const res = await this.axios.post(`/api/v1/match/${matchid}/cancel`)
         this.$message({
-          message: 'Successfully deleted server.',
+          message: 'Successfully cancelled match.',
           type: 'success'
         })
         this.$router.push('/mymatches')
       } catch (err) {
-        if (err.response) {
+        if (typeof err === 'object' && err.response) {
           if (typeof err.response.data === 'string') {
             this.$message.error(err.response.data)
           } else if (typeof err.response.data === 'object') {
             this.$message.error(err.response.data.errormessage)
           }
+        } else if (typeof err === 'string') {
+          this.$message.error(err)
         }
       }
     },
@@ -452,6 +462,109 @@ export default {
         return true
       }
       return false
+    },
+    async AddPlayerToTeam1 () {
+      let steamid = await this.$prompt(`Please enter a SteamID to add to ${this.team1.name}`, 'Tip', {
+        confirmButtonText: 'OK',
+        cancelButtonText: 'Cancel',
+        // inputPattern: /[\w!#$%&'*+/=?^_`{|}~-]+(?:\.[\w!#$%&'*+/=?^_`{|}~-]+)*@(?:[\w](?:[\w-]*[\w])?\.)+[\w](?:[\w-]*[\w])?/,
+        inputErrorMessage: 'Invalid SteamID'
+      })
+      try {
+        const res = await this.axios.post(`/api/v1/match/${this.matchdata.id}/adduser?team=team1&auth=${steamid.value}`)
+        this.$message({
+          message: 'Successfully added player.',
+          type: 'success'
+        })
+        this.$router.push(`/match/${this.matchdata.id}`)
+      } catch (err) {
+        if (typeof err === 'object' && err.response) {
+          if (typeof err.response.data === 'string') {
+            this.$message.error(err.response.data)
+          } else if (typeof err.response.data === 'object') {
+            this.$message.error(err.response.data.errormessage)
+          }
+        } else if (typeof err === 'string') {
+          this.$message.error(err)
+        }
+      }
+    },
+    async AddPlayerToTeam2 () {
+      let steamid = await this.$prompt(`Please enter a SteamID to add to ${this.team2.name}`, 'Tip', {
+        confirmButtonText: 'OK',
+        cancelButtonText: 'Cancel',
+        // inputPattern: /[\w!#$%&'*+/=?^_`{|}~-]+(?:\.[\w!#$%&'*+/=?^_`{|}~-]+)*@(?:[\w](?:[\w-]*[\w])?\.)+[\w](?:[\w-]*[\w])?/,
+        inputErrorMessage: 'Invalid SteamID'
+      })
+      try {
+        const res = await this.axios.post(`/api/v1/match/${this.matchdata.id}/adduser?team=team2&auth=${steamid.value}`)
+        this.$message({
+          message: 'Successfully added player.',
+          type: 'success'
+        })
+        this.$router.push(`/match/${this.matchdata.id}`)
+      } catch (err) {
+        if (typeof err === 'object' && err.response) {
+          if (typeof err.response.data === 'string') {
+            this.$message.error(err.response.data)
+          } else if (typeof err.response.data === 'object') {
+            this.$message.error(err.response.data.errormessage)
+          }
+        } else if (typeof err === 'string') {
+          this.$message.error(err)
+        }
+      }
+    },
+    async AddPlayerToSpec () {
+      let steamid = await this.$prompt(`Please enter a SteamID to add to Spectators`, 'Tip', {
+        confirmButtonText: 'OK',
+        cancelButtonText: 'Cancel',
+        // inputPattern: /[\w!#$%&'*+/=?^_`{|}~-]+(?:\.[\w!#$%&'*+/=?^_`{|}~-]+)*@(?:[\w](?:[\w-]*[\w])?\.)+[\w](?:[\w-]*[\w])?/,
+        inputErrorMessage: 'Invalid SteamID'
+      })
+      console.log(steamid)
+      try {
+        const res = await this.axios.post(`/api/v1/match/${this.matchdata.id}/adduser?team=spec&auth=${steamid.value}`)
+        this.$message({
+          message: 'Successfully added player.',
+          type: 'success'
+        })
+        this.$router.push(`/match/${this.matchdata.id}`)
+      } catch (err) {
+        if (typeof err === 'object' && err.response) {
+          if (typeof err.response.data === 'string') {
+            this.$message.error(err.response.data)
+          } else if (typeof err.response.data === 'object') {
+            this.$message.error(err.response.data.errormessage)
+          }
+        } else if (typeof err === 'string') {
+          this.$message.error(err)
+        }
+      }
+    },
+    async SendRCON () {
+      let command = await this.$prompt(`Enter a command to send`, 'Tip', {
+        confirmButtonText: 'OK',
+        cancelButtonText: 'Cancel',
+        // inputPattern: /[\w!#$%&'*+/=?^_`{|}~-]+(?:\.[\w!#$%&'*+/=?^_`{|}~-]+)*@(?:[\w](?:[\w-]*[\w])?\.)+[\w](?:[\w-]*[\w])?/,
+        inputErrorMessage: 'Invalid command'
+      })
+      try {
+        const res = await this.axios.post(`/api/v1/match/${this.matchdata.id}/rcon?command=${command.value}`)
+        this.$message({
+          message: 'Successfully sent command.',
+          type: 'success'
+        })
+        this.$router.push(`/match/${this.matchdata.id}`)
+      } catch (err) {
+        if (err.response) {
+          if (typeof err.response.data === 'string') {
+            this.$message.error(err.response.data)
+          } else if (typeof err.response.data === 'object') {
+            this.$message.error(err.response.data.errormessage)
+          }
+        }
+      }
     }
   }
 }

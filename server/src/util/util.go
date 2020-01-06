@@ -4,15 +4,47 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"github.com/go-ini/ini"
 	"github.com/hydrogen18/stalecucumber"
 	"math/rand"
 	"net"
 	"os/exec"
 	"strings"
 
-	steam "github.com/kidoman/go-steam"
+	"github.com/Acidic9/steam"
+	gosteam "github.com/kidoman/go-steam"
 	"strconv"
 )
+
+// Config Configration Struct for config.ini
+type Config struct {
+	SteamAPIKey string
+	DefaultPage string
+	SQLHost     string
+	SQLUser     string
+	SQLPass     string
+	SQLPort     int
+	SQLDBName   string
+	HOST        string
+}
+
+var (
+	Cnf Config
+)
+
+func init() {
+	c, _ := ini.Load("config.ini")
+	Cnf = Config{
+		SteamAPIKey: c.Section("Steam").Key("APIKey").MustString(""),
+		DefaultPage: c.Section("GET5").Key("DefaultPage").MustString(""),
+		HOST:        c.Section("GET5").Key("HOST").MustString(""),
+		SQLHost:     c.Section("sql").Key("host").MustString(""),
+		SQLUser:     c.Section("sql").Key("user").MustString(""),
+		SQLPass:     c.Section("sql").Key("pass").MustString(""),
+		SQLPort:     c.Section("sql").Key("port").MustInt(3306),
+		SQLDBName:   c.Section("sql").Key("database").MustString(""),
+	}
+}
 
 func checkIP(ip string) bool {
 	trial := net.ParseIP(ip)
@@ -48,8 +80,8 @@ func SendRCON(host string, port int, pass string, cmd string) (string, error) {
 		return "", fmt.Errorf("Specified IP is not valid")
 	}
 	dest := host + ":" + strconv.Itoa(port)
-	o := &steam.ConnectOptions{RCONPassword: pass}
-	rcon, err := steam.Connect(dest, o)
+	o := &gosteam.ConnectOptions{RCONPassword: pass}
+	rcon, err := gosteam.Connect(dest, o)
 	if err != nil {
 		fmt.Println(err)
 		return "", err
@@ -141,4 +173,47 @@ func RandString(n int) string {
 		b[i] = rs2Letters[rand.Intn(len(rs2Letters))]
 	}
 	return string(b)
+}
+
+// AuthToSteamID64 Converts Auth to SteamID64
+func AuthToSteamID64(auth string) (string, error) { // TODO
+	auth = strings.TrimSpace(auth)
+	if strings.Contains(auth, "steamcommunity.com/id/") {
+		s := steam.SearchForID(auth, Cnf.SteamAPIKey)
+		if s == 0 {
+			return "", fmt.Errorf("User not found")
+		}
+		return strconv.Itoa(int(s)), nil
+	} else if strings.Contains(auth, "steamcommunity.com/profiles/") {
+		s := steam.SearchForID(auth, Cnf.SteamAPIKey)
+		if s == 0 {
+			return "", fmt.Errorf("User not found")
+		}
+		return string(s), nil
+	} else if strings.HasPrefix(auth, "1:0") || strings.HasPrefix(auth, "1:1") {
+		var s steam.SteamID = steam.SteamID("STEAM_" + auth)
+		return strconv.Itoa(int(steam.SteamIDToSteamID64(s))), nil
+	} else if strings.HasPrefix(auth, "STEAM_") {
+		var s steam.SteamID = steam.SteamID(auth)
+		return strconv.Itoa(int(steam.SteamIDToSteamID64(s))), nil
+	} else if strings.HasPrefix(auth, "7656119") && !strings.Contains(auth, "steam") {
+		return auth, nil
+	} else if strings.HasPrefix(auth, "[U:1:") {
+		var s steam.SteamID3 = steam.SteamID3(auth)
+		return strconv.Itoa(int(steam.SteamID3ToSteamID64(s))), nil
+	}
+	s := steam.SearchForID(auth, Cnf.SteamAPIKey)
+	if s == 0 {
+		return "", fmt.Errorf("User not found")
+	}
+	return strconv.Itoa(int(s)), nil
+}
+
+// IsValidSteamID Checks if steamid is correct format or not
+func IsValidSteamID(auth string) bool {
+	_, err := AuthToSteamID64(auth)
+	if err != nil {
+		return false
+	}
+	return true
 }
