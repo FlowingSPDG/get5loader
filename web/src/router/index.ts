@@ -96,7 +96,7 @@ export default new Router({
       name: 'Create Server',
       component: ServerCreate,
       props: {
-        edit: true
+        edit: false
       }
     },
     {
