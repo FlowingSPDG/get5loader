@@ -1178,17 +1178,20 @@ func MatchRconHandler(w http.ResponseWriter, r *http.Request) {
 		rec := db.SQLAccess.Gorm.Where("id = ?", matchid).First(&Match)
 		if rec.RecordNotFound() {
 			http.Error(w, "Failed to find match", http.StatusNotFound)
+			return
 		}
 
 		Server := db.GameServerData{}
 		rec = db.SQLAccess.Gorm.Where("id = ?", Match.ServerID).First(&Server)
 		if rec.RecordNotFound() {
 			http.Error(w, "Failed to find server", http.StatusNotFound)
+			return
 		}
 		RconRes := "No output"
 		res, err := Server.SendRcon(command)
 		if err != nil {
 			http.Error(w, fmt.Sprintf("Failed to send command : %s", err), http.StatusInternalServerError)
+			return
 		}
 		if res != "" {
 			RconRes = res
@@ -1206,6 +1209,7 @@ func MatchRconHandler(w http.ResponseWriter, r *http.Request) {
 		w.Write(jsonbyte)
 	} else {
 		http.Error(w, "Please log in", http.StatusUnauthorized)
+		return
 	}
 }
 
@@ -1306,8 +1310,110 @@ func MatchUnpauseHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 // MatchAddUserHandler Handler for /api/v1/match/{matchID}/adduser API.
-func MatchAddUserHandler(w http.ResponseWriter, r *http.Request) { // TODO
+func MatchAddUserHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("MatchAddUserHandler")
+	var IsLoggedIn = false
+	var IsAdmin = false
+	s := db.Sess.Start(w, r)
+	if s.Get("Loggedin") != nil {
+		IsLoggedIn = s.Get("Loggedin").(bool)
+		IsAdmin = s.Get("Admin").(bool)
+	}
+	if IsLoggedIn && IsAdmin {
+		q := r.URL.Query()
+		team := q.Get("team")
+		if team != "team1" && team != "team2" && team != "spec" {
+			http.Error(w, "No team specified", http.StatusBadRequest)
+			return
+		}
+		auth := q.Get("auth")
+		newauth, err := util.AuthToSteamID64(auth)
+		if err != nil {
+			http.Error(w, "Auth format invalid.", http.StatusBadRequest)
+			return
+		}
+		fmt.Printf("auth : %s", newauth)
+		vars := mux.Vars(r)
+		matchid, err := strconv.Atoi(vars["matchID"])
+		if err != nil {
+			http.Error(w, "matchID should be int", http.StatusBadRequest)
+			return
+		}
+		Match := db.MatchData{}
+		rec := db.SQLAccess.Gorm.Where("id = ?", matchid).First(&Match)
+		if rec.RecordNotFound() {
+			http.Error(w, "Failed to find match", http.StatusNotFound)
+			return
+		}
+
+		Server := db.GameServerData{}
+		rec = db.SQLAccess.Gorm.Where("id = ?", Match.ServerID).First(&Server)
+		if rec.RecordNotFound() {
+			http.Error(w, "Failed to find server", http.StatusNotFound)
+			return
+		}
+		res, err := Server.SendRcon(fmt.Sprintf("get5_addplayer %s %s", newauth, team))
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Failed to send command : %s", err), http.StatusInternalServerError)
+			return
+		}
+		w.WriteHeader(http.StatusOK)
+		w.Header().Set("Content-Type", "application/json")
+		fmt.Fprintf(w, res)
+	} else {
+		http.Error(w, "Please log in", http.StatusUnauthorized)
+	}
+}
+
+// MatchListBackupsHandler Handler for /api/v1/match/{matchID}/backup API(GET).
+func MatchListBackupsHandler(w http.ResponseWriter, r *http.Request) { // TODO
+	fmt.Println("MatchListBackupsHandler")
+	var IsLoggedIn = false
+	var IsAdmin = false
+	s := db.Sess.Start(w, r)
+	if s.Get("Loggedin") != nil {
+		IsLoggedIn = s.Get("Loggedin").(bool)
+		IsAdmin = s.Get("Admin").(bool)
+	}
+	if IsLoggedIn && IsAdmin {
+		vars := mux.Vars(r)
+		matchid, err := strconv.Atoi(vars["matchID"])
+		if err != nil {
+			http.Error(w, "matchID should be int", http.StatusBadRequest)
+			return
+		}
+		Match := db.MatchData{}
+		rec := db.SQLAccess.Gorm.Where("id = ?", matchid).First(&Match)
+		if rec.RecordNotFound() {
+			http.Error(w, "Failed to find match", http.StatusNotFound)
+			return
+		}
+
+		Server := db.GameServerData{}
+		rec = db.SQLAccess.Gorm.Where("id = ?", Match.ServerID).First(&Server)
+		if rec.RecordNotFound() {
+			http.Error(w, "Failed to find server", http.StatusNotFound)
+			return
+		}
+		res, err := Server.SendRcon(fmt.Sprintf("get5_listbackups %d", matchid))
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Failed to send command : %s", err), http.StatusInternalServerError)
+			return
+		}
+		BackupFiles := strings.Split(res, "\n")
+		fmt.Printf("BackupFiles : %v", BackupFiles)
+		// Convert to JSON... // TODO
+		w.WriteHeader(http.StatusOK)
+		w.Header().Set("Content-Type", "application/json")
+		fmt.Fprintf(w, res)
+	} else {
+		http.Error(w, "Please log in", http.StatusUnauthorized)
+	}
+}
+
+// MatchLoadBackupsHandler Handler for /api/v1/match/{matchID}/backup API(POST).
+func MatchLoadBackupsHandler(w http.ResponseWriter, r *http.Request) { // TODO
+	fmt.Println("MatchLoadBackupsHandler")
 	var IsLoggedIn = false
 	var IsAdmin = false
 	s := db.Sess.Start(w, r)

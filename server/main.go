@@ -112,7 +112,8 @@ func main() {
 	r.HandleFunc("/api/v1/match/{matchID}/unpause", api.MatchUnpauseHandler)
 	r.HandleFunc("/api/v1/match/{matchID}/adduser", api.MatchAddUserHandler)
 	// //r.HandleFunc("/api/v1/match/{matchID}/sendconfig", api.MatchSendConfigHandler) // ? // I won't implement this
-	//r.HandleFunc("/api/v1/match/{matchID}/backup", api.MatchBackupHandler).Methods("GET") // GET
+	//r.HandleFunc("/api/v1/match/{matchID}/backup", api.MatchListBackupsHandler).Methods("GET") // GET
+	//r.HandleFunc("/api/v1/match/{matchID}/backup", api.MatchLoadBackupsHandler).Methods("POST") // POST
 
 	//r.HandleFunc("/api/v1/match/{matchID}/vetoUpdate", api.MatchVetoUpdateHandler).Methods("POST") // TODO
 	//r.HandleFunc("/api/v1/match/{matchID}/map/{mapNumber}/demo", api.MatchDemoUploadHandler).Methods("POST") // TODO
