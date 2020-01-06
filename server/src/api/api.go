@@ -1365,6 +1365,11 @@ func MatchAddUserHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// BackupListJSON Struct type for /api/v1/match/{matchID}/backup
+type BackupListJSON struct {
+	Files []string `json:"files"`
+}
+
 // MatchListBackupsHandler Handler for /api/v1/match/{matchID}/backup API(GET).
 func MatchListBackupsHandler(w http.ResponseWriter, r *http.Request) { // TODO
 	fmt.Println("MatchListBackupsHandler")
@@ -1400,12 +1405,18 @@ func MatchListBackupsHandler(w http.ResponseWriter, r *http.Request) { // TODO
 			http.Error(w, fmt.Sprintf("Failed to send command : %s", err), http.StatusInternalServerError)
 			return
 		}
-		BackupFiles := strings.Split(res, "\n")
-		fmt.Printf("BackupFiles : %v", BackupFiles)
-		// Convert to JSON... // TODO
+		resJSON := BackupListJSON{
+			Files: strings.Split(strings.TrimSpace(res), "\n"),
+		}
+		fmt.Printf("BackupFiles : %v", resJSON)
+		jsonbyte, err := json.Marshal(resJSON)
+		if err != nil {
+			http.Error(w, "Internal ERROR", http.StatusInternalServerError)
+			return
+		}
 		w.WriteHeader(http.StatusOK)
 		w.Header().Set("Content-Type", "application/json")
-		fmt.Fprintf(w, res)
+		w.Write(jsonbyte)
 	} else {
 		http.Error(w, "Please log in", http.StatusUnauthorized)
 	}
@@ -1423,18 +1434,11 @@ func MatchLoadBackupsHandler(w http.ResponseWriter, r *http.Request) { // TODO
 	}
 	if IsLoggedIn && IsAdmin {
 		q := r.URL.Query()
-		team := q.Get("team")
-		if team != "team1" && team != "team2" && team != "spec" {
-			http.Error(w, "No team specified", http.StatusBadRequest)
+		file := q.Get("file")
+		if file == "" {
+			http.Error(w, "No file specified", http.StatusBadRequest)
 			return
 		}
-		auth := q.Get("auth")
-		newauth, err := util.AuthToSteamID64(auth)
-		if err != nil {
-			http.Error(w, "Auth format invalid.", http.StatusBadRequest)
-			return
-		}
-		fmt.Printf("auth : %s", newauth)
 		vars := mux.Vars(r)
 		matchid, err := strconv.Atoi(vars["matchID"])
 		if err != nil {
@@ -1454,9 +1458,9 @@ func MatchLoadBackupsHandler(w http.ResponseWriter, r *http.Request) { // TODO
 			http.Error(w, "Failed to find server", http.StatusNotFound)
 			return
 		}
-		res, err := Server.SendRcon(fmt.Sprintf("get5_addplayer %s %s", newauth, team))
+		res, err := Server.SendRcon(fmt.Sprintf("get5_loadbackup %s", file))
 		if err != nil {
-			http.Error(w, fmt.Sprintf("Failed to send command : %s", err), http.StatusInternalServerError)
+			http.Error(w, fmt.Sprintf("Failed to load backup : %s", err), http.StatusInternalServerError)
 			return
 		}
 		w.WriteHeader(http.StatusOK)

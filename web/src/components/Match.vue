@@ -23,8 +23,27 @@
                   <el-dropdown-item devided command="cancelmatch">Cancel match</el-dropdown-item><br>
                 </el-dropdown-menu>
               </el-dropdown>
-
         </h1>
+
+        <el-dialog title="Select Backup file" :visible.sync="chose_backup" width="30%">
+          <el-form ref="form" :model="form" label-width="80px">
+            <el-form-item label="Backup Files">
+              <el-select v-model="chosed_backup">
+                <el-option
+                  v-for="(backup,index) in backups"
+                  :key="index"
+                  :label="backup"
+                  :value="backup">
+                </el-option>
+              </el-select>
+            </el-form-item>
+          </el-form>
+
+          <span slot="footer" class="dialog-footer">
+            <el-button @click="chose_backup = !chose_backup">Cancel</el-button>
+            <el-button type="primary" @click="SendBackup">Confirm</el-button>
+          </span>
+        </el-dialog>
 
         <br>
         <div class="alert alert-danger" role="alert" v-if="matchdata.cancelled">
@@ -190,6 +209,9 @@ export default {
   data () {
     return {
       loading: true,
+      backups: [],
+      chosed_backup: '',
+      chose_backup: false,
       matchdata: {
         id: 0,
         user_id: 0,
@@ -430,6 +452,9 @@ export default {
         case 'rcon_command':
           this.SendRCON()
           break
+        case 'backup_manager':
+          this.GetBackupList()
+          break
         default:
           this.$message.error('Unknown command occured!')
       }
@@ -554,6 +579,35 @@ export default {
           type: 'success'
         })
         this.$router.push(`/match/${this.matchdata.id}`)
+      } catch (err) {
+        if (err.response) {
+          if (typeof err.response.data === 'string') {
+            this.$message.error(err.response.data)
+          } else if (typeof err.response.data === 'object') {
+            this.$message.error(err.response.data.errormessage)
+          }
+        }
+      }
+    },
+    async GetBackupList () {
+      try {
+        let backups = await this.axios.get(`/api/v1/match/${this.matchdata.id}/backup`)
+        this.backups = backups.data.files
+        this.chose_backup = true
+      } catch (err) {
+        if (err.response) {
+          if (typeof err.response.data === 'string') {
+            this.$message.error(err.response.data)
+          } else if (typeof err.response.data === 'object') {
+            this.$message.error(err.response.data.errormessage)
+          }
+        }
+      }
+    },
+    async SendBackup () {
+      try {
+        await this.axios.post(`/api/v1/match/${this.matchdata.id}/backup?file=${this.chosed_backup}`)
+        this.chose_backup = false
       } catch (err) {
         if (err.response) {
           if (typeof err.response.data === 'string') {
