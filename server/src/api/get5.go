@@ -200,8 +200,10 @@ func MatchMapFinishHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Printf("mapnumber : %d\n", mapnumber)
 	fmt.Printf("winner : %s\n", winner)
 
-	var m = db.MatchData{}
+	m := db.MatchData{}
 	db.SQLAccess.Gorm.Where("id = ?", matchid).First(&m)
+	mUpdate := m
+	db.SQLAccess.Gorm.First(&mUpdate)
 	err = MatchAPICheck(&m, r)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -216,15 +218,17 @@ func MatchMapFinishHandler(w http.ResponseWriter, r *http.Request) {
 		MapStatsUpdate.EndTime.Scan(time.Now())
 		if winner == "team1" {
 			MapStatsUpdate.Winner.Scan(m.Team1ID)
-			m.Team1Score++
+			mUpdate.Team1Score++
 		} else if winner == "team2" {
 			MapStatsUpdate.Winner.Scan(m.Team2ID)
-			m.Team2Score++
+			mUpdate.Team2Score++
 		} else {
 			MapStatsUpdate.Winner.Scan(nil)
 		}
 		db.SQLAccess.Gorm.Model(&MapStats).Update(&MapStatsUpdate)
 		db.SQLAccess.Gorm.Save(&MapStatsUpdate)
+		db.SQLAccess.Gorm.Model(&m).Update(&mUpdate)
+		db.SQLAccess.Gorm.Save(&mUpdate)
 	} else {
 		http.Error(w, "Failed to find map stats object", http.StatusBadRequest)
 		return
