@@ -128,7 +128,6 @@ func MatchMapStartHandler(w http.ResponseWriter, r *http.Request) {
 	mUpdate.StartTime.Scan(time.Now())
 	db.SQLAccess.Gorm.Model(&m).Update(&mUpdate)
 	db.SQLAccess.Gorm.Save(&mUpdate)
-	fmt.Println(MapStats)
 }
 
 // MatchMapUpdateHandler Handler for /api/v1/match/{matchID}/map/{mapNumber}/update API.

@@ -82,7 +82,7 @@ func init() {
 		// Cookie string, the session's client cookie name, for example: "mysessionid"
 		//
 		// Defaults to "gosessionid"
-		Cookie: "mysessionid",
+		Cookie: "mysessionid", // TODO
 		// it's time.Duration, from the time cookie is created, how long it can be alive?
 		// 0 means no expire.
 		// -1 means expire when browser closes
@@ -98,6 +98,7 @@ func init() {
 
 // LoginHandler HTTP Handler for /login page.
 func LoginHandler(w http.ResponseWriter, r *http.Request) {
+	fmt.Printf("LoginHandler\n")
 	opID := steam_go.NewOpenId(r)
 	switch opID.Mode() {
 	case "":
@@ -129,14 +130,11 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		// Register to DB if its new player
 		http.Redirect(w, r, "/", 302)
 	}
-	vars := mux.Vars(r) //パスパラメータ取得
-	fmt.Printf("LoginHandler\nvars : %v\n", vars)
-	w.WriteHeader(http.StatusOK)
 }
 
 // LogoutHandler HTTP Handler for /logout
 func LogoutHandler(w http.ResponseWriter, r *http.Request) {
-	//fmt.Printf("LogoutHandler\n")
+	fmt.Printf("LogoutHandler\n")
 	s := Sess.Start(w, r)
 	s.Destroy()
 	http.Redirect(w, r, "/", 302)

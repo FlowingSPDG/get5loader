@@ -71,7 +71,7 @@ func (u *UserData) GetOrCreate(g *gorm.DB, steamid string) (*UserData, error) {
 		g.Create(&SQLUserData)
 	} else {
 		fmt.Println("USER EXIST")
-		fmt.Println(SQLUserData)
+		// fmt.Println(SQLUserData)
 		u.Name = SQLUserData.Name
 		u.ID = SQLUserData.ID
 		u.Admin = SQLUserData.Admin
@@ -82,7 +82,6 @@ func (u *UserData) GetOrCreate(g *gorm.DB, steamid string) (*UserData, error) {
 
 // GetURL Get user page URL
 func (u *UserData) GetURL() string {
-	fmt.Println(Cnf)
 	return fmt.Sprintf("http://%s/user/%d", Cnf.HOST, u.ID)
 }
 
@@ -195,14 +194,12 @@ func (g *GameServerData) SendRcon(cmd string) (string, error) {
 	o := &gosteam.ConnectOptions{RCONPassword: g.RconPassword}
 	rcon, err := gosteam.Connect(g.GetHostPort(), o)
 	if err != nil {
-		fmt.Println(err)
 		return "", err
 	}
 	defer rcon.Close()
 
 	resp, err := rcon.Send(cmd)
 	if err != nil {
-		fmt.Println(err)
 		return "", err
 	}
 	return resp, nil
@@ -651,7 +648,6 @@ func (m *MatchData) GetCurrentScore(g *gorm.DB) (int, int) {
 	//g.First(&m).Association("MapStats").Find(&m)
 	m.MapStats = []MapStatsData{}
 	g.First(&m.MapStats, "match_id = ?", m.ID)
-	fmt.Println(m.MapStats)
 	if m.MaxMaps == 1 {
 		if len(m.MapStats) == 0 { // check ok?
 			return 0, 0
@@ -752,7 +748,6 @@ func (m *MatchData) SendToServer() error {
 	}
 	res, err := m.Server.SendRcon(fmt.Sprintf("get5_loadmatch_url %s/api/v1/match/%v/config", Cnf.HOST, m.ID))
 	res, err = m.Server.SendRcon(fmt.Sprintf("get5_web_api_key %s", m.APIKey))
-	fmt.Println(res)
 	if err != nil || res != "" {
 		return err
 	}
