@@ -10,7 +10,7 @@
                         <span class="icon-bar"></span>
                     </button>
                     <transition name="fade">
-                        <router-link to="/" class="navbar-brand" >Get5 Web Panel</router-link>
+                        <router-link v-if="LogoTransition" to="/" class="navbar-brand" >Get5 Web Panel</router-link>
                     </transition>
                 </div>
                 <div class="collapse navbar-collapse" id="myNavbar">
@@ -51,6 +51,7 @@ export default {
   name: 'App',
   data () {
     return {
+      LogoTransition: false,
       version: '',
       activeIndex: '',
       user: {
@@ -62,6 +63,7 @@ export default {
     }
   },
   async mounted () {
+    this.LogoTransition = true
     this.activeIndex = this.$route.name
     let LoggedIn = await axios.get('/api/v1/CheckLoggedIn')
     this.user = LoggedIn.data
@@ -85,7 +87,7 @@ export default {
 }
 
 .fade-enter-active, .fade-leave-active {
-  transition: opacity .5s;
+  transition: opacity 5s;
 }
 .fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
   opacity: 0;

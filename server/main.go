@@ -56,7 +56,7 @@ func init() {
 		SQLDBName: c.Section("sql").Key("database").MustString(""),
 	}
 	HOST = Cnf.HOST
-	fmt.Println(db.SQLAccess)
+	// fmt.Println(db.SQLAccess)
 }
 
 func main() {

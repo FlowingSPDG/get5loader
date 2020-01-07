@@ -26,7 +26,7 @@
         </h1>
 
         <el-dialog title="Select Backup file" :visible.sync="chose_backup" width="30%">
-          <el-form ref="form" :model="form" label-width="80px">
+          <el-form ref="form" label-width="80px">
             <el-form-item label="Backups">
               <el-select v-model="chosed_backup">
                 <el-option

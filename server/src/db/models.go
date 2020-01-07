@@ -71,7 +71,7 @@ func (u *UserData) GetOrCreate(g *gorm.DB, steamid string) (*UserData, error) {
 		g.Create(&SQLUserData)
 	} else {
 		fmt.Println("USER EXIST")
-		fmt.Println(SQLUserData)
+		// fmt.Println(SQLUserData)
 		u.Name = SQLUserData.Name
 		u.ID = SQLUserData.ID
 		u.Admin = SQLUserData.Admin
@@ -82,7 +82,6 @@ func (u *UserData) GetOrCreate(g *gorm.DB, steamid string) (*UserData, error) {
 
 // GetURL Get user page URL
 func (u *UserData) GetURL() string {
-	fmt.Println(Cnf)
 	return fmt.Sprintf("http://%s/user/%d", Cnf.HOST, u.ID)
 }
 
@@ -149,7 +148,7 @@ func (g *GameServerData) Create(userid int, displayname string, ipstring string,
 // CanEdit Check if server is editable for user or not.
 func (g *GameServerData) CanEdit(userid int) bool {
 	if g.UserID == 0 {
-		SQLAccess.Gorm.Where("id = ?", g.ID).First(&g)
+		SQLAccess.Gorm.First(&g, g.ID)
 	}
 	if userid == 0 {
 		return false
@@ -168,7 +167,10 @@ func (g *GameServerData) Edit() (*GameServerData, error) {
 		return nil, fmt.Errorf("ID not valid")
 	}
 	Server := GameServerData{}
-	SQLAccess.Gorm.Where("id = ?", g.ID).First(&Server)
+	rec := SQLAccess.Gorm.First(&Server, g.ID)
+	if rec.RecordNotFound() {
+		return nil, fmt.Errorf("Server not found")
+	}
 	SQLAccess.Gorm.Model(&Server).Update(&g)
 	SQLAccess.Gorm.Save(&g)
 	return g, nil
@@ -179,7 +181,7 @@ func (g *GameServerData) Delete() error {
 	if g.ID == 0 {
 		return fmt.Errorf("ID not valid")
 	}
-	rec := SQLAccess.Gorm.Where("id = ?", g.ID).First(&g)
+	rec := SQLAccess.Gorm.First(&g, g.ID)
 	if rec.RecordNotFound() {
 		return fmt.Errorf("Server not found")
 	}
@@ -195,14 +197,12 @@ func (g *GameServerData) SendRcon(cmd string) (string, error) {
 	o := &gosteam.ConnectOptions{RCONPassword: g.RconPassword}
 	rcon, err := gosteam.Connect(g.GetHostPort(), o)
 	if err != nil {
-		fmt.Println(err)
 		return "", err
 	}
 	defer rcon.Close()
 
 	resp, err := rcon.Send(cmd)
 	if err != nil {
-		fmt.Println(err)
 		return "", err
 	}
 	return resp, nil
@@ -215,8 +215,8 @@ func (g *GameServerData) GetHostPort() string {
 
 // GetDisplay Returns "DisplayName" if its not empty. otherwise it returns address and port.
 func (g *GameServerData) GetDisplay() string {
-	if g.DisplayName == "" {
-		return g.DisplayName
+	if g.DisplayName != "" {
+		return fmt.Sprintf("%s (%s)", g.DisplayName, g.GetHostPort())
 	}
 	return g.GetHostPort()
 }
@@ -270,7 +270,10 @@ func (t *TeamData) Edit() (*TeamData, error) {
 		return nil, fmt.Errorf("ID not valid")
 	}
 	Team := TeamData{}
-	SQLAccess.Gorm.Where("id = ?", t.ID).First(&Team)
+	rec := SQLAccess.Gorm.First(&Team, t.ID)
+	if rec.RecordNotFound() {
+		return nil, fmt.Errorf("Team not found")
+	}
 	SQLAccess.Gorm.Model(&Team).Update(&t)
 	SQLAccess.Gorm.Save(&t)
 	return t, nil
@@ -281,7 +284,7 @@ func (t *TeamData) Delete() error {
 	if t.ID == 0 {
 		return fmt.Errorf("ID not valid")
 	}
-	rec := SQLAccess.Gorm.Where("id = ?", t.ID).Delete(&t)
+	rec := SQLAccess.Gorm.Delete(&t, t.ID)
 	if rec.RecordNotFound() {
 		return fmt.Errorf("Team not found")
 	}
@@ -291,7 +294,7 @@ func (t *TeamData) Delete() error {
 // CanEdit Check if server is editable for user or not.
 func (t *TeamData) CanEdit(userid int) bool {
 	if t.UserID == 0 {
-		SQLAccess.Gorm.Where("id = ?", t.ID).First(&t)
+		SQLAccess.Gorm.First(&t, t.ID)
 	}
 	if userid == 0 {
 		return false
@@ -372,7 +375,7 @@ func (t *TeamData) GetRecentMatches(limit int) []MatchData {
 		SQLAccess.Gorm.Where("team1_id = ?", t.ID).Or("team2_id = ?", t.ID).Not("start_time = null AND cancelled = true").Limit(limit).Find(&matches)
 	} else {
 		var owner UserData
-		SQLAccess.Gorm.Where("id = ?", t.UserID).First(&owner)
+		SQLAccess.Gorm.First(&owner, t.UserID)
 		SQLAccess.Gorm.Where("user_id = ?", t.UserID).Find(&owner.Matches).Limit(limit)
 		matches = owner.Matches
 	}
@@ -385,27 +388,27 @@ func (t *TeamData) GetVSMatchResult(matchid int) (string, error) {
 	myscore := 0
 	otherteamscore := 0
 	var match MatchData
-	SQLAccess.Gorm.Where("id = ?", matchid).First(&match)
+	SQLAccess.Gorm.First(&match, matchid)
 	if int(match.Team1ID) == t.ID {
 		myscore = match.Team1Score
 		otherteamscore = match.Team2Score
-		SQLAccess.Gorm.Where("id = ?", match.Team2ID).First(&otherteam)
+		SQLAccess.Gorm.First(&otherteam, match.Team2ID)
 	} else {
 		myscore = match.Team2Score
 		otherteamscore = match.Team1Score
-		SQLAccess.Gorm.Where("id = ?", match.Team2ID).First(&otherteam)
+		SQLAccess.Gorm.First(&otherteam, match.Team2ID)
 	}
 
 	// for a bo1 replace series score with the map score...
 	if match.MaxMaps == 1 {
-		mapstats, err := match.GetMapStat()
+		_, err := match.GetMapStat()
 		if err != nil {
 			return "", err
 		}
-		if len(mapstats) <= 0 {
+		if len(match.MapStats) <= 0 {
 			return fmt.Sprintf("Pending, vs %s", otherteam.Name), nil // maybe add <a> tag for otherteam.Name ?
 		}
-		mapstat := mapstats[0]
+		mapstat := match.MapStats[0]
 		if int(match.Team1ID) == t.ID {
 			myscore = mapstat.Team1Score
 			otherteamscore = mapstat.Team2Score
@@ -573,15 +576,21 @@ func (m *MatchData) Create(userid int, team1id int, team2id int, team1string str
 	return m, nil
 }
 
-// GetStatusString Get match status as string. for gorazor template
+// GetStatusString Get match status as string.
 func (m *MatchData) GetStatusString(ShowWinner bool) (string, error) {
 	if m.Pending() {
 		return "Pending", nil
 	} else if m.Live() {
-		teams1core, team2score := m.GetCurrentScore(SQLAccess.Gorm)
+		teams1core, team2score, err := m.GetCurrentScore(SQLAccess.Gorm)
+		if err != nil {
+			return "", err
+		}
 		return fmt.Sprintf("Live, %d:%d", teams1core, team2score), nil
 	} else if m.Finished() {
-		teams1core, team2score := m.GetCurrentScore(SQLAccess.Gorm)
+		teams1core, team2score, err := m.GetCurrentScore(SQLAccess.Gorm)
+		if err != nil {
+			return "", err
+		}
 		minscore := math.Min(float64(teams1core), float64(team2score))
 		maxscore := math.Max(float64(teams1core), float64(team2score))
 		ScoreString := fmt.Sprintf("%d:%d", int(maxscore), int(minscore))
@@ -615,7 +624,10 @@ func (m *MatchData) GetVSString() (string, error) {
 	if err != nil {
 		return "", err
 	}
-	team1score, team2score := m.GetCurrentScore(SQLAccess.Gorm)
+	team1score, team2score, err := m.GetCurrentScore(SQLAccess.Gorm)
+	if err != nil {
+		return "", err
+	}
 	str := fmt.Sprintf("%s VS %s (%d:%d)", team1.GetNameURLHtml(), team2.GetNameURLHtml(), team1score, team2score)
 	return str, nil
 }
@@ -641,31 +653,34 @@ func (m *MatchData) Live() bool {
 }
 
 // GetServer Get match server ID as GameServerData
-func (m *MatchData) GetServer() *GameServerData {
-	SQLAccess.Gorm.Where("id = ?", m.ServerID).First(&m.Server)
-	return &m.Server
+func (m *MatchData) GetServer() (*GameServerData, error) {
+	rec := SQLAccess.Gorm.First(&m.Server, m.ServerID)
+	if rec.RecordNotFound() {
+		return nil, fmt.Errorf("Server not found")
+	}
+	return &m.Server, nil
 }
 
 // GetCurrentScore Returns current match score. returns map-score if match is BO1.
-func (m *MatchData) GetCurrentScore(g *gorm.DB) (int, int) {
-	//g.First(&m).Association("MapStats").Find(&m)
-	m.MapStats = []MapStatsData{}
-	g.First(&m.MapStats, "match_id = ?", m.ID)
-	fmt.Println(m.MapStats)
+func (m *MatchData) GetCurrentScore(g *gorm.DB) (int, int, error) {
+	if m.ID == 0 {
+		return 0, 0, fmt.Errorf("Match ID invalid")
+	}
+	m.GetMapStat()
 	if m.MaxMaps == 1 {
 		if len(m.MapStats) == 0 { // check ok?
-			return 0, 0
+			return 0, 0, nil
 		}
-		return m.MapStats[0].Team1Score, m.MapStats[0].Team2Score
+		return m.MapStats[0].Team1Score, m.MapStats[0].Team2Score, nil
 	}
-	return m.Team1Score, m.Team2Score
+	return m.Team1Score, m.Team2Score, nil
 }
 
 // GetTeam1 Get Team1 as "TeamData" struct.
 func (m *MatchData) GetTeam1() (TeamData, error) {
 	var Team = TeamData{}
 	var STeam TeamData
-	SQLAccess.Gorm.Where("id = ?", m.Team1ID).First(&STeam)
+	SQLAccess.Gorm.First(&STeam, m.Team1ID)
 	Team.ID = STeam.ID
 	Team.Name = STeam.Name
 	Team.Tag = STeam.Tag
@@ -685,7 +700,7 @@ func (m *MatchData) GetTeam1() (TeamData, error) {
 func (m *MatchData) GetTeam2() (TeamData, error) {
 	var Team = TeamData{}
 	var STeam TeamData
-	SQLAccess.Gorm.Where("id = ?", m.Team2ID).First(&STeam)
+	SQLAccess.Gorm.First(&STeam, m.Team2ID)
 	Team.ID = STeam.ID
 	Team.Name = STeam.Name
 	Team.Tag = STeam.Tag
@@ -703,7 +718,7 @@ func (m *MatchData) GetTeam2() (TeamData, error) {
 
 // GetUser Get Match owner as "UserData" struct.
 func (m *MatchData) GetUser() UserData {
-	SQLAccess.Gorm.Where("id = ?", m.UserID).First(&m.User)
+	SQLAccess.Gorm.First(&m.User, m.UserID)
 	return m.User
 }
 
@@ -752,7 +767,6 @@ func (m *MatchData) SendToServer() error {
 	}
 	res, err := m.Server.SendRcon(fmt.Sprintf("get5_loadmatch_url %s/api/v1/match/%v/config", Cnf.HOST, m.ID))
 	res, err = m.Server.SendRcon(fmt.Sprintf("get5_web_api_key %s", m.APIKey))
-	fmt.Println(res)
 	if err != nil || res != "" {
 		return err
 	}
@@ -763,7 +777,7 @@ func (m *MatchData) SendToServer() error {
 
 // BuildMatchDict Builds match JSON data.
 func (m *MatchData) BuildMatchDict() (*MatchConfig, error) {
-	SQLAccess.Gorm.Where("id = ?", m.ID).First(&m)
+	SQLAccess.Gorm.First(&m, m.ID)
 	m.VetoMapPoolJSON = strings.Split(m.VetoMapPool, " ")
 	team1, err := m.GetTeam1()
 	team2, err := m.GetTeam2()
@@ -821,9 +835,9 @@ func (m *MatchData) BuildMatchDict() (*MatchConfig, error) {
 }
 
 // GetMapStat Gets each map stat data as "MapStatsData" struct array.
-func (m *MatchData) GetMapStat() ([]MapStatsData, error) {
-	SQLAccess.Gorm.Limit(7).Where("match_id = ?", int(m.ID)).Find(&m.MapStats)
-	return m.MapStats, nil
+func (m *MatchData) GetMapStat() (*MatchData, error) {
+	SQLAccess.Gorm.Limit(7).Where("match_id = ?", m.ID).Find(&m.MapStats)
+	return m, nil
 }
 
 // MapStatsData MapStatsData struct for map_stats table.
@@ -849,7 +863,7 @@ func (m *MapStatsData) TableName() string {
 // GetOrCreate Get or register mapstats data.
 func (m *MapStatsData) GetOrCreate(matchID int, MapNumber int, mapname string) (*MapStatsData, error) {
 	Match := MatchData{}
-	MatchRecord := SQLAccess.Gorm.Where("id = ?", matchID).First(&Match)
+	MatchRecord := SQLAccess.Gorm.First(&Match, matchID)
 	if MatchRecord.RecordNotFound() {
 		return nil, fmt.Errorf("Match not found")
 	}

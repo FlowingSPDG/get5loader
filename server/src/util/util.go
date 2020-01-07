@@ -84,14 +84,12 @@ func SendRCON(host string, port int, pass string, cmd string) (string, error) {
 	o := &gosteam.ConnectOptions{RCONPassword: pass}
 	rcon, err := gosteam.Connect(dest, o)
 	if err != nil {
-		fmt.Println(err)
 		return "", err
 	}
 	defer rcon.Close()
 
 	resp, err := rcon.Send(cmd)
 	if err != nil {
-		fmt.Println(err)
 		return "", err
 	}
 	return resp, nil
