@@ -401,14 +401,14 @@ func (t *TeamData) GetVSMatchResult(matchid int) (string, error) {
 
 	// for a bo1 replace series score with the map score...
 	if match.MaxMaps == 1 {
-		mapstats, err := match.GetMapStat()
+		_, err := match.GetMapStat()
 		if err != nil {
 			return "", err
 		}
-		if len(mapstats) <= 0 {
+		if len(match.MapStats) <= 0 {
 			return fmt.Sprintf("Pending, vs %s", otherteam.Name), nil // maybe add <a> tag for otherteam.Name ?
 		}
-		mapstat := mapstats[0]
+		mapstat := match.MapStats[0]
 		if int(match.Team1ID) == t.ID {
 			myscore = mapstat.Team1Score
 			otherteamscore = mapstat.Team2Score
@@ -576,15 +576,21 @@ func (m *MatchData) Create(userid int, team1id int, team2id int, team1string str
 	return m, nil
 }
 
-// GetStatusString Get match status as string. for gorazor template
+// GetStatusString Get match status as string.
 func (m *MatchData) GetStatusString(ShowWinner bool) (string, error) {
 	if m.Pending() {
 		return "Pending", nil
 	} else if m.Live() {
-		teams1core, team2score := m.GetCurrentScore(SQLAccess.Gorm)
+		teams1core, team2score, err := m.GetCurrentScore(SQLAccess.Gorm)
+		if err != nil {
+			return "", err
+		}
 		return fmt.Sprintf("Live, %d:%d", teams1core, team2score), nil
 	} else if m.Finished() {
-		teams1core, team2score := m.GetCurrentScore(SQLAccess.Gorm)
+		teams1core, team2score, err := m.GetCurrentScore(SQLAccess.Gorm)
+		if err != nil {
+			return "", err
+		}
 		minscore := math.Min(float64(teams1core), float64(team2score))
 		maxscore := math.Max(float64(teams1core), float64(team2score))
 		ScoreString := fmt.Sprintf("%d:%d", int(maxscore), int(minscore))
@@ -618,7 +624,10 @@ func (m *MatchData) GetVSString() (string, error) {
 	if err != nil {
 		return "", err
 	}
-	team1score, team2score := m.GetCurrentScore(SQLAccess.Gorm)
+	team1score, team2score, err := m.GetCurrentScore(SQLAccess.Gorm)
+	if err != nil {
+		return "", err
+	}
 	str := fmt.Sprintf("%s VS %s (%d:%d)", team1.GetNameURLHtml(), team2.GetNameURLHtml(), team1score, team2score)
 	return str, nil
 }
@@ -653,17 +662,18 @@ func (m *MatchData) GetServer() (*GameServerData, error) {
 }
 
 // GetCurrentScore Returns current match score. returns map-score if match is BO1.
-func (m *MatchData) GetCurrentScore(g *gorm.DB) (int, int) {
-	//g.First(&m).Association("MapStats").Find(&m)
-	m.MapStats = []MapStatsData{}
-	g.First(&m.MapStats, m.ID)
+func (m *MatchData) GetCurrentScore(g *gorm.DB) (int, int, error) {
+	if m.ID == 0 {
+		return 0, 0, fmt.Errorf("Match ID invalid")
+	}
+	m.GetMapStat()
 	if m.MaxMaps == 1 {
 		if len(m.MapStats) == 0 { // check ok?
-			return 0, 0
+			return 0, 0, nil
 		}
-		return m.MapStats[0].Team1Score, m.MapStats[0].Team2Score
+		return m.MapStats[0].Team1Score, m.MapStats[0].Team2Score, nil
 	}
-	return m.Team1Score, m.Team2Score
+	return m.Team1Score, m.Team2Score, nil
 }
 
 // GetTeam1 Get Team1 as "TeamData" struct.
@@ -825,9 +835,9 @@ func (m *MatchData) BuildMatchDict() (*MatchConfig, error) {
 }
 
 // GetMapStat Gets each map stat data as "MapStatsData" struct array.
-func (m *MatchData) GetMapStat() ([]MapStatsData, error) {
-	SQLAccess.Gorm.Limit(7).Where("match_id = ?", int(m.ID)).Find(&m.MapStats)
-	return m.MapStats, nil
+func (m *MatchData) GetMapStat() (*MatchData, error) {
+	SQLAccess.Gorm.Limit(7).Where("match_id = ?", m.ID).Find(&m.MapStats)
+	return m, nil
 }
 
 // MapStatsData MapStatsData struct for map_stats table.
