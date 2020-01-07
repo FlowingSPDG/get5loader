@@ -461,6 +461,11 @@ export default {
     },
     async CancelMatch (matchid) {
       try {
+        await this.$confirm('This will cancel the match. Continue?', 'Warning', {
+          confirmButtonText: 'OK',
+          cancelButtonText: 'Cancel',
+          type: 'warning'
+        })
         const res = await this.axios.post(`/api/v1/match/${matchid}/cancel`)
         this.$message({
           message: 'Successfully cancelled match.',
