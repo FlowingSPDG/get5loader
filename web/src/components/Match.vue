@@ -643,4 +643,8 @@ li {
 a {
     color: #42b983;
 }
+
+.panel-body {
+  overflow: scroll
+}
 </style>
