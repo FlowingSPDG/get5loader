@@ -17,79 +17,79 @@
   </el-form-item>
 
   <el-form-item label="Country Flag" style="width: 653px;" prop="flag">
-    <el-select v-model="form.flag" placeholder="None" style="width: 653px;">
-      <el-option selected value="">None</el-option><br>
-      <el-option label="Algeria" value="dz">Algeria - DZ</el-option><br>
-      <el-option label="Argentina" value="ar">Argentina - AR</el-option><br>
-      <el-option label="Australia" value="au">Australia - AU</el-option><br>
-      <el-option label="Austria" value="at">Austria - AT</el-option><br>
-      <el-option label="Belarus" value="by">Belarus - BY</el-option><br>
-      <el-option label="Belgium" value="be">Belgium - BE</el-option><br>
-      <el-option label="Brazil" value="br">Brazil - BR</el-option><br>
-      <el-option label="Bulgaria" value="bg">Bulgaria - BG</el-option><br>
-      <el-option label="Canada" value="ca">Canada - CA</el-option><br>
-      <el-option label="Chile" value="cl">Chile - CL</el-option><br>
-      <el-option label="China" value="cn">China - CN</el-option><br>
-      <el-option label="Cocos Islands" value="cc">Cocos Islands - CC</el-option><br>
-      <el-option label="Croatia" value="hr">Croatia - HR</el-option><br>
-      <el-option label="Czech Republic" value="cz">Czech Republic - CZ</el-option><br>
-      <el-option label="Denmark" value="dk">Denmark - DK</el-option><br>
-      <el-option label="Estonia" value="ee">Estonia - EE</el-option><br>
-      <el-option label="European Union" value="eu">European Union - EU</el-option><br>
-      <el-option label="Finland" value="fi">Finland - FI</el-option><br>
-      <el-option label="France" value="fr">France - FR</el-option><br>
-      <el-option label="Germany" value="de">Germany - DE</el-option><br>
-      <el-option label="Greece" value="gr">Greece - GR</el-option><br>
-      <el-option label="Guadeloupe" value="gp">Guadeloupe - GP</el-option><br>
-      <el-option label="Hong Kong" value="hk">Hong Kong - HK</el-option><br>
-      <el-option label="Hungary" value="hu">Hungary - HU</el-option><br>
-      <el-option label="Iceland" value="is">Iceland - IS</el-option><br>
-      <el-option label="India" value="in">India - IN</el-option><br>
-      <el-option label="Indonesia" value="id">Indonesia - ID</el-option><br>
-      <el-option label="Iran" value="ir">Iran - IR</el-option><br>
-      <el-option label="Ireland" value="ie">Ireland - IE</el-option><br>
-      <el-option label="Israel" value="il">Israel - IL</el-option><br>
-      <el-option label="Italy" value="it">Italy - IT</el-option><br>
-      <el-option label="Japan" value="jp">Japan - JP</el-option><br>
-      <el-option label="Kazahkstan" value="kz">Kazahkstan - KZ</el-option><br>
-      <el-option label="Latvia" value="lv">Latvia - LV</el-option><br>
-      <el-option label="Libya" value="ly">Libya - LY</el-option><br>
-      <el-option label="Liechtenstein" value="lt">Liechtenstein - LT</el-option><br>
-      <el-option label="Luxembourg" value="lu">Luxembourg - LU</el-option><br>
-      <el-option label="Macao" value="mo">Macao - MO</el-option><br>
-      <el-option label="Macedonia" value="mk">Macedonia - MK</el-option><br>
-      <el-option label="Malaysia" value="my">Malaysia - MY</el-option><br>
-      <el-option label="Mexico" value="mx">Mexico - MX</el-option><br>
-      <el-option label="Netherlands" value="nl">Netherlands - NL</el-option><br>
-      <el-option label="New Zealand" value="nz">New Zealand - NZ</el-option><br>
-      <el-option label="Norway" value="no">Norway - NO</el-option><br>
-      <el-option label="Pakistan" value="pk">Pakistan - PK</el-option><br>
-      <el-option label="Peru" value="pe">Peru - PE</el-option><br>
-      <el-option label="Phillippines" value="ph">Phillippines - PH</el-option><br>
-      <el-option label="Poland" value="pl">Poland - PL</el-option><br>
-      <el-option label="Portugal" value="pt">Portugal - PT</el-option><br>
-      <el-option label="Reunion" value="re">Reunion - RE</el-option><br>
-      <el-option label="Romania" value="ro">Romania - RO</el-option><br>
-      <el-option label="Russia" value="ru">Russia - RU</el-option><br>
-      <el-option label="Saudi Arabia" value="sa">Saudi Arabia - SA</el-option><br>
-      <el-option label="Serbia" value="rs">Serbia - RS</el-option><br>
-      <el-option label="Singapore" value="sg">Singapore - SG</el-option><br>
-      <el-option label="Slovenia" value="si">Slovenia - SI</el-option><br>
-      <el-option label="Slovokia" value="sk">Slovokia - SK</el-option><br>
-      <el-option label="South Africa" value="za">South Africa - ZA</el-option><br>
-      <el-option label="South Korea" value="kr">South Korea - KR</el-option><br>
-      <el-option label="Spain" value="es">Spain - ES</el-option><br>
-      <el-option label="Sweden" value="se">Sweden - SE</el-option><br>
-      <el-option label="Switzerland" value="ch">Switzerland - CH</el-option><br>
-      <el-option label="Taiwan" value="tw">Taiwan - TW</el-option><br>
-      <el-option label="Thailand" value="th">Thailand - TH</el-option><br>
-      <el-option label="Turkey" value="tr">Turkey - TR</el-option><br>
-      <el-option label="Ukraine" value="ua">Ukraine - UA</el-option><br>
-      <el-option label="United Arab Emirates" value="ae">United Arab Emirates - AE</el-option><br>
-      <el-option label="United Kingdom" value="gb">United Kingdom - GB</el-option><br>
-      <el-option label="United States" value="us">United States - US</el-option><br>
-      <el-option label="Venezuela" value="ve">Venezuela - VE</el-option><br>
-      <el-option label="Vietnam" value="vn">Vietnam - VN</el-option><br>
+    <el-select v-model="form.flag" placeholder="None" style="width: 653px;" filterable>
+      <el-option selected value="" >None</el-option>
+      <el-option label="Algeria" value="dz">Algeria - DZ</el-option>
+      <el-option label="Argentina" value="ar">Argentina - AR</el-option>
+      <el-option label="Australia" value="au">Australia - AU</el-option>
+      <el-option label="Austria" value="at">Austria - AT</el-option>
+      <el-option label="Belarus" value="by">Belarus - BY</el-option>
+      <el-option label="Belgium" value="be">Belgium - BE</el-option>
+      <el-option label="Brazil" value="br">Brazil - BR</el-option>
+      <el-option label="Bulgaria" value="bg">Bulgaria - BG</el-option>
+      <el-option label="Canada" value="ca">Canada - CA</el-option>
+      <el-option label="Chile" value="cl">Chile - CL</el-option>
+      <el-option label="China" value="cn">China - CN</el-option>
+      <el-option label="Cocos Islands" value="cc">Cocos Islands - CC</el-option>
+      <el-option label="Croatia" value="hr">Croatia - HR</el-option>
+      <el-option label="Czech Republic" value="cz">Czech Republic - CZ</el-option>
+      <el-option label="Denmark" value="dk">Denmark - DK</el-option>
+      <el-option label="Estonia" value="ee">Estonia - EE</el-option>
+      <el-option label="European Union" value="eu">European Union - EU</el-option>
+      <el-option label="Finland" value="fi">Finland - FI</el-option>
+      <el-option label="France" value="fr">France - FR</el-option>
+      <el-option label="Germany" value="de">Germany - DE</el-option>
+      <el-option label="Greece" value="gr">Greece - GR</el-option>
+      <el-option label="Guadeloupe" value="gp">Guadeloupe - GP</el-option>
+      <el-option label="Hong Kong" value="hk">Hong Kong - HK</el-option>
+      <el-option label="Hungary" value="hu">Hungary - HU</el-option>
+      <el-option label="Iceland" value="is">Iceland - IS</el-option>
+      <el-option label="India" value="in">India - IN</el-option>
+      <el-option label="Indonesia" value="id">Indonesia - ID</el-option>
+      <el-option label="Iran" value="ir">Iran - IR</el-option>
+      <el-option label="Ireland" value="ie">Ireland - IE</el-option>
+      <el-option label="Israel" value="il">Israel - IL</el-option>
+      <el-option label="Italy" value="it">Italy - IT</el-option>
+      <el-option label="Japan" value="jp">Japan - JP</el-option>
+      <el-option label="Kazahkstan" value="kz">Kazahkstan - KZ</el-option>
+      <el-option label="Latvia" value="lv">Latvia - LV</el-option>
+      <el-option label="Libya" value="ly">Libya - LY</el-option>
+      <el-option label="Liechtenstein" value="lt">Liechtenstein - LT</el-option>
+      <el-option label="Luxembourg" value="lu">Luxembourg - LU</el-option>
+      <el-option label="Macao" value="mo">Macao - MO</el-option>
+      <el-option label="Macedonia" value="mk">Macedonia - MK</el-option>
+      <el-option label="Malaysia" value="my">Malaysia - MY</el-option>
+      <el-option label="Mexico" value="mx">Mexico - MX</el-option>
+      <el-option label="Netherlands" value="nl">Netherlands - NL</el-option>
+      <el-option label="New Zealand" value="nz">New Zealand - NZ</el-option>
+      <el-option label="Norway" value="no">Norway - NO</el-option>
+      <el-option label="Pakistan" value="pk">Pakistan - PK</el-option>
+      <el-option label="Peru" value="pe">Peru - PE</el-option>
+      <el-option label="Phillippines" value="ph">Phillippines - PH</el-option>
+      <el-option label="Poland" value="pl">Poland - PL</el-option>
+      <el-option label="Portugal" value="pt">Portugal - PT</el-option>
+      <el-option label="Reunion" value="re">Reunion - RE</el-option>
+      <el-option label="Romania" value="ro">Romania - RO</el-option>
+      <el-option label="Russia" value="ru">Russia - RU</el-option>
+      <el-option label="Saudi Arabia" value="sa">Saudi Arabia - SA</el-option>
+      <el-option label="Serbia" value="rs">Serbia - RS</el-option>
+      <el-option label="Singapore" value="sg">Singapore - SG</el-option>
+      <el-option label="Slovenia" value="si">Slovenia - SI</el-option>
+      <el-option label="Slovokia" value="sk">Slovokia - SK</el-option>
+      <el-option label="South Africa" value="za">South Africa - ZA</el-option>
+      <el-option label="South Korea" value="kr">South Korea - KR</el-option>
+      <el-option label="Spain" value="es">Spain - ES</el-option>
+      <el-option label="Sweden" value="se">Sweden - SE</el-option>
+      <el-option label="Switzerland" value="ch">Switzerland - CH</el-option>
+      <el-option label="Taiwan" value="tw">Taiwan - TW</el-option>
+      <el-option label="Thailand" value="th">Thailand - TH</el-option>
+      <el-option label="Turkey" value="tr">Turkey - TR</el-option>
+      <el-option label="Ukraine" value="ua">Ukraine - UA</el-option>
+      <el-option label="United Arab Emirates" value="ae">United Arab Emirates - AE</el-option>
+      <el-option label="United Kingdom" value="gb">United Kingdom - GB</el-option>
+      <el-option label="United States" value="us">United States - US</el-option>
+      <el-option label="Venezuela" value="ve">Venezuela - VE</el-option>
+      <el-option label="Vietnam" value="vn">Vietnam - VN</el-option>
     </el-select>
   </el-form-item>
 
@@ -301,7 +301,7 @@ ul {
 }
 
 li {
-    display: inline-block;
+    display: block;
     margin: 0 10px;
 }
 
