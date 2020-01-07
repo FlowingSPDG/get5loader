@@ -6,13 +6,15 @@
                 <el-select v-model="form.server_id" filterable>
                     <el-option v-for="(server, index) in servers" :label="server.display_name" :key="index" :value="server.id"></el-option>
                 </el-select>
-                <router-link class="btn btn-primary" to="/server/create">Create a Server</router-link>
+                <el-button icon="el-icon-plus" @click="$router.push('/server/create')"></el-button>
+
             </el-form-item>
 
             <el-form-item label="Team 1" style="width: 653px;" prop="team1_id">
                 <el-select v-model="form.team1_id" filterable>
                     <el-option v-for="(team, index) in teams" :label="team.name" :key="index" :value="team.id"></el-option>
                 </el-select>
+                <el-button icon="el-icon-plus" @click="$router.push('/team/create')"></el-button>
             </el-form-item>
 
             <el-form-item v-if="match_text_option" label="Team 1 title text" style="width: 653px;" prop="team1_string">
@@ -23,6 +25,7 @@
                 <el-select v-model="form.team2_id" filterable>
                     <el-option v-for="(team, index) in teams" :label="team.name" :key="index" :value="team.id"></el-option>
                 </el-select>
+                <el-button icon="el-icon-plus" @click="$router.push('/team/create')"></el-button>
             </el-form-item>
 
             <el-form-item v-if="match_text_option" label="Team 2 title text" style="width: 653px;" prop="team2_string">

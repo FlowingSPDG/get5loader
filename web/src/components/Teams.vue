@@ -5,11 +5,11 @@
   <h1 v-else-if="owner">Teams for <a :href="'/user/'+owner.id"> {{ owner.name }}</a></h1>
 
   <ul class="list-group">
-    <li class="list-group-item" v-if="teams.length == 0">
+    <li class="list-group-item" v-if="owner.teams.length == 0">
     No teams found.
     </li>
 
-    <li class="list-group-item" v-else v-for="(team,index) in teams" :key="index">
+    <li class="list-group-item" v-else v-for="(team,index) in owner.teams" :key="index">
 
       <img :src="get_flag_link(team)" />
       <router-link :to="'/team/'+team.id" class="col-sm-offset-1">{{team.name}}</router-link>
@@ -35,21 +35,21 @@ export default {
     return {
       user: {},
       my_teams: false,
-      teams: [],
-      owner: {}
+      owner: {
+        teams: []
+      }
     }
   },
   async created () {
-    this.user = await this.axios.get('/api/v1/CheckLoggedIn')
-    if (this.user.user_id === this.$route.params.userid || this.$route.path.userid === '/myteams') {
+    let res = await this.axios.get('/api/v1/CheckLoggedIn')
+    this.user = res.data
+    if (this.user.userid === this.$route.params.userid || this.$route.path === '/myteams') {
       this.my_teams = true
     }
     if (this.my_teams) {
-      const userdata = await this.GetUserData(this.user.user_id)
-      this.teams = userdata.teams
+      this.owner = await this.GetUserData(this.user.userid)
     } else {
-      const userdata = await this.GetUserData(this.$route.params.userid)
-      this.teams = userdata.teams
+      this.owner = await this.GetUserData(this.$route.params.userid)
     }
   },
   methods: {
