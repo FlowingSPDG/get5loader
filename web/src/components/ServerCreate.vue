@@ -36,36 +36,6 @@
 </div>
 </template>
 
-<!--script>
-    jQuery("#addplayer_team1").click(function (e) {
-        var input = prompt("Please enter a steamid to add to {{team1.name}}", "");
-        if (input != null) {
-            window.location.href = "{{request.path}}/adduser?team=team1&auth=" + encodeURIComponent(input);
-        }
-    });
-
-    jQuery("#addplayer_team2").click(function (e) {
-        var input = prompt("Please enter a steamid to add to {{team2.name}}", "");
-        if (input != null) {
-            window.location.href = "{{request.path}}/adduser?team=team2&auth=" + encodeURIComponent(input);
-        }
-    });
-
-    jQuery("#addplayer_spec").click(function (e) {
-        var input = prompt("Please enter a steamid to add to the spectators list", "");
-        if (input != null) {
-            window.location.href = "{{request.path}}/adduser?team=spec&auth=" + encodeURIComponent(input);
-        }
-    });
-
-    jQuery("#rcon_command").click(function (e) {
-        var input = prompt("Enter a command to send", "");
-        if (input != null) {
-            window.location.href = "{{request.path}}/rcon?command=" + encodeURIComponent(input);
-        }
-    });
-</script>-->
-
 <script>
 export default {
   name: 'ServerCreate',
@@ -99,11 +69,14 @@ export default {
         ip_string: [
           { required: true, trigger: 'change', validator: ValidateIPaddress, message: 'Please enter valid IP' }
         ],
+        port: [
+          { required: true, trigger: 'change', message: 'Please enter valid Port' }
+        ],
         rcon_password: [
           { required: true, message: 'Please input rcon password', trigger: 'change' }
         ],
         display_name: [
-          { required: true, message: 'Please input server display name', trigger: 'change' }
+          { required: false, message: 'Please input server display name', trigger: 'change' }
         ],
         public_server: [
           { required: false, message: 'Please check if server is public', trigger: 'change' }

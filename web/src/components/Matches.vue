@@ -41,7 +41,7 @@
           <router-link :to="'/user/'+matchinfo[match.id].user.id">{{ matchinfo[match.id].user.name }}</router-link>
         </td>
       </tr>
-    <el-button type="primary" :loading="loadingmore" @click="GetMatches()">Load more...</el-button>
+    <el-button type="primary" v-if="!limit" :loading="loadingmore" @click="GetMatches()">Load more...</el-button>
     </tbody>
   </table>
 
@@ -60,6 +60,7 @@ export default {
       loaded: 0,
       loading: {},
       flag_loading: {},
+      limit: false,
       my_matches: false,
       all_matches: true,
       matches: [],
@@ -85,6 +86,7 @@ export default {
       this.loaded = 0
       this.loading = {}
       this.flag_loading = {}
+      this.limit = false
       this.my_matches = false
       this.all_matches = true
       this.matches = []
@@ -126,6 +128,9 @@ export default {
             self.$set(self.loading, [res.data[i].id], true)
             this.GetMatchInfo(res.data[i].id)
             self.$set(self.loading, [res.data[i].id], false)
+            if (res.data.length === 0) {
+              self.limit = true
+            }
             if (i + 1 === res.data.length) {
               self.loadingmore = false
               resolve(res.data)
@@ -134,6 +139,9 @@ export default {
         } else {
           const res = await this.axios.get(`/api/v1/GetMatches?offset=${this.loaded}`)
           self.loaded = self.loaded + res.data.length
+          if (res.data.length === 0) {
+            self.limit = true
+          }
           for (let i = 0; i < res.data.length; i++) {
             this.matches.push(res.data[i])
             self.$set(self.loading, [res.data[i].id], true)
