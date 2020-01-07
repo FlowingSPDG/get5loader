@@ -215,8 +215,8 @@ func (g *GameServerData) GetHostPort() string {
 
 // GetDisplay Returns "DisplayName" if its not empty. otherwise it returns address and port.
 func (g *GameServerData) GetDisplay() string {
-	if g.DisplayName == "" {
-		return g.DisplayName
+	if g.DisplayName != "" {
+		return fmt.Sprintf("%s (%s)", g.DisplayName, g.GetHostPort())
 	}
 	return g.GetHostPort()
 }
