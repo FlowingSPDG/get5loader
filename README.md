@@ -22,7 +22,7 @@ Shugo [**FlowingSPDG**](http://github.com/FlowingSPDG) Kawamura
 2. Register teams on the "Create a Team" section with steamids.
 3. Go to the "Create a Match" page.
 
-API Server will send rcon command to load match config(``get5_loadmatch_url <webserver>/match/<matchid>/config``) Then game server loads match and wait for players.
+API Server will send rcon command to load match config(``get5_loadmatch_url <webserver>/api/v1/match/<matchid>/config``) Then game server loads match and wait for players.
 
 ## ScreenShots
 ![Matches](/screenshots/Matches.PNG?raw=true "Matches list page")
