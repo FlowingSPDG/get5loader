@@ -34,18 +34,23 @@ export default {
   data () {
     return {
       user: {},
-      my_matches: false,
+      my_teams: false,
       teams: [],
       owner: {}
     }
   },
   async created () {
-    const res = await this.axios.get('/api/v1/CheckLoggedIn')
-    this.user = res
-    const userdata = await this.GetUserData(this.$route.params.userid)
-    this.owner = userdata
-    this.my_matches = this.$route.params.userid === userdata.id
-    this.teams = userdata.teams
+    this.user = await this.axios.get('/api/v1/CheckLoggedIn')
+    if (this.user.user_id === this.$route.params.userid || this.$route.path.userid === '/myteams') {
+      this.my_teams = true
+    }
+    if (this.my_teams) {
+      const userdata = await this.GetUserData(this.user.user_id)
+      this.teams = userdata.teams
+    } else {
+      const userdata = await this.GetUserData(this.$route.params.userid)
+      this.teams = userdata.teams
+    }
   },
   methods: {
     async GetUserData (userid) {

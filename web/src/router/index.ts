@@ -87,6 +87,11 @@ export default new Router({
       component: Teams
     },
     {
+      path: '/myteams',
+      name: 'My Teams',
+      component: Teams
+    },
+    {
       path: '/user/:userid',
       name: 'User',
       component: User
