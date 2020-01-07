@@ -195,6 +195,11 @@ export default {
     },
     async DeleteTeam (teamid) {
       try {
+        await this.$confirm('This will permanently delete the team. Continue?', 'Warning', {
+          confirmButtonText: 'OK',
+          cancelButtonText: 'Cancel',
+          type: 'warning'
+        })
         let res = await this.axios.delete(`/api/v1/team/${teamid}/delete`)
         this.$message({
           message: 'Successfully deleted team.',

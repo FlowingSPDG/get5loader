@@ -17,8 +17,8 @@
       </el-table-column>
       <el-table-column>
         <template slot-scope="scope">
-          <router-link :to="'/server/'+scope.row.id+'/edit'" class="btn btn-primary btn-xs">Edit</router-link>
-          <button @click="DeleteTeam(scope.row.id)" class="btn btn-danger btn-xs" v-if="!scope.row.in_use">Delete</button>
+          <el-button icon="el-icon-edit" @click="$router.push('/server/'+scope.row.id+'/edit')"></el-button>
+          <el-button icon="el-icon-delete" @click="DeleteTeam(scope.row.id)" v-if="!scope.row.in_use"></el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -49,6 +49,11 @@ export default {
     },
     async DeleteTeam (serverid) {
       try {
+        await this.$confirm('This will permanently delete the server. Continue?', 'Warning', {
+          confirmButtonText: 'OK',
+          cancelButtonText: 'Cancel',
+          type: 'warning'
+        })
         let res = await this.axios.delete(`/api/v1/server/${serverid}/delete`)
         this.$message({
           message: 'Successfully deleted server.',

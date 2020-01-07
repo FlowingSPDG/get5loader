@@ -3,14 +3,14 @@
     <div id="content">
         <el-form ref="form" :model="form" :rules="rules" label-position="left" label-width="120px">
             <el-form-item label="Server" style="width: 653px;" prop="display_name">
-                <el-select v-model="form.server_id">
+                <el-select v-model="form.server_id" filterable>
                     <el-option v-for="(server, index) in servers" :label="server.display_name" :key="index" :value="server.id"></el-option>
                 </el-select>
                 <router-link class="btn btn-primary" to="/server/create">Create a Server</router-link>
             </el-form-item>
 
             <el-form-item label="Team 1" style="width: 653px;" prop="team1_id">
-                <el-select v-model="form.team1_id">
+                <el-select v-model="form.team1_id" filterable>
                     <el-option v-for="(team, index) in teams" :label="team.name" :key="index" :value="team.id"></el-option>
                 </el-select>
             </el-form-item>
@@ -20,7 +20,7 @@
             </el-form-item>
 
             <el-form-item label="Team2" style="width: 653px;" prop="team2_id">
-                <el-select v-model="form.team2_id">
+                <el-select v-model="form.team2_id" filterable>
                     <el-option v-for="(team, index) in teams" :label="team.name" :key="index" :value="team.id"></el-option>
                 </el-select>
             </el-form-item>
@@ -33,15 +33,19 @@
                 <el-input v-model="form.match_title"></el-input>
             </el-form-item>
 
-            <el-form-item label="Map pool" style="width: 653px;" prop="series_type">
+            <el-form-item label="Series Type" style="width: 653px;" prop="series_type">
                 <el-radio-group v-model="form.series_type">
                     <el-radio v-for="(option, index) in series_type" :label="option.type" :key="index"></el-radio>
                 </el-radio-group>
             </el-form-item>
 
-            <el-form-item label="Map pool" style="width: 653px;" prop="veto_mappool">
-                <el-checkbox-group v-model="form.veto_mappool">
+            <el-form-item label="Map Pool" style="width: 653px;" prop="veto_mappool">
+                <el-checkbox-group v-if="form.series_type == 'bo1-preset'" v-model="form.veto_mappool">
                     <el-checkbox v-for="(map, index) in mappool" :label="map.system" :key="index"></el-checkbox>
+                </el-checkbox-group>
+
+                <el-checkbox-group v-else v-model="form.veto_mappool">
+                    <el-radio  v-for="(map, index) in mappool" :label="map.system" :key="index"></el-radio >
                 </el-checkbox-group>
             </el-form-item>
 
@@ -161,8 +165,8 @@ export default {
       ],
       form: {
         server_id: 0,
-        team1_id: 0,
-        team2_id: 0,
+        team1_id: undefined,
+        team2_id: undefined,
         max_maps: 0,
         title: '',
         skip_veto: false,
@@ -296,7 +300,7 @@ ul {
 }
 
 li {
-    display: inline-block;
+    display: block;
     margin: 0 10px;
 }
 
