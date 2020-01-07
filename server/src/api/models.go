@@ -166,7 +166,7 @@ type APIPlayerStatsData struct {
 }
 
 // TableName declairation for GORM
-func (u *APIPlayerStatsData) TableName() string {
+func (p *APIPlayerStatsData) TableName() string {
 	return "player_stats"
 }
 
@@ -180,7 +180,7 @@ func (p *APIPlayerStatsData) GetRating() float64 { // Rating value can be more a
 	var killcount float64 = float64(p.K1 + 4*p.K2 + 9*p.K3 + 16*p.K4 + 25*p.K5)
 	var RoundsWithMultipleKillsRating float64 = killcount / float64(p.Roundsplayed) / float64(AverageRMK)
 	var rating float64 = (KillRating + 0.7*SurvivalRating + RoundsWithMultipleKillsRating) / 2.7
-	return rating
+	return util.Round(rating, 2)
 }
 
 // GetKDR Returns player's KDR(Kill/Deaths Ratio).
@@ -188,7 +188,7 @@ func (p *APIPlayerStatsData) GetKDR() float64 {
 	if p.Deaths == 0 {
 		return float64(p.Kills)
 	}
-	return float64(p.Kills) / float64(p.Deaths)
+	return util.Round(float64(p.Kills)/float64(p.Deaths), 2)
 }
 
 // GetHSP Returns player's HSP(HeadShot Percentage).
@@ -196,7 +196,7 @@ func (p *APIPlayerStatsData) GetHSP() float64 {
 	if p.Kills == 0 {
 		return 0
 	}
-	return float64(p.HeadshotKills) / float64(p.Kills) * 100
+	return util.Round(float64(p.HeadshotKills)/float64(p.Kills)*100, 2)
 }
 
 // GetADR Returns player's ADR(Average Damage per Round).
@@ -204,7 +204,7 @@ func (p *APIPlayerStatsData) GetADR() float64 {
 	if p.Roundsplayed == 0 {
 		return 0.0
 	}
-	return float64(p.Damage) / float64(p.Roundsplayed)
+	return util.Round(float64(p.Damage)/float64(p.Roundsplayed), 2)
 }
 
 // GetFPR Returns player's FPR(Frags Per Round).
@@ -212,7 +212,7 @@ func (p *APIPlayerStatsData) GetFPR() float64 {
 	if p.Roundsplayed == 0 {
 		return 0.0
 	}
-	return float64(p.Kills) / float64(p.Roundsplayed)
+	return util.Round(float64(p.Kills)/float64(p.Roundsplayed), 2)
 }
 
 type SimpleJSONResponse struct {

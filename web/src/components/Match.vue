@@ -135,7 +135,7 @@
                             <td v-if="player.roundsplayed" class="text-center"> {{ player.rating }} </td>
                             <td v-if="player.roundsplayed" class="text-center"> {{ player.fpr }} </td>
                             <td v-if="player.roundsplayed" class="text-center"> {{ player.adr }} </td>
-                            <td v-if="player.roundsplayed" class="text-center"> {{ player.hsp }} </td>
+                            <td v-if="player.roundsplayed" class="text-center"> {{ player.hsp }}% </td>
                         </tr>
 
                         <td> <b>{{ team2.name }}</b> </td>
