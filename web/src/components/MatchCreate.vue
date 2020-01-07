@@ -33,13 +33,13 @@
                 <el-input v-model="form.match_title"></el-input>
             </el-form-item>
 
-            <el-form-item label="Map pool" style="width: 653px;" prop="series_type">
+            <el-form-item label="Series Type" style="width: 653px;" prop="series_type">
                 <el-radio-group v-model="form.series_type">
                     <el-radio v-for="(option, index) in series_type" :label="option.type" :key="index"></el-radio>
                 </el-radio-group>
             </el-form-item>
 
-            <el-form-item label="Map pool" style="width: 653px;" prop="veto_mappool">
+            <el-form-item label="Map Pool" style="width: 653px;" prop="veto_mappool">
                 <el-checkbox-group v-model="form.veto_mappool">
                     <el-checkbox v-for="(map, index) in mappool" :label="map.system" :key="index"></el-checkbox>
                 </el-checkbox-group>
