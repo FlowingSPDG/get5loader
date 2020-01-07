@@ -16,7 +16,7 @@ func MatchConfigHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Printf("MatchConfigHandler\n")
 	matchid := vars["matchID"]
 	match := db.MatchData{}
-	db.SQLAccess.Gorm.Where("id = ?", matchid).First(&match)
+	db.SQLAccess.Gorm.First(&match, matchid)
 	res, err := match.BuildMatchDict()
 	if err != nil {
 		http.Error(w, "Internal ERROR", http.StatusInternalServerError)
@@ -53,7 +53,7 @@ func MatchFinishHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Printf("winner : %s\n", winner)
 	fmt.Printf("forfeit : %s\n", forfeit)
 	var Match = db.MatchData{}
-	db.SQLAccess.Gorm.Where("id = ?", matchid).First(&Match)
+	db.SQLAccess.Gorm.First(&Match, matchid)
 	fmt.Printf("Requested API key : %s\n", r.FormValue("key"))
 	fmt.Printf("Real API key : %s\n", Match.APIKey)
 	var MatchUpdate = Match
@@ -83,7 +83,10 @@ func MatchFinishHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	MatchUpdate.EndTime.Scan(time.Now())
-	server := MatchUpdate.GetServer()
+	server, err := MatchUpdate.GetServer()
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+	}
 	serverUpdate := server
 	db.SQLAccess.Gorm.First(&serverUpdate)
 	serverUpdate.InUse = false
@@ -111,7 +114,7 @@ func MatchMapStartHandler(w http.ResponseWriter, r *http.Request) {
 	mapname := r.FormValue("mapname")
 	fmt.Printf("mapname : %s\n", mapname)
 	var m = db.MatchData{}
-	db.SQLAccess.Gorm.Where("id = ?", matchid).First(&m)
+	db.SQLAccess.Gorm.First(&m, matchid)
 	err = MatchAPICheck(&m, r)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -161,7 +164,7 @@ func MatchMapUpdateHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Printf("team2score : %d\n", team2score)
 
 	var m = db.MatchData{}
-	db.SQLAccess.Gorm.Where("id = ?", matchid).First(&m)
+	db.SQLAccess.Gorm.First(&m, matchid)
 	err = MatchAPICheck(&m, r)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -204,7 +207,7 @@ func MatchMapFinishHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Printf("winner : %s\n", winner)
 
 	m := db.MatchData{}
-	db.SQLAccess.Gorm.Where("id = ?", matchid).First(&m)
+	db.SQLAccess.Gorm.First(&m, matchid)
 	mUpdate := m
 	db.SQLAccess.Gorm.First(&mUpdate)
 	err = MatchAPICheck(&m, r)
@@ -423,7 +426,7 @@ func MatchMapPlayerUpdateHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Printf("firstdeath_ct : %d\n", FormFirstDeathCT)
 
 	var m = db.MatchData{}
-	db.SQLAccess.Gorm.Where("id = ?", matchid).First(&m)
+	db.SQLAccess.Gorm.First(&m, matchid)
 	if m.APIKey != r.FormValue("key") {
 		http.Error(w, "Wrong API Key", http.StatusBadRequest)
 		return
@@ -501,7 +504,7 @@ func MatchVetoUpdateHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Printf("FormPickOrVeto : %s\n", FormPickOrVeto)
 
 	m := &db.MatchData{}
-	db.SQLAccess.Gorm.Where("id = ?", matchid).First(&m)
+	db.SQLAccess.Gorm.First(&m,matchid)
 	err = MatchAPICheck(m, r)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -546,7 +549,7 @@ func MatchDemoUploadHandler(w http.ResponseWriter, r *http.Request) {
 	DemoFile := r.FormValue("demoFile")
 
 	m := &db.MatchData{}
-	db.SQLAccess.Gorm.Where("id = ?", matchid).First(&m)
+	db.SQLAccess.Gorm.First(&m,matchid)
 	err = MatchAPICheck(m, r)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)

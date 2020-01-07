@@ -84,8 +84,8 @@ export default {
     }
     const loggedin = await this.axios.get('/api/v1/CheckLoggedIn')
     this.user = loggedin.data
-    this.Editable = this.CheckTeamEditable(this.user.userid)
-    this.Deletable = this.CheckTeamDeletable(this.user.userid)
+    this.Editable = this.CheckTeamEditable(this.user.user_id)
+    this.Deletable = this.CheckTeamDeletable(this.user.user_id)
   },
   methods: {
     async GetTeamData (teamid) {

@@ -1,7 +1,7 @@
 <template>
 <div id="content">
 
-  <h1 v-if="my_matches">Your teams</h1>
+  <h1 v-if="my_teams">Your teams</h1>
   <h1 v-else-if="owner">Teams for <a :href="'/user/'+owner.id"> {{ owner.name }}</a></h1>
 
   <ul class="list-group">

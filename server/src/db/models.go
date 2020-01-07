@@ -148,7 +148,7 @@ func (g *GameServerData) Create(userid int, displayname string, ipstring string,
 // CanEdit Check if server is editable for user or not.
 func (g *GameServerData) CanEdit(userid int) bool {
 	if g.UserID == 0 {
-		SQLAccess.Gorm.Where("id = ?", g.ID).First(&g)
+		SQLAccess.Gorm.First(&g, g.ID)
 	}
 	if userid == 0 {
 		return false
@@ -167,7 +167,10 @@ func (g *GameServerData) Edit() (*GameServerData, error) {
 		return nil, fmt.Errorf("ID not valid")
 	}
 	Server := GameServerData{}
-	SQLAccess.Gorm.Where("id = ?", g.ID).First(&Server)
+	rec := SQLAccess.Gorm.First(&Server, g.ID)
+	if rec.RecordNotFound() {
+		return nil, fmt.Errorf("Server not found")
+	}
 	SQLAccess.Gorm.Model(&Server).Update(&g)
 	SQLAccess.Gorm.Save(&g)
 	return g, nil
@@ -178,7 +181,7 @@ func (g *GameServerData) Delete() error {
 	if g.ID == 0 {
 		return fmt.Errorf("ID not valid")
 	}
-	rec := SQLAccess.Gorm.Where("id = ?", g.ID).First(&g)
+	rec := SQLAccess.Gorm.First(&g, g.ID)
 	if rec.RecordNotFound() {
 		return fmt.Errorf("Server not found")
 	}
@@ -267,7 +270,10 @@ func (t *TeamData) Edit() (*TeamData, error) {
 		return nil, fmt.Errorf("ID not valid")
 	}
 	Team := TeamData{}
-	SQLAccess.Gorm.Where("id = ?", t.ID).First(&Team)
+	rec := SQLAccess.Gorm.First(&Team, t.ID)
+	if rec.RecordNotFound() {
+		return nil, fmt.Errorf("Team not found")
+	}
 	SQLAccess.Gorm.Model(&Team).Update(&t)
 	SQLAccess.Gorm.Save(&t)
 	return t, nil
@@ -278,7 +284,7 @@ func (t *TeamData) Delete() error {
 	if t.ID == 0 {
 		return fmt.Errorf("ID not valid")
 	}
-	rec := SQLAccess.Gorm.Where("id = ?", t.ID).Delete(&t)
+	rec := SQLAccess.Gorm.Delete(&t, t.ID)
 	if rec.RecordNotFound() {
 		return fmt.Errorf("Team not found")
 	}
@@ -288,7 +294,7 @@ func (t *TeamData) Delete() error {
 // CanEdit Check if server is editable for user or not.
 func (t *TeamData) CanEdit(userid int) bool {
 	if t.UserID == 0 {
-		SQLAccess.Gorm.Where("id = ?", t.ID).First(&t)
+		SQLAccess.Gorm.First(&t, t.ID)
 	}
 	if userid == 0 {
 		return false
@@ -369,7 +375,7 @@ func (t *TeamData) GetRecentMatches(limit int) []MatchData {
 		SQLAccess.Gorm.Where("team1_id = ?", t.ID).Or("team2_id = ?", t.ID).Not("start_time = null AND cancelled = true").Limit(limit).Find(&matches)
 	} else {
 		var owner UserData
-		SQLAccess.Gorm.Where("id = ?", t.UserID).First(&owner)
+		SQLAccess.Gorm.First(&owner, t.UserID)
 		SQLAccess.Gorm.Where("user_id = ?", t.UserID).Find(&owner.Matches).Limit(limit)
 		matches = owner.Matches
 	}
@@ -382,15 +388,15 @@ func (t *TeamData) GetVSMatchResult(matchid int) (string, error) {
 	myscore := 0
 	otherteamscore := 0
 	var match MatchData
-	SQLAccess.Gorm.Where("id = ?", matchid).First(&match)
+	SQLAccess.Gorm.First(&match, matchid)
 	if int(match.Team1ID) == t.ID {
 		myscore = match.Team1Score
 		otherteamscore = match.Team2Score
-		SQLAccess.Gorm.Where("id = ?", match.Team2ID).First(&otherteam)
+		SQLAccess.Gorm.First(&otherteam, match.Team2ID)
 	} else {
 		myscore = match.Team2Score
 		otherteamscore = match.Team1Score
-		SQLAccess.Gorm.Where("id = ?", match.Team2ID).First(&otherteam)
+		SQLAccess.Gorm.First(&otherteam, match.Team2ID)
 	}
 
 	// for a bo1 replace series score with the map score...
@@ -638,16 +644,19 @@ func (m *MatchData) Live() bool {
 }
 
 // GetServer Get match server ID as GameServerData
-func (m *MatchData) GetServer() *GameServerData {
-	SQLAccess.Gorm.Where("id = ?", m.ServerID).First(&m.Server)
-	return &m.Server
+func (m *MatchData) GetServer() (*GameServerData, error) {
+	rec := SQLAccess.Gorm.First(&m.Server, m.ServerID)
+	if rec.RecordNotFound() {
+		return nil, fmt.Errorf("Server not found")
+	}
+	return &m.Server, nil
 }
 
 // GetCurrentScore Returns current match score. returns map-score if match is BO1.
 func (m *MatchData) GetCurrentScore(g *gorm.DB) (int, int) {
 	//g.First(&m).Association("MapStats").Find(&m)
 	m.MapStats = []MapStatsData{}
-	g.First(&m.MapStats, "match_id = ?", m.ID)
+	g.First(&m.MapStats, m.ID)
 	if m.MaxMaps == 1 {
 		if len(m.MapStats) == 0 { // check ok?
 			return 0, 0
@@ -661,7 +670,7 @@ func (m *MatchData) GetCurrentScore(g *gorm.DB) (int, int) {
 func (m *MatchData) GetTeam1() (TeamData, error) {
 	var Team = TeamData{}
 	var STeam TeamData
-	SQLAccess.Gorm.Where("id = ?", m.Team1ID).First(&STeam)
+	SQLAccess.Gorm.First(&STeam, m.Team1ID)
 	Team.ID = STeam.ID
 	Team.Name = STeam.Name
 	Team.Tag = STeam.Tag
@@ -681,7 +690,7 @@ func (m *MatchData) GetTeam1() (TeamData, error) {
 func (m *MatchData) GetTeam2() (TeamData, error) {
 	var Team = TeamData{}
 	var STeam TeamData
-	SQLAccess.Gorm.Where("id = ?", m.Team2ID).First(&STeam)
+	SQLAccess.Gorm.First(&STeam, m.Team2ID)
 	Team.ID = STeam.ID
 	Team.Name = STeam.Name
 	Team.Tag = STeam.Tag
@@ -699,7 +708,7 @@ func (m *MatchData) GetTeam2() (TeamData, error) {
 
 // GetUser Get Match owner as "UserData" struct.
 func (m *MatchData) GetUser() UserData {
-	SQLAccess.Gorm.Where("id = ?", m.UserID).First(&m.User)
+	SQLAccess.Gorm.First(&m.User, m.UserID)
 	return m.User
 }
 
@@ -758,7 +767,7 @@ func (m *MatchData) SendToServer() error {
 
 // BuildMatchDict Builds match JSON data.
 func (m *MatchData) BuildMatchDict() (*MatchConfig, error) {
-	SQLAccess.Gorm.Where("id = ?", m.ID).First(&m)
+	SQLAccess.Gorm.First(&m, m.ID)
 	m.VetoMapPoolJSON = strings.Split(m.VetoMapPool, " ")
 	team1, err := m.GetTeam1()
 	team2, err := m.GetTeam2()
@@ -844,7 +853,7 @@ func (m *MapStatsData) TableName() string {
 // GetOrCreate Get or register mapstats data.
 func (m *MapStatsData) GetOrCreate(matchID int, MapNumber int, mapname string) (*MapStatsData, error) {
 	Match := MatchData{}
-	MatchRecord := SQLAccess.Gorm.Where("id = ?", matchID).First(&Match)
+	MatchRecord := SQLAccess.Gorm.First(&Match, matchID)
 	if MatchRecord.RecordNotFound() {
 		return nil, fmt.Errorf("Match not found")
 	}

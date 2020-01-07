@@ -82,12 +82,12 @@ func GetMatchInfo(w http.ResponseWriter, r *http.Request) {
 	team1 := APITeamData{}
 	team2 := APITeamData{}
 	user := APIUserData{}
-	db.SQLAccess.Gorm.Where("id = ?", matchid).First(&match)
+	db.SQLAccess.Gorm.First(&match, matchid)
 	db.SQLAccess.Gorm.Where("match_id = ?", matchid).Limit(7).Find(&mapstats)
-	db.SQLAccess.Gorm.Where("id = ?", match.ServerID).First(&server)
-	db.SQLAccess.Gorm.Where("id = ?", match.Team1ID).First(&team1)
-	db.SQLAccess.Gorm.Where("id = ?", match.Team2ID).First(&team2)
-	db.SQLAccess.Gorm.Where("id = ?", match.UserID).First(&user)
+	db.SQLAccess.Gorm.First(&server, match.ServerID)
+	db.SQLAccess.Gorm.First(&team1, match.Team1ID)
+	db.SQLAccess.Gorm.First(&team2, match.Team2ID)
+	db.SQLAccess.Gorm.First(&user, match.UserID)
 	var winner int64
 	if match.Winner.Valid {
 		winner_, err := match.Winner.Value()
@@ -178,7 +178,7 @@ func GetUserInfo(w http.ResponseWriter, r *http.Request) {
 	fmt.Printf("GetUserInfo\n")
 	userid := vars["userID"]
 	response := APIUserData{}
-	db.SQLAccess.Gorm.Where("id = ?", userid).First(&response)
+	db.SQLAccess.Gorm.First(&response, userid)
 	db.SQLAccess.Gorm.Where("user_id = ?", userid).Limit(20).Find(&response.Teams)
 	db.SQLAccess.Gorm.Where("user_id = ?", userid).Limit(20).Find(&response.Servers)
 
@@ -193,10 +193,10 @@ func GetUserInfo(w http.ResponseWriter, r *http.Request) {
 		team2 := APITeamData{}
 		user := APIUserData{}
 		db.SQLAccess.Gorm.Where("match_id = ?", matches[i].ID).Limit(7).Find(&mapstats)
-		db.SQLAccess.Gorm.Where("id = ?", matches[i].ServerID).First(&server)
-		db.SQLAccess.Gorm.Where("id = ?", matches[i].Team1ID).First(&team1)
-		db.SQLAccess.Gorm.Where("id = ?", matches[i].Team2ID).First(&team2)
-		db.SQLAccess.Gorm.Where("id = ?", matches[i].UserID).First(&user)
+		db.SQLAccess.Gorm.First(&server, matches[i].ServerID)
+		db.SQLAccess.Gorm.First(&user, matches[i].UserID)
+		db.SQLAccess.Gorm.First(&team1, matches[i].Team1ID)
+		db.SQLAccess.Gorm.First(&team2, matches[i].Team2ID)
 		var winner int64
 		if matches[i].Winner.Valid {
 			winner_, err := matches[i].Winner.Value()
@@ -264,7 +264,7 @@ func GetServerInfo(w http.ResponseWriter, r *http.Request) {
 	fmt.Printf("GetServerInfo\n")
 	serverID := vars["serverID"]
 	response := db.GameServerData{}
-	db.SQLAccess.Gorm.Where("id = ?", serverID).First(&response)
+	db.SQLAccess.Gorm.First(&response, serverID)
 	jsonbyte, err := json.Marshal(response)
 	if err != nil {
 		http.Error(w, "JSON Format invalid", http.StatusInternalServerError)
@@ -280,7 +280,7 @@ func GetStatusString(w http.ResponseWriter, r *http.Request) {
 	fmt.Printf("GetStatusString\n")
 	matchid := vars["matchID"]
 	response := db.MatchData{}
-	db.SQLAccess.Gorm.Where("id = ?", matchid).First(&response)
+	db.SQLAccess.Gorm.First(&response, matchid)
 	status, err := response.GetStatusString(true)
 	if err != nil {
 		http.Error(w, "Failed to get status", http.StatusInternalServerError)
@@ -318,11 +318,15 @@ func GetMatches(w http.ResponseWriter, r *http.Request) {
 func GetTeamInfo(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	fmt.Printf("GetTeamInfo\n")
-	teamid := vars["teamID"]
+	teamid, err := strconv.Atoi(vars["teamID"])
+	if err != nil {
+		http.Error(w, "teamID should be int.", http.StatusBadRequest)
+		return
+	}
 	response := APITeamData{}
-	db.SQLAccess.Gorm.Where("id = ?", teamid).First(&response)
+	db.SQLAccess.Gorm.First(&response, teamid)
 	var steamids = make([]string, 5)
-	steamids, err := response.GetPlayers()
+	steamids, err = response.GetPlayers()
 	if err != nil {
 		http.Error(w, "Failed to get players.", http.StatusInternalServerError)
 		return
@@ -354,10 +358,10 @@ func GetRecentMatches(w http.ResponseWriter, r *http.Request) {
 		team2 := APITeamData{}
 		user := APIUserData{}
 		db.SQLAccess.Gorm.Where("match_id = ?", matches[i].ID).Limit(7).Find(&mapstats)
-		db.SQLAccess.Gorm.Where("id = ?", matches[i].ServerID).First(&server)
-		db.SQLAccess.Gorm.Where("id = ?", matches[i].Team1ID).First(&team1)
-		db.SQLAccess.Gorm.Where("id = ?", matches[i].Team2ID).First(&team2)
-		db.SQLAccess.Gorm.Where("id = ?", matches[i].UserID).First(&user)
+		db.SQLAccess.Gorm.First(&server, matches[i].ServerID)
+		db.SQLAccess.Gorm.First(&team1, matches[i].Team1ID)
+		db.SQLAccess.Gorm.First(&team2, matches[i].Team2ID)
+		db.SQLAccess.Gorm.First(&user, matches[i].UserID)
 		var winner int64
 		if matches[i].Winner.Valid {
 			winner_, err := matches[i].Winner.Value()
@@ -426,7 +430,7 @@ func CheckUserCanEdit(w http.ResponseWriter, r *http.Request) {
 	teamid := vars["teamID"]
 	useridstr := q.Get("userID")
 	team := db.TeamData{}
-	db.SQLAccess.Gorm.Where("id = ?", teamid).First(&team)
+	db.SQLAccess.Gorm.First(&team, teamid)
 	userid, err := strconv.Atoi(useridstr)
 	if err != nil {
 		http.Error(w, "userid should be int", http.StatusBadRequest)
@@ -791,7 +795,7 @@ func MatchCancelHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		Match := db.MatchData{}
-		rec := db.SQLAccess.Gorm.Where("id = ?", matchid).First(&Match)
+		rec := db.SQLAccess.Gorm.First(&Match, matchid)
 		if rec.RecordNotFound() {
 			http.Error(w, "Failed to find match", http.StatusNotFound)
 		}
@@ -802,7 +806,7 @@ func MatchCancelHandler(w http.ResponseWriter, r *http.Request) {
 		db.SQLAccess.Gorm.Save(&MatchUpdate)
 
 		Server := db.GameServerData{}
-		db.SQLAccess.Gorm.Where("id = ?", Match.ServerID).First(&Server)
+		db.SQLAccess.Gorm.First(&Server, Match.ServerID)
 		ServerUpdate := Server
 		db.SQLAccess.Gorm.First(&ServerUpdate)
 		ServerUpdate.InUse = false
@@ -838,14 +842,14 @@ func MatchRconHandler(w http.ResponseWriter, r *http.Request) {
 		q := r.URL.Query()
 		command := q.Get("command")
 		Match := db.MatchData{}
-		rec := db.SQLAccess.Gorm.Where("id = ?", matchid).First(&Match)
+		rec := db.SQLAccess.Gorm.First(&Match, matchid)
 		if rec.RecordNotFound() {
 			http.Error(w, "Failed to find match", http.StatusNotFound)
 			return
 		}
 
 		Server := db.GameServerData{}
-		rec = db.SQLAccess.Gorm.Where("id = ?", Match.ServerID).First(&Server)
+		rec = db.SQLAccess.Gorm.First(&Server, Match.ServerID)
 		if rec.RecordNotFound() {
 			http.Error(w, "Failed to find server", http.StatusNotFound)
 			return
@@ -886,13 +890,13 @@ func MatchPauseHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		Match := db.MatchData{}
-		rec := db.SQLAccess.Gorm.Where("id = ?", matchid).First(&Match)
+		rec := db.SQLAccess.Gorm.First(&Match, matchid)
 		if rec.RecordNotFound() {
 			http.Error(w, "Failed to find match", http.StatusNotFound)
 		}
 
 		Server := db.GameServerData{}
-		rec = db.SQLAccess.Gorm.Where("id = ?", Match.ServerID).First(&Server)
+		rec = db.SQLAccess.Gorm.First(&Server, Match.ServerID)
 		if rec.RecordNotFound() {
 			http.Error(w, "Failed to find server", http.StatusNotFound)
 		}
@@ -926,13 +930,13 @@ func MatchUnpauseHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		Match := db.MatchData{}
-		rec := db.SQLAccess.Gorm.Where("id = ?", matchid).First(&Match)
+		rec := db.SQLAccess.Gorm.First(&Match, matchid)
 		if rec.RecordNotFound() {
 			http.Error(w, "Failed to find match", http.StatusNotFound)
 		}
 
 		Server := db.GameServerData{}
-		rec = db.SQLAccess.Gorm.Where("id = ?", Match.ServerID).First(&Server)
+		rec = db.SQLAccess.Gorm.First(&Server, Match.ServerID)
 		if rec.RecordNotFound() {
 			http.Error(w, "Failed to find server", http.StatusNotFound)
 		}
@@ -979,14 +983,14 @@ func MatchAddUserHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		Match := db.MatchData{}
-		rec := db.SQLAccess.Gorm.Where("id = ?", matchid).First(&Match)
+		rec := db.SQLAccess.Gorm.First(&Match, matchid)
 		if rec.RecordNotFound() {
 			http.Error(w, "Failed to find match", http.StatusNotFound)
 			return
 		}
 
 		Server := db.GameServerData{}
-		rec = db.SQLAccess.Gorm.Where("id = ?", Match.ServerID).First(&Server)
+		rec = db.SQLAccess.Gorm.First(&Server, Match.ServerID)
 		if rec.RecordNotFound() {
 			http.Error(w, "Failed to find server", http.StatusNotFound)
 			return
@@ -1027,14 +1031,14 @@ func MatchListBackupsHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		Match := db.MatchData{}
-		rec := db.SQLAccess.Gorm.Where("id = ?", matchid).First(&Match)
+		rec := db.SQLAccess.Gorm.First(&Match, matchid)
 		if rec.RecordNotFound() {
 			http.Error(w, "Failed to find match", http.StatusNotFound)
 			return
 		}
 
 		Server := db.GameServerData{}
-		rec = db.SQLAccess.Gorm.Where("id = ?", Match.ServerID).First(&Server)
+		rec = db.SQLAccess.Gorm.First(&Server, Match.ServerID)
 		if rec.RecordNotFound() {
 			http.Error(w, "Failed to find server", http.StatusNotFound)
 			return
@@ -1085,14 +1089,14 @@ func MatchLoadBackupsHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		Match := db.MatchData{}
-		rec := db.SQLAccess.Gorm.Where("id = ?", matchid).First(&Match)
+		rec := db.SQLAccess.Gorm.First(&Match, matchid)
 		if rec.RecordNotFound() {
 			http.Error(w, "Failed to find match", http.StatusNotFound)
 			return
 		}
 
 		Server := db.GameServerData{}
-		rec = db.SQLAccess.Gorm.Where("id = ?", Match.ServerID).First(&Server)
+		rec = db.SQLAccess.Gorm.First(&Server, Match.ServerID)
 		if rec.RecordNotFound() {
 			http.Error(w, "Failed to find server", http.StatusNotFound)
 			return
