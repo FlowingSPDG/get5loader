@@ -58,14 +58,23 @@
             This match was forfeit by {{get_loser(matchdata)}}.
         </div>
 
-        <p v-if="matchdata.start_time != '0001-01-01T00:00:00Z'">Started at {{ matchdata.start_time }}</p>
-        <div class="panel panel-default" role="alert" v-else>
+        <div class="panel panel-default" role="alert" v-if="matchdata.start_time == '0001-01-01T00:00:00Z'">
             <div class="panel-body">
                 This match is pending start.
             </div>
         </div>
 
-        <p v-if="matchdata.end_time != '0001-01-01T00:00:00Z'">Ended at {{ matchdata.end_time }}</p>
+        <el-timeline>
+          <el-timeline-item
+            v-for="(activity, index) in activities"
+            :key="index"
+            :timestamp="activity.timestamp"
+            :icon="activity.icon"
+            :color="activity.color"
+            >
+            {{activity.content}}
+          </el-timeline-item>
+        </el-timeline>
 
         <div v-for="map_stats in matchdata.map_stats" :key="map_stats.id">
         <br>
@@ -210,6 +219,7 @@ export default {
     return {
       loading: true,
       backups: [],
+      activities: [], // {timestamp:"",content:""}
       chosed_backup: '',
       chose_backup: false,
       matchdata: {
@@ -303,6 +313,12 @@ export default {
   },
   async created () {
     this.matchdata = await this.GetMatchData(this.$route.params.matchid)
+    this.activities.push({ timestamp: this.matchdata.start_time, content: 'Match Started', icon: 'el-icon-plus', color: '#0bbd87' })
+    for (let i = 0; i < this.matchdata.map_stats.length; i++) {
+      this.activities.push({ timestamp: this.matchdata.map_stats[i].start_time, content: `Map ${i + 1} Started`, icon: 'el-icon-circle-plus-outline', color: '#0bbd87' })
+      this.activities.push({ timestamp: this.matchdata.map_stats[i].end_time, content: `Map ${i + 1} Finished`, icon: 'el-icon-circle-check', color: '#0bbd87' })
+    }
+    this.activities.push({ timestamp: this.matchdata.end_time, content: 'Match Finished', icon: 'el-icon-success', color: '#0bbd87' })
     for (let i = 0; i < this.matchdata.map_stats.length; i++) {
       this.GetPlayerStats(this.matchdata.id, this.matchdata.map_stats[i].id)
     }
@@ -334,10 +350,9 @@ export default {
         resolve(res.data)
       })
     },
-    async GetMapStat (matchid) {
+    async GetMapStat (matchid) { // TODO?
       return new Promise(async (resolve, reject) => {
         const res = await this.axios.get(`/api/v1/match/${matchid}/GetMatchInfo`)
-        this.matchdata.map_stats.push(res.data)
         resolve(res.data)
       })
     },
@@ -641,7 +656,7 @@ ul {
 }
 
 li {
-    display: inline-block;
+    display: block;
     margin: 0 10px;
 }
 
