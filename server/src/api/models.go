@@ -214,9 +214,3 @@ func (p *APIPlayerStatsData) GetFPR() float64 {
 	}
 	return util.Round(float64(p.Kills)/float64(p.Roundsplayed), 2)
 }
-
-type SimpleJSONResponse struct {
-	Response     string `json:"response"`
-	Errorcode    int    `json:"errorcode"`
-	Errormessage string `json:"errormessage"`
-}
