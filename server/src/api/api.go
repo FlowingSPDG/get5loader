@@ -16,7 +16,7 @@ import (
 
 const (
 	// VERSION get5-web-go Version
-	VERSION = "0.1.0"
+	VERSION = "0.1.1"
 )
 
 // CheckLoggedInJSON Struct type for /api/v1/CheckLoggedIn API.

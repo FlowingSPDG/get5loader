@@ -1,5 +1,5 @@
 [![Build Status](https://travis-ci.org/FlowingSPDG/get5-web-go.svg?branch=master)](https://travis-ci.org/FlowingSPDG/get5-web-go)  
-get5-web-go
+GET5-WEB Go
 ===========================
 **Status: Experimental, Not Supported**
 
@@ -17,7 +17,7 @@ Shugo [**FlowingSPDG**](http://github.com/FlowingSPDG) Kawamura
 5. To support SPA and better UI/UX design
 6. To support get5 HTTP API for developers
 
-## How to use it:
+## How to use
 1. Register your CS:GO servers on the "Add a server" section.
 2. Register teams on the "Create a Team" section with steamids.
 3. Go to the "Create a Match" page.
