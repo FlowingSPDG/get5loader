@@ -40,8 +40,12 @@
             </el-form-item>
 
             <el-form-item label="Map Pool" style="width: 653px;" prop="veto_mappool">
-                <el-checkbox-group v-model="form.veto_mappool">
+                <el-checkbox-group v-if="form.series_type == 'bo1-preset'" v-model="form.veto_mappool">
                     <el-checkbox v-for="(map, index) in mappool" :label="map.system" :key="index"></el-checkbox>
+                </el-checkbox-group>
+
+                <el-checkbox-group v-else v-model="form.veto_mappool">
+                    <el-radio  v-for="(map, index) in mappool" :label="map.system" :key="index"></el-radio >
                 </el-checkbox-group>
             </el-form-item>
 
