@@ -313,12 +313,20 @@ export default {
   },
   async created () {
     this.matchdata = await this.GetMatchData(this.$route.params.matchid)
-    this.activities.push({ timestamp: this.matchdata.start_time, content: 'Match Started', icon: 'el-icon-plus', color: '#0bbd87' })
-    for (let i = 0; i < this.matchdata.map_stats.length; i++) {
-      this.activities.push({ timestamp: this.matchdata.map_stats[i].start_time, content: `Map ${i + 1} Started`, icon: 'el-icon-circle-plus-outline', color: '#0bbd87' })
-      this.activities.push({ timestamp: this.matchdata.map_stats[i].end_time, content: `Map ${i + 1} Finished`, icon: 'el-icon-circle-check', color: '#0bbd87' })
+    if (this.matchdata.start_time !== '0001-01-01T00:00:00Z') {
+      this.activities.push({ timestamp: this.matchdata.start_time, content: 'Match Started', icon: 'el-icon-plus', color: '#0bbd87' })
     }
-    this.activities.push({ timestamp: this.matchdata.end_time, content: 'Match Finished', icon: 'el-icon-success', color: '#0bbd87' })
+    for (let i = 0; i < this.matchdata.map_stats.length; i++) {
+      if (this.matchdata.map_stats[i].start_time !== '0001-01-01T00:00:00Z') {
+        this.activities.push({ timestamp: this.matchdata.map_stats[i].start_time, content: `Map ${i + 1} Started`, icon: 'el-icon-circle-plus-outline', color: '#0bbd87' })
+      }
+      if (this.matchdata.map_stats[i].end_time !== '0001-01-01T00:00:00Z') {
+        this.activities.push({ timestamp: this.matchdata.map_stats[i].end_time, content: `Map ${i + 1} Finished`, icon: 'el-icon-circle-check', color: '#0bbd87' })
+      }
+    }
+    if (this.matchdata.end_time !== '0001-01-01T00:00:00Z') {
+      this.activities.push({ timestamp: this.matchdata.end_time, content: 'Match Finished', icon: 'el-icon-success', color: '#0bbd87' })
+    }
     for (let i = 0; i < this.matchdata.map_stats.length; i++) {
       this.GetPlayerStats(this.matchdata.id, this.matchdata.map_stats[i].id)
     }
