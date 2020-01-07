@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/go-ini/ini"
 	"github.com/hydrogen18/stalecucumber"
+	"math"
 	"math/rand"
 	"net"
 	"os/exec"
@@ -216,4 +217,9 @@ func IsValidSteamID(auth string) bool {
 		return false
 	}
 	return true
+}
+
+func Round(f float64, places int) float64 {
+	shift := math.Pow(10, float64(places))
+	return math.Floor(f*shift+.5) / shift
 }
