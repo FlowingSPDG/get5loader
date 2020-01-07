@@ -13,12 +13,12 @@
               <el-dropdown v-if="AdminToolsAvailable()" @command="handleCommand">
                 <el-button type="primary">Admin tools<i class="el-icon-arrow-down el-icon--right"></i></el-button>
                 <el-dropdown-menu slot="dropdown">
-                  <el-dropdown-item v-if="matchdata.live">Pause match</el-dropdown-item><br>
-                  <el-dropdown-item v-if="matchdata.live">Unpause match</el-dropdown-item><br>
+                  <el-dropdown-item command="PauseMatch" v-if="matchdata.live">Pause match</el-dropdown-item><br>
+                  <el-dropdown-item command="UnpauseMatch" v-if="matchdata.live">Unpause match</el-dropdown-item><br>
                   <el-dropdown-item command="AddPlayerToTeam1">Add player to team1</el-dropdown-item><br>
                   <el-dropdown-item command="AddPlayerToTeam2">Add player to team2</el-dropdown-item><br>
                   <el-dropdown-item command="AddPlayerToSpec">Add player to specator list</el-dropdown-item><br>
-                  <el-dropdown-item command="rcon_command">Send rcon command</el-dropdown-item><br>
+                  <el-dropdown-item command="SendRcon">Send rcon command</el-dropdown-item><br>
                   <el-dropdown-item devided command="backup_manager">Load a backup file</el-dropdown-item><br>
                   <el-dropdown-item devided command="cancelmatch">Cancel match</el-dropdown-item><br>
                 </el-dropdown-menu>
@@ -179,36 +179,6 @@
 
     <br>
 </div>
-
-<!--script>
-    jQuery("#addplayer_team1").click(function (e) {
-        var input = prompt("Please enter a steamid to add to {{team1.name}}", "");
-        if (input != null) {
-            window.location.href = "{{request.path}}/adduser?team=team1&auth=" + encodeURIComponent(input);
-        }
-    });
-
-    jQuery("#addplayer_team2").click(function (e) {
-        var input = prompt("Please enter a steamid to add to {{team2.name}}", "");
-        if (input != null) {
-            window.location.href = "{{request.path}}/adduser?team=team2&auth=" + encodeURIComponent(input);
-        }
-    });
-
-    jQuery("#addplayer_spec").click(function (e) {
-        var input = prompt("Please enter a steamid to add to the spectators list", "");
-        if (input != null) {
-            window.location.href = "{{request.path}}/adduser?team=spec&auth=" + encodeURIComponent(input);
-        }
-    });
-
-    jQuery("#rcon_command").click(function (e) {
-        var input = prompt("Enter a command to send", "");
-        if (input != null) {
-            window.location.href = "{{request.path}}/rcon?command=" + encodeURIComponent(input);
-        }
-    });
-</script>-->
 </div>
 </template>
 
@@ -472,11 +442,17 @@ export default {
         case 'AddPlayerToSpec':
           this.AddPlayerToSpec()
           break
-        case 'rcon_command':
+        case 'SendRcon':
           this.SendRCON()
           break
         case 'backup_manager':
           this.GetBackupList()
+          break
+        case 'PauseMatch':
+          this.PauseMatch()
+          break
+        case 'UnpauseMatch':
+          this.UnpauseMatch()
           break
         default:
           this.$message.error('Unknown command occured!')
@@ -636,6 +612,42 @@ export default {
       try {
         await this.axios.post(`/api/v1/match/${this.matchdata.id}/backup?file=${this.chosed_backup}`)
         this.chose_backup = false
+      } catch (err) {
+        if (err.response) {
+          if (typeof err.response.data === 'string') {
+            this.$message.error(err.response.data)
+          } else if (typeof err.response.data === 'object') {
+            this.$message.error(err.response.data.errormessage)
+          }
+        }
+      }
+    },
+    async PauseMatch () {
+      try {
+        await this.$confirm('Pausing match. Continue?', 'Warning', {
+          confirmButtonText: 'OK',
+          cancelButtonText: 'Cancel',
+          type: 'warning'
+        })
+        await this.axios.post(`/api/v1/match/${this.matchdata.id}/pause`)
+      } catch (err) {
+        if (err.response) {
+          if (typeof err.response.data === 'string') {
+            this.$message.error(err.response.data)
+          } else if (typeof err.response.data === 'object') {
+            this.$message.error(err.response.data.errormessage)
+          }
+        }
+      }
+    },
+    async UnpauseMatch () {
+      try {
+        await this.$confirm('Unpausing match. Continue?', 'Warning', {
+          confirmButtonText: 'OK',
+          cancelButtonText: 'Cancel',
+          type: 'warning'
+        })
+        await this.axios.post(`/api/v1/match/${this.matchdata.id}/unpause`)
       } catch (err) {
         if (err.response) {
           if (typeof err.response.data === 'string') {
