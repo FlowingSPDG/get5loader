@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/go-ini/ini"
-	"github.com/gorilla/mux"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 	"github.com/kataras/go-sessions"
 	"github.com/solovev/steam_go"
