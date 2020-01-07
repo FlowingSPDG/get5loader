@@ -34,19 +34,16 @@
             </el-form-item>
 
             <el-form-item label="Series Type" style="width: 653px;" prop="series_type">
-                <el-radio-group v-model="form.series_type">
+                <el-radio-group v-model="form.series_type" v-on:change="form.veto_mappool = []">
                     <el-radio v-for="(option, index) in series_type" :label="option.type" :key="index"></el-radio>
                 </el-radio-group>
             </el-form-item>
 
             <el-form-item label="Map Pool" style="width: 653px;" prop="veto_mappool">
-                <el-checkbox-group v-if="form.series_type == 'bo1-preset'" v-model="form.veto_mappool">
-                    <el-checkbox v-for="(map, index) in mappool" :label="map.system" :key="index"></el-checkbox>
+                <el-checkbox-group v-if="form.series_type !== 'bo1-preset'" v-model="form.veto_mappool">
+                    <el-checkbox v-for="(map, index) in mappool" :label="map.system" :key="index"></el-checkbox >
                 </el-checkbox-group>
-
-                <el-checkbox-group v-else v-model="form.veto_mappool">
-                    <el-radio  v-for="(map, index) in mappool" :label="map.system" :key="index"></el-radio >
-                </el-checkbox-group>
+                <el-radio v-else-if="form.series_type === 'bo1-preset'" v-for="(map, index) in mappool" v-model="form.veto_mappool[0]" :label="map.system" :key="index"></el-radio>
             </el-form-item>
 
             <el-form-item style="width: 653px;">
