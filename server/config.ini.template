@@ -11,3 +11,4 @@ APIKey = "YOURSTEAMAPIKEY"
 [GET5]
 HOST = "localhost:8080"
 DefaultPage = "/matches"
+API_ONLY = False

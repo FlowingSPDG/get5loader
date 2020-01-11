@@ -21,6 +21,7 @@ type Config struct {
 	SQLPort     int
 	SQLDBName   string
 	HOST        string
+	APIONLY     bool
 }
 
 var (
@@ -54,6 +55,7 @@ func init() {
 		SQLPass:   c.Section("sql").Key("pass").MustString(""),
 		SQLPort:   c.Section("sql").Key("port").MustInt(3306),
 		SQLDBName: c.Section("sql").Key("database").MustString(""),
+		APIONLY:   c.Section("GET5").Key("API_ONLY").MustBool(false),
 	}
 	HOST = Cnf.HOST
 	// fmt.Println(db.SQLAccess)
@@ -64,12 +66,6 @@ func main() {
 	defer SQLAccess.Gorm.Close()
 
 	r := mux.NewRouter()
-	entrypoint := "./static/index.html"
-	r.Path("/").HandlerFunc(ServeStaticFile(entrypoint))
-	r.PathPrefix("/css").Handler(http.StripPrefix("/css/", http.FileServer(http.Dir("static/css"))))
-	r.PathPrefix("/js").Handler(http.StripPrefix("/js/", http.FileServer(http.Dir("static/js"))))
-	r.PathPrefix("/img").Handler(http.StripPrefix("/img/", http.FileServer(http.Dir("static/img"))))
-	r.PathPrefix("/fonts").Handler(http.StripPrefix("/fonts/", http.FileServer(http.Dir("static/fonts"))))
 
 	//s := r.Host(HOST).Subrouter() // in-case if we need vhost thing
 
@@ -124,6 +120,17 @@ func main() {
 
 	r.HandleFunc("/api/v1/login", db.LoginHandler).Methods("GET")
 	r.HandleFunc("/api/v1/logout", db.LogoutHandler).Methods("GET")
+
+	if !Cnf.APIONLY {
+		entrypoint := "./static/index.html"
+		r.Path("/").HandlerFunc(ServeStaticFile(entrypoint))
+		r.PathPrefix("/css").Handler(http.StripPrefix("/css/", http.FileServer(http.Dir("static/css"))))
+		r.PathPrefix("/js").Handler(http.StripPrefix("/js/", http.FileServer(http.Dir("static/js"))))
+		r.PathPrefix("/img").Handler(http.StripPrefix("/img/", http.FileServer(http.Dir("static/img"))))
+		r.PathPrefix("/fonts").Handler(http.StripPrefix("/fonts/", http.FileServer(http.Dir("static/fonts"))))
+	} else {
+		fmt.Println("API ONLY MODE")
+	}
 
 	r.Methods("GET", "POST", "DELETE")
 	http.Handle("/", r)
