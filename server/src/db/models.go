@@ -127,7 +127,7 @@ func (g *GameServerData) TableName() string {
 // Create Register GameServer into DB.
 func (g *GameServerData) Create(userid int, displayname string, ipstring string, port int, rconpassword string, publicserver bool) (*GameServerData, error) {
 	if ipstring == "" || rconpassword == "" {
-		return nil, fmt.Errorf("IPaddress or RCON empty...")
+		return nil, fmt.Errorf("IPaddress or RCON password is empty")
 	}
 	g.UserID = userid
 	g.DisplayName = displayname
@@ -246,7 +246,7 @@ func (t *TeamData) TableName() string {
 // Create Register Team information into DB.
 func (t *TeamData) Create(userid int, name string, tag string, flag string, logo string, auths []string, publicteam bool) (*TeamData, error) {
 	if name == "" {
-		return nil, fmt.Errorf("Team name cannot be empty!")
+		return nil, fmt.Errorf("Team name cannot be empty")
 	}
 	t.UserID = userid
 	t.Name = name
@@ -255,11 +255,16 @@ func (t *TeamData) Create(userid int, name string, tag string, flag string, logo
 	t.Logo = logo
 	t.PublicTeam = publicteam
 	var err error
+	for i := 0; i < len(auths); i++ {
+		auths[i], err = util.AuthToSteamID64(auths[i])
+		if err != nil {
+			return nil, err
+		}
+	}
 	t.AuthsPickle, err = util.SteamID64sToPickle(auths)
 	if err != nil {
 		return nil, err
 	}
-	fmt.Println(t.AuthsPickle)
 	SQLAccess.Gorm.Create(&t)
 	return t, nil
 }
@@ -274,6 +279,15 @@ func (t *TeamData) Edit() (*TeamData, error) {
 	if rec.RecordNotFound() {
 		return nil, fmt.Errorf("Team not found")
 	}
+
+	var err error
+	for i := 0; i < len(t.Auths); i++ {
+		t.Auths[i], err = util.AuthToSteamID64(t.Auths[i])
+		if err != nil {
+			return nil, err
+		}
+	}
+	t.AuthsPickle, err = util.SteamID64sToPickle(t.Auths)
 	SQLAccess.Gorm.Model(&Team).Update(&t)
 	SQLAccess.Gorm.Save(&t)
 	return t, nil
@@ -316,7 +330,7 @@ func (t *TeamData) CanDelete(userid int) bool {
 // GetPlayers Gets registered player's steamid64.
 func (t *TeamData) GetPlayers() (*[]string, error) {
 	auths, err := util.PickleToSteamID64s(t.AuthsPickle)
-	var results []string
+	var results = make([]string, 0, len(auths))
 	if err != nil {
 		return &results, err
 	}
@@ -529,14 +543,14 @@ func (m *MatchData) Create(userid int, team1id int, team2id int, team1string str
 	}
 	SQLAccess.Gorm.First(&user)
 	if team1id == 0 || team2id == 0 || serverid == 0 {
-		return nil, fmt.Errorf("TeamID or ServerID is empty!")
+		return nil, fmt.Errorf("TeamID or ServerID is empty")
 	}
 	server := GameServerData{}
 	server.ID = serverid
 	SQLAccess.Gorm.First(&server)
 	// returns error if user wasnt owned server,or not an admin.
 	if userid != server.UserID && !user.Admin && !server.PublicServer {
-		return nil, fmt.Errorf("This is not your server!")
+		return nil, fmt.Errorf("This is not your server")
 	}
 
 	get5res, err := util.CheckServerAvailability(server.IPString, server.Port, server.RconPassword) // Returns error if SRCDS is not available

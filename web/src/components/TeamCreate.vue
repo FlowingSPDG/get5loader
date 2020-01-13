@@ -262,7 +262,7 @@ export default {
       this.$refs['form'].validate(async (valid) => {
         if (valid) {
           try {
-            let res = await this.axios.post(`/api/v1/team/${this.$route.params.teamid}/edit`, json)
+            let res = await this.axios.put(`/api/v1/team/${this.$route.params.teamid}/edit`, json)
             this.form = {}
             this.$message({
               message: 'Successfully edited team.',
