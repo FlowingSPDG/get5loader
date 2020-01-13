@@ -23,7 +23,7 @@ matrix:
         - make deps-go
       script:
         - make build-mac-server-only
-      - language: go
+    - language: go
       go: 1.13.5
       before_install:
         - make deps-go
