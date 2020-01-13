@@ -349,7 +349,7 @@ func GetRecentMatches(w http.ResponseWriter, r *http.Request) {
 	fmt.Printf("GetRecentMatches\n")
 	teamID := vars["teamID"]
 	matches := []db.MatchData{}
-	response := []APIMatchData{}
+	response := make([]APIMatchData, 0, len(matches))
 	db.SQLAccess.Gorm.Where("team1_id = ?", teamID).Or("team2_id = ?", teamID).Limit(20).Order("id DESC").Find(&matches)
 	for i := 0; i < len(matches); i++ {
 		mapstats := []APIMapStatsData{}
@@ -586,6 +586,7 @@ func EditTeam(w http.ResponseWriter, r *http.Request) {
 		}
 		Team.ID = teamid
 		Team.UserID = userid
+		fmt.Printf("Team : %v\n", Team)
 
 		_, err = Team.Edit()
 		if err != nil {
