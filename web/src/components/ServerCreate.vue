@@ -140,7 +140,7 @@ export default {
       this.$refs['form'].validate(async (valid) => {
         if (valid) {
           try {
-            let res = await this.axios.post(`/api/v1/server/${this.$route.params.serverID}/edit`, json)
+            let res = await this.axios.put(`/api/v1/server/${this.$route.params.serverID}/edit`, json)
             this.form = {}
             this.$message({
               message: 'Successfully edited server.',

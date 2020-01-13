@@ -87,12 +87,12 @@ func main() {
 	r.HandleFunc("/api/v1/team/{teamID}/GetRecentMatches", api.GetRecentMatches).Methods("GET")
 	r.HandleFunc("/api/v1/team/{teamID}/CheckUserCanEdit", api.CheckUserCanEdit).Methods("GET")
 	r.HandleFunc("/api/v1/team/create", api.CreateTeam).Methods("POST")
-	r.HandleFunc("/api/v1/team/{teamID}/edit", api.EditTeam).Methods("POST")
+	r.HandleFunc("/api/v1/team/{teamID}/edit", api.EditTeam).Methods("PUT")
 	r.HandleFunc("/api/v1/team/{teamID}/delete", api.DeleteTeam).Methods("DELETE")
 	r.HandleFunc("/api/v1/user/{userID}/GetUserInfo", api.GetUserInfo).Methods("GET")
 	r.HandleFunc("/api/v1/server/{serverID}/GetServerInfo", api.GetServerInfo).Methods("GET")
 	r.HandleFunc("/api/v1/server/create", api.CreateServer).Methods("POST")
-	r.HandleFunc("/api/v1/server/{serverID}/edit", api.EditServer).Methods("POST")
+	r.HandleFunc("/api/v1/server/{serverID}/edit", api.EditServer).Methods("PUT")
 	r.HandleFunc("/api/v1/server/{serverID}/delete", api.DeleteServer).Methods("DELETE")
 
 	// GET5 API
@@ -132,7 +132,7 @@ func main() {
 		fmt.Println("API ONLY MODE")
 	}
 
-	r.Methods("GET", "POST", "DELETE")
+	r.Methods("GET", "POST", "DELETE", "PUT")
 	http.Handle("/", r)
 	fmt.Printf("RUNNING at %v\n", HOST)
 	log.Fatal(http.ListenAndServe(HOST, nil))
