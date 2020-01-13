@@ -138,10 +138,13 @@ func main() {
 	}
 
 	if EnablegRPC {
-		err := get5grpc.StartGrpc(GRPC_ADDR)
-		if err != nil {
-			panic(err)
-		}
+		fmt.Println("EnableGRPC option enabled. Starting gRPC server...")
+		go func() {
+			err := get5grpc.StartGrpc(GRPC_ADDR)
+			if err != nil {
+				panic(err)
+			}
+		}()
 	}
 
 	r.Methods("GET", "POST", "DELETE", "PUT")

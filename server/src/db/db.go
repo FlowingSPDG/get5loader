@@ -112,8 +112,8 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		fmt.Println("SteamID : " + steamid)
 
-		user := UserData{}
-		user.GetOrCreate(SQLAccess.Gorm, steamid)
+		user := UserData{SteamID: steamid}
+		user.GetOrCreate()
 		s := Sess.Start(w, r)
 		// Set some session values.
 		s.Set("Loggedin", true)

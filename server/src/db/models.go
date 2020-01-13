@@ -51,33 +51,36 @@ func (u *UserData) TableName() string {
 	return "user"
 }
 
-// GetOrCreate Get or Register Userdata into DB.
-func (u *UserData) GetOrCreate(g *gorm.DB, steamid string) (*UserData, error) {
+// GetOrCreate Get or Register Userdata by their steamid into DB.
+func (u *UserData) GetOrCreate() (*UserData, bool, error) { // userdata, exist,error
 	SQLUserData := UserData{}
-	SQLUserData.SteamID = steamid
+	SQLUserData.SteamID = u.SteamID
+	exist := false
 
-	record := g.Where("steam_id = ?", steamid).First(&SQLUserData)
+	record := SQLAccess.Gorm.Where("steam_id = ?", u.SteamID).First(&SQLUserData)
 	if record.RecordNotFound() {
+		exist = false
 		fmt.Println("USER NOT EXIST!")
 		fmt.Println("CREATING USER")
-		steamid64, err := strconv.Atoi(steamid)
+		steamid64, err := strconv.Atoi(u.SteamID)
 		if err != nil {
-			return u, err
+			return u, exist, err
 		}
 		SQLUserData.Name, err = GetSteamName(uint64(steamid64))
 		if err != nil {
-			return u, err
+			return u, exist, err
 		}
-		g.Create(&SQLUserData)
+		SQLAccess.Gorm.Create(&SQLUserData)
 	} else {
 		fmt.Println("USER EXIST")
+		exist = true
 		// fmt.Println(SQLUserData)
 		u.Name = SQLUserData.Name
 		u.ID = SQLUserData.ID
 		u.Admin = SQLUserData.Admin
 		u.SteamID = SQLUserData.SteamID
 	}
-	return u, nil
+	return u, exist, nil
 }
 
 // GetURL Get user page URL
