@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/FlowingSPDG/get5-web-go/server/src/db"
+	pb "github.com/FlowingSPDG/get5-web-go/server/src/grpc/proto"
+	pbservices "github.com/FlowingSPDG/get5-web-go/server/src/grpc/services"
 	"github.com/gorilla/mux"
 	"net/http"
 	"strconv"
@@ -95,6 +97,27 @@ func MatchFinishHandler(w http.ResponseWriter, r *http.Request) {
 	db.SQLAccess.Gorm.Model(&Match).Update(&MatchUpdate)
 	db.SQLAccess.Gorm.Save(&MatchUpdate)
 	fmt.Printf("Finished match %v, winner = %v\n", MatchUpdate.ID, winner)
+
+	forfeitbool, err := strconv.ParseBool(forfeit)
+	if err != nil {
+		fmt.Println("Failed to parse forfeit value,interuppting streaming")
+		return
+	}
+	matchidInt, err := strconv.Atoi(matchid)
+	if err != nil {
+		fmt.Println("match id is not int,interuppting streaming")
+		return
+	}
+	pbservices.MatchesStream[int32(matchidInt)].Event = &pb.MatchEventReply{
+		Event: &pb.MatchEventReply_Matchfinish{
+			Matchfinish: &pb.MatchEventMatchFinish{
+				Matchid: int32(matchidInt),
+				Winner:  winner,
+				Forfeit: forfeitbool,
+			},
+		},
+	}
+	pbservices.MatchesStream[int32(matchidInt)].Finished = true
 }
 
 // MatchMapStartHandler Handler for /api/v1/match/{matchID}/map/{mapNumber}/start  API.
@@ -131,6 +154,16 @@ func MatchMapStartHandler(w http.ResponseWriter, r *http.Request) {
 	mUpdate.StartTime.Scan(time.Now())
 	db.SQLAccess.Gorm.Model(&m).Update(&mUpdate)
 	db.SQLAccess.Gorm.Save(&mUpdate)
+
+	pbservices.MatchesStream[int32(matchid)].Event = &pb.MatchEventReply{
+		Event: &pb.MatchEventReply_Mapstart{
+			Mapstart: &pb.MatchEventMapStart{
+				Matchid:   int32(matchid),
+				Mapnumber: int32(mapnumber),
+				Mapname:   mapname,
+			},
+		},
+	}
 }
 
 // MatchMapUpdateHandler Handler for /api/v1/match/{matchID}/map/{mapNumber}/update API.

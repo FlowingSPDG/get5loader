@@ -225,7 +225,7 @@ message MatchEventReply {
 
 message MatchEventMatchFinish {
   int32 matchid = 1;
-  int32 winner = 2;
+  string winner = 2;
   bool forfeit = 3;
 }
 

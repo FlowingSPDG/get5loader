@@ -5,13 +5,55 @@ import (
 	// "github.com/FlowingSPDG/get5-web-go/server/src/db"
 	pb "github.com/FlowingSPDG/get5-web-go/server/src/grpc/proto"
 	// "github.com/FlowingSPDG/get5-web-go/server/src/util"
-	// "context"
 	// "google.golang.org/grpc"
 	// "log"
 	"fmt"
 )
 
+type Events struct {
+	Finished bool // Stream is closed or not
+	Event    *pb.MatchEventReply
+}
+
+var (
+	MatchesStream map[int32]*Events // MatchesStream[MatchID].Servers[0].Send()
+)
+
+func init() {
+	MatchesStream = make(map[int32]*Events)
+}
+
 func (s Server) MatchEvent(req *pb.MatchEventRequest, srv pb.Get5_MatchEventServer) error {
-	fmt.Printf("MatchEvent. matchid : %d\n", req.Matchid)
-	return nil
+	matchid := req.GetMatchid()
+	fmt.Printf("MatchEvent. matchid : %d\n", matchid)
+	if _, ok := MatchesStream[matchid]; !ok {
+		MatchesStream[matchid] = &Events{
+			Finished: false,
+			Event: &pb.MatchEventReply{
+				Event: &pb.MatchEventReply_Mapstart{
+					Mapstart: &pb.MatchEventMapStart{
+						Matchid:   0,
+						Mapnumber: 0,
+						Mapname:   "",
+					},
+				},
+			},
+		} // initialize
+	}
+
+	lastevent := &pb.MatchEventReply{}
+	for { //go func(){}() ?
+		if !MatchesStream[matchid].Finished && lastevent != MatchesStream[matchid].Event {
+			fmt.Println("sending")
+			srv.Send(MatchesStream[matchid].Event)
+			lastevent = MatchesStream[matchid].Event
+		}
+		if MatchesStream[matchid].Finished {
+			return nil // closes stream
+		}
+	}
+
+	// srvを公開し、ハンドシェイク確立時にスライスに入れ込む
+	// get5-web-go側のAPIでデータを受け取った際にスライスに入れたクライアントに送り込む
+	// Disconnect判定をどうするか...
 }

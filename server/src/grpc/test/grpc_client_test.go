@@ -4,6 +4,7 @@ import (
 	"context"
 	pb "github.com/FlowingSPDG/get5-web-go/server/src/grpc/proto"
 	"google.golang.org/grpc"
+	"io"
 	"log"
 	"testing"
 )
@@ -170,4 +171,30 @@ func TestGrpcGetMatch(t *testing.T) {
 		return
 	}
 	log.Printf("result: %v \n", res)
+}
+
+func TestGrpcMatchEventStreaming(t *testing.T) {
+	log.Printf("Starting GET5 gRPC Client...")
+	conn, err := grpc.Dial("127.0.0.1:50055", grpc.WithInsecure())
+	if err != nil {
+		t.Errorf("client connection error:%v\n", err)
+	}
+	defer conn.Close()
+	req := &pb.MatchEventRequest{
+		Matchid: 97,
+	}
+	client := pb.NewGet5Client(conn)
+	stream, err := client.MatchEvent(context.Background(), req)
+	if err != nil {
+	}
+	for {
+		resp, err := stream.Recv()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			log.Fatalf("ERR : %v", err)
+		}
+		log.Printf("resp : %v\n", resp)
+	}
 }

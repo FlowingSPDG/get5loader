@@ -1,3 +1,5 @@
 package services
 
-type Server struct{}
+type Server struct {
+	Streams []string
+}
