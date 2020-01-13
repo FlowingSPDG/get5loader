@@ -1,0 +1,41 @@
+syntax = 'proto3';
+
+service Get5 {
+  // User related
+  rpc RegisterUser(RegisterUserRequest) returns (RegisterUserReply) {}
+  rpc GetUser(GetUserRequest) returns (GetUserReply) {}
+  rpc EditUser(EditUserRequest) returns (EditUserUserReply) {}
+  rpc DeleteUser(DeleteUserRequest) returns (DeleteUserReply) {}
+  
+  // Team related. CRUD
+  rpc RegisterTeam(RegisterTeamRequest) returns (RegisterTeamReply) {}
+  rpc GetTeam(GetTeamRequest) returns (GetTeamReply) {}
+  rpc EditTeam(EditTeamRequest) returns (EditTeamReply) {}
+  rpc DeleteTeam(DelteTeamRequest) returns (DeleteTeamReply) {}
+  
+  // Match related. CRUD and Streaming
+  rpc RegisterMatch(RegisterMatchRequest) returns (RegisterMatchReply) {}
+  rpc GetMatch(GetMatchRequest) returns (GetMatchReply) {}
+  rpc EditMatch(EditMatchRequest) returns (EditMatchReply) {}
+  rpc DeleteMatch(DeleteMatchRequest) returns (DeleteMatchReply) {}
+
+  rpc MatchEvent(MatchEventRequest) returns (stream MatchEventReply) {} // Streams match events such as "mapend","matchend" etc.
+
+  // Map stats realted. CRUD
+  rpc RegisterMapStats(RegisterMapStatsRequest) returns (RegisterMapStatsReply) {}
+  rpc GetMapStats(GetMapStatsRequest) returns (GetMapStatsReply) {}
+  rpc EditMapStats(EditMapStatsRequest) returns (EditMapStatsReply) {}
+  rpc DeleteMapStats(DeleteMapStatsRequest) returns (DeleteMapStatsReply) {}
+
+  // Player related. CRUD
+  rpc RegisterPlayerStats(RegisterPlayerStatsRequest) returns (RegisterPlayerStatsReply) {}
+  rpc GetPlayerStats(GetPlayerStatsRequest) returns (GetPlayerStatsReply) {}
+  rpc EditPlayerStats(EditPlayerStatsRequest) returns (EditPlayerStatsReply) {}
+  rpc DeletePlayerStats(DeletePlayerStatsRequest) returns (DeletePlayerStatsReply) {}
+
+  // Game Server related. CRUD
+  rpc RegisterGameServer(RegisterGameServerRequest) returns (RegisterGameServerReply) {}
+  rpc GetGameServer(GetGameServerRequest) returns (GetGameServerReply) {}
+  rpc EditGameServer(EditGameServerRequest) returns (EditGameServerReply) {}
+  rpc DeleteGameServer(DeleteGameServerRequest) returns (DeleteGameServerReply) {}
+}
