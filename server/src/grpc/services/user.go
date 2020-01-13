@@ -1,6 +1,7 @@
 package services
 
 import (
+	"fmt"
 	//"github.com/FlowingSPDG/get5-web-go/server/src/api"
 	"github.com/FlowingSPDG/get5-web-go/server/src/db"
 	pb "github.com/FlowingSPDG/get5-web-go/server/src/grpc/proto"
@@ -37,10 +38,11 @@ func (s Server) GetUser(ctx context.Context, req *pb.GetUserRequest) (*pb.GetUse
 	user := &db.UserData{}
 	switch req.Ids.(type) {
 	case *pb.GetUserRequest_Id:
-		user.SteamID = req.GetSteamid()
+		fmt.Println("Type : *pb.GetUserRequest_Id")
+		db.SQLAccess.Gorm.First(&user, req.GetId())
 	case *pb.GetUserRequest_Steamid:
-		user.ID = int(req.GetId())
-		// DO gorm thing...
+		fmt.Println("Type : *pb.GetUserRequest_Steamid")
+		db.SQLAccess.Gorm.Where("steam_id = ?", req.GetSteamid()).First(&user)
 	}
 	return &pb.GetUserReply{
 		User: &pb.UserData{
@@ -57,5 +59,17 @@ func (s Server) EditUser(ctx context.Context, req *pb.EditUserRequest) (*pb.Edit
 }
 
 func (s Server) DeleteUser(ctx context.Context, req *pb.DeleteUserRequest) (*pb.DeleteUserReply, error) {
-	return nil, nil // TODO
+	user := &db.UserData{}
+	rec := db.SQLAccess.Gorm.First(&user, req.GetId())
+	if rec.RecordNotFound() {
+		return &pb.DeleteUserReply{
+			Error:        true,
+			Errormessage: "User not found",
+		}, fmt.Errorf("User not found")
+	}
+	db.SQLAccess.Gorm.Delete(&user)
+	return &pb.DeleteUserReply{
+		Error:        false,
+		Errormessage: "",
+	}, nil
 }
