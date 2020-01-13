@@ -11,14 +11,23 @@ notifications:
   email: false
 matrix:
   include:
-    - language: go,node_js
+    - language: go
       go: 1.13.5
-      node_js: 10.18.0
       before_install:
-        - make deps
+        - make deps-go
       script:
         - make build-linux-server-only
+    - language: go
+      go: 1.13.5
+      before_install:
+        - make deps-go
+      script:
         - make build-mac-server-only
+      - language: go
+      go: 1.13.5
+      before_install:
+        - make deps-go
+      script:
         - make build-windows-server-only
     - language: node_js
       node_js: 10.18.0
