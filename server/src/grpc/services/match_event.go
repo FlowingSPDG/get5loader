@@ -52,8 +52,4 @@ func (s Server) MatchEvent(req *pb.MatchEventRequest, srv pb.Get5_MatchEventServ
 			return nil // closes stream
 		}
 	}
-
-	// srvを公開し、ハンドシェイク確立時にスライスに入れ込む
-	// get5-web-go側のAPIでデータを受け取った際にスライスに入れたクライアントに送り込む
-	// Disconnect判定をどうするか...
 }

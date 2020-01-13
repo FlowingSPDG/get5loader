@@ -18,11 +18,13 @@ func (s Server) RegisterGameServer(ctx context.Context, req *pb.RegisterGameServ
 		return &pb.RegisterGameServerReply{
 			Error:        true,
 			Errormessage: "Could not register server",
+			Id:           0,
 		}, err
 	}
 	return &pb.RegisterGameServerReply{
 		Error:        false,
 		Errormessage: "",
+		Id:           int32(srcds.ID),
 	}, nil
 }
 
