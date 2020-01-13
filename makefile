@@ -53,7 +53,6 @@ deps-go:
 	-@$(RM) $(GOPATHDIR)/src/github.com/FlowingSPDG/get5-web-go
 	@$(GOGET) -v -u \
 	golang.org/x/sys/unix \
-	github.com/FlowingSPDG/get5-web-go/server \
 	github.com/mitchellh/gox \
 	github.com/go-ini/ini \
 	github.com/gorilla/mux \
