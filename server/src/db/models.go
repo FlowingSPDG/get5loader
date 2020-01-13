@@ -127,7 +127,7 @@ func (g *GameServerData) TableName() string {
 // Create Register GameServer into DB.
 func (g *GameServerData) Create(userid int, displayname string, ipstring string, port int, rconpassword string, publicserver bool) (*GameServerData, error) {
 	if ipstring == "" || rconpassword == "" {
-		return nil, fmt.Errorf("IPaddress or RCON empty...")
+		return nil, fmt.Errorf("IPaddress or RCON password is empty")
 	}
 	g.UserID = userid
 	g.DisplayName = displayname
@@ -543,14 +543,14 @@ func (m *MatchData) Create(userid int, team1id int, team2id int, team1string str
 	}
 	SQLAccess.Gorm.First(&user)
 	if team1id == 0 || team2id == 0 || serverid == 0 {
-		return nil, fmt.Errorf("TeamID or ServerID is empty!")
+		return nil, fmt.Errorf("TeamID or ServerID is empty")
 	}
 	server := GameServerData{}
 	server.ID = serverid
 	SQLAccess.Gorm.First(&server)
 	// returns error if user wasnt owned server,or not an admin.
 	if userid != server.UserID && !user.Admin && !server.PublicServer {
-		return nil, fmt.Errorf("This is not your server!")
+		return nil, fmt.Errorf("This is not your server")
 	}
 
 	get5res, err := util.CheckServerAvailability(server.IPString, server.Port, server.RconPassword) // Returns error if SRCDS is not available
