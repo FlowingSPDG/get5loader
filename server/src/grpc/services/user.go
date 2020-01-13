@@ -11,7 +11,13 @@ import (
 )
 
 func (s Server) RegisterUser(ctx context.Context, req *pb.RegisterUserRequest) (*pb.RegisterUserReply, error) {
-	return nil, nil // TODO
+	// return nil, nil // TODO
+	// debug...
+	resp := &pb.RegisterUserReply{
+		Error:        false,
+		Errormessage: "Debug Error Message!",
+	}
+	return resp, nil
 }
 
 func (s Server) GetUser(ctx context.Context, req *pb.GetUserRequest) (*pb.GetUserReply, error) {

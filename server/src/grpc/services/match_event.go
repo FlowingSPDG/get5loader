@@ -8,8 +8,10 @@ import (
 	// "context"
 	// "google.golang.org/grpc"
 	// "log"
+	"fmt"
 )
 
 func (s Server) MatchEvent(req *pb.MatchEventRequest, srv pb.Get5_MatchEventServer) error {
+	fmt.Printf("MatchEvent. matchid : %d\n", req.Matchid)
 	return nil
 }
