@@ -246,7 +246,7 @@ message MatchEventMapUpdate {
 message MatchEventMapFinish {
   int32 matchid = 1;
   int32 mapnumber = 2;
-  int32 winner = 3;
+  string winner = 3;
 }
 
 message MatchEventMapPlayerUpdate {
