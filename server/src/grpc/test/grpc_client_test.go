@@ -124,3 +124,50 @@ func TestGrpcDeleteGameServer(t *testing.T) {
 	}
 	log.Printf("result: %v \n", res)
 }
+
+func TestGrpcRegisterMatch(t *testing.T) {
+	log.Printf("Starting GET5 gRPC Client...")
+	conn, err := grpc.Dial("127.0.0.1:50055", grpc.WithInsecure())
+	if err != nil {
+		t.Errorf("client connection error:%v\n", err)
+	}
+	defer conn.Close()
+	client := pb.NewGet5Client(conn)
+	req := &pb.RegisterMatchRequest{
+		Userid:      0,
+		Team1Id:     0,
+		Team2Id:     0,
+		Team1String: "",
+		Team2String: "",
+		Maxmaps:     1,
+		Skipveto:    true,
+		Title:       "",
+		Vetomappool: []string{"de_dust2", "de_mirage", "de_inferno"},
+		Serverid:    0,
+	}
+	res, err := client.RegisterMatch(context.TODO(), req)
+	if err != nil {
+		t.Errorf("error::%v \n", err)
+		return
+	}
+	log.Printf("result: %v \n", res)
+}
+
+func TestGrpcGetMatch(t *testing.T) {
+	log.Printf("Starting GET5 gRPC Client...")
+	conn, err := grpc.Dial("127.0.0.1:50055", grpc.WithInsecure())
+	if err != nil {
+		t.Errorf("client connection error:%v\n", err)
+	}
+	defer conn.Close()
+	client := pb.NewGet5Client(conn)
+	req := &pb.GetMatchRequest{
+		Id: 96,
+	}
+	res, err := client.GetMatch(context.TODO(), req)
+	if err != nil {
+		t.Errorf("error::%v \n", err)
+		return
+	}
+	log.Printf("result: %v \n", res)
+}

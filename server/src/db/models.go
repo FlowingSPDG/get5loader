@@ -533,10 +533,12 @@ func (m *MatchData) TableName() string {
 }
 
 // Get Get myself
-func (m *MatchData) Get(id int) *MatchData {
-	m.ID = id
-	SQLAccess.Gorm.First(&m)
-	return m
+func (m *MatchData) Get(id int) (*MatchData, error) {
+	rec := SQLAccess.Gorm.First(&m, id)
+	if rec.RecordNotFound() {
+		return nil, fmt.Errorf("Match not found")
+	}
+	return m, nil
 }
 
 // Create Register Match information into DB.

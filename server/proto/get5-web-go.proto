@@ -161,7 +161,16 @@ message MatchData {
 }
 
 message RegisterMatchRequest {
-  MatchData match = 1;
+  int32 userid = 1;
+  int32 team1id = 2;
+  int32 team2id = 3;
+  string team1string = 4;
+  string team2string = 5;
+  int32 maxmaps = 6;
+  bool skipveto = 7;
+  string title = 8;
+  repeated string vetomappool = 9;
+  int32 serverid = 10;
 }
 
 message RegisterMatchReply {
