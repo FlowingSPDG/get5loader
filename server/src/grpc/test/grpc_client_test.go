@@ -62,3 +62,65 @@ func TestGrpcDeleteUser(t *testing.T) {
 	}
 	log.Printf("result: %v \n", res)
 }
+
+func TestGrpcRegisterGameServer(t *testing.T) {
+	log.Printf("Starting GET5 gRPC Client...")
+	conn, err := grpc.Dial("127.0.0.1:50055", grpc.WithInsecure())
+	if err != nil {
+		t.Errorf("client connection error:%v\n", err)
+	}
+	defer conn.Close()
+	client := pb.NewGet5Client(conn)
+	req := &pb.RegisterGameServerRequest{
+		Userid:       0,
+		DisplayName:  "gRPC API TEST",
+		IpString:     "0.0.0.0",
+		Port:         27015,
+		RconPassword: "wasd",
+		PublicServer: false,
+	}
+	res, err := client.RegisterGameServer(context.TODO(), req)
+	if err != nil {
+		t.Errorf("error::%v \n", err)
+		return
+	}
+	log.Printf("result: %v \n", res)
+}
+
+func TestGrpcGetGameServer(t *testing.T) {
+	log.Printf("Starting GET5 gRPC Client...")
+	conn, err := grpc.Dial("127.0.0.1:50055", grpc.WithInsecure())
+	if err != nil {
+		t.Errorf("client connection error:%v\n", err)
+	}
+	defer conn.Close()
+	client := pb.NewGet5Client(conn)
+	req := &pb.GetGameServerRequest{
+		Id: 80,
+	}
+	res, err := client.GetGameServer(context.TODO(), req)
+	if err != nil {
+		t.Errorf("error::%v \n", err)
+		return
+	}
+	log.Printf("result: %v \n", res)
+}
+
+func TestGrpcDeleteGameServer(t *testing.T) {
+	log.Printf("Starting GET5 gRPC Client...")
+	conn, err := grpc.Dial("127.0.0.1:50055", grpc.WithInsecure())
+	if err != nil {
+		t.Errorf("client connection error:%v\n", err)
+	}
+	defer conn.Close()
+	client := pb.NewGet5Client(conn)
+	req := &pb.DeleteGameServerRequest{
+		Id: 80,
+	}
+	res, err := client.DeleteGameServer(context.TODO(), req)
+	if err != nil {
+		t.Errorf("error::%v \n", err)
+		return
+	}
+	log.Printf("result: %v \n", res)
+}

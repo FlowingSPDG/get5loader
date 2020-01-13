@@ -55,7 +55,10 @@ func (s Server) GetUser(ctx context.Context, req *pb.GetUserRequest) (*pb.GetUse
 }
 
 func (s Server) EditUser(ctx context.Context, req *pb.EditUserRequest) (*pb.EditUserReply, error) {
-	return nil, nil // TODO
+	return &pb.EditUserReply{
+		Error:        true,
+		Errormessage: "NOT IMPLEMENTED YET",
+	}, fmt.Errorf("NOT IMPLEMENTED YET") // TODO
 }
 
 func (s Server) DeleteUser(ctx context.Context, req *pb.DeleteUserRequest) (*pb.DeleteUserReply, error) {
