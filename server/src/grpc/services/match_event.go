@@ -54,7 +54,9 @@ func (s Server) MatchEvent(req *pb.MatchEventRequest, srv pb.Get5_MatchEventServ
 	matchid := req.GetMatchid()
 	fmt.Printf("MatchEvent. matchid : %d\n", matchid)
 	MatchesStream.Write(matchid, &pb.MatchEventReply{
-		Event: &pb.MatchEventReply_Initialized{},
+		Event: &pb.MatchEventReply_Initialized{
+			Initialized: &pb.MatchEventInitialized{},
+		},
 	}) // initialize?
 	srv.Send(MatchesStream.Read(matchid))
 
