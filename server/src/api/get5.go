@@ -111,12 +111,14 @@ func MatchFinishHandler(w http.ResponseWriter, r *http.Request) {
 	if pbservices.MatchesStream == nil {
 		pbservices.MatchesStream = make(map[int32]*pbservices.Events)
 	}
-	pbservices.MatchesStream[int32(matchidInt)].Event = &pb.MatchEventReply{
-		Event: &pb.MatchEventReply_Matchfinish{
-			Matchfinish: &pb.MatchEventMatchFinish{
-				Matchid: int32(matchidInt),
-				Winner:  winner,
-				Forfeit: forfeitbool,
+	pbservices.MatchesStream[int32(matchidInt)] = &pbservices.Events{
+		Event: &pb.MatchEventReply{
+			Event: &pb.MatchEventReply_Matchfinish{
+				Matchfinish: &pb.MatchEventMatchFinish{
+					Matchid: int32(matchidInt),
+					Winner:  winner,
+					Forfeit: forfeitbool,
+				},
 			},
 		},
 	}
@@ -160,12 +162,14 @@ func MatchMapStartHandler(w http.ResponseWriter, r *http.Request) {
 	if pbservices.MatchesStream == nil {
 		pbservices.MatchesStream = make(map[int32]*pbservices.Events)
 	}
-	pbservices.MatchesStream[int32(matchid)].Event = &pb.MatchEventReply{
-		Event: &pb.MatchEventReply_Mapstart{
-			Mapstart: &pb.MatchEventMapStart{
-				Matchid:   int32(matchid),
-				Mapnumber: int32(mapnumber),
-				Mapname:   mapname,
+	pbservices.MatchesStream[int32(matchid)] = &pbservices.Events{
+		Event: &pb.MatchEventReply{
+			Event: &pb.MatchEventReply_Mapstart{
+				Mapstart: &pb.MatchEventMapStart{
+					Matchid:   int32(matchid),
+					Mapnumber: int32(mapnumber),
+					Mapname:   mapname,
+				},
 			},
 		},
 	}
@@ -226,13 +230,15 @@ func MatchMapUpdateHandler(w http.ResponseWriter, r *http.Request) {
 	if pbservices.MatchesStream == nil {
 		pbservices.MatchesStream = make(map[int32]*pbservices.Events)
 	}
-	pbservices.MatchesStream[int32(matchid)].Event = &pb.MatchEventReply{
-		Event: &pb.MatchEventReply_Mapupdate{
-			Mapupdate: &pb.MatchEventMapUpdate{
-				Matchid:    int32(matchid),
-				Mapnumber:  int32(mapnumber),
-				Team1Score: int32(team1score),
-				Team2Score: int32(team2score),
+	pbservices.MatchesStream[int32(matchid)] = &pbservices.Events{
+		Event: &pb.MatchEventReply{
+			Event: &pb.MatchEventReply_Mapupdate{
+				Mapupdate: &pb.MatchEventMapUpdate{
+					Matchid:    int32(matchid),
+					Mapnumber:  int32(mapnumber),
+					Team1Score: int32(team1score),
+					Team2Score: int32(team2score),
+				},
 			},
 		},
 	}
@@ -293,16 +299,17 @@ func MatchMapFinishHandler(w http.ResponseWriter, r *http.Request) {
 	if pbservices.MatchesStream == nil {
 		pbservices.MatchesStream = make(map[int32]*pbservices.Events)
 	}
-	pbservices.MatchesStream[int32(matchid)].Event = &pb.MatchEventReply{
-		Event: &pb.MatchEventReply_Mapfinish{
-			Mapfinish: &pb.MatchEventMapFinish{
-				Matchid:   int32(matchid),
-				Mapnumber: int32(mapnumber),
-				Winner:    winner,
+	pbservices.MatchesStream[int32(matchid)] = &pbservices.Events{
+		Event: &pb.MatchEventReply{
+			Event: &pb.MatchEventReply_Mapfinish{
+				Mapfinish: &pb.MatchEventMapFinish{
+					Matchid:   int32(matchid),
+					Mapnumber: int32(mapnumber),
+					Winner:    winner,
+				},
 			},
 		},
 	}
-
 }
 
 // MatchMapPlayerUpdateHandler Handler for /api/v1/match/{matchID}/map/{mapNumber}/player/{steamid64}/update API.
@@ -547,43 +554,44 @@ func MatchMapPlayerUpdateHandler(w http.ResponseWriter, r *http.Request) {
 	if pbservices.MatchesStream == nil {
 		pbservices.MatchesStream = make(map[int32]*pbservices.Events)
 	}
-	pbservices.MatchesStream[int32(matchid)].Event = &pb.MatchEventReply{
-		Event: &pb.MatchEventReply_Mapplayerupdate{
-			Mapplayerupdate: &pb.MatchEventMapPlayerUpdate{
-				Matchid:          int32(matchid),
-				Mapnumber:        int32(mapnumber),
-				Steamid:          steamid64,
-				Name:             FormName,
-				Team:             FormTeam,
-				Kills:            int32(FormKills),
-				Assists:          int32(FormAssists),
-				Deaths:           int32(FormDeaths),
-				FlashbangAssists: int32(FormFlashbangAssists),
-				Teamkills:        int32(FormTeamKills),
-				Suicides:         int32(FormSuicides),
-				Damage:           int32(FormDamage),
-				HeadshotKills:    int32(FormHeadShotKills),
-				Roundsplayed:     int32(FormRoundsPlayed),
-				BombPlants:       int32(FormBombPlants),
-				BombDefuses:      int32(FormBombDefuses),
-				OneKillRounds:    int32(Form1KillRounds),
-				TwoKillRounds:    int32(Form2KillRounds),
-				ThreeKillRounds:  int32(Form3KillRounds),
-				FourKillRounds:   int32(Form4KillRounds),
-				FiveKillRounds:   int32(Form5KillRounds),
-				V1:               int32(FormV1),
-				V2:               int32(FormV2),
-				V3:               int32(FormV3),
-				V4:               int32(FormV4),
-				V5:               int32(FormV5),
-				FirstkillT:       int32(FormFirstKillT),
-				FirstkillCt:      int32(FormFirstKillCT),
-				FirstdeathT:      int32(FormFirstDeathT),
-				FirstdeathCt:     int32(FormFirstDeathCT),
+	pbservices.MatchesStream[int32(matchid)] = &pbservices.Events{
+		Event: &pb.MatchEventReply{
+			Event: &pb.MatchEventReply_Mapplayerupdate{
+				Mapplayerupdate: &pb.MatchEventMapPlayerUpdate{
+					Matchid:          int32(matchid),
+					Mapnumber:        int32(mapnumber),
+					Steamid:          steamid64,
+					Name:             FormName,
+					Team:             FormTeam,
+					Kills:            int32(FormKills),
+					Assists:          int32(FormAssists),
+					Deaths:           int32(FormDeaths),
+					FlashbangAssists: int32(FormFlashbangAssists),
+					Teamkills:        int32(FormTeamKills),
+					Suicides:         int32(FormSuicides),
+					Damage:           int32(FormDamage),
+					HeadshotKills:    int32(FormHeadShotKills),
+					Roundsplayed:     int32(FormRoundsPlayed),
+					BombPlants:       int32(FormBombPlants),
+					BombDefuses:      int32(FormBombDefuses),
+					OneKillRounds:    int32(Form1KillRounds),
+					TwoKillRounds:    int32(Form2KillRounds),
+					ThreeKillRounds:  int32(Form3KillRounds),
+					FourKillRounds:   int32(Form4KillRounds),
+					FiveKillRounds:   int32(Form5KillRounds),
+					V1:               int32(FormV1),
+					V2:               int32(FormV2),
+					V3:               int32(FormV3),
+					V4:               int32(FormV4),
+					V5:               int32(FormV5),
+					FirstkillT:       int32(FormFirstKillT),
+					FirstkillCt:      int32(FormFirstKillCT),
+					FirstdeathT:      int32(FormFirstDeathT),
+					FirstdeathCt:     int32(FormFirstDeathCT),
+				},
 			},
 		},
 	}
-
 }
 
 // MatchVetoUpdateHandler Handler for /api/v1/match/{matchID}/vetoUpdate API. // TODO
