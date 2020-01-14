@@ -30,13 +30,7 @@ func (s Server) MatchEvent(req *pb.MatchEventRequest, srv pb.Get5_MatchEventServ
 		MatchesStream[matchid] = &Events{
 			Finished: false,
 			Event: &pb.MatchEventReply{
-				Event: &pb.MatchEventReply_Mapstart{
-					Mapstart: &pb.MatchEventMapStart{
-						Matchid:   0,
-						Mapnumber: 0,
-						Mapname:   "",
-					},
-				},
+				Event: &pb.MatchEventReply_Initialized{},
 			},
 		} // initialize
 	}
