@@ -16,6 +16,7 @@ func (s Server) RegisterGameServer(ctx context.Context, req *pb.RegisterGameServ
 	fmt.Printf("req : %v\n", req)
 	srcds, err := srcds.Create(int(req.GetUserid()), req.GetDisplayName(), req.GetIpString(), int(req.GetPort()), req.GetRconPassword(), req.GetPublicServer())
 	if err != nil {
+		fmt.Println(err)
 		return &pb.RegisterGameServerReply{
 			Error:        true,
 			Errormessage: "Could not register server",

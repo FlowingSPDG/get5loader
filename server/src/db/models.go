@@ -144,8 +144,13 @@ func (g *GameServerData) Create(userid int, displayname string, ipstring string,
 		return nil, err
 	}
 
-	SQLAccess.Gorm.Create(&g)
-	return g, nil
+	result := SQLAccess.Gorm.Create(&g)
+	errors := result.GetErrors()
+	fmt.Printf("Errors len : %d\n", len(errors))
+	if len(errors) >= 1 {
+		return nil, errors[0]
+	}
+	return g, result.Error
 }
 
 // CanEdit Check if server is editable for user or not.
