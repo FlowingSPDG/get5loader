@@ -13,6 +13,7 @@ import (
 
 func (s Server) RegisterGameServer(ctx context.Context, req *pb.RegisterGameServerRequest) (*pb.RegisterGameServerReply, error) {
 	srcds := &db.GameServerData{}
+	fmt.Printf("req : %v\n", req)
 	srcds, err := srcds.Create(int(req.GetUserid()), req.GetDisplayName(), req.GetIpString(), int(req.GetPort()), req.GetRconPassword(), req.GetPublicServer())
 	if err != nil {
 		return &pb.RegisterGameServerReply{
@@ -21,6 +22,7 @@ func (s Server) RegisterGameServer(ctx context.Context, req *pb.RegisterGameServ
 			Id:           0,
 		}, err
 	}
+	fmt.Printf("srcds : %v\n", srcds)
 	return &pb.RegisterGameServerReply{
 		Error:        false,
 		Errormessage: "",
