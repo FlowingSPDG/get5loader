@@ -220,9 +220,14 @@ message MatchEventReply {
     MatchEventMapUpdate mapupdate = 3;
     MatchEventMapFinish mapfinish = 4;
     MatchEventMapPlayerUpdate mapplayerupdate = 5;
-    // MatchEventVetoUpdate vetoupdate = 6;
-    // MatchEventDemoUpload demoupload = 7;
+    MatchEventInitialized initialized = 6;
+    // MatchEventVetoUpdate vetoupdate = 7;
+    // MatchEventDemoUpload demoupload = 8;
   }
+}
+
+message MatchEventInitialized {
+  
 }
 
 message MatchEventMatchFinish {

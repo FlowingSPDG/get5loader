@@ -108,6 +108,9 @@ func MatchFinishHandler(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("match id is not int,interuppting streaming")
 		return
 	}
+	if pbservices.MatchesStream == nil {
+		pbservices.MatchesStream = make(map[int32]*pbservices.Events)
+	}
 	pbservices.MatchesStream[int32(matchidInt)].Event = &pb.MatchEventReply{
 		Event: &pb.MatchEventReply_Matchfinish{
 			Matchfinish: &pb.MatchEventMatchFinish{
@@ -154,7 +157,9 @@ func MatchMapStartHandler(w http.ResponseWriter, r *http.Request) {
 	mUpdate.StartTime.Scan(time.Now())
 	db.SQLAccess.Gorm.Model(&m).Update(&mUpdate)
 	db.SQLAccess.Gorm.Save(&mUpdate)
-
+	if pbservices.MatchesStream == nil {
+		pbservices.MatchesStream = make(map[int32]*pbservices.Events)
+	}
 	pbservices.MatchesStream[int32(matchid)].Event = &pb.MatchEventReply{
 		Event: &pb.MatchEventReply_Mapstart{
 			Mapstart: &pb.MatchEventMapStart{
@@ -218,7 +223,9 @@ func MatchMapUpdateHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Failed to find map stats object", http.StatusBadRequest)
 		return
 	}
-
+	if pbservices.MatchesStream == nil {
+		pbservices.MatchesStream = make(map[int32]*pbservices.Events)
+	}
 	pbservices.MatchesStream[int32(matchid)].Event = &pb.MatchEventReply{
 		Event: &pb.MatchEventReply_Mapupdate{
 			Mapupdate: &pb.MatchEventMapUpdate{
@@ -283,7 +290,9 @@ func MatchMapFinishHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Failed to find map stats object", http.StatusBadRequest)
 		return
 	}
-
+	if pbservices.MatchesStream == nil {
+		pbservices.MatchesStream = make(map[int32]*pbservices.Events)
+	}
 	pbservices.MatchesStream[int32(matchid)].Event = &pb.MatchEventReply{
 		Event: &pb.MatchEventReply_Mapfinish{
 			Mapfinish: &pb.MatchEventMapFinish{
@@ -535,7 +544,9 @@ func MatchMapPlayerUpdateHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Failed to find map stats object", http.StatusNotFound)
 		return
 	}
-
+	if pbservices.MatchesStream == nil {
+		pbservices.MatchesStream = make(map[int32]*pbservices.Events)
+	}
 	pbservices.MatchesStream[int32(matchid)].Event = &pb.MatchEventReply{
 		Event: &pb.MatchEventReply_Mapplayerupdate{
 			Mapplayerupdate: &pb.MatchEventMapPlayerUpdate{
