@@ -38,7 +38,7 @@ func (s Server) MatchEvent(req *pb.MatchEventRequest, srv pb.Get5_MatchEventServ
 	lastevent := &pb.MatchEventReply{}
 	for { //go func(){}() ?
 		if !MatchesStream[matchid].Finished && lastevent != MatchesStream[matchid].Event {
-			fmt.Println("sending")
+			fmt.Println("sending data : %V\n", MatchesStream[matchid].Event)
 			srv.Send(MatchesStream[matchid].Event)
 			lastevent = MatchesStream[matchid].Event
 		}
