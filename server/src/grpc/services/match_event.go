@@ -8,6 +8,7 @@ import (
 	// "google.golang.org/grpc"
 	// "log"
 	"fmt"
+	"sync"
 )
 
 type Events struct {
@@ -15,36 +16,55 @@ type Events struct {
 	Event    *pb.MatchEventReply
 }
 
+type EventsMap struct {
+	Event map[int32]*Events
+	mux   sync.Mutex
+}
+
+func (e *EventsMap) Write(key int32, Event *pb.MatchEventReply) {
+	e.mux.Lock()
+	defer e.mux.Unlock()
+	if e.Event == nil {
+		e.Event = make(map[int32]*Events)
+	}
+	if e.Event[key] == nil {
+		e.Event[key] = &Events{}
+	}
+	e.Event[key].Event = Event
+}
+
+func (e *EventsMap) Read(key int32) *pb.MatchEventReply {
+	e.mux.Lock()
+	defer e.mux.Unlock()
+	if e.Event[key] == nil {
+		e.Event[key] = &Events{}
+	}
+	return e.Event[key].Event
+}
+
 var (
-	MatchesStream map[int32]*Events // MatchesStream[MatchID].Servers[0].Send()
+	MatchesStream EventsMap
 )
 
 func init() {
-	MatchesStream = make(map[int32]*Events)
+	MatchesStream = EventsMap{}
 }
 
 func (s Server) MatchEvent(req *pb.MatchEventRequest, srv pb.Get5_MatchEventServer) error {
 	matchid := req.GetMatchid()
 	fmt.Printf("MatchEvent. matchid : %d\n", matchid)
-	if _, ok := MatchesStream[matchid]; !ok {
-		MatchesStream[matchid] = &Events{
-			Finished: false,
-			Event: &pb.MatchEventReply{
-				Event: &pb.MatchEventReply_Initialized{},
-			},
-		} // initialize
-	}
-	srv.Send(MatchesStream[matchid].Event)
+	MatchesStream.Write(matchid, &pb.MatchEventReply{
+		Event: &pb.MatchEventReply_Initialized{},
+	}) // initialize?
+	srv.Send(MatchesStream.Read(matchid))
 
 	lastevent := &pb.MatchEventReply{}
 	for { //go func(){}() ?
-		if !MatchesStream[matchid].Finished && lastevent != MatchesStream[matchid].Event {
-			fmt.Printf("sending data : %v\n", MatchesStream[matchid].Event)
-			srv.Send(MatchesStream[matchid].Event)
-			lastevent = MatchesStream[matchid].Event
-		}
-		if MatchesStream[matchid].Finished {
-			return nil // closes stream
+		senddata := MatchesStream.Read(matchid)
+		if lastevent != senddata {
+			fmt.Printf("sending data : %v\n", senddata)
+			srv.Send(senddata)
+			lastevent = senddata
 		}
 	}
 }
