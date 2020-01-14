@@ -543,16 +543,13 @@ func (m *MatchData) Get(id int) (*MatchData, error) {
 
 // Create Register Match information into DB.
 func (m *MatchData) Create(userid int, team1id int, team2id int, team1string string, team2string string, maxmaps int, skipveto bool, title string, vetomappool []string, serverid int) (*MatchData, error) {
-	user := UserData{
-		ID: userid,
-	}
-	SQLAccess.Gorm.First(&user)
+	user := UserData{}
+	SQLAccess.Gorm.First(&user, userid)
 	if team1id == 0 || team2id == 0 || serverid == 0 {
 		return nil, fmt.Errorf("TeamID or ServerID is empty")
 	}
 	server := GameServerData{}
-	server.ID = serverid
-	SQLAccess.Gorm.First(&server)
+	SQLAccess.Gorm.First(&server, serverid)
 	// returns error if user wasnt owned server,or not an admin.
 	if userid != server.UserID && !user.Admin && !server.PublicServer {
 		return nil, fmt.Errorf("This is not your server")
