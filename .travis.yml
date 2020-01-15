@@ -11,9 +11,8 @@ notifications:
   email: false
 matrix:
   include:
-    - language: go,node_js
+    - language: go
       go: 1.13.5
-      node_js: 10.18.0
       before_install:
         - make deps-go
       script:
