@@ -4,9 +4,21 @@
 export default {
   name: 'api',
   methods: {
+    async GetUserData (userid) {
+      return new Promise(async (resolve, reject) => {
+        const res = await this.axios.get(`/api/v1/user/${userid}/GetUserInfo`)
+        resolve(res.data)
+      })
+    },
     async GetTeamData (teamid) {
       return new Promise(async (resolve, reject) => {
         const res = await this.axios.get(`/api/v1/team/${teamid}/GetTeamInfo`)
+        resolve(res.data)
+      })
+    },
+    async GetServerData (serverid) {
+      return new Promise(async (resolve, reject) => {
+        const res = await this.axios.get(`/api/v1/server/${serverid}/GetServerInfo`)
         resolve(res.data)
       })
     },
