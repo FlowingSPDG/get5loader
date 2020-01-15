@@ -15,7 +15,7 @@ Shugo [**FlowingSPDG**](http://github.com/FlowingSPDG) Kawamura
 3. GOLANG has better performance than Python in some case
 4. To support local file-DB insted of MySQL DB for better performance and easy to deploy(this would be optional).
 5. To support SPA and better UI/UX design
-6. To support get5 HTTP API for developers
+6. To support Get5 HTTP/gRPC Streaming API for developers
 
 ## How to use
 1. Register your CS:GO servers on the "Add a server" section.
