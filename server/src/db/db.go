@@ -14,15 +14,16 @@ import (
 
 // Config Configration Struct for config.ini
 type Config struct {
-	SteamAPIKey string
-	DefaultPage string
-	SQLHost     string
-	SQLUser     string
-	SQLPass     string
-	SQLPort     int
-	SQLDBName   string
-	HOST        string
-	Cookie      string
+	SteamAPIKey  string
+	DefaultPage  string
+	SQLHost      string
+	SQLUser      string
+	SQLPass      string
+	SQLPort      int
+	SQLDBName    string
+	SQLDebugMode bool
+	HOST         string
+	Cookie       string
 }
 
 // DBdatas Struct for MySQL configration and Gorm
@@ -51,15 +52,16 @@ var (
 func init() {
 	c, _ := ini.Load("config.ini")
 	Cnf := Config{
-		SteamAPIKey: c.Section("Steam").Key("APIKey").MustString(""),
-		DefaultPage: c.Section("GET5").Key("DefaultPage").MustString(""),
-		HOST:        c.Section("GET5").Key("HOST").MustString(""),
-		SQLHost:     c.Section("sql").Key("host").MustString(""),
-		SQLUser:     c.Section("sql").Key("user").MustString(""),
-		SQLPass:     c.Section("sql").Key("pass").MustString(""),
-		SQLPort:     c.Section("sql").Key("port").MustInt(3306),
-		SQLDBName:   c.Section("sql").Key("database").MustString(""),
-		Cookie:      c.Section("GET5").Key("Cookie").MustString("SecretString"),
+		SteamAPIKey:  c.Section("Steam").Key("APIKey").MustString(""),
+		DefaultPage:  c.Section("GET5").Key("DefaultPage").MustString(""),
+		HOST:         c.Section("GET5").Key("HOST").MustString(""),
+		SQLHost:      c.Section("sql").Key("host").MustString(""),
+		SQLUser:      c.Section("sql").Key("user").MustString(""),
+		SQLPass:      c.Section("sql").Key("pass").MustString(""),
+		SQLPort:      c.Section("sql").Key("port").MustInt(3306),
+		SQLDBName:    c.Section("sql").Key("database").MustString(""),
+		SQLDebugMode: c.Section("sql").Key("debug").MustBool(false),
+		Cookie:       c.Section("GET5").Key("Cookie").MustString("SecretString"),
 	}
 	SQLAccess = DBdatas{
 		Host: Cnf.SQLHost,
@@ -74,7 +76,10 @@ func init() {
 	if err != nil {
 		panic(err)
 	}
-	DB.LogMode(false)
+	if Cnf.SQLDebugMode {
+		fmt.Println("SQL Debug mode Enabled. Transaction logs active")
+	}
+	DB.LogMode(Cnf.SQLDebugMode)
 	SQLAccess.Gorm = DB
 	SteamAPIKey = Cnf.SteamAPIKey
 	DefaultPage = Cnf.DefaultPage

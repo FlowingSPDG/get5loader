@@ -4,6 +4,7 @@ user = ""
 pass = ""
 port = 3306
 database = ""
+debug = False
  
 [Steam]
 APIKey = "YOURSTEAMAPIKEY"
