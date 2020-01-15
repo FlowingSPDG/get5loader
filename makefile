@@ -8,7 +8,7 @@ BINARY_NAME=get5
 DIST_DIR=build
 SERVER_DIR=server
 WEB_DIR=web
-GAME_DIR=game_plugin
+#GAME_DIR=game_plugin
 OS_Linux=linux
 OS_Windows=windows
 OS_Mac=darwin
@@ -90,9 +90,9 @@ build-all: build-prepare build-web clean
 	@$(CP) ./server/config.ini.template ./$(DIST_DIR)/$(BINARY_NAME)_$(OS_Mac)_$(ARCH_AMD64)/config.ini.template
 	
 build-prepare:
-	@cd ./server && $(GOGET) github.com/mitchellh/gox
-	@cd ./server && $(GOGET) github.com/konsorten/go-windows-terminal-sequences
-	@cd ./server && $(GOGET) github.com/FlowingSPDG/get5-web-go/server
+	@cd ./server && $(GOGET) github.com/mitchellh/gox \
+	github.com/konsorten/go-windows-terminal-sequences \
+	github.com/FlowingSPDG/get5-web-go/server
 	-@$(RM) ./$(DIST_DIR)/*/static
 build-linux: build-prepare build-web
 	@cd ./server && gox \
