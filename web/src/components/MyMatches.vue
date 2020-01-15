@@ -81,7 +81,8 @@ export default {
     this.user = res.data
     const matches = await this.GetMatches(this.user.userid)
     for (let i = 0; i < matches.length; i++) {
-      this.GetMatchInfo(matches[i].id)
+      this.$set(this.matchinfo, matchid, res.data)
+      this.matchinfo[matches[i].id] = await this.GetMatchInfo(matches[i].id)
     }
   },
   methods: {
@@ -97,41 +98,6 @@ export default {
           resolve(res.data)
         }
       })
-    },
-    async GetTeamData (teamid) {
-      return new Promise(async (resolve, reject) => {
-        const res = await this.axios.get(`/api/v1/team/${teamid}/GetTeamInfo`)
-        this.$set(this.teamdatas, teamid, res.data)
-        resolve(res.data)
-      })
-    },
-    async GetUserData (userid) {
-      return new Promise(async (resolve, reject) => {
-        const res = this.axios.get(`/api/v1/user/${userid}/GetUserInfo`)
-        this.$set(this.userdatas, userid, res.data)
-        resolve(res.data)
-      })
-    },
-    async GetServerData (serverid) {
-      return new Promise(async (resolve, reject) => {
-        const res = await this.axios.get(`/api/v1/server/${serverid}/GetServerInfo`)
-        this.$set(this.serverdatas, serverid, res.data)
-        resolve(res.data)
-      })
-    },
-    async GetMatchInfo (matchid) {
-      return new Promise(async (resolve, reject) => {
-        const res = await this.axios.get(`/api/v1/match/${matchid}/GetMatchInfo`)
-        this.$set(this.matchinfo, matchid, res.data)
-        resolve(res.data)
-      })
-    },
-    get_flag_link: function (team) {
-      if (team.flag === '') {
-        return `/img/_unknown.png`
-      }
-      // return `<img src="/img/valve_flags/${team.flag}"  width="24" height="16">`
-      return `/img/valve_flags/${team.flag}.png`
     }
   }
 }

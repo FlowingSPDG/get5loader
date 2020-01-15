@@ -41,12 +41,6 @@ export default {
     this.servers = servers.servers
   },
   methods: {
-    async GetUserData (userid) {
-      return new Promise(async (resolve, reject) => {
-        const res = await this.axios.get(`/api/v1/user/${userid}/GetUserInfo`)
-        resolve(res.data)
-      })
-    },
     async DeleteTeam (serverid) {
       try {
         await this.$confirm('This will permanently delete the server. Continue?', 'Warning', {

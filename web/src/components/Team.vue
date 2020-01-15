@@ -69,9 +69,8 @@ export default {
   },
   async created () {
     const teamdataPromise = this.GetTeamData(this.$route.params.teamid)
-    const matchesPromise = this.GetRecentMatches(this.$route.params.teamid)
+    this.matches = await this.GetRecentMatches(this.$route.params.teamid)
     this.team = await teamdataPromise
-    this.matches = await matchesPromise
     for (let i = 0; i < this.matches.length; i++) {
       if (!this.matchdata) {
         this.matchdata = []
@@ -88,19 +87,6 @@ export default {
     this.Deletable = this.CheckTeamDeletable(this.user.userid)
   },
   methods: {
-    async GetTeamData (teamid) {
-      return new Promise(async (resolve, reject) => {
-        const res = await this.axios.get(`/api/v1/team/${teamid}/GetTeamInfo`)
-        resolve(res.data)
-      })
-    },
-    async GetRecentMatches (teamid) {
-      return new Promise(async (resolve, reject) => {
-        const res = await this.axios.get(`/api/v1/team/${teamid}/GetRecentMatches`)
-        this.matches = res.data
-        resolve(res.data)
-      })
-    },
     async GetSteamName (steamid) {
       let self = this
       if (steamid === '') {
@@ -118,31 +104,27 @@ export default {
     CheckTeamDeletable: function (userid) {
       return this.team.user_id === parseInt(userid)
     },
-    get_flag_link: function (team) {
-      if (team.flag === '') {
-        return `/img/_unknown.png`
-      }
-      // return `<img src="/img/valve_flags/${team.flag}"  width="24" height="16">`
-      return `/img/valve_flags/${team.flag}.png`
-    },
     async get_vs_match_result (match) {
       return new Promise(async (resolve, reject) => {
         let MyScore
         let OtherTeamScore
         let OtherTeam
-        if (match.team1.id === this.$route.params.teamid) {
-          MyScore = match.team1_score
-          OtherTeamScore = match.team2_score
+        const teamid = parseInt(this.$route.params.teamid)
+        const maxmaps = parseInt(match.max_maps)
+
+        if (match.team1.id === teamid) {
+          MyScore = parseInt(match.team1_score)
+          OtherTeamScore = parseInt(match.team2_score)
           OtherTeam = await this.GetTeamData(match.team2.id)
           // for a bo1 replace series score with the map score
-          if (match.max_maps === 1) {
+          if (maxmaps === 1) {
             if (match.map_stats.length === 1) {
-              if (match.team1_id === self.id) {
-                MyScore = match.map_stats[0].team1_score
-                OtherTeamScore = match.map_stats[0].team2_score
+              if (match.team1_id === this.team.id) {
+                MyScore = parseInt(match.map_stats[0].team1_score)
+                OtherTeamScore = parseInt(match.map_stats[0].team2_score)
               } else {
-                MyScore = match.map_stats[0].team2_score
-                OtherTeamScore = match.map_stats[0].team1_score
+                MyScore = parseInt(match.map_stats[0].team1_score)
+                OtherTeamScore = parseInt(match.map_stats[0].team2_score)
               }
             }
           }
@@ -161,18 +143,18 @@ export default {
             resolve(r)
           }
         } else {
-          MyScore = match.team2_score
-          OtherTeamScore = match.team1_score
+          MyScore = parseInt(match.team2_score)
+          OtherTeamScore = parseInt(match.team1_score)
           OtherTeam = await this.GetTeamData(match.team1.id)
           // for a bo1 replace series score with the map score
-          if (match.max_maps === 1) {
+          if (maxmaps === 1) {
             if (match.map_stats.length === 1) {
-              if (match.team1_id === self.id) {
-                MyScore = match.map_stats[0].team1_score
-                OtherTeamScore = match.map_stats[0].team2_score
+              if (match.team1_id === this.team.id) {
+                MyScore = parseInt(match.map_stats[0].team2_score)
+                OtherTeamScore = parseInt(match.map_stats[0].team1_score)
               } else {
-                MyScore = match.map_stats[0].team2_score
-                OtherTeamScore = match.map_stats[0].team1_score
+                MyScore = parseInt(match.map_stats[0].team2_score)
+                OtherTeamScore = parseInt(match.map_stats[0].team1_score)
               }
             }
           }

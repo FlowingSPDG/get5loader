@@ -52,18 +52,6 @@ export default {
     GetSteamURL: function (steamid) {
       return `https://steamcommunity.com/profiles/${steamid}`
     },
-    async GetUserData (userid) {
-      return new Promise(async (resolve, reject) => {
-        const res = await this.axios.get(`/api/v1/user/${userid}/GetUserInfo`)
-        resolve(res.data)
-      })
-    },
-    async GetTeamData (teamid) {
-      return new Promise(async (resolve, reject) => {
-        const res = await this.axios.get(`/api/v1/team/${teamid}/GetTeamInfo`)
-        resolve(res.data)
-      })
-    },
     async get_vs_match_result (match) {
       return new Promise(async (resolve, reject) => {
         let MyScore
