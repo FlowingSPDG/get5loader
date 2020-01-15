@@ -35,6 +35,7 @@ func (s Server) RegisterMatch(ctx context.Context, req *pb.RegisterMatchRequest)
 	return &pb.RegisterMatchReply{
 		Error:        false,
 		Errormessage: "",
+		Id:           int32(match.ID),
 	}, nil
 }
 

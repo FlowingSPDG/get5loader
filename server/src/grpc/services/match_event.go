@@ -1,6 +1,7 @@
 package services
 
 import (
+	"time"
 	// "github.com/FlowingSPDG/get5-web-go/server/src/api"
 	// "github.com/FlowingSPDG/get5-web-go/server/src/db"
 	pb "github.com/FlowingSPDG/get5-web-go/server/src/grpc/proto"
@@ -58,14 +59,20 @@ func (s Server) MatchEvent(req *pb.MatchEventRequest, srv pb.Get5_MatchEventServ
 			Initialized: &pb.MatchEventInitialized{},
 		},
 	}) // initialize?
-	srv.Send(MatchesStream.Read(matchid))
+	err := srv.Send(MatchesStream.Read(matchid))
+	if err != nil {
+		return err
+	}
 
 	lastevent := &pb.MatchEventReply{}
 	for { //go func(){}() ?
 		senddata := MatchesStream.Read(matchid)
 		if lastevent != senddata {
-			fmt.Printf("sending data : %v\n", senddata)
-			srv.Send(senddata)
+			fmt.Printf("Data Updated! Sending data : %v\n", senddata)
+			err = srv.Send(senddata)
+			if err != nil {
+				return err
+			}
 			lastevent = senddata
 		}
 	}
