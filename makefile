@@ -65,7 +65,7 @@ deps-go:
 	github.com/kataras/go-sessions \
 	github.com/Acidic9/steam \
 	github.com/kidoman/go-steam \
-	github.com/FlowingSPDG/get5-web-go/server/src \
+	github.com/FlowingSPDG/get5-web-go/server/src/grpc \
 # Cross compile for go
 build-all: clean build-prepare build-web
 	@cd ./server && gox \
