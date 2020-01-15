@@ -51,33 +51,36 @@ func (u *UserData) TableName() string {
 	return "user"
 }
 
-// GetOrCreate Get or Register Userdata into DB.
-func (u *UserData) GetOrCreate(g *gorm.DB, steamid string) (*UserData, error) {
+// GetOrCreate Get or Register Userdata by their steamid into DB.
+func (u *UserData) GetOrCreate() (*UserData, bool, error) { // userdata, exist,error
 	SQLUserData := UserData{}
-	SQLUserData.SteamID = steamid
+	SQLUserData.SteamID = u.SteamID
+	exist := false
 
-	record := g.Where("steam_id = ?", steamid).First(&SQLUserData)
+	record := SQLAccess.Gorm.Where("steam_id = ?", u.SteamID).First(&SQLUserData)
 	if record.RecordNotFound() {
+		exist = false
 		fmt.Println("USER NOT EXIST!")
 		fmt.Println("CREATING USER")
-		steamid64, err := strconv.Atoi(steamid)
+		steamid64, err := strconv.Atoi(u.SteamID)
 		if err != nil {
-			return u, err
+			return u, exist, err
 		}
 		SQLUserData.Name, err = GetSteamName(uint64(steamid64))
 		if err != nil {
-			return u, err
+			return u, exist, err
 		}
-		g.Create(&SQLUserData)
+		SQLAccess.Gorm.Create(&SQLUserData)
 	} else {
 		fmt.Println("USER EXIST")
+		exist = true
 		// fmt.Println(SQLUserData)
 		u.Name = SQLUserData.Name
 		u.ID = SQLUserData.ID
 		u.Admin = SQLUserData.Admin
 		u.SteamID = SQLUserData.SteamID
 	}
-	return u, nil
+	return u, exist, nil
 }
 
 // GetURL Get user page URL
@@ -141,8 +144,13 @@ func (g *GameServerData) Create(userid int, displayname string, ipstring string,
 		return nil, err
 	}
 
-	SQLAccess.Gorm.Create(&g)
-	return g, nil
+	result := SQLAccess.Gorm.Create(&g)
+	errors := result.GetErrors()
+	fmt.Printf("Errors len : %d\n", len(errors))
+	if len(errors) >= 1 {
+		return nil, errors[0]
+	}
+	return g, result.Error
 }
 
 // CanEdit Check if server is editable for user or not.
@@ -530,24 +538,23 @@ func (m *MatchData) TableName() string {
 }
 
 // Get Get myself
-func (m *MatchData) Get(id int) *MatchData {
-	m.ID = id
-	SQLAccess.Gorm.First(&m)
-	return m
+func (m *MatchData) Get(id int) (*MatchData, error) {
+	rec := SQLAccess.Gorm.First(&m, id)
+	if rec.RecordNotFound() {
+		return nil, fmt.Errorf("Match not found")
+	}
+	return m, nil
 }
 
 // Create Register Match information into DB.
 func (m *MatchData) Create(userid int, team1id int, team2id int, team1string string, team2string string, maxmaps int, skipveto bool, title string, vetomappool []string, serverid int) (*MatchData, error) {
-	user := UserData{
-		ID: userid,
-	}
-	SQLAccess.Gorm.First(&user)
+	user := UserData{}
+	SQLAccess.Gorm.First(&user, userid)
 	if team1id == 0 || team2id == 0 || serverid == 0 {
 		return nil, fmt.Errorf("TeamID or ServerID is empty")
 	}
 	server := GameServerData{}
-	server.ID = serverid
-	SQLAccess.Gorm.First(&server)
+	SQLAccess.Gorm.First(&server, serverid)
 	// returns error if user wasnt owned server,or not an admin.
 	if userid != server.UserID && !user.Admin && !server.PublicServer {
 		return nil, fmt.Errorf("This is not your server")

@@ -7,6 +7,7 @@ import (
 
 	"github.com/FlowingSPDG/get5-web-go/server/src/api"
 	"github.com/FlowingSPDG/get5-web-go/server/src/db"
+	"github.com/FlowingSPDG/get5-web-go/server/src/grpc"
 	"github.com/go-ini/ini"
 	"github.com/gorilla/mux"
 )
@@ -33,6 +34,9 @@ var (
 	Cnf Config
 	// SQLAccess SQL Access Object for MySQL and GORM things
 	SQLAccess db.DBdatas
+
+	GRPC_ADDR  string
+	EnablegRPC bool
 )
 
 // ServeStaticFile Host static files
@@ -58,7 +62,8 @@ func init() {
 		APIONLY:   c.Section("GET5").Key("API_ONLY").MustBool(false),
 	}
 	HOST = Cnf.HOST
-	// fmt.Println(db.SQLAccess)
+	GRPC_ADDR = c.Section("GET5").Key("GPRC_ADDR").MustString(":50055")
+	EnablegRPC = c.Section("GET5").Key("ENABLE_gRPC").MustBool(false)
 }
 
 func main() {
@@ -132,8 +137,19 @@ func main() {
 		fmt.Println("API ONLY MODE")
 	}
 
+	if EnablegRPC {
+		fmt.Println("EnableGRPC option enabled. Starting gRPC server...")
+		go func() {
+			err := get5grpc.StartGrpc(GRPC_ADDR)
+			if err != nil {
+				panic(err)
+			}
+		}()
+	}
+
 	r.Methods("GET", "POST", "DELETE", "PUT")
 	http.Handle("/", r)
 	fmt.Printf("RUNNING at %v\n", HOST)
 	log.Fatal(http.ListenAndServe(HOST, nil))
+
 }
