@@ -109,22 +109,27 @@ export default {
         let MyScore
         let OtherTeamScore
         let OtherTeam
-        if (match.team1.id === this.$route.params.teamid) {
-          MyScore = match.team1_score
-          OtherTeamScore = match.team2_score
+        const teamid = parseInt(this.$route.params.teamid)
+        const maxmaps = parseInt(match.max_maps)
+
+        if (match.team1.id === teamid) {
+          MyScore = parseInt(match.team1_score)
+          OtherTeamScore = parseInt(match.team2_score)
           OtherTeam = await this.GetTeamData(match.team2.id)
           // for a bo1 replace series score with the map score
-          if (match.max_maps === 1) {
+          if (maxmaps === 1) {
             if (match.map_stats.length === 1) {
-              if (match.team1_id === self.id) {
-                MyScore = match.map_stats[0].team1_score
-                OtherTeamScore = match.map_stats[0].team2_score
+              if (match.team1_id === this.team.id) {
+                MyScore = parseInt(match.map_stats[0].team1_score)
+                OtherTeamScore = parseInt(match.map_stats[0].team2_score)
               } else {
-                MyScore = match.map_stats[0].team2_score
-                OtherTeamScore = match.map_stats[0].team1_score
+                MyScore = parseInt(match.map_stats[0].team1_score)
+                OtherTeamScore = parseInt(match.map_stats[0].team2_score)
               }
             }
           }
+          console.log(`MyScore : ${MyScore}`)
+          console.log(`OtherTeamScore : ${OtherTeamScore}`)
           if (match.live) {
             let r = `Live, ${MyScore}:${OtherTeamScore} vs ${OtherTeam.name}`
             resolve(r)
@@ -140,21 +145,23 @@ export default {
             resolve(r)
           }
         } else {
-          MyScore = match.team2_score
-          OtherTeamScore = match.team1_score
+          MyScore = parseInt(match.team2_score)
+          OtherTeamScore = parseInt(match.team1_score)
           OtherTeam = await this.GetTeamData(match.team1.id)
           // for a bo1 replace series score with the map score
-          if (match.max_maps === 1) {
+          if (maxmaps === 1) {
             if (match.map_stats.length === 1) {
-              if (match.team1_id === self.id) {
-                MyScore = match.map_stats[0].team1_score
-                OtherTeamScore = match.map_stats[0].team2_score
+              if (match.team1_id === this.team.id) {
+                MyScore = parseInt(match.map_stats[0].team2_score)
+                OtherTeamScore = parseInt(match.map_stats[0].team1_score)
               } else {
-                MyScore = match.map_stats[0].team2_score
-                OtherTeamScore = match.map_stats[0].team1_score
+                MyScore = parseInt(match.map_stats[0].team2_score)
+                OtherTeamScore = parseInt(match.map_stats[0].team1_score)
               }
             }
           }
+          console.log(`MyScore : ${MyScore}`)
+          console.log(`OtherTeamScore : ${OtherTeamScore}`)
           if (match.live) {
             let r = `Live, ${MyScore}:${OtherTeamScore} vs ${OtherTeam.name}`
             resolve(r)
