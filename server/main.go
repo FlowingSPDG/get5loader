@@ -81,6 +81,7 @@ func main() {
 	r.HandleFunc("/api/v1/GetTeamList", api.GetTeamList).Methods("GET")
 	r.HandleFunc("/api/v1/GetServerList", api.GetServerList).Methods("GET")
 	r.HandleFunc("/api/v1/GetVersion", api.GetVersion).Methods("GET")
+	r.HandleFunc("/api/v1/GetMapList", api.GetMapList).Methods("GET")
 
 	// API for front(Vue)
 	r.HandleFunc("/api/v1/CheckLoggedIn", api.CheckLoggedIn).Methods("GET")

@@ -16,3 +16,7 @@ API_ONLY = False
 ENABLE_gRPC = False
 GPRC_ADDR = "localhost:50055"
 Cookie = "YourSuperSecuretStringDoNotShare"
+
+[MAPLIST]
+Active = "de_dust2,de_mirage,de_inferno,de_overpass,de_train,de_nuke,de_vertigo"
+Reserve = "de_cache,de_season"

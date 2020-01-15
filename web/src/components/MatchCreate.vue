@@ -44,7 +44,7 @@
 
             <el-form-item label="Map Pool" style="width: 653px;" prop="veto_mappool">
                 <el-checkbox-group v-if="form.series_type !== 'bo1-preset'" v-model="form.veto_mappool">
-                    <el-checkbox v-for="(map, index) in mappool" :label="map.system" :key="index"></el-checkbox >
+                    <el-checkbox v-for="(map, index) in mappool.active" :label="map" :key="index"></el-checkbox >
                 </el-checkbox-group>
                 <el-radio v-else-if="form.series_type === 'bo1-preset'" v-for="(map, index) in mappool" v-model="form.veto_mappool[0]" :label="map.system" :key="index"></el-radio>
             </el-form-item>
@@ -103,7 +103,12 @@ export default {
       },
       servers: [],
       teams: [],
-      mappool: [
+      mappool: {
+        active: ['de_dust2', 'de_mirage', 'de_inferno', 'de_overpass', 'de_train', 'de_nuke', 'de_vertigo'],
+        reserve: ['de_cache', 'de_season']
+      },
+
+      /* mappool: [
         {
           system: 'de_dust2',
           formal: 'Dust II'
@@ -136,7 +141,7 @@ export default {
           system: 'de_cache',
           formal: 'Cache'
         }
-      ],
+      ], */
       series_type: [
         {
           type: 'bo1-preset',
@@ -212,6 +217,7 @@ export default {
     this.user = await this.axios.get('/api/v1/CheckLoggedIn')
     this.servers = await this.GetServers()
     this.teams = await this.GetTeams()
+    this.mappool = await this.GetMapList()
   },
   methods: {
     async RegisterMatch () {

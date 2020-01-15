@@ -34,6 +34,12 @@ export default {
         resolve(res.data)
       })
     },
+    async GetMapList () {
+      return new Promise(async (resolve, reject) => {
+        const res = await this.axios.get(`/api/v1/GetMapList`)
+        resolve(res.data)
+      })
+    },
     GetSteamURL: function (steamid) {
       return `https://steamcommunity.com/profiles/${steamid}`
     },
