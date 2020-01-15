@@ -22,6 +22,7 @@ type Config struct {
 	SQLPort     int
 	SQLDBName   string
 	HOST        string
+	Cookie      string
 }
 
 // DBdatas Struct for MySQL configration and Gorm
@@ -58,6 +59,7 @@ func init() {
 		SQLPass:     c.Section("sql").Key("pass").MustString(""),
 		SQLPort:     c.Section("sql").Key("port").MustInt(3306),
 		SQLDBName:   c.Section("sql").Key("database").MustString(""),
+		Cookie:      c.Section("GET5").Key("Cookie").MustString("SecretString"),
 	}
 	SQLAccess = DBdatas{
 		Host: Cnf.SQLHost,
@@ -81,7 +83,7 @@ func init() {
 		// Cookie string, the session's client cookie name, for example: "mysessionid"
 		//
 		// Defaults to "gosessionid"
-		Cookie: "mysessionid", // TODO
+		Cookie: Cnf.Cookie,
 		// it's time.Duration, from the time cookie is created, how long it can be alive?
 		// 0 means no expire.
 		// -1 means expire when browser closes
