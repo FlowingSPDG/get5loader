@@ -28,6 +28,12 @@ export default {
         resolve(res.data)
       })
     },
+    async GetRecentMatches (teamid) {
+      return new Promise(async (resolve, reject) => {
+        const res = await this.axios.get(`/api/v1/team/${teamid}/GetRecentMatches`)
+        resolve(res.data)
+      })
+    },
     GetSteamURL: function (steamid) {
       return `https://steamcommunity.com/profiles/${steamid}`
     },
