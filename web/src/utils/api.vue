@@ -93,6 +93,18 @@ export default {
         return true
       }
       return false
+    },
+    async GetTeams () {
+      return new Promise(async (resolve, reject) => {
+        const res = await this.axios.get('/api/v1/GetTeamList')
+        resolve(res.data)
+      })
+    },
+    async GetServers () {
+      return new Promise(async (resolve, reject) => {
+        const res = await this.axios.get('/api/v1/GetServerList')
+        resolve(res.data)
+      })
     }
   }
 }
