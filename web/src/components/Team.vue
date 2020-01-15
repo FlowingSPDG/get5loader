@@ -128,8 +128,6 @@ export default {
               }
             }
           }
-          console.log(`MyScore : ${MyScore}`)
-          console.log(`OtherTeamScore : ${OtherTeamScore}`)
           if (match.live) {
             let r = `Live, ${MyScore}:${OtherTeamScore} vs ${OtherTeam.name}`
             resolve(r)
@@ -160,8 +158,6 @@ export default {
               }
             }
           }
-          console.log(`MyScore : ${MyScore}`)
-          console.log(`OtherTeamScore : ${OtherTeamScore}`)
           if (match.live) {
             let r = `Live, ${MyScore}:${OtherTeamScore} vs ${OtherTeam.name}`
             resolve(r)
