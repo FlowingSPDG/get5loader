@@ -60,6 +60,7 @@ func (s Server) MatchEvent(req *pb.MatchEventRequest, srv pb.Get5_MatchEventServ
 	}) // initialize?
 	err := srv.Send(MatchesStream.Read(matchid))
 	if err != nil {
+		fmt.Println(err)
 		return err
 	}
 
@@ -70,6 +71,7 @@ func (s Server) MatchEvent(req *pb.MatchEventRequest, srv pb.Get5_MatchEventServ
 			fmt.Printf("Data Updated! Sending data : %v\n", senddata)
 			err = srv.Send(senddata)
 			if err != nil {
+				fmt.Println(err)
 				return err
 			}
 			lastevent = senddata
