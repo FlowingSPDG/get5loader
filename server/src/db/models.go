@@ -587,6 +587,13 @@ func (m *MatchData) Create(userid int, team1id int, team2id int, team1string str
 	if get5res.PluginVersion == "" {
 		get5res.PluginVersion = "unknown"
 	}
+
+	MatchServerUpdate := m.Server
+	SQLAccess.Gorm.First(&MatchServerUpdate)
+	MatchServerUpdate.InUse = true
+	SQLAccess.Gorm.Model(&m.Server).Update(&MatchServerUpdate)
+	SQLAccess.Gorm.Save(&MatchServerUpdate)
+
 	m.PluginVersion = get5res.PluginVersion
 	m.APIKey = util.RandString(24)
 	SQLAccess.Gorm.Create(&m)
