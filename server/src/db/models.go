@@ -103,9 +103,13 @@ func (u *UserData) GetRecentMatches(limit int) []MatchData {
 }
 
 // GetTeams Get teams which is owened by user
-func (u *UserData) GetTeams(limit int) []TeamData {
+func (u *UserData) GetTeams(limit int) []*TeamData {
 	SQLAccess.Gorm.Where("user_id = ?", u.ID).Limit((limit)).Find(&u.Teams)
-	return u.Teams
+	teampointer := make([]*TeamData, 0, len(u.Teams))
+	for i := 0; i < len(u.Teams); i++ {
+		teampointer = append(teampointer, &u.Teams[i])
+	}
+	return teampointer
 }
 
 // GameServerData Struct for game_server table.

@@ -47,6 +47,32 @@ func (s Server) GetTeam(ctx context.Context, req *pb.GetTeamRequest) (*pb.GetTea
 	}, nil
 }
 
+func (s Server) GetTeamByUserID(ctx context.Context, req *pb.GetTeamsByUserIDRequest) (*pb.GetTeamsByUserIDReply, error) {
+	user := db.UserData{}
+	rec := db.SQLAccess.Gorm.First(&user, req.GetUserid())
+	if rec.RecordNotFound() {
+		return &pb.GetTeamsByUserIDReply{}, fmt.Errorf("User not found")
+	}
+	fmt.Printf("user : %v\n", user)
+	teams := user.GetTeams(20)
+	teamsreply := make([]*pb.TeamData, 0, len(teams))
+	for i := 0; i < len(teams); i++ {
+		teamsreply = append(teamsreply, &pb.TeamData{
+			Id:     int32(teams[i].ID),
+			Userid: int32(teams[i].UserID),
+			Name:   teams[i].Name,
+			Tag:    teams[i].Tag,
+			Flag:   teams[i].Flag,
+			Logo:   teams[i].Logo,
+			Auths:  teams[i].Auths,
+		})
+	}
+
+	return &pb.GetTeamsByUserIDReply{
+		Team: teamsreply,
+	}, nil
+}
+
 func (s Server) EditTeam(ctx context.Context, req *pb.EditTeamRequest) (*pb.EditTeamReply, error) {
 	return nil, nil // TODO
 }
