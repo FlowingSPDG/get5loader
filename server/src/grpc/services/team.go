@@ -47,7 +47,7 @@ func (s Server) GetTeam(ctx context.Context, req *pb.GetTeamRequest) (*pb.GetTea
 	}, nil
 }
 
-func (s Server) GetTeamByUserID(ctx context.Context, req *pb.GetTeamsByUserIDRequest) (*pb.GetTeamsByUserIDReply, error) {
+func (s Server) GetTeamsByUserID(ctx context.Context, req *pb.GetTeamsByUserIDRequest) (*pb.GetTeamsByUserIDReply, error) {
 	user := db.UserData{}
 	rec := db.SQLAccess.Gorm.First(&user, req.GetUserid())
 	if rec.RecordNotFound() {
