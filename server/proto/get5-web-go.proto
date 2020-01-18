@@ -11,7 +11,6 @@ service Get5 {
   // Team related. CRUD
   rpc RegisterTeam(RegisterTeamRequest) returns (RegisterTeamReply) {}
   rpc GetTeam(GetTeamRequest) returns (GetTeamReply) {}
-  rpc GetTeamByUserID(GetTeamsByUserIDRequest) returns (GetTeamsByUserIDReply) {}
   rpc EditTeam(EditTeamRequest) returns (EditTeamReply) {}
   rpc DeleteTeam(DeleteTeamRequest) returns (DeleteTeamReply) {}
   
@@ -40,6 +39,12 @@ service Get5 {
   rpc GetGameServer(GetGameServerRequest) returns (GetGameServerReply) {}
   rpc EditGameServer(EditGameServerRequest) returns (EditGameServerReply) {}
   rpc DeleteGameServer(DeleteGameServerRequest) returns (DeleteGameServerReply) {}
+
+  // Get resources that belongs to user. GET
+  rpc GetTeamsByUserID(GetTeamsByUserIDRequest) returns (GetTeamsByUserIDReply) {}
+  // rpc GetGameServersByUserID(GetTeamsByUserIDRequest) returns (GetTeamsByUserIDReply) {}
+  // rpc GetMapStatsByUserID(GetTeamsByUserIDRequest) returns (GetTeamsByUserIDReply) {}
+  // rpc GetPlayerStatsByUserID(GetTeamsByUserIDRequest) returns (GetTeamsByUserIDReply) {}
 }
 
 // User Data Struct
