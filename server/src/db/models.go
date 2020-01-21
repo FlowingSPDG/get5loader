@@ -71,6 +71,7 @@ func (u *UserData) GetOrCreate() (*UserData, bool, error) { // userdata, exist,e
 			return u, exist, err
 		}
 		SQLAccess.Gorm.Create(&SQLUserData)
+		u = &SQLUserData
 	} else {
 		fmt.Println("USER EXIST")
 		exist = true

@@ -7,6 +7,7 @@ service Get5 {
   rpc GetUser(GetUserRequest) returns (GetUserReply) {}
   rpc EditUser(EditUserRequest) returns (EditUserReply) {}
   rpc DeleteUser(DeleteUserRequest) returns (DeleteUserReply) {}
+  rpc GetOrRegisterUser(RegisterUserRequest) returns (RegisterUserReply) {}
   
   // Team related. CRUD
   rpc RegisterTeam(RegisterTeamRequest) returns (RegisterTeamReply) {}
