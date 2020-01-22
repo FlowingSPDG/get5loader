@@ -573,8 +573,8 @@ func EditTeam(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "teamid should be int.", http.StatusBadRequest)
 			return
 		}
-		Team := db.TeamData{ID: teamid}
-		db.SQLAccess.Gorm.First(&Team)
+		Team := db.TeamData{}
+		db.SQLAccess.Gorm.First(&Team, teamid)
 		if !Team.CanEdit(userid) {
 			http.Error(w, "You do not have permission to edit this team.", http.StatusUnauthorized)
 			return
@@ -590,6 +590,7 @@ func EditTeam(w http.ResponseWriter, r *http.Request) {
 
 		_, err = Team.Edit()
 		if err != nil {
+			fmt.Printf("Team edit ERR : %v\n", err)
 			http.Error(w, "Failed to edit team", http.StatusInternalServerError)
 			return
 		}

@@ -295,9 +295,11 @@ func (t *TeamData) Edit() (*TeamData, error) {
 
 	var err error
 	for i := 0; i < len(t.Auths); i++ {
-		t.Auths[i], err = util.AuthToSteamID64(t.Auths[i])
-		if err != nil {
-			return nil, err
+		if t.Auths[i] != "" {
+			t.Auths[i], err = util.AuthToSteamID64(t.Auths[i])
+			if err != nil {
+				return nil, err
+			}
 		}
 	}
 	t.AuthsPickle, err = util.SteamID64sToPickle(t.Auths)
