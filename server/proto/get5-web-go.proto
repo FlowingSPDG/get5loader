@@ -7,6 +7,7 @@ service Get5 {
   rpc GetUser(GetUserRequest) returns (GetUserReply) {}
   rpc EditUser(EditUserRequest) returns (EditUserReply) {}
   rpc DeleteUser(DeleteUserRequest) returns (DeleteUserReply) {}
+  rpc GetOrRegisterUser(RegisterUserRequest) returns (RegisterUserReply) {}
   
   // Team related. CRUD
   rpc RegisterTeam(RegisterTeamRequest) returns (RegisterTeamReply) {}
@@ -39,6 +40,12 @@ service Get5 {
   rpc GetGameServer(GetGameServerRequest) returns (GetGameServerReply) {}
   rpc EditGameServer(EditGameServerRequest) returns (EditGameServerReply) {}
   rpc DeleteGameServer(DeleteGameServerRequest) returns (DeleteGameServerReply) {}
+
+  // Get resources that belongs to user. GET
+  rpc GetTeamsByUserID(GetTeamsByUserIDRequest) returns (GetTeamsByUserIDReply) {}
+  // rpc GetGameServersByUserID(GetTeamsByUserIDRequest) returns (GetTeamsByUserIDReply) {}
+  // rpc GetMapStatsByUserID(GetTeamsByUserIDRequest) returns (GetTeamsByUserIDReply) {}
+  // rpc GetPlayerStatsByUserID(GetTeamsByUserIDRequest) returns (GetTeamsByUserIDReply) {}
 }
 
 // User Data Struct
@@ -114,6 +121,14 @@ message RegisterTeamReply {
 
 message GetTeamRequest {
   int32 id = 1;
+}
+
+message GetTeamsByUserIDRequest {
+  int32 userid = 1;
+}
+
+message GetTeamsByUserIDReply {
+  repeated TeamData team = 1;
 }
 
 message GetTeamReply {

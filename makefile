@@ -8,7 +8,7 @@ BINARY_NAME=get5
 DIST_DIR=build
 SERVER_DIR=server
 WEB_DIR=web
-GAME_DIR=game_plugin
+#GAME_DIR=game_plugin
 OS_Linux=linux
 OS_Windows=windows
 OS_Mac=darwin
@@ -39,10 +39,12 @@ ifeq ($(OS),Windows_NT)
     GOPATHDIR = $$env:GOPATH
 endif
 
+.DEFAULT_GOAL := build-all
+
 test:
 	$(GOTEST) -v ./...
 clean:
-	$(GOCLEAN)
+	@$(GOCLEAN)
 	-@$(RM) $(DIST_DIR)/*
 deps: deps-web deps-go
 	@git submodule update
@@ -62,9 +64,10 @@ deps-go:
 	github.com/jinzhu/gorm \
 	github.com/kataras/go-sessions \
 	github.com/Acidic9/steam \
-	github.com/kidoman/go-steam
+	github.com/kidoman/go-steam \
+	github.com/FlowingSPDG/get5-web-go/server/src/grpc \
 # Cross compile for go
-build-all: build-prepare build-web clean
+build-all: clean build-prepare build-web
 	@cd ./server && gox \
 	-os="$(OS_Windows) $(OS_Mac) $(OS_Linux)" \
 	-arch="$(ARCH_386) $(ARCH_AMD64)" \
@@ -90,21 +93,15 @@ build-all: build-prepare build-web clean
 	@$(CP) ./server/config.ini.template ./$(DIST_DIR)/$(BINARY_NAME)_$(OS_Mac)_$(ARCH_AMD64)/config.ini.template
 	
 build-prepare:
-	@cd ./server && $(GOGET) github.com/mitchellh/gox
-	@cd ./server && $(GOGET) github.com/konsorten/go-windows-terminal-sequences
-	@cd ./server && $(GOGET) github.com/FlowingSPDG/get5-web-go/server
+	@cd ./server && $(GOGET) github.com/mitchellh/gox \
+	github.com/konsorten/go-windows-terminal-sequences \
+	github.com/FlowingSPDG/get5-web-go/server
 	-@$(RM) ./$(DIST_DIR)/*/static
-build-linux: build-prepare build-web
-	@cd ./server && gox \
-	-os="$(OS_Linux)" \
-	-arch="$(ARCH_386) $(ARCH_AMD64)" \
-	--output "../$(DIST_DIR)/$(BINARY_NAME)_{{.OS}}_{{.Arch}}/$(BINARY_NAME)"
+build-linux: build-prepare build-web build-linux-server-only
 	@$(MKDIR) ./$(DIST_DIR)/$(BINARY_NAME)_$(OS_Linux)_$(ARCH_386)/static
 	@$(MKDIR) ./$(DIST_DIR)/$(BINARY_NAME)_$(OS_Linux)_$(ARCH_AMD64)/static
 	@$(CP) ./web/dist/* ./$(DIST_DIR)/$(BINARY_NAME)_$(OS_Linux)_$(ARCH_386)/static
 	@$(CP) ./web/dist/* ./$(DIST_DIR)/$(BINARY_NAME)_$(OS_Linux)_$(ARCH_AMD64)/static
-	@$(CP) ./server/config.ini.template ./$(DIST_DIR)/$(BINARY_NAME)_$(OS_Linux)_$(ARCH_386)/config.ini.template
-	@$(CP) ./server/config.ini.template ./$(DIST_DIR)/$(BINARY_NAME)_$(OS_Linux)_$(ARCH_AMD64)/config.ini.template
 build-linux-server-only: build-prepare 
 	@cd ./server && gox \
 	-os="$(OS_Linux)" \
@@ -112,17 +109,11 @@ build-linux-server-only: build-prepare
 	--output "../$(DIST_DIR)/$(BINARY_NAME)_{{.OS}}_{{.Arch}}/$(BINARY_NAME)"
 	@cp ./server/config.ini.template ./$(DIST_DIR)/$(BINARY_NAME)_$(OS_Linux)_$(ARCH_386)/config.ini.template
 	@cp ./server/config.ini.template ./$(DIST_DIR)/$(BINARY_NAME)_$(OS_Linux)_$(ARCH_AMD64)/config.ini.template
-build-windows: build-prepare build-web
-	@cd ./server && gox \
-	-os="$(OS_Windows)" \
-	-arch="$(ARCH_386) $(ARCH_AMD64)" \
-	--output "../$(DIST_DIR)/$(BINARY_NAME)_{{.OS}}_{{.Arch}}/$(BINARY_NAME)"
+build-windows: build-prepare build-web build-windows-server-only
 	@$(MKDIR) ./$(DIST_DIR)/$(BINARY_NAME)_$(OS_Windows)_$(ARCH_386)/static
 	@$(MKDIR) ./$(DIST_DIR)/$(BINARY_NAME)_$(OS_Windows)_$(ARCH_AMD64)/static
 	@$(CP) ./web/dist/* ./$(DIST_DIR)/$(BINARY_NAME)_$(OS_Windows)_$(ARCH_386)/static
 	@$(CP) ./web/dist/* ./$(DIST_DIR)/$(BINARY_NAME)_$(OS_Windows)_$(ARCH_AMD64)/static
-	@$(CP) ./server/config.ini.template ./$(DIST_DIR)/$(BINARY_NAME)_$(OS_Windows)_$(ARCH_386)
-	@$(CP) ./server/config.ini.template ./$(DIST_DIR)/$(BINARY_NAME)_$(OS_Windows)_$(ARCH_AMD64)
 build-windows-server-only: build-prepare
 	@cd ./server && gox \
 	-os="$(OS_Windows)" \
@@ -130,17 +121,11 @@ build-windows-server-only: build-prepare
 	--output "../$(DIST_DIR)/$(BINARY_NAME)_{{.OS}}_{{.Arch}}/$(BINARY_NAME)"
 	$(CP) ./server/config.ini.template ./$(DIST_DIR)/$(BINARY_NAME)_$(OS_Windows)_$(ARCH_386)
 	$(CP) ./server/config.ini.template ./$(DIST_DIR)/$(BINARY_NAME)_$(OS_Windows)_$(ARCH_AMD64)
-build-mac: build-prepare build-web
-	@cd ./server && gox \
-	-os="$(OS_Mac)" \
-	-arch="$(ARCH_386) $(ARCH_AMD64)" \
-	--output "../$(DIST_DIR)/$(BINARY_NAME)_{{.OS}}_{{.Arch}}/$(BINARY_NAME)"
+build-mac: build-prepare build-web build-mac-server-only
 	@$(MKDIR) ./$(DIST_DIR)/$(BINARY_NAME)_$(OS_Mac)_$(ARCH_386)/static
 	@$(MKDIR) ./$(DIST_DIR)/$(BINARY_NAME)_$(OS_Mac)_$(ARCH_AMD64)/static
 	@$(CP) ./web/dist/* ./$(DIST_DIR)/$(BINARY_NAME)_$(OS_Mac)_$(ARCH_386)/static
 	@$(CP) ./web/dist/* ./$(DIST_DIR)/$(BINARY_NAME)_$(OS_Mac)_$(ARCH_AMD64)/static
-	@$(CP) ./server/config.ini.template ./$(DIST_DIR)/$(BINARY_NAME)_$(OS_Mac)_$(ARCH_386)/config.ini.template
-	@$(CP) ./server/config.ini.template ./$(DIST_DIR)/$(BINARY_NAME)_$(OS_Mac)_$(ARCH_AMD64)/config.ini.template
 build-mac-server-only: build-prepare
 	@cd ./server && gox \
 	-os="$(OS_Mac)" \

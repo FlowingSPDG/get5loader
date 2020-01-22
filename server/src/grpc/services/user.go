@@ -54,6 +54,26 @@ func (s Server) GetUser(ctx context.Context, req *pb.GetUserRequest) (*pb.GetUse
 	}, nil
 }
 
+func (s Server) GetOrRegisterUser(ctx context.Context, req *pb.RegisterUserRequest) (*pb.RegisterUserReply, error) {
+	user := &db.UserData{
+		SteamID: req.GetSteamid(),
+	}
+	fmt.Printf("req : %v\n", req)
+	user, _, err := user.GetOrCreate()
+	if err != nil {
+		return nil, err
+	}
+	fmt.Printf("user : %v\n", user)
+	return &pb.RegisterUserReply{
+		User: &pb.UserData{
+			Id:      int32(user.ID),
+			Steamid: user.SteamID,
+			Name:    user.Name,
+			Admin:   user.Admin,
+		},
+	}, nil
+}
+
 func (s Server) EditUser(ctx context.Context, req *pb.EditUserRequest) (*pb.EditUserReply, error) {
 	return &pb.EditUserReply{
 		Error:        true,

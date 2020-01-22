@@ -57,36 +57,6 @@
 </div>
 </template>
 
-<!--script>
-    jQuery("#addplayer_team1").click(function (e) {
-        var input = prompt("Please enter a steamid to add to {{team1.name}}", "");
-        if (input != null) {
-            window.location.href = "{{request.path}}/adduser?team=team1&auth=" + encodeURIComponent(input);
-        }
-    });
-
-    jQuery("#addplayer_team2").click(function (e) {
-        var input = prompt("Please enter a steamid to add to {{team2.name}}", "");
-        if (input != null) {
-            window.location.href = "{{request.path}}/adduser?team=team2&auth=" + encodeURIComponent(input);
-        }
-    });
-
-    jQuery("#addplayer_spec").click(function (e) {
-        var input = prompt("Please enter a steamid to add to the spectators list", "");
-        if (input != null) {
-            window.location.href = "{{request.path}}/adduser?team=spec&auth=" + encodeURIComponent(input);
-        }
-    });
-
-    jQuery("#rcon_command").click(function (e) {
-        var input = prompt("Enter a command to send", "");
-        if (input != null) {
-            window.location.href = "{{request.path}}/rcon?command=" + encodeURIComponent(input);
-        }
-    });
-</script>-->
-
 <script>
 export default {
   name: 'MatchCreate',

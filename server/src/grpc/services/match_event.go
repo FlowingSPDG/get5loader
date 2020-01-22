@@ -1,6 +1,7 @@
 package services
 
 import (
+	"time"
 	// "github.com/FlowingSPDG/get5-web-go/server/src/api"
 	// "github.com/FlowingSPDG/get5-web-go/server/src/db"
 	pb "github.com/FlowingSPDG/get5-web-go/server/src/grpc/proto"
@@ -66,6 +67,7 @@ func (s Server) MatchEvent(req *pb.MatchEventRequest, srv pb.Get5_MatchEventServ
 
 	lastevent := &pb.MatchEventReply{}
 	for { //go func(){}() ?
+		time.Sleep(time.Millisecond * 200) // lower value=high cpu usage, higher value may loss some events
 		senddata := MatchesStream.Read(matchid)
 		if lastevent != senddata {
 			fmt.Printf("Data Updated! Sending data : %v\n", senddata)

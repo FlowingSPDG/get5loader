@@ -71,6 +71,7 @@ func (u *UserData) GetOrCreate() (*UserData, bool, error) { // userdata, exist,e
 			return u, exist, err
 		}
 		SQLAccess.Gorm.Create(&SQLUserData)
+		u = &SQLUserData
 	} else {
 		fmt.Println("USER EXIST")
 		exist = true
@@ -103,9 +104,13 @@ func (u *UserData) GetRecentMatches(limit int) []MatchData {
 }
 
 // GetTeams Get teams which is owened by user
-func (u *UserData) GetTeams(limit int) []TeamData {
+func (u *UserData) GetTeams(limit int) []*TeamData {
 	SQLAccess.Gorm.Where("user_id = ?", u.ID).Limit((limit)).Find(&u.Teams)
-	return u.Teams
+	teampointer := make([]*TeamData, 0, len(u.Teams))
+	for i := 0; i < len(u.Teams); i++ {
+		teampointer = append(teampointer, &u.Teams[i])
+	}
+	return teampointer
 }
 
 // GameServerData Struct for game_server table.
@@ -587,6 +592,13 @@ func (m *MatchData) Create(userid int, team1id int, team2id int, team1string str
 	if get5res.PluginVersion == "" {
 		get5res.PluginVersion = "unknown"
 	}
+
+	MatchServerUpdate := m.Server
+	SQLAccess.Gorm.First(&MatchServerUpdate)
+	MatchServerUpdate.InUse = true
+	SQLAccess.Gorm.Model(&m.Server).Update(&MatchServerUpdate)
+	SQLAccess.Gorm.Save(&MatchServerUpdate)
+
 	m.PluginVersion = get5res.PluginVersion
 	m.APIKey = util.RandString(24)
 	SQLAccess.Gorm.Create(&m)
