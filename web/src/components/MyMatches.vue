@@ -81,7 +81,7 @@ export default {
     this.user = res.data
     const matches = await this.GetMatches(this.user.userid)
     for (let i = 0; i < matches.length; i++) {
-      this.$set(this.matchinfo, matchid, res.data)
+      this.$set(this.matchinfo, matches[i].id, res.data)
       this.matchinfo[matches[i].id] = await this.GetMatchInfo(matches[i].id)
     }
   },
