@@ -825,9 +825,9 @@ func (m *MatchData) BuildMatchDict() (*MatchConfig, error) {
 		MatchID: strconv.Itoa(m.ID),
 		//Scrim:false,
 		MatchTitle:        m.Title,
-		PlayersPerTeam:    1, // 0 broke Veto commencing section
+		PlayersPerTeam:    5, // 0 broke Veto commencing section // not 1
 		MinPlayersToReady: 1, // Minimum # of players a team must have to ready
-		// MinSPectatorsToReady: // How many spectators must be ready to begin.
+		// MinSpectatorsToReady: // How many spectators must be ready to begin.
 		SkipVeto: m.SkipVeto, // If set to 1, the maps will be preset using the first maps in the maplist below.
 		NumMaps:  m.MaxMaps,  // Must be an odd number or 2. 1->Bo1, 2->Bo2, 3->Bo3, etc.
 		// VetoFirst: "team1", //  Set to "team1" or "team2" to select who starts the veto. Any other values will default to team1 starting.

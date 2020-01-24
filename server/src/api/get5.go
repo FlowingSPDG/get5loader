@@ -193,7 +193,6 @@ func MatchMapUpdateHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Printf("matchid : %d\n", matchid)
 	fmt.Printf("mapnumber : %d\n", mapnumber)
 	fmt.Printf("team1score : %d\n", team1score)
-	fmt.Printf("team1score : %d\n", team1score)
 	fmt.Printf("team2score : %d\n", team2score)
 
 	var m = db.MatchData{}
