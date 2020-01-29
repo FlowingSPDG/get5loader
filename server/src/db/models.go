@@ -71,7 +71,7 @@ func (u *UserData) GetOrCreate() (*UserData, bool, error) { // userdata, exist,e
 			return u, exist, err
 		}
 		SQLAccess.Gorm.Create(&SQLUserData)
-		u = &SQLUserData
+		SQLAccess.Gorm.Where("steam_id = ?", u.SteamID).First(u)
 	} else {
 		fmt.Println("USER EXIST")
 		exist = true
