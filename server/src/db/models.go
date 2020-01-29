@@ -71,7 +71,7 @@ func (u *UserData) GetOrCreate() (*UserData, bool, error) { // userdata, exist,e
 			return u, exist, err
 		}
 		SQLAccess.Gorm.Create(&SQLUserData)
-		u = &SQLUserData
+		SQLAccess.Gorm.Where("steam_id = ?", u.SteamID).First(u)
 	} else {
 		fmt.Println("USER EXIST")
 		exist = true
@@ -295,9 +295,11 @@ func (t *TeamData) Edit() (*TeamData, error) {
 
 	var err error
 	for i := 0; i < len(t.Auths); i++ {
-		t.Auths[i], err = util.AuthToSteamID64(t.Auths[i])
-		if err != nil {
-			return nil, err
+		if t.Auths[i] != "" {
+			t.Auths[i], err = util.AuthToSteamID64(t.Auths[i])
+			if err != nil {
+				return nil, err
+			}
 		}
 	}
 	t.AuthsPickle, err = util.SteamID64sToPickle(t.Auths)
@@ -823,9 +825,9 @@ func (m *MatchData) BuildMatchDict() (*MatchConfig, error) {
 		MatchID: strconv.Itoa(m.ID),
 		//Scrim:false,
 		MatchTitle:        m.Title,
-		PlayersPerTeam:    1, // 0 broke Veto commencing section
-		MinPlayersToReady: 1, // Minimum # of players a team must have to ready
-		// MinSPectatorsToReady: // How many spectators must be ready to begin.
+		PlayersPerTeam:    5, // 0 broke Veto commencing section // not 1 // original get5-web did not specify this value...
+		MinPlayersToReady: 1, // Minimum # of players a team must have to ready // original get5-web did not specify this value...
+		// MinSpectatorsToReady: // How many spectators must be ready to begin.
 		SkipVeto: m.SkipVeto, // If set to 1, the maps will be preset using the first maps in the maplist below.
 		NumMaps:  m.MaxMaps,  // Must be an odd number or 2. 1->Bo1, 2->Bo2, 3->Bo3, etc.
 		// VetoFirst: "team1", //  Set to "team1" or "team2" to select who starts the veto. Any other values will default to team1 starting.
