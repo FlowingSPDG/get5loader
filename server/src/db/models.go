@@ -317,6 +317,9 @@ func (t *TeamData) Delete() error {
 	if rec.RecordNotFound() {
 		return fmt.Errorf("Team not found")
 	}
+	if rec.Error != nil {
+		return rec.Error
+	}
 	return nil
 }
 
