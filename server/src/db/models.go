@@ -475,20 +475,20 @@ func (t *TeamData) GetNameURLHtml() string {
 // MatchConfig Match configration for get5 api, based on https://github.com/splewis/get5/blob/master/configs/get5/example_match.json and https://github.com/splewis/get5/blob/3f793ceb3736d78ba6a92f42631d91cb52f0beb4/scripting/get5/matchconfig.sp#L435
 type MatchConfig struct {
 	MatchID              string `json:"matchid"` // NOT int
-	Scrim                bool   `json:"scrim"`
-	MatchTitle           string `json:"match_title"`
-	PlayersPerTeam       int    `json:"players_per_team"`
-	MinPlayersToReady    int    `json:"min_players_to_ready"`
-	MinSPectatorsToReady int    `json:"min_spectators_to_ready"`
-	SkipVeto             bool   `json:"skip_veto"`
+	Scrim                bool   `json:"scrim,omitempty"`
+	MatchTitle           string `json:"match_title,omitempty"`
+	PlayersPerTeam       int    `json:"players_per_team,omitempty"`
+	MinPlayersToReady    int    `json:"min_players_to_ready,omitempty"`
+	MinSPectatorsToReady int    `json:"min_spectators_to_ready,omitempty"`
+	SkipVeto             bool   `json:"skip_veto,omitempty"`
 	// bo2_series and maps_to_win are deprecated on get5 plugin side. Use num_maps insted
 	// Bo2Series 			   bool   `json:"bo2_series"`
 	// MapsToWin 			   int    `json:"maps_to_win"`
-	NumMaps                    int    `json:"num_maps"`
-	VetoFirst                  string `json:"veto_first"` // team1 || team2
-	SideType                   string `json:"side_type"`  // standard and ?
-	FavoredTeamPercentageText  string `json:"favored_percentage_text"`
-	FavoredTeamPercentageTeam1 int    `json:"favored_percentage_team1"`
+	NumMaps                    int    `json:"num_maps,omitempty"`
+	VetoFirst                  string `json:"veto_first,omitempty"` // team1 || team2
+	SideType                   string `json:"side_type,omitempty"`  // standard and ?
+	FavoredTeamPercentageText  string `json:"favored_percentage_text,omitempty"`
+	FavoredTeamPercentageTeam1 int    `json:"favored_percentage_team1,omitempty"`
 	Spectators                 struct {
 		Name    string   `json:"name"`
 		Players []string `json:"players"`
