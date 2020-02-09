@@ -2,6 +2,7 @@ package services
 
 import (
 	"fmt"
+	"log"
 	// "github.com/FlowingSPDG/get5-web-go/server/src/api"
 	"github.com/FlowingSPDG/get5-web-go/server/src/db"
 	pb "github.com/FlowingSPDG/get5-web-go/server/src/grpc/proto"
@@ -53,7 +54,7 @@ func (s Server) GetTeamsByUserID(ctx context.Context, req *pb.GetTeamsByUserIDRe
 	if rec.RecordNotFound() {
 		return &pb.GetTeamsByUserIDReply{}, fmt.Errorf("User not found")
 	}
-	fmt.Printf("user : %v\n", user)
+	log.Printf("user : %v\n", user)
 	teams := user.GetTeams(100)
 	teamsreply := make([]*pb.TeamData, 0, len(teams))
 	for i := 0; i < len(teams); i++ {

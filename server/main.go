@@ -1,15 +1,14 @@
 package main
 
 import (
-	"fmt"
+	"github.com/gin-gonic/gin"
 	"log"
-	"net/http"
 
 	"github.com/FlowingSPDG/get5-web-go/server/src/api"
 	"github.com/FlowingSPDG/get5-web-go/server/src/db"
 	"github.com/FlowingSPDG/get5-web-go/server/src/grpc"
+	"github.com/gin-contrib/static"
 	"github.com/go-ini/ini"
-	"github.com/gorilla/mux"
 )
 
 // Config Configration Struct for config.ini
@@ -39,14 +38,6 @@ var (
 	EnablegRPC bool
 )
 
-// ServeStaticFile Host static files
-func ServeStaticFile(entrypoint string) func(w http.ResponseWriter, r *http.Request) {
-	fn := func(w http.ResponseWriter, r *http.Request) {
-		http.ServeFile(w, r, entrypoint)
-	}
-	return http.HandlerFunc(fn)
-}
-
 func init() {
 	c, err := ini.Load("config.ini")
 	if err != nil {
@@ -70,76 +61,97 @@ func main() {
 
 	defer SQLAccess.Gorm.Close()
 
-	r := mux.NewRouter()
+	r := gin.Default()
 
 	//s := r.Host(HOST).Subrouter() // in-case if we need vhost thing
 
 	// misc
-	r.HandleFunc("/api/v1/GetMatches", api.GetMatches).Methods("GET")
-	r.HandleFunc("/api/v1/GetMetrics", api.GetMetrics).Methods("GET")
-	r.HandleFunc("/api/v1/GetSteamName", api.GetSteamName).Methods("GET")
-	r.HandleFunc("/api/v1/GetTeamList", api.GetTeamList).Methods("GET")
-	r.HandleFunc("/api/v1/GetServerList", api.GetServerList).Methods("GET")
-	r.HandleFunc("/api/v1/GetVersion", api.GetVersion).Methods("GET")
-	r.HandleFunc("/api/v1/GetMapList", api.GetMapList).Methods("GET")
+	r.GET("/login", db.LoginHandler)
+	r.GET("/logout", db.LogoutHandler)
 
-	// API for front(Vue)
-	r.HandleFunc("/api/v1/CheckLoggedIn", api.CheckLoggedIn).Methods("GET")
-	r.HandleFunc("/api/v1/match/{matchID}/GetMatchInfo", api.GetMatchInfo).Methods("GET")
-	r.HandleFunc("/api/v1/match/{matchID}/GetPlayerStatInfo", api.GetPlayerStatInfo).Methods("GET")
-	r.HandleFunc("/api/v1/match/{matchID}/GetStatusString", api.GetStatusString).Methods("GET")
-	r.HandleFunc("/api/v1/match/create", api.CreateMatch).Methods("POST")
-	r.HandleFunc("/api/v1/team/{teamID}/GetTeamInfo", api.GetTeamInfo).Methods("GET")
-	r.HandleFunc("/api/v1/team/{teamID}/GetRecentMatches", api.GetRecentMatches).Methods("GET")
-	r.HandleFunc("/api/v1/team/{teamID}/CheckUserCanEdit", api.CheckUserCanEdit).Methods("GET")
-	r.HandleFunc("/api/v1/team/create", api.CreateTeam).Methods("POST")
-	r.HandleFunc("/api/v1/team/{teamID}/edit", api.EditTeam).Methods("PUT")
-	r.HandleFunc("/api/v1/team/{teamID}/delete", api.DeleteTeam).Methods("DELETE")
-	r.HandleFunc("/api/v1/user/{userID}/GetUserInfo", api.GetUserInfo).Methods("GET")
-	r.HandleFunc("/api/v1/server/{serverID}/GetServerInfo", api.GetServerInfo).Methods("GET")
-	r.HandleFunc("/api/v1/server/create", api.CreateServer).Methods("POST")
-	r.HandleFunc("/api/v1/server/{serverID}/edit", api.EditServer).Methods("PUT")
-	r.HandleFunc("/api/v1/server/{serverID}/delete", api.DeleteServer).Methods("DELETE")
+	v1 := r.Group("/api/v1")
+	{
+		// session handling
+		v1.GET("/login", db.LoginHandler)
+		v1.GET("/logout", db.LogoutHandler)
 
-	// GET5 API
-	r.HandleFunc("/api/v1/match/{matchID}/config", api.MatchConfigHandler)
-	r.HandleFunc("/api/v1/match/{matchID}/finish", api.MatchFinishHandler).Methods("POST")
-	r.HandleFunc("/api/v1/match/{matchID}/map/{mapNumber}/start", api.MatchMapStartHandler).Methods("POST")
-	r.HandleFunc("/api/v1/match/{matchID}/map/{mapNumber}/update", api.MatchMapUpdateHandler).Methods("POST")
-	r.HandleFunc("/api/v1/match/{matchID}/map/{mapNumber}/finish", api.MatchMapFinishHandler).Methods("POST")
-	r.HandleFunc("/api/v1/match/{matchID}/map/{mapNumber}/player/{steamid64}/update", api.MatchMapPlayerUpdateHandler).Methods("POST")
-	r.HandleFunc("/api/v1/match/{matchID}/cancel", api.MatchCancelHandler).Methods("POST")
-	r.HandleFunc("/api/v1/match/{matchID}/rcon", api.MatchRconHandler).Methods("POST")
-	r.HandleFunc("/api/v1/match/{matchID}/pause", api.MatchPauseHandler)
-	r.HandleFunc("/api/v1/match/{matchID}/unpause", api.MatchUnpauseHandler)
-	r.HandleFunc("/api/v1/match/{matchID}/adduser", api.MatchAddUserHandler)
-	// //r.HandleFunc("/api/v1/match/{matchID}/sendconfig", api.MatchSendConfigHandler) // ? // I won't implement this
-	r.HandleFunc("/api/v1/match/{matchID}/backup", api.MatchListBackupsHandler).Methods("GET")  // GET
-	r.HandleFunc("/api/v1/match/{matchID}/backup", api.MatchLoadBackupsHandler).Methods("POST") // POST
+		v1.GET("/GetMatches", api.GetMatches)
+		v1.GET("/GetMetrics", api.GetMetrics)
+		v1.GET("/GetSteamName", api.GetSteamName)
+		v1.GET("/GetTeamList", api.GetTeamList)
+		v1.GET("/GetServerList", api.GetServerList)
+		v1.GET("/GetVersion", api.GetVersion)
+		v1.GET("/GetMapList", api.GetMapList)
+		v1.GET("/CheckLoggedIn", api.CheckLoggedIn)
 
-	//r.HandleFunc("/api/v1/match/{matchID}/vetoUpdate", api.MatchVetoUpdateHandler).Methods("POST") // TODO
-	//r.HandleFunc("/api/v1/match/{matchID}/map/{mapNumber}/demo", api.MatchDemoUploadHandler).Methods("POST") // TODO
+		// Match API for front(Vue)
+		match := v1.Group("/match")
+		{
+			match.GET("/:matchID/GetMatchInfo", api.GetMatchInfo)
+			match.GET("/:matchID/GetPlayerStatInfo", api.GetPlayerStatInfo)
+			match.GET("/:matchID/GetStatusString", api.GetStatusString)
+			match.POST("/:matchID", api.CreateMatch) // avoid conflicts...
 
-	// session handling
-	r.HandleFunc("/login", db.LoginHandler).Methods("GET")
-	r.HandleFunc("/logout", db.LogoutHandler).Methods("GET")
+			// GET5 API
+			match.GET("/:matchID/config", api.MatchConfigHandler)
+			match.POST("/:matchID/finish", api.MatchFinishHandler)
+			match.POST("/:matchID/start", api.MatchMapStartHandler)
+			match.POST("/:matchID/map/:mapNumber/update", api.MatchMapUpdateHandler)
+			match.POST("/:matchID/map/:mapNumber/finish", api.MatchMapFinishHandler)
+			match.POST("/:matchID/map/:mapNumber/player/:steamid64/update", api.MatchMapPlayerUpdateHandler)
 
-	r.HandleFunc("/api/v1/login", db.LoginHandler).Methods("GET")
-	r.HandleFunc("/api/v1/logout", db.LogoutHandler).Methods("GET")
+			match.POST("/:matchID/cancel", api.MatchCancelHandler)
+			match.POST("/:matchID/rcon", api.MatchRconHandler)
+			match.POST("/:matchID/pause", api.MatchPauseHandler)
+			match.POST("/:matchID/unpause", api.MatchUnpauseHandler)
+			match.POST("/:matchID/adduser", api.MatchAddUserHandler)
+			// // match.POST("/:matchID/sendconfig", api.MatchSendConfigHandler) // ? // I won't implement this
+			match.GET("/:matchID/backup", api.MatchListBackupsHandler)
+			match.POST("/:matchID/backup", api.MatchLoadBackupsHandler)
+
+			// match.POST("/:matchID/vetoUpdate", api.MatchVetoUpdateHandler)
+			// match.POST("/:matchID/map/:mapNumber/demo", api.MatchDemoUploadHandler)
+		}
+
+		team := v1.Group("/team")
+		{
+			team.GET("/:teamID/GetTeamInfo", api.GetTeamInfo)
+			team.GET("/:teamID/GetRecentMatches", api.GetRecentMatches)
+			team.GET("/:teamID/CheckUserCanEdit", api.CheckUserCanEdit)
+			team.POST("/create", api.CreateTeam)
+			team.PUT("/teamID/edit", api.EditTeam)
+			team.DELETE("/:teamID/delete", api.DeleteTeam)
+		}
+
+		user := v1.Group("/user")
+		{
+			user.GET("/:userID/GetUserInfo", api.GetUserInfo)
+		}
+
+		server := v1.Group("/server")
+		{
+			server.GET("/:serverID/GetServerInfo", api.GetServerInfo)
+			server.POST("/create", api.CreateServer)
+			server.PUT("/:serverID/edit", api.EditServer)
+			server.DELETE("/:serverID/delete", api.DeleteServer)
+		}
+	}
 
 	if !Cnf.APIONLY {
-		entrypoint := "./static/index.html"
-		r.Path("/").HandlerFunc(ServeStaticFile(entrypoint))
-		r.PathPrefix("/css").Handler(http.StripPrefix("/css/", http.FileServer(http.Dir("static/css"))))
-		r.PathPrefix("/js").Handler(http.StripPrefix("/js/", http.FileServer(http.Dir("static/js"))))
-		r.PathPrefix("/img").Handler(http.StripPrefix("/img/", http.FileServer(http.Dir("static/img"))))
-		r.PathPrefix("/fonts").Handler(http.StripPrefix("/fonts/", http.FileServer(http.Dir("static/fonts"))))
+		/*
+			entrypoint := "./static/index.html"
+			r.Path("/").HandlerFunc(ServeStaticFile(entrypoint))
+			r.PathPrefix("/css").Handler(http.StripPrefix("/css/", http.FileServer(http.Dir("static/css"))))
+			r.PathPrefix("/js").Handler(http.StripPrefix("/js/", http.FileServer(http.Dir("static/js"))))
+			r.PathPrefix("/img").Handler(http.StripPrefix("/img/", http.FileServer(http.Dir("static/img"))))
+			r.PathPrefix("/fonts").Handler(http.StripPrefix("/fonts/", http.FileServer(http.Dir("static/fonts"))))
+		*/
 	} else {
-		fmt.Println("API ONLY MODE")
+		log.Println("API ONLY MODE")
 	}
 
 	if EnablegRPC {
-		fmt.Println("EnableGRPC option enabled. Starting gRPC server...")
+		log.Println("EnableGRPC option enabled. Starting gRPC server...")
 		go func() {
 			err := get5grpc.StartGrpc(GRPC_ADDR)
 			if err != nil {
@@ -148,9 +160,8 @@ func main() {
 		}()
 	}
 
-	r.Methods("GET", "POST", "DELETE", "PUT")
-	http.Handle("/", r)
-	fmt.Printf("RUNNING at %v\n", HOST)
-	log.Fatal(http.ListenAndServe(HOST, nil))
+	r.Use(static.Serve("/", static.LocalFile("/static", false)))
+
+	log.Panicf("Failed to listen port %s : %v\n", HOST, r.Run(HOST))
 
 }

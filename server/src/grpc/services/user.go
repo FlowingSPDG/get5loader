@@ -2,6 +2,7 @@ package services
 
 import (
 	"fmt"
+	"log"
 	//"github.com/FlowingSPDG/get5-web-go/server/src/api"
 	"github.com/FlowingSPDG/get5-web-go/server/src/db"
 	pb "github.com/FlowingSPDG/get5-web-go/server/src/grpc/proto"
@@ -38,10 +39,10 @@ func (s Server) GetUser(ctx context.Context, req *pb.GetUserRequest) (*pb.GetUse
 	user := &db.UserData{}
 	switch req.Ids.(type) {
 	case *pb.GetUserRequest_Id:
-		fmt.Println("Type : *pb.GetUserRequest_Id")
+		log.Println("Type : *pb.GetUserRequest_Id")
 		db.SQLAccess.Gorm.First(&user, req.GetId())
 	case *pb.GetUserRequest_Steamid:
-		fmt.Println("Type : *pb.GetUserRequest_Steamid")
+		log.Println("Type : *pb.GetUserRequest_Steamid")
 		db.SQLAccess.Gorm.Where("steam_id = ?", req.GetSteamid()).First(&user)
 	}
 	return &pb.GetUserReply{
@@ -58,12 +59,12 @@ func (s Server) GetOrRegisterUser(ctx context.Context, req *pb.RegisterUserReque
 	user := &db.UserData{
 		SteamID: req.GetSteamid(),
 	}
-	fmt.Printf("req : %v\n", req)
+	log.Printf("req : %v\n", req)
 	user, _, err := user.GetOrCreate()
 	if err != nil {
 		return nil, err
 	}
-	fmt.Printf("user : %v\n", user)
+	log.Printf("user : %v\n", user)
 	return &pb.RegisterUserReply{
 		User: &pb.UserData{
 			Id:      int32(user.ID),

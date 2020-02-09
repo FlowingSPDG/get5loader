@@ -8,7 +8,7 @@ import (
 	// "github.com/FlowingSPDG/get5-web-go/server/src/util"
 	// "google.golang.org/grpc"
 	// "log"
-	"fmt"
+	"log"
 	"sync"
 )
 
@@ -53,7 +53,7 @@ func init() {
 
 func (s Server) MatchEvent(req *pb.MatchEventRequest, srv pb.Get5_MatchEventServer) error {
 	matchid := req.GetMatchid()
-	fmt.Printf("MatchEvent. matchid : %d\n", matchid)
+	log.Printf("MatchEvent. matchid : %d\n", matchid)
 	MatchesStream.Write(matchid, &pb.MatchEventReply{
 		Event: &pb.MatchEventReply_Initialized{
 			Initialized: &pb.MatchEventInitialized{},
@@ -61,7 +61,7 @@ func (s Server) MatchEvent(req *pb.MatchEventRequest, srv pb.Get5_MatchEventServ
 	}) // initialize?
 	err := srv.Send(MatchesStream.Read(matchid))
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 		return err
 	}
 
@@ -70,10 +70,10 @@ func (s Server) MatchEvent(req *pb.MatchEventRequest, srv pb.Get5_MatchEventServ
 		time.Sleep(time.Millisecond * 200) // lower value=high cpu usage, higher value may loss some events
 		senddata := MatchesStream.Read(matchid)
 		if lastevent != senddata {
-			fmt.Printf("Data Updated! Sending data : %v\n", senddata)
+			log.Printf("Data Updated! Sending data : %v\n", senddata)
 			err = srv.Send(senddata)
 			if err != nil {
-				fmt.Println(err)
+				log.Println(err)
 				return err
 			}
 			lastevent = senddata

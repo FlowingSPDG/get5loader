@@ -9,21 +9,22 @@ import (
 	"context"
 	// "google.golang.org/grpc"
 	// "log"
+	"log"
 )
 
 func (s Server) RegisterGameServer(ctx context.Context, req *pb.RegisterGameServerRequest) (*pb.RegisterGameServerReply, error) {
 	srcds := &db.GameServerData{}
-	fmt.Printf("req : %v\n", req)
+	log.Printf("req : %v\n", req)
 	srcds, err := srcds.Create(int(req.GetUserid()), req.GetDisplayName(), req.GetIpString(), int(req.GetPort()), req.GetRconPassword(), req.GetPublicServer())
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 		return &pb.RegisterGameServerReply{
 			Error:        true,
 			Errormessage: "Could not register server",
 			Id:           0,
 		}, err
 	}
-	fmt.Printf("srcds : %v\n", srcds)
+	log.Printf("srcds : %v\n", srcds)
 	return &pb.RegisterGameServerReply{
 		Error:        false,
 		Errormessage: "",

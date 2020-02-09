@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/go-ini/ini"
 	"github.com/hydrogen18/stalecucumber"
+	"log"
 	"math"
 	"math/rand"
 	"net"
@@ -50,7 +51,7 @@ func init() {
 func checkIP(ip string) bool {
 	trial := net.ParseIP(ip)
 	if trial.To4() == nil {
-		fmt.Printf("%v is not an IPv4 address\n", ip)
+		log.Printf("%v is not an IPv4 address\n", ip)
 		return false
 	}
 	return true
@@ -120,7 +121,7 @@ func CheckServerAvailability(IPString string, Port int, RconPassword string) (GE
 	}
 	jsonBytes := ([]byte)(resp)
 	if err := json.Unmarshal(jsonBytes, &data); err != nil {
-		fmt.Println("JSON Unmarshal error:", err)
+		log.Println("JSON Unmarshal error:", err)
 		return data, fmt.Errorf("Error reading get5_web_avaliable response")
 	}
 	if strings.Contains(resp, "Unknown command") {
