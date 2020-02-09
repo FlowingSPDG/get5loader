@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/FlowingSPDG/get5-web-go/server/src/util"
+	"github.com/go-ini/ini"
 
 	"net/http"
 	"strconv"
@@ -18,6 +19,19 @@ const (
 	// VERSION get5-web-go Version
 	VERSION = "0.1.1"
 )
+
+var (
+	ActiveMapPool  []string
+	ReserveMapPool []string
+)
+
+func init() {
+	c, _ := ini.Load("config.ini")
+	active := c.Section("MAPLIST").Key("Active").MustString("de_dust2,de_mirage,de_inferno,de_overpass,de_train,de_nuke,de_vertigo")
+	reserve := c.Section("MAPLIST").Key("Reserve").MustString("de_cache,de_season")
+	ActiveMapPool = strings.Split(strings.ToLower(strings.TrimSpace(active)), ",")
+	ReserveMapPool = strings.Split(strings.ToLower(strings.TrimSpace(reserve)), ",")
+}
 
 // CheckLoggedInJSON Struct type for /api/v1/CheckLoggedIn API.
 type CheckLoggedInJSON struct {
@@ -37,6 +51,29 @@ func GetVersion(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("CheckLoggedIn")
 	response := GetVersionJSON{
 		Version: VERSION,
+	}
+	jsonbyte, err := json.Marshal(response)
+	if err != nil {
+		http.Error(w, "JSON Format invalid", http.StatusBadRequest)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(jsonbyte)
+}
+
+// GetMapList Struct type for /api/v1/GetMapList API Response.
+type GetMapListJSON struct {
+	Active  []string `json:"active"`
+	Reserve []string `json:"reserve"`
+}
+
+// GetMapList handler for /api/v1/GetMapList API.
+func GetMapList(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("CheckLoggedIn")
+	response := GetMapListJSON{
+		Active:  ActiveMapPool,
+		Reserve: ReserveMapPool,
 	}
 	jsonbyte, err := json.Marshal(response)
 	if err != nil {
