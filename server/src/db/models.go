@@ -21,6 +21,17 @@ import (
 	"strconv"
 )
 
+type UserMaxResources struct {
+	Servers uint16
+	Teams   uint16
+	Matches uint16
+}
+
+var (
+	// MaxResource  per user
+	MaxResource UserMaxResources
+)
+
 func init() {
 	c, _ := ini.Load("config.ini")
 	Cnf = Config{
@@ -30,6 +41,11 @@ func init() {
 		SQLPass:   c.Section("sql").Key("pass").MustString(""),
 		SQLPort:   c.Section("sql").Key("port").MustInt(3306),
 		SQLDBName: c.Section("sql").Key("database").MustString(""),
+	}
+	MaxResource = UserMaxResources{
+		Servers: uint16(c.Section("USER").Key("Max_Servers").MustUint(10)),
+		Teams:   uint16(c.Section("USER").Key("Max_Teams").MustUint(100)),
+		Matches: uint16(c.Section("USER").Key("Max_Matches").MustUint(1000)),
 	}
 	SteamAPIKey = c.Section("Steam").Key("APIKey").MustString("")
 }
@@ -136,6 +152,11 @@ func (g *GameServerData) TableName() string {
 func (g *GameServerData) Create(userid int, displayname string, ipstring string, port int, rconpassword string, publicserver bool) (*GameServerData, error) {
 	if ipstring == "" || rconpassword == "" {
 		return nil, fmt.Errorf("IPaddress or RCON password is empty")
+	}
+	var servernum int
+	SQLAccess.Gorm.Model(&GameServerData{}).Where("user_id = ?", userid).Count(&servernum)
+	if uint16(servernum) >= MaxResource.Servers {
+		return nil, fmt.Errorf("Max servers limit exceeded")
 	}
 	g.UserID = userid
 	g.DisplayName = displayname
@@ -260,6 +281,11 @@ func (t *TeamData) TableName() string {
 func (t *TeamData) Create(userid int, name string, tag string, flag string, logo string, auths []string, publicteam bool) (*TeamData, error) {
 	if name == "" {
 		return nil, fmt.Errorf("Team name cannot be empty")
+	}
+	var teamnum int
+	SQLAccess.Gorm.Model(&TeamData{}).Where("user_id = ?", userid).Count(&teamnum)
+	if uint16(teamnum) >= MaxResource.Teams {
+		return nil, fmt.Errorf("Max teams limit exceeded")
 	}
 	t.UserID = userid
 	t.Name = name
@@ -556,6 +582,13 @@ func (m *MatchData) Get(id int) (*MatchData, error) {
 // Create Register Match information into DB.
 func (m *MatchData) Create(userid int, team1id int, team2id int, team1string string, team2string string, maxmaps int, skipveto bool, title string, vetomappool []string, serverid int) (*MatchData, error) {
 	user := UserData{}
+
+	var matchnum int
+	SQLAccess.Gorm.Model(&MatchData{}).Where("user_id = ?", userid).Count(&matchnum)
+	if uint16(matchnum) >= MaxResource.Matches {
+		return nil, fmt.Errorf("Max matches limit exceeded")
+	}
+
 	SQLAccess.Gorm.First(&user, userid)
 	if team1id == 0 || team2id == 0 || serverid == 0 {
 		return nil, fmt.Errorf("TeamID or ServerID is empty")

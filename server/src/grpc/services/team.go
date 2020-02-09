@@ -54,7 +54,7 @@ func (s Server) GetTeamsByUserID(ctx context.Context, req *pb.GetTeamsByUserIDRe
 		return &pb.GetTeamsByUserIDReply{}, fmt.Errorf("User not found")
 	}
 	fmt.Printf("user : %v\n", user)
-	teams := user.GetTeams(20)
+	teams := user.GetTeams(100)
 	teamsreply := make([]*pb.TeamData, 0, len(teams))
 	for i := 0; i < len(teams); i++ {
 		teamsreply = append(teamsreply, &pb.TeamData{
