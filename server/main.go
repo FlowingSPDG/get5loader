@@ -138,10 +138,13 @@ func main() {
 	}
 
 	if !Cnf.APIONLY {
-		r.Use(static.Serve("/", static.LocalFile("./static", false)))
-		r.NoRoute(func(c *gin.Context) {
-			c.File("./static/index.html")
-		})
+		entrypoint := "./static/index.html"
+		r.GET("/", func(c *gin.Context) { c.File(entrypoint) })
+		r.Use(static.Serve("/css", static.LocalFile("./static/css", false)))
+		r.Use(static.Serve("/js", static.LocalFile("./static/js", false)))
+		r.Use(static.Serve("/img", static.LocalFile("./static/img", false)))
+		r.Use(static.Serve("/fonts", static.LocalFile("./static/fonts", false)))
+
 	} else {
 		log.Println("API ONLY MODE")
 	}
