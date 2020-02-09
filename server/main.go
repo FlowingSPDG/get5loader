@@ -138,14 +138,10 @@ func main() {
 	}
 
 	if !Cnf.APIONLY {
-		/*
-			entrypoint := "./static/index.html"
-			r.Path("/").HandlerFunc(ServeStaticFile(entrypoint))
-			r.PathPrefix("/css").Handler(http.StripPrefix("/css/", http.FileServer(http.Dir("static/css"))))
-			r.PathPrefix("/js").Handler(http.StripPrefix("/js/", http.FileServer(http.Dir("static/js"))))
-			r.PathPrefix("/img").Handler(http.StripPrefix("/img/", http.FileServer(http.Dir("static/img"))))
-			r.PathPrefix("/fonts").Handler(http.StripPrefix("/fonts/", http.FileServer(http.Dir("static/fonts"))))
-		*/
+		r.Use(static.Serve("/", static.LocalFile("./static", false)))
+		r.NoRoute(func(c *gin.Context) {
+			c.File("./static/index.html")
+		})
 	} else {
 		log.Println("API ONLY MODE")
 	}
@@ -159,8 +155,6 @@ func main() {
 			}
 		}()
 	}
-
-	r.Use(static.Serve("/", static.LocalFile("/static", false)))
 
 	log.Panicf("Failed to listen port %s : %v\n", HOST, r.Run(HOST))
 
