@@ -152,15 +152,17 @@ func GetPlayerStatInfo(c *gin.Context) {
 func GetUserInfo(c *gin.Context) {
 	log.Printf("GetUserInfo\n")
 	userid := c.Params.ByName("userID")
-	response := APIUserData{}
-	db.SQLAccess.Gorm.First(&response, userid)
-	db.SQLAccess.Gorm.Where("user_id = ?", userid).Limit(20).Find(&response.Teams)
-	db.SQLAccess.Gorm.Where("user_id = ?", userid).Limit(20).Find(&response.Servers)
+	user := &APIUserData{}
+	db.SQLAccess.Gorm.First(user, userid)
+
+	db.SQLAccess.Gorm.Model(user).Related(&user.Teams, "Teams")
+	db.SQLAccess.Gorm.Model(user).Related(&user.Servers, "Servers")
 
 	matches := []db.MatchData{}
-	db.SQLAccess.Gorm.Where("user_id = ?", userid).Limit(20).Find(&matches)
 
-	var m []APIMatchData
+	db.SQLAccess.Gorm.Model(user).Related(&matches, "Matches")
+
+	var m []*APIMatchData
 	for i := 0; i < len(matches); i++ {
 		mapstats := []APIMapStatsData{}
 		server := APIGameServerData{}
@@ -220,10 +222,10 @@ func GetUserInfo(c *gin.Context) {
 			User:          user,
 			Status:        status,
 		}
-		m = append(m, matchdata)
+		m = append(m, &matchdata)
 	}
-	response.Matches = m
-	c.JSON(http.StatusOK, response)
+	user.Matches = m
+	c.JSON(http.StatusOK, user)
 }
 
 func GetServerInfo(c *gin.Context) {
@@ -254,9 +256,11 @@ func GetMatches(c *gin.Context) {
 		offset = "0"
 	}
 	userID := c.Query("userID")
+	user := db.UserData{}
 	response := []db.MatchData{}
 	if userID != "" {
-		db.SQLAccess.Gorm.Limit(20).Where("user_id = ?", userID).Order("id DESC").Offset(offset).Find(&response)
+		db.SQLAccess.Gorm.Limit(20).First(&user, userID)
+		db.SQLAccess.Gorm.Model(&user).Related(&response, "Matches")
 	} else {
 		db.SQLAccess.Gorm.Limit(20).Order("id DESC").Offset(offset).Find(&response)
 	}

@@ -8,14 +8,13 @@ import (
 
 // UserData Struct for "user" table.
 type APIUserData struct {
-	ID      int    `gorm:"primary_key;column:id;AUTO_INCREMENT" json:"id"`
-	SteamID string `gorm:"column:steam_id;unique" json:"steam_id"`
-	Name    string `gorm:"column:name" json:"name"`
-	Admin   bool   `gorm:"column:admin" json:"admin"`
-
-	Servers []APIGameServerData `gorm:"foreignkey:-" json:"servers"`
-	Teams   []APITeamData       `gorm:"foreignkey:-" json:"teams"`
-	Matches []APIMatchData      `gorm:"foreignkey:-" json:"matches"`
+	ID      int                  `gorm:"primary_key;column:id;AUTO_INCREMENT" json:"id"`
+	SteamID string               `gorm:"column:steam_id;unique" json:"steam_id"`
+	Name    string               `gorm:"column:name" json:"name"`
+	Admin   bool                 `gorm:"column:admin" json:"admin"`
+	Servers []*APIGameServerData `gorm:"ForeignKey:UserID" json:"servers"`
+	Teams   []*APITeamData       `gorm:"ForeignKey:UserID" json:"teams"`
+	Matches []*APIMatchData      `gorm:"ForeignKey:UserID" json:"matches"`
 }
 
 // TableName declairation for GORM

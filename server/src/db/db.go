@@ -52,7 +52,10 @@ var (
 )
 
 func init() {
-	c, _ := ini.Load("config.ini")
+	c, err := ini.Load("config.ini")
+	if err != nil {
+		panic(err)
+	}
 	Cnf := Config{
 		SteamAPIKey:  c.Section("Steam").Key("APIKey").MustString(""),
 		DefaultPage:  c.Section("GET5").Key("DefaultPage").MustString(""),
