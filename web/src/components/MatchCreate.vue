@@ -46,7 +46,7 @@
                 <el-checkbox-group v-if="form.series_type !== 'bo1-preset'" v-model="form.veto_mappool">
                     <el-checkbox v-for="(map, index) in mappool.active" :label="map" :key="index"></el-checkbox >
                 </el-checkbox-group>
-                <el-radio v-else-if="form.series_type === 'bo1-preset'" v-for="(map, index) in mappool" v-model="form.veto_mappool[0]" :label="map.system" :key="index"></el-radio>
+                <el-radio v-else-if="form.series_type === 'bo1-preset'" v-for="(map, index) in mappool.active" v-model="form.veto_mappool[0]" :label="map" :key="index"></el-radio>
             </el-form-item>
 
             <el-form-item style="width: 653px;">
