@@ -271,11 +271,15 @@ func GetTeamInfo(c *gin.Context) {
 	log.Printf("GetTeamInfo\n")
 	teamid, err := strconv.Atoi(c.Params.ByName("teamID"))
 	if err != nil {
-		c.AbortWithError(http.StatusBadRequest, fmt.Errorf("teamID shoulbe int"))
+		c.AbortWithError(http.StatusBadRequest, fmt.Errorf("teamID should be int"))
 		return
 	}
 	response := APITeamData{}
-	db.SQLAccess.Gorm.First(&response, teamid)
+	rec := db.SQLAccess.Gorm.First(&response, teamid)
+	if rec.RecordNotFound() {
+		c.AbortWithError(http.StatusNotFound, fmt.Errorf("team not found"))
+		return
+	}
 	var steamids = make([]string, 5)
 	steamids, err = response.GetPlayers()
 	if err != nil {
