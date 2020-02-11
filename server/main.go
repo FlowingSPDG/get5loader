@@ -119,7 +119,7 @@ func main() {
 			team.GET("/:teamID/GetRecentMatches", api.GetRecentMatches)
 			team.GET("/:teamID/CheckUserCanEdit", api.CheckUserCanEdit)
 			team.POST("/create", api.CreateTeam)
-			team.PUT("/'teamID/edit", api.EditTeam)
+			team.PUT("/:teamID/edit", api.EditTeam)
 			team.DELETE("/:teamID/delete", api.DeleteTeam)
 		}
 
