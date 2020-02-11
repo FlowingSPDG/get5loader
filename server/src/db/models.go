@@ -58,9 +58,9 @@ type UserData struct {
 	Name    string `gorm:"column:name"`
 	Admin   bool   `gorm:"column:admin"`
 
-	Servers []GameServerData `gorm:"foreignkey:user_id"`
-	Teams   []TeamData       `gorm:"foreignkey:user_id"`
-	Matches []MatchData      `gorm:"foreignkey:user_id"`
+	Servers []*GameServerData `gorm:"ForeignKey:UserID"`
+	Teams   []*TeamData       `gorm:"ForeignKey:UserID"`
+	Matches []*MatchData      `gorm:"ForeignKey:UserID"`
 }
 
 // TableName declairation for GORM
@@ -112,22 +112,15 @@ func (u *UserData) GetSteamURL() string {
 }
 
 // GetRecentMatches Gets match history
-func (u *UserData) GetRecentMatches(limit int) []MatchData {
-	SQLAccess.Gorm.Where("user_id = ?", u.ID).Limit(limit).Find(&u.Matches)
-	//SQLAccess.Gorm.Model(&u).Related(&u.Matches)
+func (u *UserData) GetRecentMatches(limit int) []*MatchData {
+	SQLAccess.Gorm.Model(u).Related(&u.Matches, "Matches")
 	return u.Matches
-	//u.Matches
-	//return self.matches.filter_by(cancelled=False).limit(limit)
 }
 
 // GetTeams Get teams which is owened by user
 func (u *UserData) GetTeams(limit int) []*TeamData {
-	SQLAccess.Gorm.Where("user_id = ?", u.ID).Limit((limit)).Find(&u.Teams)
-	teampointer := make([]*TeamData, 0, len(u.Teams))
-	for i := 0; i < len(u.Teams); i++ {
-		teampointer = append(teampointer, &u.Teams[i])
-	}
-	return teampointer
+	SQLAccess.Gorm.Model(u).Related(&u.Teams, "Teams")
+	return u.Teams
 }
 
 // GameServerData Struct for game_server table.
@@ -140,8 +133,6 @@ type GameServerData struct {
 	RconPassword string `gorm:"column:rcon_password;DEFAULT NULL" json:"rcon_password"`
 	DisplayName  string `gorm:"column:display_name;DEFAULT NULL" json:"display_name"`
 	PublicServer bool   `gorm:"column:public_server;DEFAULT NULL" json:"public_server"`
-
-	User UserData `gorm:"ASSOCIATION_FOREIGNKEY:user_id"`
 }
 
 // TableName declairation for GORM
@@ -155,7 +146,12 @@ func (g *GameServerData) Create(userid int, displayname string, ipstring string,
 		return nil, fmt.Errorf("IPaddress or RCON password is empty")
 	}
 	var servernum int
-	SQLAccess.Gorm.Model(&GameServerData{}).Where("user_id = ?", userid).Count(&servernum)
+	user := UserData{}
+	err := SQLAccess.Gorm.First(&user, userid).Error
+	if err != nil {
+		return nil, err
+	}
+	SQLAccess.Gorm.Model(&user).Related(&user.Servers, "Servers").Count(&servernum)
 	if uint16(servernum) >= MaxResource.Servers {
 		return nil, fmt.Errorf("Max servers limit exceeded")
 	}
@@ -166,7 +162,7 @@ func (g *GameServerData) Create(userid int, displayname string, ipstring string,
 	g.RconPassword = rconpassword
 	g.PublicServer = publicserver
 
-	_, err := util.CheckServerAvailability(g.IPString, g.Port, g.RconPassword)
+	_, err = util.CheckServerAvailability(g.IPString, g.Port, g.RconPassword)
 	if err != nil {
 		return nil, err
 	}
@@ -268,9 +264,6 @@ type TeamData struct {
 	Auths       []string          `gorm:"-" json:"auths"` // converts pickle []byte to []string
 	Players     []PlayerStatsData `gorm:"-" json:"-"`
 	PublicTeam  bool              `gorm:"column:public_team" json:"public_team"`
-
-	// User UserData `gorm:"ASSOCIATION_FOREIGNKEY:user_id" json:"-"`
-	User UserData `gorm:"-" json:"-"`
 }
 
 // TableName declairation for GORM
@@ -284,7 +277,12 @@ func (t *TeamData) Create(userid int, name string, tag string, flag string, logo
 		return nil, fmt.Errorf("Team name cannot be empty")
 	}
 	var teamnum int
-	SQLAccess.Gorm.Model(&TeamData{}).Where("user_id = ?", userid).Count(&teamnum)
+	user := UserData{}
+	err := SQLAccess.Gorm.First(&user, userid).Error
+	if err != nil {
+		return nil, err
+	}
+	SQLAccess.Gorm.Model(&user).Related(&user.Teams, "Teams").Count(&teamnum)
 	if uint16(teamnum) >= MaxResource.Teams {
 		return nil, fmt.Errorf("Max teams limit exceeded")
 	}
@@ -294,7 +292,6 @@ func (t *TeamData) Create(userid int, name string, tag string, flag string, logo
 	t.Flag = flag
 	t.Logo = logo
 	t.PublicTeam = publicteam
-	var err error
 	for i := 0; i < len(auths); i++ {
 		auths[i], err = util.AuthToSteamID64(auths[i])
 		if err != nil {
@@ -428,14 +425,14 @@ func (t *TeamData) GetPlayers() ([]PlayerStatsData, error) {
 */
 
 // GetRecentMatches Gets team match history.
-func (t *TeamData) GetRecentMatches(limit int) []MatchData {
-	var matches []MatchData
+func (t *TeamData) GetRecentMatches(limit int) []*MatchData {
+	var matches []*MatchData
 	if t.PublicTeam == true {
 		SQLAccess.Gorm.Where("team1_id = ?", t.ID).Or("team2_id = ?", t.ID).Not("start_time = null AND cancelled = true").Limit(limit).Find(&matches)
 	} else {
 		var owner UserData
 		SQLAccess.Gorm.First(&owner, t.UserID)
-		SQLAccess.Gorm.Where("user_id = ?", t.UserID).Find(&owner.Matches).Limit(limit)
+		SQLAccess.Gorm.Model(&owner).Related(&owner.Matches, "Matches").Limit(limit)
 		matches = owner.Matches
 	}
 	return matches
@@ -563,10 +560,8 @@ type MatchData struct {
 	Forfeit         bool          `gorm:"column:forfeit" json:"forfeit"`
 	PluginVersion   string        `gorm:"column:plugin_version" json:"-"`
 
-	MapStats []MapStatsData `json:"-"`
+	MapStats []MapStatsData `gorm:"ForeignKey:MatchID" json:"-"`
 	Server   GameServerData `json:"-"`
-
-	User UserData `gorm:"ASSOCIATION_FOREIGNKEY:user_id" json:"-"`
 }
 
 // TableName declairation for GORM
@@ -788,11 +783,13 @@ func (m *MatchData) GetTeam2() (TeamData, error) {
 	return Team, nil
 }
 
+/*
 // GetUser Get Match owner as "UserData" struct.
 func (m *MatchData) GetUser() UserData {
 	SQLAccess.Gorm.First(&m.User, m.UserID)
 	return m.User
 }
+*/
 
 // GetWinner Get Winner team as "TeamData" struct.
 func (m *MatchData) GetWinner() (TeamData, error) {
