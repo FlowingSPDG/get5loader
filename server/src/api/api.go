@@ -705,7 +705,7 @@ func MatchCancelHandler(c *gin.Context) {
 
 		_, err = Server.SendRcon("get5_endmatch")
 		if err != nil {
-			c.AbortWithError(http.StatusNotFound, fmt.Errorf("Failed to cancel match %v", err))
+			c.AbortWithError(http.StatusInternalServerError, err)
 			return
 		}
 	} else {
