@@ -181,10 +181,12 @@ func MatchMapUpdateHandler(c *gin.Context) {
 		c.AbortWithError(http.StatusBadRequest, fmt.Errorf("team2score should be int"))
 		return
 	}
-	log.Printf("matchid : %d\n", matchid)
-	log.Printf("mapnumber : %d\n", mapnumber)
-	log.Printf("team1score : %d\n", team1score)
-	log.Printf("team2score : %d\n", team2score)
+	/*
+		log.Printf("matchid : %d\n", matchid)
+		log.Printf("mapnumber : %d\n", mapnumber)
+		log.Printf("team1score : %d\n", team1score)
+		log.Printf("team2score : %d\n", team2score)
+	*/
 
 	var m = db.MatchData{}
 	db.SQLAccess.Gorm.First(&m, matchid)
@@ -435,37 +437,38 @@ func MatchMapPlayerUpdateHandler(c *gin.Context) {
 			return
 		}
 	*/
-
-	log.Printf("matchid : %d\n", matchid)
-	log.Printf("mapnumber : %d\n", mapnumber)
-	log.Printf("key : %s\n", c.PostForm("key"))
-	log.Printf("name : %s\n", FormName)
-	log.Printf("team : %s\n", FormTeam)
-	log.Printf("kills : %d\n", FormKills)
-	log.Printf("assists : %d\n", FormAssists)
-	log.Printf("deaths : %d\n", FormDeaths)
-	log.Printf("flashbang_assists : %d\n", FormFlashbangAssists)
-	log.Printf("teamkills : %d\n", FormTeamKills)
-	log.Printf("suicides : %d\n", FormSuicides) // not working?
-	log.Printf("damage : %d\n", FormDamage)
-	log.Printf("headshot_kills : %d\n", FormHeadShotKills)
-	log.Printf("roundsplayed : %d\n", FormRoundsPlayed)
-	log.Printf("bomb_plants : %d\n", FormBombPlants)
-	log.Printf("bomb_defuses : %d\n", FormBombDefuses)
-	log.Printf("1kill_rounds : %d\n", Form1KillRounds)
-	log.Printf("2kill_rounds : %d\n", Form2KillRounds)
-	log.Printf("3kill_rounds : %d\n", Form3KillRounds)
-	log.Printf("4kill_rounds : %d\n", Form4KillRounds)
-	log.Printf("5kill_rounds : %d\n", Form5KillRounds)
-	log.Printf("v1 : %d\n", FormV1)
-	log.Printf("v2 : %d\n", FormV2)
-	log.Printf("v3 : %d\n", FormV3)
-	log.Printf("v4 : %d\n", FormV4)
-	log.Printf("v5 : %d\n", FormV5)
-	log.Printf("firstkill_t : %d\n", FormFirstKillT)
-	log.Printf("firstkill_ct : %d\n", FormFirstKillCT)
-	log.Printf("firstdeath_t : %d\n", FormFirstDeathT)
-	log.Printf("firstdeath_ct : %d\n", FormFirstDeathCT)
+	/*
+		log.Printf("matchid : %d\n", matchid)
+		log.Printf("mapnumber : %d\n", mapnumber)
+		log.Printf("key : %s\n", c.PostForm("key"))
+		log.Printf("name : %s\n", FormName)
+		log.Printf("team : %s\n", FormTeam)
+		log.Printf("kills : %d\n", FormKills)
+		log.Printf("assists : %d\n", FormAssists)
+		log.Printf("deaths : %d\n", FormDeaths)
+		log.Printf("flashbang_assists : %d\n", FormFlashbangAssists)
+		log.Printf("teamkills : %d\n", FormTeamKills)
+		log.Printf("suicides : %d\n", FormSuicides) // not working?
+		log.Printf("damage : %d\n", FormDamage)
+		log.Printf("headshot_kills : %d\n", FormHeadShotKills)
+		log.Printf("roundsplayed : %d\n", FormRoundsPlayed)
+		log.Printf("bomb_plants : %d\n", FormBombPlants)
+		log.Printf("bomb_defuses : %d\n", FormBombDefuses)
+		log.Printf("1kill_rounds : %d\n", Form1KillRounds)
+		log.Printf("2kill_rounds : %d\n", Form2KillRounds)
+		log.Printf("3kill_rounds : %d\n", Form3KillRounds)
+		log.Printf("4kill_rounds : %d\n", Form4KillRounds)
+		log.Printf("5kill_rounds : %d\n", Form5KillRounds)
+		log.Printf("v1 : %d\n", FormV1)
+		log.Printf("v2 : %d\n", FormV2)
+		log.Printf("v3 : %d\n", FormV3)
+		log.Printf("v4 : %d\n", FormV4)
+		log.Printf("v5 : %d\n", FormV5)
+		log.Printf("firstkill_t : %d\n", FormFirstKillT)
+		log.Printf("firstkill_ct : %d\n", FormFirstKillCT)
+		log.Printf("firstdeath_t : %d\n", FormFirstDeathT)
+		log.Printf("firstdeath_ct : %d\n", FormFirstDeathCT)
+	*/
 
 	var m = db.MatchData{}
 	db.SQLAccess.Gorm.First(&m, matchid)

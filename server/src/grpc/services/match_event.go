@@ -2,6 +2,7 @@ package services
 
 import (
 	"fmt"
+	"time"
 	// "github.com/FlowingSPDG/get5-web-go/server/src/api"
 	// "github.com/FlowingSPDG/get5-web-go/server/src/db"
 	pb "github.com/FlowingSPDG/get5-web-go/server/src/grpc/proto"
@@ -23,26 +24,37 @@ type EventsMap struct {
 }
 
 func (e *EventsMap) Write(key int32, Event *pb.MatchEventReply, finished bool) error {
-	e.mux.Lock()
-	defer e.mux.Unlock()
 	if e.Event == nil {
-		return fmt.Errorf("Not Found")
+		e.Event = make(map[int32]*Events)
 	}
+	//e.mux.Lock()
+	//defer e.mux.Unlock()
 	if e.Event[key] == nil {
-		return fmt.Errorf("Not Found")
+		e.Event[key] = &Events{
+			Finished: make(chan bool, 1),
+			Event:    make(chan *pb.MatchEventReply, 1),
+		}
 	}
+	log.Printf("[gRPC] Writing for key %d\n", key)
 	e.Event[key].Finished <- finished
 	e.Event[key].Event <- Event
+	log.Printf("[gRPC] Writing for key %d DONE\n", key)
 	return nil
 }
 
 func (e *EventsMap) Read(key int32) (*pb.MatchEventReply, bool, error) {
+	log.Printf("[gRPC] Reading for key %d\n", key)
 	e.mux.Lock()
 	defer e.mux.Unlock()
-	if e.Event[key] == nil {
-		return nil, false, fmt.Errorf("Not Found")
+	if val, ok := e.Event[key]; ok {
+		ev := <-val.Event
+		fi := <-val.Finished
+		log.Printf("[gRPC] Received Event on Read(). Event : %v Finished : %v\n", ev, fi)
+		log.Printf("[gRPC] Reading for key %d DONE\n", key)
+		return ev, fi, nil
 	}
-	return <-e.Event[key].Event, <-e.Event[key].Finished, nil
+	return nil, false, fmt.Errorf("Not Found")
+
 }
 
 func (e *EventsMap) CloseChannels(key int32) error {
@@ -70,30 +82,24 @@ func init() {
 
 func (s Server) MatchEvent(req *pb.MatchEventRequest, srv pb.Get5_MatchEventServer) error {
 	matchid := req.GetMatchid()
-	log.Printf("MatchEvent. matchid : %d\n", matchid)
-	MatchesStream.Write(matchid, &pb.MatchEventReply{
+	log.Printf("[gRPC] MatchEvent. matchid : %d\n", matchid)
+
+	initev := &pb.MatchEventReply{
 		Event: &pb.MatchEventReply_Initialized{
 			Initialized: &pb.MatchEventInitialized{},
 		},
-	}, false) // initialize?
-	err := srv.Send(&pb.MatchEventReply{
-		Event: &pb.MatchEventReply_Initialized{},
-	})
-	if err != nil {
-		log.Println(err)
-		return err
 	}
 
-	lastevent := &pb.MatchEventReply{
-		Event: &pb.MatchEventReply_Initialized{},
-	}
+	lastevent := initev
 	for { //go func(){}() ?
 		senddata, finished, err := MatchesStream.Read(matchid)
 		if err != nil {
-			log.Printf("Unknown ERROR : %v\n", err)
+			log.Printf("[gRPC] Unknown ERROR : %v\n", err)
+			time.Sleep(time.Millisecond * 200)
+			continue
 		}
-		if lastevent.Event != senddata.Event {
-			log.Printf("Data Updated! Sending data : %v\n", senddata)
+		if lastevent != senddata {
+			log.Printf("[gRPC] Data Updated! Sending data : %v\n", senddata)
 			err = srv.Send(senddata)
 			if err != nil {
 				log.Println(err)
@@ -101,11 +107,10 @@ func (s Server) MatchEvent(req *pb.MatchEventRequest, srv pb.Get5_MatchEventServ
 			}
 			lastevent = senddata
 			if finished {
-				log.Println("Stream finished")
+				log.Println("[gRPC] Stream finished")
 				MatchesStream.CloseChannels(matchid)
 				return nil
 			}
 		}
 	}
-	return nil
 }
