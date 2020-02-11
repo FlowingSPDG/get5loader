@@ -2,7 +2,9 @@ package db
 
 import (
 	"fmt"
+	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
+	"log"
 	"time"
 
 	"github.com/go-ini/ini"
@@ -71,13 +73,13 @@ func init() {
 		Port: Cnf.SQLPort,
 	}
 	sqloption := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8mb4&parseTime=True&loc=Local", SQLAccess.User, SQLAccess.Pass, SQLAccess.Host, SQLAccess.Port, SQLAccess.Db)
-	//fmt.Println(sqloption)
+	//log.Println(sqloption)
 	DB, err := gorm.Open("mysql", sqloption)
 	if err != nil {
 		panic(err)
 	}
 	if Cnf.SQLDebugMode {
-		fmt.Println("SQL Debug mode Enabled. Transaction logs active")
+		log.Println("SQL Debug mode Enabled. Transaction logs active")
 	}
 	DB.LogMode(Cnf.SQLDebugMode)
 	SQLAccess.Gorm = DB
@@ -103,25 +105,25 @@ func init() {
 }
 
 // LoginHandler HTTP Handler for /login page.
-func LoginHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Printf("LoginHandler\n")
-	opID := steam_go.NewOpenId(r)
+func LoginHandler(c *gin.Context) {
+	log.Printf("LoginHandler\n")
+	opID := steam_go.NewOpenId(c.Request)
 	switch opID.Mode() {
 	case "":
-		http.Redirect(w, r, opID.AuthUrl(), 302)
+		http.Redirect(c.Writer, c.Request, opID.AuthUrl(), 302)
 	case "cancel":
-		http.Redirect(w, r, DefaultPage, 302)
+		http.Redirect(c.Writer, c.Request, DefaultPage, 302)
 	default:
 		steamid, err := opID.ValidateAndGetId()
 		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
+			http.Error(c.Writer, err.Error(), http.StatusInternalServerError)
 			panic(err)
 		}
-		fmt.Println("SteamID : " + steamid)
+		log.Println("SteamID : " + steamid)
 
 		user := UserData{SteamID: steamid}
 		user.GetOrCreate()
-		s := Sess.Start(w, r)
+		s := Sess.Start(c.Writer, c.Request)
 		// Set some session values.
 		s.Set("Loggedin", true)
 		s.Set("UserID", user.ID) // should be get5 id
@@ -134,16 +136,16 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Register to DB if its new player
-		http.Redirect(w, r, "/", 302)
+		http.Redirect(c.Writer, c.Request, "/", 302)
 	}
 }
 
 // LogoutHandler HTTP Handler for /logout
-func LogoutHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Printf("LogoutHandler\n")
-	s := Sess.Start(w, r)
+func LogoutHandler(c *gin.Context) {
+	log.Printf("LogoutHandler\n")
+	s := Sess.Start(c.Writer, c.Request)
 	s.Destroy()
-	http.Redirect(w, r, "/", 302)
+	http.Redirect(c.Writer, c.Request, "/", 302)
 }
 
 // GetUserData Gets UserData array via MySQL(GORM).

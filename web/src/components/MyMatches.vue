@@ -22,20 +22,20 @@
         <td v-if="match"><router-link :to="'/match/'+match.id">{{match.id}}</router-link></td>
 
         <td v-if="matchinfo[match.id]">
-          <img :src="get_flag_link(matchinfo[match.id].team1)" />
-          <router-link :to="'/team/'+match.team1_id">{{matchinfo[match.id].team1.name}}</router-link>
+          <img v-if="matchinfo[match.id].team1" :src="get_flag_link(matchinfo[match.id].team1)" />
+          <router-link v-if="matchinfo[match.id].team1" :to="'/team/'+match.team1_id">{{matchinfo[match.id].team1.name}}</router-link>
         </td>
 
         <td v-if="matchinfo[match.id]">
-          <img :src="get_flag_link(matchinfo[match.id].team2)" />
-          <router-link :to="'/team/'+match.team2_id">{{matchinfo[match.id].team2.name}}</router-link>
+          <img v-if="matchinfo[match.id].team1" :src="get_flag_link(matchinfo[match.id].team2)" />
+          <router-link v-if="matchinfo[match.id].team2" :to="'/team/'+match.team2_id">{{matchinfo[match.id].team2.name}}</router-link>
         </td>
 
         <td v-if="matchinfo[match.id]">
           {{ matchinfo[match.id].status }}
         </td>
 
-        <td v-if="my_matches && matchinfo[match.id]">{{ matchinfo[match.id].server.display_name }} </td>
+        <td v-if="my_matches && matchinfo[match.id]"><div v-if="matchinfo[match.id].server">{{ matchinfo[match.id].server.display_name }}</div> </td>
         <td v-if="my_matches && matchinfo[match.id]">
           <a v-if="(match.pending || match.live)" :href="'/match/'+match.id+'cancel'" class="btn btn-danger btn-xs align-right">Cancel</a>
         </td>
@@ -77,12 +77,13 @@ export default {
     }
   },
   async created () {
+    let self = this
     const res = await this.axios.get('/api/v1/CheckLoggedIn')
     this.user = res.data
     const matches = await this.GetMatches(this.user.userid)
     for (let i = 0; i < matches.length; i++) {
       this.$set(this.matchinfo, matches[i].id, res.data)
-      this.matchinfo[matches[i].id] = await this.GetMatchInfo(matches[i].id)
+      this.matchinfo[matches[i].id] = await self.GetMatchData(matches[i].id)
     }
   },
   methods: {

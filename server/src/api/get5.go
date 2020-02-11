@@ -1,36 +1,29 @@
 package api
 
 import (
-	"encoding/json"
 	"fmt"
 	"github.com/FlowingSPDG/get5-web-go/server/src/db"
 	pb "github.com/FlowingSPDG/get5-web-go/server/src/grpc/proto"
 	pbservices "github.com/FlowingSPDG/get5-web-go/server/src/grpc/services"
-	"github.com/gorilla/mux"
+	"github.com/gin-gonic/gin"
+	"log"
 	"net/http"
 	"strconv"
 	"time"
 )
 
 // MatchConfigHandler Handler for /api/v1/match/{matchID}/config API.
-func MatchConfigHandler(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	fmt.Printf("MatchConfigHandler\n")
-	matchid := vars["matchID"]
+func MatchConfigHandler(c *gin.Context) {
+	log.Printf("MatchConfigHandler\n")
+	matchid := c.Params.ByName("matchID")
 	match := db.MatchData{}
 	db.SQLAccess.Gorm.First(&match, matchid)
 	res, err := match.BuildMatchDict()
 	if err != nil {
-		http.Error(w, "Internal ERROR", http.StatusInternalServerError)
+		c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
-	jsonbyte, err := json.Marshal(res)
-	if err != nil {
-		http.Error(w, "Internal ERROR", http.StatusInternalServerError)
-		return
-	}
-	w.Header().Set("Content-Type", "application/json")
-	w.Write(jsonbyte)
+	c.JSON(http.StatusOK, res)
 }
 
 // MatchAPICheck Checks if API is available or not
@@ -45,24 +38,23 @@ func MatchAPICheck(m *db.MatchData, r *http.Request) error {
 }
 
 // MatchFinishHandler Handler for /api/v1/match/{matchID}/finish API.
-func MatchFinishHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("MatchFinishHandler")
-	vars := mux.Vars(r)
-	matchid := vars["matchID"]
-	winner := r.FormValue("winner")
-	forfeit := r.FormValue("forfeit")
-	fmt.Printf("matchid : %s\n", matchid)
-	fmt.Printf("winner : %s\n", winner)
-	fmt.Printf("forfeit : %s\n", forfeit)
+func MatchFinishHandler(c *gin.Context) {
+	log.Println("MatchFinishHandler")
+	matchid := c.Params.ByName("matchID")
+	winner := c.PostForm("winner")
+	forfeit := c.PostForm("forfeit")
+	log.Printf("matchid : %s\n", matchid)
+	log.Printf("winner : %s\n", winner)
+	log.Printf("forfeit : %s\n", forfeit)
 	var Match = db.MatchData{}
 	db.SQLAccess.Gorm.First(&Match, matchid)
-	fmt.Printf("Requested API key : %s\n", r.FormValue("key"))
-	fmt.Printf("Real API key : %s\n", Match.APIKey)
+	log.Printf("Requested API key : %s\n", c.PostForm("key"))
+	log.Printf("Real API key : %s\n", Match.APIKey)
 	var MatchUpdate = Match
 	db.SQLAccess.Gorm.First(&MatchUpdate)
-	err := MatchAPICheck(&Match, r)
+	err := MatchAPICheck(&Match, c.Request)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
 	if winner == "team1" {
@@ -87,7 +79,8 @@ func MatchFinishHandler(w http.ResponseWriter, r *http.Request) {
 	MatchUpdate.EndTime.Scan(time.Now())
 	server, err := MatchUpdate.GetServer()
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		c.AbortWithError(http.StatusBadRequest, err)
+		return
 	}
 	serverUpdate := server
 	db.SQLAccess.Gorm.First(&serverUpdate)
@@ -96,16 +89,16 @@ func MatchFinishHandler(w http.ResponseWriter, r *http.Request) {
 	db.SQLAccess.Gorm.Save(&serverUpdate)
 	db.SQLAccess.Gorm.Model(&Match).Update(&MatchUpdate)
 	db.SQLAccess.Gorm.Save(&MatchUpdate)
-	fmt.Printf("Finished match %v, winner = %v\n", MatchUpdate.ID, winner)
+	log.Printf("Finished match %v, winner = %v\n", MatchUpdate.ID, winner)
 
 	forfeitbool, err := strconv.ParseBool(forfeit)
 	if err != nil {
-		fmt.Println("Failed to parse forfeit value,interuppting streaming")
+		log.Println("Failed to parse forfeit value,interuppting streaming")
 		return
 	}
 	matchidInt, err := strconv.Atoi(matchid)
 	if err != nil {
-		fmt.Println("match id is not int,interuppting streaming")
+		log.Println("match id is not int,interuppting streaming")
 		return
 	}
 
@@ -117,30 +110,29 @@ func MatchFinishHandler(w http.ResponseWriter, r *http.Request) {
 				Forfeit: forfeitbool,
 			},
 		},
-	})
+	}, true)
 }
 
 // MatchMapStartHandler Handler for /api/v1/match/{matchID}/map/{mapNumber}/start  API.
-func MatchMapStartHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("MatchMapStartHandler")
-	vars := mux.Vars(r)
-	matchid, err := strconv.Atoi(vars["matchID"])
+func MatchMapStartHandler(c *gin.Context) {
+	log.Println("MatchMapStartHandler")
+	matchid, err := strconv.Atoi(c.Params.ByName("matchID"))
 	if err != nil {
-		http.Error(w, "matchid should be int", http.StatusBadRequest)
+		c.AbortWithError(http.StatusBadRequest, fmt.Errorf("matchid should be int"))
 		return
 	}
-	mapnumber, err := strconv.Atoi(vars["mapNumber"])
+	mapnumber, err := strconv.Atoi(c.Params.ByName("mapNumber"))
 	if err != nil {
-		http.Error(w, "mapnumber should be int", http.StatusBadRequest)
+		c.AbortWithError(http.StatusBadRequest, fmt.Errorf("mapnumber should be int"))
 		return
 	}
-	mapname := r.FormValue("mapname")
-	fmt.Printf("mapname : %s\n", mapname)
+	mapname := c.PostForm("mapname")
+	log.Printf("mapname : %s\n", mapname)
 	var m = db.MatchData{}
 	db.SQLAccess.Gorm.First(&m, matchid)
-	err = MatchAPICheck(&m, r)
+	err = MatchAPICheck(&m, c.Request)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
 	mUpdate := m
@@ -148,7 +140,7 @@ func MatchMapStartHandler(w http.ResponseWriter, r *http.Request) {
 	MapStats := &db.MapStatsData{}
 	MapStats, err = MapStats.GetOrCreate(matchid, mapnumber, mapname)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
 	mUpdate.StartTime.Scan(time.Now())
@@ -163,43 +155,44 @@ func MatchMapStartHandler(w http.ResponseWriter, r *http.Request) {
 				Mapname:   mapname,
 			},
 		},
-	})
+	}, false)
 }
 
 // MatchMapUpdateHandler Handler for /api/v1/match/{matchID}/map/{mapNumber}/update API.
-func MatchMapUpdateHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("MatchMapUpdateHandler")
-	vars := mux.Vars(r)
-	matchid, err := strconv.Atoi(vars["matchID"])
+func MatchMapUpdateHandler(c *gin.Context) {
+	log.Println("MatchMapUpdateHandler")
+	matchid, err := strconv.Atoi(c.Params.ByName("matchID"))
 	if err != nil {
-		http.Error(w, "matchID should be int", http.StatusBadRequest)
+		c.AbortWithError(http.StatusBadRequest, fmt.Errorf("matchID should be int"))
 		return
 	}
-	mapnumber, err := strconv.Atoi(vars["mapNumber"])
+	mapnumber, err := strconv.Atoi(c.Params.ByName("mapNumber"))
 	if err != nil {
-		http.Error(w, "mapNumber should be int", http.StatusBadRequest)
+		c.AbortWithError(http.StatusBadRequest, fmt.Errorf("mapNumber should be int"))
 		return
 	}
-	team1score, err := strconv.Atoi(r.FormValue("team1score"))
+	team1score, err := strconv.Atoi(c.PostForm("team1score"))
 	if err != nil {
-		http.Error(w, "team1score should be int", http.StatusBadRequest)
+		c.AbortWithError(http.StatusBadRequest, fmt.Errorf("team1score should be int"))
 		return
 	}
-	team2score, err := strconv.Atoi(r.FormValue("team2score"))
+	team2score, err := strconv.Atoi(c.PostForm("team2score"))
 	if err != nil {
-		http.Error(w, "team2score should be int", http.StatusBadRequest)
+		c.AbortWithError(http.StatusBadRequest, fmt.Errorf("team2score should be int"))
 		return
 	}
-	fmt.Printf("matchid : %d\n", matchid)
-	fmt.Printf("mapnumber : %d\n", mapnumber)
-	fmt.Printf("team1score : %d\n", team1score)
-	fmt.Printf("team2score : %d\n", team2score)
+	/*
+		log.Printf("matchid : %d\n", matchid)
+		log.Printf("mapnumber : %d\n", mapnumber)
+		log.Printf("team1score : %d\n", team1score)
+		log.Printf("team2score : %d\n", team2score)
+	*/
 
 	var m = db.MatchData{}
 	db.SQLAccess.Gorm.First(&m, matchid)
-	err = MatchAPICheck(&m, r)
+	err = MatchAPICheck(&m, c.Request)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
 	MapStats := db.MapStatsData{}
@@ -214,7 +207,7 @@ func MatchMapUpdateHandler(w http.ResponseWriter, r *http.Request) {
 			db.SQLAccess.Gorm.Save(&MapStatsUpdate)
 		}
 	} else {
-		http.Error(w, "Failed to find map stats object", http.StatusBadRequest)
+		c.AbortWithError(http.StatusBadRequest, fmt.Errorf("Failed to find map stats object"))
 		return
 	}
 
@@ -227,35 +220,34 @@ func MatchMapUpdateHandler(w http.ResponseWriter, r *http.Request) {
 				Team2Score: int32(team2score),
 			},
 		},
-	})
+	}, false)
 }
 
 // MatchMapFinishHandler Handler for /api/v1/match/{matchID}/map/{mapNumber}/finish API.
-func MatchMapFinishHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("MatchMapFinishHandler")
-	vars := mux.Vars(r)
-	matchid, err := strconv.Atoi(vars["matchID"])
+func MatchMapFinishHandler(c *gin.Context) {
+	log.Println("MatchMapFinishHandler")
+	matchid, err := strconv.Atoi(c.Params.ByName("matchID"))
 	if err != nil {
-		http.Error(w, "matchID should be int", http.StatusBadRequest)
+		c.AbortWithError(http.StatusBadRequest, fmt.Errorf("matchID should be int"))
 		return
 	}
-	mapnumber, err := strconv.Atoi(vars["mapNumber"])
+	mapnumber, err := strconv.Atoi(c.Params.ByName("mapNumber"))
 	if err != nil {
-		http.Error(w, "mapNumber should be int", http.StatusBadRequest)
+		c.AbortWithError(http.StatusBadRequest, fmt.Errorf("mapNumber should be int"))
 		return
 	}
-	winner := r.FormValue("winner")
-	fmt.Printf("matchid : %d\n", matchid)
-	fmt.Printf("mapnumber : %d\n", mapnumber)
-	fmt.Printf("winner : %s\n", winner)
+	winner := c.PostForm("winner")
+	log.Printf("matchid : %d\n", matchid)
+	log.Printf("mapnumber : %d\n", mapnumber)
+	log.Printf("winner : %s\n", winner)
 
 	m := db.MatchData{}
 	db.SQLAccess.Gorm.First(&m, matchid)
 	mUpdate := m
 	db.SQLAccess.Gorm.First(&mUpdate)
-	err = MatchAPICheck(&m, r)
+	err = MatchAPICheck(&m, c.Request)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
 
@@ -279,7 +271,7 @@ func MatchMapFinishHandler(w http.ResponseWriter, r *http.Request) {
 		db.SQLAccess.Gorm.Model(&m).Update(&mUpdate)
 		db.SQLAccess.Gorm.Save(&mUpdate)
 	} else {
-		http.Error(w, "Failed to find map stats object", http.StatusBadRequest)
+		c.AbortWithError(http.StatusBadRequest, fmt.Errorf("Failed to find map stats object"))
 		return
 	}
 
@@ -291,196 +283,197 @@ func MatchMapFinishHandler(w http.ResponseWriter, r *http.Request) {
 				Winner:    winner,
 			},
 		},
-	})
+	}, false)
 }
 
 // MatchMapPlayerUpdateHandler Handler for /api/v1/match/{matchID}/map/{mapNumber}/player/{steamid64}/update API.
-func MatchMapPlayerUpdateHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("MatchMapPlayerUpdateHandler")
-	vars := mux.Vars(r)
-	matchid, err := strconv.Atoi(vars["matchID"])
+func MatchMapPlayerUpdateHandler(c *gin.Context) {
+	log.Println("MatchMapPlayerUpdateHandler")
+	matchid, err := strconv.Atoi(c.Params.ByName("matchID"))
 	if err != nil {
-		http.Error(w, "matchid should be int", http.StatusBadRequest)
+		c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
-	mapnumber, err := strconv.Atoi(vars["mapNumber"])
+	mapnumber, err := strconv.Atoi(c.Params.ByName("mapNumber"))
 	if err != nil {
-		http.Error(w, "mapnumber should be int", http.StatusBadRequest)
+		c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
-	steamid64 := vars["steamid64"]
+	steamid64 := c.Params.ByName("steamid64")
 
-	FormName := r.FormValue("name")
-	FormTeam := r.FormValue("team")
-	FormKills, err := strconv.Atoi(r.FormValue("kills"))
+	FormName := c.PostForm("name")
+	FormTeam := c.PostForm("team")
+	FormKills, err := strconv.Atoi(c.PostForm("kills"))
 	if err != nil {
-		http.Error(w, "kills should be int", http.StatusBadRequest)
+		c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
-	FormAssists, err := strconv.Atoi(r.FormValue("assists"))
+	FormAssists, err := strconv.Atoi(c.PostForm("assists"))
 	if err != nil {
-		http.Error(w, "assists should be int", http.StatusBadRequest)
+		c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
-	FormDeaths, err := strconv.Atoi(r.FormValue("deaths"))
+	FormDeaths, err := strconv.Atoi(c.PostForm("deaths"))
 	if err != nil {
-		http.Error(w, "deaths should be int", http.StatusBadRequest)
+		c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
-	FormFlashbangAssists, err := strconv.Atoi(r.FormValue("flashbang_assists"))
+	FormFlashbangAssists, err := strconv.Atoi(c.PostForm("flashbang_assists"))
 	if err != nil {
-		http.Error(w, "flashbang_assists should be int", http.StatusBadRequest)
+		c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
-	FormTeamKills, err := strconv.Atoi(r.FormValue("teamkills"))
+	FormTeamKills, err := strconv.Atoi(c.PostForm("teamkills"))
 	if err != nil {
-		http.Error(w, "teamkills should be int", http.StatusBadRequest)
+		c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
-	FormSuicides, err := strconv.Atoi(r.FormValue("suicides"))
+	FormSuicides, err := strconv.Atoi(c.PostForm("suicides"))
 	if err != nil {
-		http.Error(w, "suicides should be int", http.StatusBadRequest)
+		c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
-	FormDamage, err := strconv.Atoi(r.FormValue("damage"))
+	FormDamage, err := strconv.Atoi(c.PostForm("damage"))
 	if err != nil {
-		http.Error(w, "damage should be int", http.StatusBadRequest)
+		c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
-	FormHeadShotKills, err := strconv.Atoi(r.FormValue("headshot_kills"))
+	FormHeadShotKills, err := strconv.Atoi(c.PostForm("headshot_kills"))
 	if err != nil {
-		http.Error(w, "headshot_kills should be int", http.StatusBadRequest)
+		c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
-	FormRoundsPlayed, err := strconv.Atoi(r.FormValue("roundsplayed"))
+	FormRoundsPlayed, err := strconv.Atoi(c.PostForm("roundsplayed"))
 	if err != nil {
-		http.Error(w, "roundsplayed should be int", http.StatusBadRequest)
+		c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
-	FormBombPlants, err := strconv.Atoi(r.FormValue("bomb_plants"))
+	FormBombPlants, err := strconv.Atoi(c.PostForm("bomb_plants"))
 	if err != nil {
-		http.Error(w, "bomb_plants should be int", http.StatusBadRequest)
+		c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
-	FormBombDefuses, err := strconv.Atoi(r.FormValue("bomb_defuses"))
+	FormBombDefuses, err := strconv.Atoi(c.PostForm("bomb_defuses"))
 	if err != nil {
-		http.Error(w, "bomb_defuses should be int", http.StatusBadRequest)
+		c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
 
-	Form1KillRounds, err := strconv.Atoi(r.FormValue("1kill_rounds"))
+	Form1KillRounds, err := strconv.Atoi(c.PostForm("1kill_rounds"))
 	if err != nil {
-		http.Error(w, "1kill_rounds should be int", http.StatusBadRequest)
+		c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
-	Form2KillRounds, err := strconv.Atoi(r.FormValue("2kill_rounds"))
+	Form2KillRounds, err := strconv.Atoi(c.PostForm("2kill_rounds"))
 	if err != nil {
-		http.Error(w, "3kill_rounds should be int", http.StatusBadRequest)
+		c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
-	Form3KillRounds, err := strconv.Atoi(r.FormValue("3kill_rounds"))
+	Form3KillRounds, err := strconv.Atoi(c.PostForm("3kill_rounds"))
 	if err != nil {
-		http.Error(w, "3kill_rounds should be int", http.StatusBadRequest)
+		c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
-	Form4KillRounds, err := strconv.Atoi(r.FormValue("4kill_rounds"))
+	Form4KillRounds, err := strconv.Atoi(c.PostForm("4kill_rounds"))
 	if err != nil {
-		http.Error(w, "4kill_rounds should be int", http.StatusBadRequest)
+		c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
-	Form5KillRounds, err := strconv.Atoi(r.FormValue("5kill_rounds"))
+	Form5KillRounds, err := strconv.Atoi(c.PostForm("5kill_rounds"))
 	if err != nil {
-		http.Error(w, "5kill_rounds should be int", http.StatusBadRequest)
+		c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
-	FormV1, err := strconv.Atoi(r.FormValue("v1"))
+	FormV1, err := strconv.Atoi(c.PostForm("v1"))
 	if err != nil {
-		http.Error(w, "v1 should be int", http.StatusBadRequest)
+		c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
-	FormV2, err := strconv.Atoi(r.FormValue("v2"))
+	FormV2, err := strconv.Atoi(c.PostForm("v2"))
 	if err != nil {
-		http.Error(w, "v2 should be int", http.StatusBadRequest)
+		c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
-	FormV3, err := strconv.Atoi(r.FormValue("v3"))
+	FormV3, err := strconv.Atoi(c.PostForm("v3"))
 	if err != nil {
-		http.Error(w, "v3 should be int", http.StatusBadRequest)
+		c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
-	FormV4, err := strconv.Atoi(r.FormValue("v4"))
+	FormV4, err := strconv.Atoi(c.PostForm("v4"))
 	if err != nil {
-		http.Error(w, "v4 should be int", http.StatusBadRequest)
+		c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
-	FormV5, err := strconv.Atoi(r.FormValue("v5"))
+	FormV5, err := strconv.Atoi(c.PostForm("v5"))
 	if err != nil {
-		http.Error(w, "v5 should be int", http.StatusBadRequest)
+		c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
-	FormFirstKillT, err := strconv.Atoi(r.FormValue("firstkill_t"))
+	FormFirstKillT, err := strconv.Atoi(c.PostForm("firstkill_t"))
 	if err != nil {
-		http.Error(w, "firstkill_t should be int", http.StatusBadRequest)
+		c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
-	FormFirstKillCT, err := strconv.Atoi(r.FormValue("firstkill_ct"))
+	FormFirstKillCT, err := strconv.Atoi(c.PostForm("firstkill_ct"))
 	if err != nil {
-		http.Error(w, "firstkill_ct should be int", http.StatusBadRequest)
+		c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
-	FormFirstDeathT, err := strconv.Atoi(r.FormValue("firstdeath_t"))
+	FormFirstDeathT, err := strconv.Atoi(c.PostForm("firstdeath_t"))
 	if err != nil {
-		http.Error(w, "firstdeath_t should be int", http.StatusBadRequest)
+		c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
-	FormFirstDeathCT, err := strconv.Atoi(r.FormValue("firstdeath_ct"))
+	FormFirstDeathCT, err := strconv.Atoi(c.PostForm("firstdeath_ct"))
 	if err != nil {
-		http.Error(w, "firstdeath_ct should be int", http.StatusBadRequest)
+		c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
 	/*
-		Form, err := strconv.Atoi(r.FormValue("tradekill")) // https://github.com/FlowingSPDG/get5-webapi/blob/e41ac0ab3c698ed67dbadcd667e55feef403e074/scripting/get5_apistats.sp#L429
+		Form, err := strconv.Atoi(c.PostForm("tradekill")) // https://github.com/FlowingSPDG/get5-webapi/blob/e41ac0ab3c698ed67dbadcd667e55feef403e074/scripting/get5_apistats.sp#L429
 		if err != nil {
-			http.Error(w, "tradekill should be int", http.StatusBadRequest)
+			c.AbortWithError(http.StatusBadRequest, err)
+			c.AbortWithError(http.StatusBadRequest, err)
 			return
 		}
 	*/
-
-	fmt.Printf("matchid : %d\n", matchid)
-	fmt.Printf("mapnumber : %d\n", mapnumber)
-	fmt.Printf("key : %s\n", r.FormValue("key"))
-	fmt.Printf("name : %s\n", FormName)
-	fmt.Printf("team : %s\n", FormTeam)
-	fmt.Printf("kills : %d\n", FormKills)
-	fmt.Printf("assists : %d\n", FormAssists)
-	fmt.Printf("deaths : %d\n", FormDeaths)
-	fmt.Printf("flashbang_assists : %d\n", FormFlashbangAssists)
-	fmt.Printf("teamkills : %d\n", FormTeamKills)
-	fmt.Printf("suicides : %d\n", FormSuicides) // not working?
-	fmt.Printf("damage : %d\n", FormDamage)
-	fmt.Printf("headshot_kills : %d\n", FormHeadShotKills)
-	fmt.Printf("roundsplayed : %d\n", FormRoundsPlayed)
-	fmt.Printf("bomb_plants : %d\n", FormBombPlants)
-	fmt.Printf("bomb_defuses : %d\n", FormBombDefuses)
-	fmt.Printf("1kill_rounds : %d\n", Form1KillRounds)
-	fmt.Printf("2kill_rounds : %d\n", Form2KillRounds)
-	fmt.Printf("3kill_rounds : %d\n", Form3KillRounds)
-	fmt.Printf("4kill_rounds : %d\n", Form4KillRounds)
-	fmt.Printf("5kill_rounds : %d\n", Form5KillRounds)
-	fmt.Printf("v1 : %d\n", FormV1)
-	fmt.Printf("v2 : %d\n", FormV2)
-	fmt.Printf("v3 : %d\n", FormV3)
-	fmt.Printf("v4 : %d\n", FormV4)
-	fmt.Printf("v5 : %d\n", FormV5)
-	fmt.Printf("firstkill_t : %d\n", FormFirstKillT)
-	fmt.Printf("firstkill_ct : %d\n", FormFirstKillCT)
-	fmt.Printf("firstdeath_t : %d\n", FormFirstDeathT)
-	fmt.Printf("firstdeath_ct : %d\n", FormFirstDeathCT)
+	/*
+		log.Printf("matchid : %d\n", matchid)
+		log.Printf("mapnumber : %d\n", mapnumber)
+		log.Printf("key : %s\n", c.PostForm("key"))
+		log.Printf("name : %s\n", FormName)
+		log.Printf("team : %s\n", FormTeam)
+		log.Printf("kills : %d\n", FormKills)
+		log.Printf("assists : %d\n", FormAssists)
+		log.Printf("deaths : %d\n", FormDeaths)
+		log.Printf("flashbang_assists : %d\n", FormFlashbangAssists)
+		log.Printf("teamkills : %d\n", FormTeamKills)
+		log.Printf("suicides : %d\n", FormSuicides) // not working?
+		log.Printf("damage : %d\n", FormDamage)
+		log.Printf("headshot_kills : %d\n", FormHeadShotKills)
+		log.Printf("roundsplayed : %d\n", FormRoundsPlayed)
+		log.Printf("bomb_plants : %d\n", FormBombPlants)
+		log.Printf("bomb_defuses : %d\n", FormBombDefuses)
+		log.Printf("1kill_rounds : %d\n", Form1KillRounds)
+		log.Printf("2kill_rounds : %d\n", Form2KillRounds)
+		log.Printf("3kill_rounds : %d\n", Form3KillRounds)
+		log.Printf("4kill_rounds : %d\n", Form4KillRounds)
+		log.Printf("5kill_rounds : %d\n", Form5KillRounds)
+		log.Printf("v1 : %d\n", FormV1)
+		log.Printf("v2 : %d\n", FormV2)
+		log.Printf("v3 : %d\n", FormV3)
+		log.Printf("v4 : %d\n", FormV4)
+		log.Printf("v5 : %d\n", FormV5)
+		log.Printf("firstkill_t : %d\n", FormFirstKillT)
+		log.Printf("firstkill_ct : %d\n", FormFirstKillCT)
+		log.Printf("firstdeath_t : %d\n", FormFirstDeathT)
+		log.Printf("firstdeath_ct : %d\n", FormFirstDeathCT)
+	*/
 
 	var m = db.MatchData{}
 	db.SQLAccess.Gorm.First(&m, matchid)
-	if m.APIKey != r.FormValue("key") {
-		http.Error(w, "Wrong API Key", http.StatusBadRequest)
+	if m.APIKey != c.PostForm("key") {
+		c.AbortWithError(http.StatusBadRequest, fmt.Errorf("Wrong API Key"))
 		return
 	}
 
@@ -490,7 +483,7 @@ func MatchMapPlayerUpdateHandler(w http.ResponseWriter, r *http.Request) {
 		p := &db.PlayerStatsData{}
 		p, err := p.GetOrCreate(matchid, mapnumber, steamid64)
 		if err != nil {
-			http.Error(w, "Failed to solve player stats object", http.StatusNotFound)
+			c.AbortWithError(http.StatusNotFound, fmt.Errorf("Failed to solve player stats object"))
 			return
 		}
 		pUpdate := p
@@ -530,7 +523,7 @@ func MatchMapPlayerUpdateHandler(w http.ResponseWriter, r *http.Request) {
 		db.SQLAccess.Gorm.Model(&p).Update(&pUpdate)
 		db.SQLAccess.Gorm.Save(&pUpdate)
 	} else {
-		http.Error(w, "Failed to find map stats object", http.StatusNotFound)
+		c.AbortWithError(http.StatusNotFound, fmt.Errorf("Failed to find map stats object"))
 		return
 	}
 	pbservices.MatchesStream.Write(int32(matchid), &pb.MatchEventReply{
@@ -568,12 +561,12 @@ func MatchMapPlayerUpdateHandler(w http.ResponseWriter, r *http.Request) {
 				FirstdeathCt:     int32(FormFirstDeathCT),
 			},
 		},
-	})
+	}, false)
 }
 
 // MatchVetoUpdateHandler Handler for /api/v1/match/{matchID}/vetoUpdate API. // TODO
-func MatchVetoUpdateHandler(w http.ResponseWriter, r *http.Request) {
-	/*fmt.Println("MatchVetoUpdateHandler")
+func MatchVetoUpdateHandler(c *gin.Context) {
+	/*log.Println("MatchVetoUpdateHandler")
 	vars := mux.Vars(r)
 	matchid, err := strconv.Atoi(vars["matchID"])
 	if err != nil {
@@ -581,14 +574,14 @@ func MatchVetoUpdateHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	FormMap := r.FormValue("map")
-	FormTeamString := r.FormValue("teamString")
-	FormPickOrVeto := r.FormValue("pick_or_veto")
+	FormMap := c.PostForm("map")
+	FormTeamString := c.PostForm("teamString")
+	FormPickOrVeto := c.PostForm("pick_or_veto")
 
-	fmt.Printf("matchid : %d\n", matchid)
-	fmt.Printf("FormMap : %s\n", FormMap)
-	fmt.Printf("FormTeamString : %s\n", FormTeamString)
-	fmt.Printf("FormPickOrVeto : %s\n", FormPickOrVeto)
+	log.Printf("matchid : %d\n", matchid)
+	log.Printf("FormMap : %s\n", FormMap)
+	log.Printf("FormTeamString : %s\n", FormTeamString)
+	log.Printf("FormPickOrVeto : %s\n", FormPickOrVeto)
 
 	m := &db.MatchData{}
 	db.SQLAccess.Gorm.First(&m,matchid)
@@ -614,13 +607,13 @@ func MatchVetoUpdateHandler(w http.ResponseWriter, r *http.Request) {
 	// veto = Veto.create(matchid, teamName, request.values.get('map'), request.values.get('pick_or_veto'))
 	// TODO : Add Veto struct in db/models.go
 	// Register to DB
-	fmt.Printf("Confirmed Map Veto For %s on map %s\n", TeamName, FormMap)*/
-	http.Error(w, "Not implemented yet", http.StatusNotImplemented)
+	log.Printf("Confirmed Map Veto For %s on map %s\n", TeamName, FormMap)*/
+	c.AbortWithError(http.StatusNotImplemented, fmt.Errorf("Not implemented yet"))
 }
 
 // MatchDemoUploadHandler Handler for /api/v1/match/{matchID}/map/{mapNumber}/demo API. // TODO
-func MatchDemoUploadHandler(w http.ResponseWriter, r *http.Request) {
-	/*fmt.Println("MatchDemoUploadHandler")
+func MatchDemoUploadHandler(c *gin.Context) {
+	/*log.Println("MatchDemoUploadHandler")
 	vars := mux.Vars(r)
 	matchid, err := strconv.Atoi(vars["matchID"])
 	if err != nil {
@@ -633,7 +626,7 @@ func MatchDemoUploadHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	DemoFile := r.FormValue("demoFile")
+	DemoFile := c.PostForm("demoFile")
 
 	m := &db.MatchData{}
 	db.SQLAccess.Gorm.First(&m,matchid)
@@ -647,10 +640,10 @@ func MatchDemoUploadHandler(w http.ResponseWriter, r *http.Request) {
 	mapstatsRecord := db.SQLAccess.Gorm.Where("match_id = ? AND map_number = ?", matchid, mapNumber).First(&mapstats)
 	if !mapstatsRecord.RecordNotFound() {
 		mapstatsRecord.Update("demoFile", DemoFile)
-		fmt.Println("Made it through the demo post.")
+		log.Println("Made it through the demo post.")
 		return
 	}
 	http.Error(w, "Failed to find map stats object", http.StatusBadRequest)
 	*/
-	http.Error(w, "Not implemented yet", http.StatusNotImplemented)
+	c.AbortWithError(http.StatusNotImplemented, fmt.Errorf("Not implemented yet"))
 }

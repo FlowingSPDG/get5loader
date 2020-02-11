@@ -1,7 +1,7 @@
 package services
 
 import (
-	"fmt"
+	"log"
 	"strings"
 	// "github.com/FlowingSPDG/get5-web-go/server/src/api"
 	"github.com/FlowingSPDG/get5-web-go/server/src/db"
@@ -14,7 +14,7 @@ import (
 
 func (s Server) RegisterMatch(ctx context.Context, req *pb.RegisterMatchRequest) (*pb.RegisterMatchReply, error) {
 	match := &db.MatchData{}
-	fmt.Printf("req : %v\n", req)
+	log.Printf("req : %v\n", req)
 	match, err := match.Create(
 		int(req.GetUserid()),
 		int(req.GetTeam1Id()),

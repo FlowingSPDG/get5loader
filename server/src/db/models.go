@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"github.com/FlowingSPDG/get5-web-go/server/src/util"
+	"log"
 	"net"
 	"time"
 
@@ -76,8 +77,8 @@ func (u *UserData) GetOrCreate() (*UserData, bool, error) { // userdata, exist,e
 	record := SQLAccess.Gorm.Where("steam_id = ?", u.SteamID).First(&SQLUserData)
 	if record.RecordNotFound() {
 		exist = false
-		fmt.Println("USER NOT EXIST!")
-		fmt.Println("CREATING USER")
+		log.Println("USER NOT EXIST!")
+		log.Println("CREATING USER")
 		steamid64, err := strconv.Atoi(u.SteamID)
 		if err != nil {
 			return u, exist, err
@@ -89,9 +90,9 @@ func (u *UserData) GetOrCreate() (*UserData, bool, error) { // userdata, exist,e
 		SQLAccess.Gorm.Create(&SQLUserData)
 		SQLAccess.Gorm.Where("steam_id = ?", u.SteamID).First(u)
 	} else {
-		fmt.Println("USER EXIST")
+		log.Println("USER EXIST")
 		exist = true
-		// fmt.Println(SQLUserData)
+		// log.Println(SQLUserData)
 		u.Name = SQLUserData.Name
 		u.ID = SQLUserData.ID
 		u.Admin = SQLUserData.Admin
@@ -172,7 +173,7 @@ func (g *GameServerData) Create(userid int, displayname string, ipstring string,
 
 	result := SQLAccess.Gorm.Create(&g)
 	errors := result.GetErrors()
-	fmt.Printf("Errors len : %d\n", len(errors))
+	log.Printf("Errors len : %d\n", len(errors))
 	if len(errors) >= 1 {
 		return nil, errors[0]
 	}
@@ -412,7 +413,7 @@ func (t *TeamData) GetPlayers() ([]PlayerStatsData, error) {
 			if results[i] != "" {
 				p := PlayerStatsData{}
 				SQLAccess.Gorm.Where("steam_id = ?", results[i]).First(&p)
-				fmt.Println(p)
+				log.Println(p)
 				if err != nil {
 					return t.Players, err
 				}
@@ -855,8 +856,8 @@ func (m *MatchData) BuildMatchDict() (*MatchConfig, error) {
 	if err != nil {
 		return &MatchConfig{}, err
 	}
-	fmt.Printf("team1 : %v\n", team1)
-	fmt.Printf("team2 : %v\n", team2)
+	log.Printf("team1 : %v\n", team1)
+	log.Printf("team2 : %v\n", team2)
 	var cfg = MatchConfig{
 		MatchID: strconv.Itoa(m.ID),
 		//Scrim:false,
@@ -953,7 +954,7 @@ func (m *MapStatsData) GetOrCreate(matchID int, MapNumber int, mapname string) (
 		m.Team1Score = 0
 		m.Team2Score = 0
 		SQLAccess.Gorm.Create(&m)
-		fmt.Printf("Created MapStatsData : %v\n", m)
+		log.Printf("Created MapStatsData : %v\n", m)
 		return m, nil
 	}
 	return m, nil
@@ -1109,7 +1110,7 @@ func GetMetrics() MetricsData {
 func checkIP(ip string) bool {
 	trial := net.ParseIP(ip)
 	if trial.To4() == nil {
-		fmt.Printf("%v is not an IPv4 address\n", ip)
+		log.Printf("%v is not an IPv4 address\n", ip)
 		return false
 	}
 	return true

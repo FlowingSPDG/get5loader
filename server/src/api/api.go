@@ -4,13 +4,13 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/FlowingSPDG/get5-web-go/server/src/util"
+	"github.com/gin-gonic/gin"
 	"github.com/go-ini/ini"
+	"log"
 
 	"net/http"
 	"strconv"
 	"strings"
-
-	"github.com/gorilla/mux"
 
 	"github.com/FlowingSPDG/get5-web-go/server/src/db"
 )
@@ -33,86 +33,43 @@ func init() {
 	ReserveMapPool = strings.Split(strings.ToLower(strings.TrimSpace(reserve)), ",")
 }
 
-// CheckLoggedInJSON Struct type for /api/v1/CheckLoggedIn API.
-type CheckLoggedInJSON struct {
-	IsLoggedIn bool   `json:"isLoggedIn"`
-	IsAdmin    bool   `json:"isAdmin"`
-	SteamID    string `json:"steamid"`
-	UserID     int    `json:"userid"`
-}
-
-// GetVersionJSON Struct type for /api/v1/GetVersion API Response.
-type GetVersionJSON struct {
-	Version string `json:"version"`
-}
-
 // GetVersion handler for /api/v1/GetVersion API.
-func GetVersion(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("CheckLoggedIn")
-	response := GetVersionJSON{
-		Version: VERSION,
-	}
-	jsonbyte, err := json.Marshal(response)
-	if err != nil {
-		http.Error(w, "JSON Format invalid", http.StatusBadRequest)
-		return
-	}
-	w.WriteHeader(http.StatusOK)
-	w.Header().Set("Content-Type", "application/json")
-	w.Write(jsonbyte)
-}
-
-// GetMapList Struct type for /api/v1/GetMapList API Response.
-type GetMapListJSON struct {
-	Active  []string `json:"active"`
-	Reserve []string `json:"reserve"`
+func GetVersion(c *gin.Context) {
+	log.Println("CheckLoggedIn")
+	c.JSON(http.StatusOK, gin.H{
+		"version": VERSION,
+	})
 }
 
 // GetMapList handler for /api/v1/GetMapList API.
-func GetMapList(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("CheckLoggedIn")
-	response := GetMapListJSON{
-		Active:  ActiveMapPool,
-		Reserve: ReserveMapPool,
-	}
-	jsonbyte, err := json.Marshal(response)
-	if err != nil {
-		http.Error(w, "JSON Format invalid", http.StatusBadRequest)
-		return
-	}
-	w.WriteHeader(http.StatusOK)
-	w.Header().Set("Content-Type", "application/json")
-	w.Write(jsonbyte)
+func GetMapList(c *gin.Context) {
+	log.Println("GetMapList")
+	c.JSON(http.StatusOK, gin.H{
+		"active":  ActiveMapPool,
+		"reserve": ReserveMapPool,
+	})
 }
 
 // CheckLoggedIn handler for /api/v1/CheckLoggedIn API.
-func CheckLoggedIn(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("CheckLoggedIn")
-	response := CheckLoggedInJSON{
-		IsLoggedIn: false,
-	}
-	s := db.Sess.Start(w, r)
+func CheckLoggedIn(c *gin.Context) {
+	log.Println("CheckLoggedIn")
+	s := db.Sess.Start(c.Writer, c.Request)
 	if s.Get("Loggedin") != nil {
-		response.IsLoggedIn = s.Get("Loggedin").(bool)
-		response.SteamID = s.Get("SteamID").(string)
-		response.UserID = s.Get("UserID").(int)
-		response.IsAdmin = s.Get("Admin").(bool)
-	}
-	jsonbyte, err := json.Marshal(response)
-	if err != nil {
-		http.Error(w, "JSON Format invalid", http.StatusBadRequest)
+		c.JSON(http.StatusOK, gin.H{
+			"isLoggedIn": s.Get("Loggedin").(bool),
+			"isAdmin":    s.Get("Admin").(bool),
+			"steamid":    s.Get("SteamID").(string),
+			"userid":     s.Get("UserID").(int),
+		})
 		return
 	}
-	w.WriteHeader(http.StatusOK)
-	w.Header().Set("Content-Type", "application/json")
-	w.Write(jsonbyte)
+	c.AbortWithError(http.StatusNotFound, fmt.Errorf("User not found"))
 }
 
 // GetMatchInfo Gets match info by ID
-func GetMatchInfo(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	fmt.Printf("GetMatchInfo\n")
-	matchid := vars["matchID"]
+func GetMatchInfo(c *gin.Context) {
+	log.Printf("GetMatchInfo\n")
+	matchid := c.Params.ByName("matchID")
 	match := db.MatchData{}
 	mapstats := []APIMapStatsData{}
 	server := APIGameServerData{}
@@ -173,23 +130,13 @@ func GetMatchInfo(w http.ResponseWriter, r *http.Request) {
 		User:          user,
 		Status:        status,
 	}
-
-	jsonbyte, err := json.Marshal(response)
-	if err != nil {
-		http.Error(w, "JSON Format invalid", http.StatusBadRequest)
-		return
-	}
-	w.WriteHeader(http.StatusOK)
-	w.Header().Set("Content-Type", "application/json")
-	w.Write(jsonbyte)
+	c.JSON(http.StatusOK, response)
 }
 
-func GetPlayerStatInfo(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	fmt.Printf("GetPlayerStatInfo\n")
-	q := r.URL.Query()
-	matchID := vars["matchID"]
-	mapID := q.Get("mapID")
+func GetPlayerStatInfo(c *gin.Context) {
+	log.Printf("GetPlayerStatInfo\n")
+	matchID := c.Params.ByName("matchID")
+	mapID := c.Query("mapID")
 	response := []APIPlayerStatsData{}
 	db.SQLAccess.Gorm.Where("match_id = ? AND map_id = ?", matchID, mapID).Limit(10).Find(&response)
 	for i := 0; i < len(response); i++ { // Calculates by server-side for avoiding JavaScript's float restrcition
@@ -199,21 +146,12 @@ func GetPlayerStatInfo(w http.ResponseWriter, r *http.Request) {
 		response[i].ADR = response[i].GetADR()
 		response[i].FPR = response[i].GetFPR()
 	}
-
-	jsonbyte, err := json.Marshal(response)
-	if err != nil {
-		http.Error(w, "JSON Format invalid", http.StatusInternalServerError)
-		return
-	}
-	w.WriteHeader(http.StatusOK)
-	w.Header().Set("Content-Type", "application/json")
-	w.Write(jsonbyte)
+	c.JSON(http.StatusOK, response)
 }
 
-func GetUserInfo(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	fmt.Printf("GetUserInfo\n")
-	userid := vars["userID"]
+func GetUserInfo(c *gin.Context) {
+	log.Printf("GetUserInfo\n")
+	userid := c.Params.ByName("userID")
 	response := APIUserData{}
 	db.SQLAccess.Gorm.First(&response, userid)
 	db.SQLAccess.Gorm.Where("user_id = ?", userid).Limit(20).Find(&response.Teams)
@@ -285,79 +223,51 @@ func GetUserInfo(w http.ResponseWriter, r *http.Request) {
 		m = append(m, matchdata)
 	}
 	response.Matches = m
-
-	jsonbyte, err := json.Marshal(response)
-	if err != nil {
-		http.Error(w, "JSON Format invalid", http.StatusInternalServerError)
-		return
-	}
-	w.WriteHeader(http.StatusOK)
-	w.Header().Set("Content-Type", "application/json")
-	w.Write(jsonbyte)
+	c.JSON(http.StatusOK, response)
 }
 
-func GetServerInfo(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	fmt.Printf("GetServerInfo\n")
-	serverID := vars["serverID"]
+func GetServerInfo(c *gin.Context) {
+	log.Printf("GetServerInfo\n")
+	serverID := c.Params.ByName("serverID")
 	response := db.GameServerData{}
 	db.SQLAccess.Gorm.First(&response, serverID)
-	jsonbyte, err := json.Marshal(response)
-	if err != nil {
-		http.Error(w, "JSON Format invalid", http.StatusInternalServerError)
-		return
-	}
-	w.WriteHeader(http.StatusOK)
-	w.Header().Set("Content-Type", "application/json")
-	w.Write(jsonbyte)
+	c.JSON(http.StatusOK, response)
 }
 
-func GetStatusString(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	fmt.Printf("GetStatusString\n")
-	matchid := vars["matchID"]
+func GetStatusString(c *gin.Context) {
+	log.Printf("GetStatusString\n")
+	matchid := c.Params.ByName("matchID")
 	response := db.MatchData{}
 	db.SQLAccess.Gorm.First(&response, matchid)
 	status, err := response.GetStatusString(true)
 	if err != nil {
-		http.Error(w, "Failed to get status", http.StatusInternalServerError)
+		c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
-	w.WriteHeader(http.StatusOK)
-	w.Header().Set("Content-Type", "text/plain")
-	w.Write([]byte(status))
+	c.String(http.StatusOK, status)
 }
 
-func GetMatches(w http.ResponseWriter, r *http.Request) {
-	fmt.Printf("GetMatches\n")
-	q := r.URL.Query()
-	offset := q.Get("offset")
+func GetMatches(c *gin.Context) {
+	log.Printf("GetMatches\n")
+	offset := c.Query("offset")
 	if offset == "" {
 		offset = "0"
 	}
-	userID := q.Get("userID")
+	userID := c.Query("userID")
 	response := []db.MatchData{}
 	if userID != "" {
 		db.SQLAccess.Gorm.Limit(20).Where("user_id = ?", userID).Order("id DESC").Offset(offset).Find(&response)
 	} else {
 		db.SQLAccess.Gorm.Limit(20).Order("id DESC").Offset(offset).Find(&response)
 	}
-	jsonbyte, err := json.Marshal(response)
-	if err != nil {
-		http.Error(w, "JSON Format invalid", http.StatusInternalServerError)
-		return
-	}
-	w.WriteHeader(http.StatusOK)
-	w.Header().Set("Content-Type", "application/json")
-	w.Write(jsonbyte)
+	c.JSON(http.StatusOK, response)
 }
 
-func GetTeamInfo(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	fmt.Printf("GetTeamInfo\n")
-	teamid, err := strconv.Atoi(vars["teamID"])
+func GetTeamInfo(c *gin.Context) {
+	log.Printf("GetTeamInfo\n")
+	teamid, err := strconv.Atoi(c.Params.ByName("teamID"))
 	if err != nil {
-		http.Error(w, "teamID should be int.", http.StatusBadRequest)
+		c.AbortWithError(http.StatusBadRequest, fmt.Errorf("teamID shoulbe int"))
 		return
 	}
 	response := APITeamData{}
@@ -365,26 +275,18 @@ func GetTeamInfo(w http.ResponseWriter, r *http.Request) {
 	var steamids = make([]string, 5)
 	steamids, err = response.GetPlayers()
 	if err != nil {
-		http.Error(w, "Failed to get players.", http.StatusInternalServerError)
+		c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
 	for i := 0; i < len(steamids); i++ {
 		response.SteamIDs = append(response.SteamIDs, steamids[i])
 	}
-	jsonbyte, err := json.Marshal(response)
-	if err != nil {
-		http.Error(w, "JSON Format invalid", http.StatusInternalServerError)
-		return
-	}
-	w.WriteHeader(http.StatusOK)
-	w.Header().Set("Content-Type", "application/json")
-	w.Write(jsonbyte)
+	c.JSON(http.StatusOK, response)
 }
 
-func GetRecentMatches(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	fmt.Printf("GetRecentMatches\n")
-	teamID := vars["teamID"]
+func GetRecentMatches(c *gin.Context) {
+	log.Printf("GetRecentMatches\n")
+	teamID := c.Params.ByName("teamID")
 	matches := []db.MatchData{}
 	response := make([]APIMatchData, 0, len(matches))
 	db.SQLAccess.Gorm.Where("team1_id = ?", teamID).Or("team2_id = ?", teamID).Limit(20).Order("id DESC").Find(&matches)
@@ -449,73 +351,51 @@ func GetRecentMatches(w http.ResponseWriter, r *http.Request) {
 		}
 		response = append(response, m)
 	}
-
-	jsonbyte, err := json.Marshal(response)
-	if err != nil {
-		http.Error(w, "JSON Format invalid", http.StatusInternalServerError)
-		return
-	}
-	w.WriteHeader(http.StatusOK)
-	w.Header().Set("Content-Type", "application/json")
-	w.Write(jsonbyte)
+	c.JSON(http.StatusOK, response)
 }
 
-func CheckUserCanEdit(w http.ResponseWriter, r *http.Request) {
-	fmt.Printf("CheckUserCanEdit\n")
-	vars := mux.Vars(r)
-	q := r.URL.Query()
-	teamid := vars["teamID"]
-	useridstr := q.Get("userID")
+func CheckUserCanEdit(c *gin.Context) {
+	log.Printf("CheckUserCanEdit\n")
+	teamid := c.Params.ByName("teamID")
+	useridstr := c.Query("userID")
 	team := db.TeamData{}
 	db.SQLAccess.Gorm.First(&team, teamid)
 	userid, err := strconv.Atoi(useridstr)
 	if err != nil {
-		http.Error(w, "userid should be int", http.StatusBadRequest)
+		c.AbortWithError(http.StatusBadRequest, fmt.Errorf("userid should be int"))
 		return
 	}
-	w.WriteHeader(http.StatusOK)
-	w.Header().Set("Content-Type", "application/json")
-	w.Write([]byte(strconv.FormatBool(team.CanEdit(userid))))
+	c.String(http.StatusOK, strconv.FormatBool(team.CanEdit(userid)))
 }
 
-func GetMetrics(w http.ResponseWriter, r *http.Request) {
-	fmt.Printf("GetMetrics\n")
+func GetMetrics(c *gin.Context) {
+	log.Printf("GetMetrics\n")
 	Metrics := db.GetMetrics()
-	jsonbyte, err := json.Marshal(Metrics)
-	if err != nil {
-		http.Error(w, "JSON Format Invalid", http.StatusInternalServerError)
-		return
-	}
-	w.WriteHeader(http.StatusOK)
-	w.Header().Set("Content-Type", "application/json")
-	w.Write(jsonbyte)
+	c.JSON(http.StatusOK, Metrics)
 }
 
 // GetSteamName Get Steam Profile name by SteamWebAPI
-func GetSteamName(w http.ResponseWriter, r *http.Request) {
-	fmt.Printf("GetSteamName\n")
-	q := r.URL.Query()
-	steamid := q.Get("steamID")
+func GetSteamName(c *gin.Context) {
+	log.Printf("GetSteamName\n")
+	steamid := c.Query("steamID")
 	steamid64, err := strconv.Atoi(steamid)
 	if err != nil {
-		http.Error(w, "steamID should be int", http.StatusBadRequest)
+		c.AbortWithError(http.StatusBadRequest, fmt.Errorf("steamID should be int"))
 		return
 	}
 	steamname, err := db.GetSteamName(uint64(steamid64))
 	if err != nil {
-		http.Error(w, "failed to get steamname", http.StatusInternalServerError)
+		c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
-	w.WriteHeader(http.StatusOK)
-	w.Header().Set("Content-Type", "text/plain")
-	w.Write([]byte(steamname))
+	c.String(http.StatusOK, steamname)
 }
 
 // GetTeamList Returns registered team list in JSON.
-func GetTeamList(w http.ResponseWriter, r *http.Request) {
-	fmt.Printf("GetTeamList\n")
+func GetTeamList(c *gin.Context) {
+	log.Printf("GetTeamList\n")
 	Teams := []db.TeamData{}
-	s := db.Sess.Start(w, r)
+	s := db.Sess.Start(c.Writer, c.Request)
 	var IsLoggedIn bool
 	if s.Get("Loggedin") != nil {
 		IsLoggedIn = s.Get("Loggedin").(bool)
@@ -529,20 +409,13 @@ func GetTeamList(w http.ResponseWriter, r *http.Request) {
 	for i := 0; i < len(Teams); i++ {
 		Teams[i].GetPlayers()
 	}
-	jsonbyte, err := json.Marshal(Teams)
-	if err != nil {
-		http.Error(w, "JSON Format invalid", http.StatusInternalServerError)
-		return
-	}
-	w.WriteHeader(http.StatusOK)
-	w.Header().Set("Content-Type", "application/json")
-	w.Write(jsonbyte)
+	c.JSON(http.StatusOK, Teams)
 }
 
 // GetServerList Returns registered public server and owned list in JSON
-func GetServerList(w http.ResponseWriter, r *http.Request) {
-	fmt.Printf("GetServerList\n")
-	s := db.Sess.Start(w, r)
+func GetServerList(c *gin.Context) {
+	log.Printf("GetServerList\n")
+	s := db.Sess.Start(c.Writer, c.Request)
 	var IsLoggedIn bool
 	if s.Get("Loggedin") != nil {
 		IsLoggedIn = s.Get("Loggedin").(bool)
@@ -554,21 +427,14 @@ func GetServerList(w http.ResponseWriter, r *http.Request) {
 	} else {
 		db.SQLAccess.Gorm.Where("public_server = true AND in_use = false").Find(&Servers)
 	}
-	jsonbyte, err := json.Marshal(Servers)
-	if err != nil {
-		http.Error(w, "JSON Format invalid", http.StatusBadRequest)
-		return
-	}
-	w.WriteHeader(http.StatusOK)
-	w.Header().Set("Content-Type", "application/json")
-	w.Write(jsonbyte)
+	c.JSON(http.StatusOK, Servers)
 }
 
 // CreateTeam Registers team info to DB
-func CreateTeam(w http.ResponseWriter, r *http.Request) {
-	fmt.Printf("CreateTeam\n")
+func CreateTeam(c *gin.Context) {
+	log.Printf("CreateTeam\n")
 	var IsLoggedIn = false
-	s := db.Sess.Start(w, r)
+	s := db.Sess.Start(c.Writer, c.Request)
 	if s.Get("Loggedin") != nil {
 		IsLoggedIn = s.Get("Loggedin").(bool)
 	}
@@ -576,110 +442,103 @@ func CreateTeam(w http.ResponseWriter, r *http.Request) {
 		userid := s.Get("UserID").(int)
 		Team := db.TeamData{}
 		TeamTemp := db.TeamData{}
-		err := json.NewDecoder(r.Body).Decode(&TeamTemp)
+		err := json.NewDecoder(c.Request.Body).Decode(&TeamTemp)
 		if err != nil {
-			http.Error(w, "JSON Format invalid", http.StatusBadRequest)
+			c.AbortWithError(http.StatusBadRequest, fmt.Errorf("JSON Format invalid"))
 			return
 		}
 		_, err = Team.Create(userid, TeamTemp.Name, TeamTemp.Tag, TeamTemp.Flag, TeamTemp.Logo, TeamTemp.Auths, TeamTemp.PublicTeam)
 		if err != nil {
-			http.Error(w, "Failed to create team", http.StatusInternalServerError)
+			log.Printf("Failed to create team. ERR : %v\n", err)
+			c.AbortWithError(http.StatusInternalServerError, err)
 			return
 		}
-		w.WriteHeader(http.StatusOK)
-		w.Header().Set("Content-Type", "text/plain")
-		w.Write([]byte("OK"))
+		c.String(http.StatusOK, "OK")
 	} else {
-		http.Error(w, "Forbidden", http.StatusForbidden)
+		c.AbortWithError(http.StatusForbidden, fmt.Errorf("Forbidden"))
 	}
 }
 
 // EditTeam Edits team information
-func EditTeam(w http.ResponseWriter, r *http.Request) {
-	fmt.Printf("EditTeam\n")
+func EditTeam(c *gin.Context) {
+	log.Printf("EditTeam\n")
 	var IsLoggedIn = false
-	s := db.Sess.Start(w, r)
+	s := db.Sess.Start(c.Writer, c.Request)
 	if s.Get("Loggedin") != nil {
 		IsLoggedIn = s.Get("Loggedin").(bool)
 	}
 	if IsLoggedIn {
 		userid := s.Get("UserID").(int)
-		vars := mux.Vars(r)
-		teamid, err := strconv.Atoi(vars["teamID"])
+		teamid, err := strconv.Atoi(c.Params.ByName("teamID"))
 		if err != nil {
-			http.Error(w, "teamid should be int.", http.StatusBadRequest)
+			c.AbortWithError(http.StatusBadRequest, fmt.Errorf("teamid should be int."))
 			return
 		}
 		Team := db.TeamData{}
 		db.SQLAccess.Gorm.First(&Team, teamid)
 		if !Team.CanEdit(userid) {
-			http.Error(w, "You do not have permission to edit this team.", http.StatusUnauthorized)
+			c.AbortWithError(http.StatusUnauthorized, fmt.Errorf("You do not have permission to edit this team"))
 			return
 		}
-		err = json.NewDecoder(r.Body).Decode(&Team)
+		err = json.NewDecoder(c.Request.Body).Decode(&Team)
 		if err != nil {
-			http.Error(w, "JSON Format Invalid", http.StatusBadRequest)
+			c.AbortWithError(http.StatusBadRequest, fmt.Errorf("JSON Format Invalid"))
 			return
 		}
 		Team.ID = teamid
 		Team.UserID = userid
-		fmt.Printf("Team : %v\n", Team)
+		log.Printf("Team : %v\n", Team)
 
 		_, err = Team.Edit()
 		if err != nil {
-			fmt.Printf("Team edit ERR : %v\n", err)
-			http.Error(w, "Failed to edit team", http.StatusInternalServerError)
+			log.Printf("Team edit ERR : %v\n", err)
+			c.AbortWithError(http.StatusInternalServerError, err)
 			return
 		}
-		w.WriteHeader(http.StatusOK)
-		w.Header().Set("Content-Type", "text/plain")
-		w.Write([]byte("OK"))
+		c.String(http.StatusOK, "OK")
 	} else {
-		http.Error(w, "Forbidden", http.StatusUnauthorized)
+		c.AbortWithError(http.StatusUnauthorized, fmt.Errorf("Forbidden"))
 	}
 }
 
 // DeleteTeam Deletes team
-func DeleteTeam(w http.ResponseWriter, r *http.Request) {
-	fmt.Printf("DeleteTeam\n")
+func DeleteTeam(c *gin.Context) {
+	log.Printf("DeleteTeam\n")
 	var IsLoggedIn = false
-	s := db.Sess.Start(w, r)
+	s := db.Sess.Start(c.Writer, c.Request)
 	if s.Get("Loggedin") != nil {
 		IsLoggedIn = s.Get("Loggedin").(bool)
 	}
 	if IsLoggedIn {
 		userid := s.Get("UserID").(int)
-		vars := mux.Vars(r)
-		teamID, err := strconv.Atoi(vars["teamID"])
+		teamID, err := strconv.Atoi(c.Params.ByName("teamID"))
 		if err != nil {
-			http.Error(w, "teamID should be int.", http.StatusBadRequest)
+			c.AbortWithError(http.StatusBadRequest, fmt.Errorf("teamID should be int."))
 			return
 		}
 		Team := db.TeamData{ID: teamID}
 
 		if !Team.CanDelete(userid) {
-			http.Error(w, "You dont have permission to delete this team.", http.StatusUnauthorized)
+			c.AbortWithError(http.StatusUnauthorized, fmt.Errorf("You dont have permission to delete this team"))
 			return
 		}
 
 		err = Team.Delete()
 		if err != nil {
-			http.Error(w, "Failed to delete team", http.StatusInternalServerError)
+			c.AbortWithError(http.StatusInternalServerError, err)
 			return
 		}
-		w.WriteHeader(http.StatusOK)
-		w.Header().Set("Content-Type", "text/plain")
-		w.Write([]byte("OK"))
+		c.String(http.StatusOK, "OK")
 	} else {
-		http.Error(w, "Forbidden", http.StatusUnauthorized)
+		c.AbortWithError(http.StatusUnauthorized, fmt.Errorf("Forbidden"))
 	}
 }
 
 // CreateServer Register server to DB
-func CreateServer(w http.ResponseWriter, r *http.Request) {
-	fmt.Printf("CreateServer\n")
+func CreateServer(c *gin.Context) {
+	log.Printf("CreateServer\n")
 	var IsLoggedIn = false
-	s := db.Sess.Start(w, r)
+	s := db.Sess.Start(c.Writer, c.Request)
 	if s.Get("Loggedin") != nil {
 		IsLoggedIn = s.Get("Loggedin").(bool)
 	}
@@ -687,50 +546,46 @@ func CreateServer(w http.ResponseWriter, r *http.Request) {
 		userid := s.Get("UserID").(int)
 		Server := db.GameServerData{}
 		ServerTemp := db.GameServerData{}
-		err := json.NewDecoder(r.Body).Decode(&ServerTemp)
+		err := json.NewDecoder(c.Request.Body).Decode(&ServerTemp)
 		if err != nil {
-			http.Error(w, "JSON Format invalid", http.StatusBadRequest)
+			c.AbortWithError(http.StatusBadRequest, fmt.Errorf("JSON Format invalid"))
 			return
 		}
 		_, err = Server.Create(userid, ServerTemp.DisplayName, ServerTemp.IPString, ServerTemp.Port, ServerTemp.RconPassword, ServerTemp.PublicServer)
 		if err != nil {
-			http.Error(w, "Failed to create server", http.StatusBadRequest)
+			c.AbortWithError(http.StatusBadRequest, fmt.Errorf("Failed to create server"))
 			return
 		}
-		w.WriteHeader(http.StatusOK)
-		w.Header().Set("Content-Type", "text/plain")
-		w.Write([]byte("OK"))
-
+		c.String(http.StatusOK, "OK")
 	} else {
-		http.Error(w, "Forbidden", http.StatusUnauthorized)
+		c.AbortWithError(http.StatusUnauthorized, fmt.Errorf("Forbidden"))
 	}
 }
 
 // EditServer Edits Server information
-func EditServer(w http.ResponseWriter, r *http.Request) {
-	fmt.Printf("EditServer\n")
+func EditServer(c *gin.Context) {
+	log.Printf("EditServer\n")
 	var IsLoggedIn = false
-	s := db.Sess.Start(w, r)
+	s := db.Sess.Start(c.Writer, c.Request)
 	if s.Get("Loggedin") != nil {
 		IsLoggedIn = s.Get("Loggedin").(bool)
 	}
 	if IsLoggedIn {
 		userid := s.Get("UserID").(int)
-		vars := mux.Vars(r)
-		serverID, err := strconv.Atoi(vars["serverID"])
+		serverID, err := strconv.Atoi(c.Params.ByName("serverID"))
 		if err != nil {
-			fmt.Println(err)
-			http.Error(w, "serverID should be int", http.StatusBadRequest)
+			log.Printf("ERR : %v\n", err)
+			c.AbortWithError(http.StatusBadRequest, fmt.Errorf("serverID should be int"))
 			return
 		}
 		Server := db.GameServerData{ID: serverID}
 		if !Server.CanEdit(userid) {
-			http.Error(w, "You do not have permission to edit this server.", http.StatusForbidden)
+			c.AbortWithError(http.StatusForbidden, fmt.Errorf("You do not have permission to edit this server"))
 			return
 		}
-		err = json.NewDecoder(r.Body).Decode(&Server)
+		err = json.NewDecoder(c.Request.Body).Decode(&Server)
 		if err != nil {
-			http.Error(w, "JSON Format invalid", http.StatusBadRequest)
+			c.AbortWithError(http.StatusBadRequest, fmt.Errorf("JSON Format invalid"))
 			return
 		}
 		Server.ID = serverID
@@ -738,58 +593,57 @@ func EditServer(w http.ResponseWriter, r *http.Request) {
 
 		_, err = Server.Edit()
 		if err != nil {
-			http.Error(w, "Failed to edit server", http.StatusInternalServerError)
+			c.AbortWithError(http.StatusInternalServerError, err)
 			return
 		}
-		w.WriteHeader(http.StatusOK)
-		w.Header().Set("Content-Type", "text/plain")
-		w.Write([]byte("OK"))
+		c.String(http.StatusOK, "OK")
 	} else {
-		http.Error(w, "Forbidden", http.StatusUnauthorized)
+		c.AbortWithError(http.StatusUnauthorized, fmt.Errorf("Forbidden"))
 	}
 }
 
 // DeleteServer Deletes Server information
-func DeleteServer(w http.ResponseWriter, r *http.Request) {
-	fmt.Printf("DeleteTeam\n")
+func DeleteServer(c *gin.Context) {
+	log.Printf("DeleteTeam\n")
 	var IsLoggedIn = false
-	s := db.Sess.Start(w, r)
+	s := db.Sess.Start(c.Writer, c.Request)
 	if s.Get("Loggedin") != nil {
 		IsLoggedIn = s.Get("Loggedin").(bool)
 	}
 	if IsLoggedIn {
 		userid := s.Get("UserID").(int)
-		vars := mux.Vars(r)
-		serverID, err := strconv.Atoi(vars["serverID"])
+		serverID, err := strconv.Atoi(c.Params.ByName("serverID"))
 		if err != nil {
-			http.Error(w, "serverID should be int", http.StatusBadRequest)
+			c.AbortWithError(http.StatusBadRequest, fmt.Errorf("serverID should be int"))
 			return
 		}
 		Server := db.GameServerData{ID: serverID}
 
 		if !Server.CanDelete(userid) {
-			http.Error(w, "You dont have permission to delete this server.", http.StatusUnauthorized)
+			c.AbortWithError(http.StatusBadRequest, fmt.Errorf("You dont have permission to delete this server"))
 			return
 		}
 
 		err = Server.Delete()
 		if err != nil {
-			http.Error(w, "Failed to delete server", http.StatusInternalServerError)
+			c.AbortWithError(http.StatusInternalServerError, err)
 			return
 		}
-		w.WriteHeader(http.StatusOK)
-		w.Header().Set("Content-Type", "text/plain")
-		w.Write([]byte("OK"))
+		c.String(http.StatusOK, "OK")
 	} else {
-		http.Error(w, "Forbidden", http.StatusUnauthorized)
+		c.AbortWithError(http.StatusUnauthorized, fmt.Errorf("Forbidden"))
 	}
 }
 
 // CreateMatch Registers match info
-func CreateMatch(w http.ResponseWriter, r *http.Request) {
-	fmt.Printf("CreateMatch\n")
+func CreateMatch(c *gin.Context) {
+	log.Printf("CreateMatch\n")
+	if c.Params.ByName("matchID") != "create" { // rejects requests other than "/match/create".
+		c.AbortWithError(http.StatusBadRequest, fmt.Errorf("Unknown Request"))
+		return
+	}
 	var IsLoggedIn = false
-	s := db.Sess.Start(w, r)
+	s := db.Sess.Start(c.Writer, c.Request)
 	if s.Get("Loggedin") != nil {
 		IsLoggedIn = s.Get("Loggedin").(bool)
 	}
@@ -797,46 +651,43 @@ func CreateMatch(w http.ResponseWriter, r *http.Request) {
 		userid := s.Get("UserID").(int)
 		var MatchTemp = db.MatchData{}
 		var Match = db.MatchData{}
-		err := json.NewDecoder(r.Body).Decode(&MatchTemp)
+		err := json.NewDecoder(c.Request.Body).Decode(&MatchTemp)
 		if err != nil {
-			http.Error(w, "JSON Format invalid", http.StatusBadRequest)
+			c.AbortWithError(http.StatusBadRequest, fmt.Errorf("JSON Format invalid"))
 			return
 		}
 		_, err = Match.Create(userid, MatchTemp.Team1ID, MatchTemp.Team2ID, MatchTemp.Team1String, MatchTemp.Team2String, MatchTemp.MaxMaps, MatchTemp.SkipVeto, MatchTemp.Title, MatchTemp.VetoMapPoolJSON, MatchTemp.ServerID)
 		if err != nil {
-			http.Error(w, "Failed to create match", http.StatusInternalServerError)
+			c.AbortWithError(http.StatusInternalServerError, err)
 			return
 		}
-		w.WriteHeader(http.StatusOK)
-		w.Header().Set("Content-Type", "text/plain")
-		w.Write([]byte("OK"))
-
+		c.String(http.StatusOK, "OK")
 	} else {
-		http.Error(w, "Forbidden", http.StatusUnauthorized)
+		c.AbortWithError(http.StatusUnauthorized, fmt.Errorf("Forbidden"))
 	}
 }
 
 // MatchCancelHandler Handler for /api/v1/match/{matchID}/cancel API.
-func MatchCancelHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("MatchCancelHandler")
+func MatchCancelHandler(c *gin.Context) {
+	log.Println("MatchCancelHandler")
 	var IsLoggedIn = false
 	var IsAdmin = false
-	s := db.Sess.Start(w, r)
+	s := db.Sess.Start(c.Writer, c.Request)
 	if s.Get("Loggedin") != nil {
 		IsLoggedIn = s.Get("Loggedin").(bool)
 		IsAdmin = s.Get("Admin").(bool)
 	}
 	if IsLoggedIn && IsAdmin {
-		vars := mux.Vars(r)
-		matchid, err := strconv.Atoi(vars["matchID"])
+		matchid, err := strconv.Atoi(c.Params.ByName("matchID"))
 		if err != nil {
-			http.Error(w, "matchid should be int", http.StatusBadRequest)
+			c.AbortWithError(http.StatusBadRequest, fmt.Errorf("matchid should be int"))
 			return
 		}
 		Match := db.MatchData{}
 		rec := db.SQLAccess.Gorm.First(&Match, matchid)
 		if rec.RecordNotFound() {
-			http.Error(w, "Failed to find match", http.StatusNotFound)
+			c.AbortWithError(http.StatusNotFound, fmt.Errorf("Failed to find match"))
+			return
 		}
 		MatchUpdate := Match
 		db.SQLAccess.Gorm.First(&MatchUpdate)
@@ -854,196 +705,190 @@ func MatchCancelHandler(w http.ResponseWriter, r *http.Request) {
 
 		_, err = Server.SendRcon("get5_endmatch")
 		if err != nil {
-			http.Error(w, fmt.Sprintf("Failed to cancel match: %v", err), http.StatusNotFound)
+			c.AbortWithError(http.StatusNotFound, fmt.Errorf("Failed to cancel match %v", err))
+			return
 		}
 	} else {
-		http.Error(w, "Forbidden", http.StatusUnauthorized)
+		c.AbortWithError(http.StatusUnauthorized, fmt.Errorf("Forbidden"))
+		return
 	}
 }
 
 // MatchRconHandler Handler for /api/v1/match/{matchID}/rcon API.
-func MatchRconHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("MatchRconHandler")
+func MatchRconHandler(c *gin.Context) {
+	log.Println("MatchRconHandler")
 	var IsLoggedIn = false
 	var IsAdmin = false
-	s := db.Sess.Start(w, r)
+	s := db.Sess.Start(c.Writer, c.Request)
 	if s.Get("Loggedin") != nil {
 		IsLoggedIn = s.Get("Loggedin").(bool)
 		IsAdmin = s.Get("Admin").(bool)
 	}
 	if IsLoggedIn && IsAdmin {
-		vars := mux.Vars(r)
-		matchid, err := strconv.Atoi(vars["matchID"])
+		matchid, err := strconv.Atoi(c.Params.ByName("matchID"))
 		if err != nil {
-			http.Error(w, "matchid should be int", http.StatusBadRequest)
+			c.AbortWithError(http.StatusBadRequest, fmt.Errorf("matchid should be int"))
 			return
 		}
-		q := r.URL.Query()
-		command := q.Get("command")
+		command := c.Query("command")
 		Match := db.MatchData{}
 		rec := db.SQLAccess.Gorm.First(&Match, matchid)
 		if rec.RecordNotFound() {
-			http.Error(w, "Failed to find match", http.StatusNotFound)
+			c.AbortWithError(http.StatusNotFound, fmt.Errorf("Failed to find match"))
 			return
 		}
 
 		Server := db.GameServerData{}
 		rec = db.SQLAccess.Gorm.First(&Server, Match.ServerID)
 		if rec.RecordNotFound() {
-			http.Error(w, "Failed to find server", http.StatusNotFound)
+			c.AbortWithError(http.StatusNotFound, fmt.Errorf("Failed to find server"))
 			return
 		}
 		RconRes := "No output"
 		res, err := Server.SendRcon(command)
 		if err != nil {
-			http.Error(w, fmt.Sprintf("Failed to send command : %s", err), http.StatusInternalServerError)
+			c.AbortWithError(http.StatusInternalServerError, err)
 			return
 		}
 		if res != "" {
 			RconRes = res
 		}
-		w.WriteHeader(http.StatusOK)
-		w.Header().Set("Content-Type", "text/plain")
-		w.Write([]byte(RconRes))
+		c.String(http.StatusOK, RconRes)
 	} else {
-		http.Error(w, "Forbidden", http.StatusUnauthorized)
+		c.AbortWithError(http.StatusUnauthorized, fmt.Errorf("Forbidden"))
 		return
 	}
 }
 
 // MatchPauseHandler Handler for /api/v1/match/{matchID}/pause API.
-func MatchPauseHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("MatchPauseHandler")
+func MatchPauseHandler(c *gin.Context) {
+	log.Println("MatchPauseHandler")
 	var IsLoggedIn = false
 	var IsAdmin = false
-	s := db.Sess.Start(w, r)
+	s := db.Sess.Start(c.Writer, c.Request)
 	if s.Get("Loggedin") != nil {
 		IsLoggedIn = s.Get("Loggedin").(bool)
 		IsAdmin = s.Get("Admin").(bool)
 	}
 	if IsLoggedIn && IsAdmin {
-		vars := mux.Vars(r)
-		matchid, err := strconv.Atoi(vars["matchID"])
+		matchid, err := strconv.Atoi(c.Params.ByName("matchID"))
 		if err != nil {
-			http.Error(w, "matchid should be int", http.StatusBadRequest)
+			c.AbortWithError(http.StatusBadRequest, fmt.Errorf("matchid should be int"))
 			return
 		}
 		Match := db.MatchData{}
 		rec := db.SQLAccess.Gorm.First(&Match, matchid)
 		if rec.RecordNotFound() {
-			http.Error(w, "Failed to find match", http.StatusNotFound)
+			c.AbortWithError(http.StatusNotFound, fmt.Errorf("Failed to find match"))
+			return
 		}
 
 		Server := db.GameServerData{}
 		rec = db.SQLAccess.Gorm.First(&Server, Match.ServerID)
 		if rec.RecordNotFound() {
-			http.Error(w, "Failed to find server", http.StatusNotFound)
+			c.AbortWithError(http.StatusNotFound, fmt.Errorf("Failed to find server"))
+			return
 		}
 		_, err = Server.SendRcon("sm_pause")
 		if err != nil {
-			http.Error(w, fmt.Sprintf("Failed to send pause command : %s", err), http.StatusInternalServerError)
+			c.AbortWithError(http.StatusInternalServerError, err)
+			return
 		}
-		w.WriteHeader(http.StatusOK)
-		w.Header().Set("Content-Type", "text/plain")
-		w.Write([]byte("OK"))
+		c.String(http.StatusOK, "OK")
 	} else {
-		http.Error(w, "Forbidden", http.StatusUnauthorized)
+		c.AbortWithError(http.StatusUnauthorized, fmt.Errorf("Forbidden"))
 	}
 }
 
 // MatchUnpauseHandler Handler for /api/v1/match/{matchID}/unpause API.
-func MatchUnpauseHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("MatchUnpauseHandler")
+func MatchUnpauseHandler(c *gin.Context) {
+	log.Println("MatchUnpauseHandler")
 	var IsLoggedIn = false
 	var IsAdmin = false
-	s := db.Sess.Start(w, r)
+	s := db.Sess.Start(c.Writer, c.Request)
 	if s.Get("Loggedin") != nil {
 		IsLoggedIn = s.Get("Loggedin").(bool)
 		IsAdmin = s.Get("Admin").(bool)
 	}
 	if IsLoggedIn && IsAdmin {
-		vars := mux.Vars(r)
-		matchid, err := strconv.Atoi(vars["matchID"])
+		matchid, err := strconv.Atoi(c.Params.ByName("matchID"))
 		if err != nil {
-			http.Error(w, "matchid should be int", http.StatusBadRequest)
+			c.AbortWithError(http.StatusBadRequest, fmt.Errorf("matchid should be int"))
 			return
 		}
 		Match := db.MatchData{}
 		rec := db.SQLAccess.Gorm.First(&Match, matchid)
 		if rec.RecordNotFound() {
-			http.Error(w, "Failed to find match", http.StatusNotFound)
+			c.AbortWithError(http.StatusNotFound, fmt.Errorf("Failed to find match"))
+			return
 		}
 
 		Server := db.GameServerData{}
 		rec = db.SQLAccess.Gorm.First(&Server, Match.ServerID)
 		if rec.RecordNotFound() {
-			http.Error(w, "Failed to find server", http.StatusNotFound)
+			c.AbortWithError(http.StatusNotFound, fmt.Errorf("Failed to find server"))
+			return
 		}
 		_, err = Server.SendRcon("sm_unpause")
 		if err != nil {
-			http.Error(w, fmt.Sprintf("Failed to send unpause command : %s", err), http.StatusInternalServerError)
+			c.AbortWithError(http.StatusInternalServerError, err)
+			return
 		}
-		w.WriteHeader(http.StatusOK)
-		w.Header().Set("Content-Type", "text/plain")
-		w.Write([]byte("OK"))
+		c.String(http.StatusOK, "OK")
 	} else {
-		http.Error(w, "Forbidden", http.StatusUnauthorized)
+		c.AbortWithError(http.StatusUnauthorized, fmt.Errorf("Forbidden"))
 	}
 }
 
 // MatchAddUserHandler Handler for /api/v1/match/{matchID}/adduser API.
-func MatchAddUserHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("MatchAddUserHandler")
+func MatchAddUserHandler(c *gin.Context) {
+	log.Println("MatchAddUserHandler")
 	var IsLoggedIn = false
 	var IsAdmin = false
-	s := db.Sess.Start(w, r)
+	s := db.Sess.Start(c.Writer, c.Request)
 	if s.Get("Loggedin") != nil {
 		IsLoggedIn = s.Get("Loggedin").(bool)
 		IsAdmin = s.Get("Admin").(bool)
 	}
 	if IsLoggedIn && IsAdmin {
-		q := r.URL.Query()
-		team := q.Get("team")
+		team := c.Query("team")
 		if team != "team1" && team != "team2" && team != "spec" {
-			http.Error(w, "No team specified", http.StatusBadRequest)
+			c.AbortWithError(http.StatusBadRequest, fmt.Errorf("No team specified"))
 			return
 		}
-		auth := q.Get("auth")
+		auth := c.Query("auth")
 		newauth, err := util.AuthToSteamID64(auth)
 		if err != nil {
-			http.Error(w, "Auth format invalid.", http.StatusBadRequest)
+			c.AbortWithError(http.StatusBadRequest, fmt.Errorf("Auth format invalid."))
 			return
 		}
-		fmt.Printf("auth : %s", newauth)
-		vars := mux.Vars(r)
-		matchid, err := strconv.Atoi(vars["matchID"])
+		log.Printf("auth : %s", newauth)
+		matchid, err := strconv.Atoi(c.Params.ByName("matchID"))
 		if err != nil {
-			http.Error(w, "matchID should be int", http.StatusBadRequest)
+			c.AbortWithError(http.StatusBadRequest, fmt.Errorf("matchID should be int"))
 			return
 		}
 		Match := db.MatchData{}
 		rec := db.SQLAccess.Gorm.First(&Match, matchid)
 		if rec.RecordNotFound() {
-			http.Error(w, "Failed to find match", http.StatusNotFound)
+			c.AbortWithError(http.StatusNotFound, fmt.Errorf("Failed to find match"))
 			return
 		}
 
 		Server := db.GameServerData{}
 		rec = db.SQLAccess.Gorm.First(&Server, Match.ServerID)
 		if rec.RecordNotFound() {
-			http.Error(w, "Failed to find server", http.StatusNotFound)
+			c.AbortWithError(http.StatusNotFound, fmt.Errorf("Failed to find server"))
 			return
 		}
 		res, err := Server.SendRcon(fmt.Sprintf("get5_addplayer %s %s", newauth, team))
 		if err != nil {
-			http.Error(w, fmt.Sprintf("Failed to send command : %s", err), http.StatusInternalServerError)
+			c.AbortWithError(http.StatusInternalServerError, err)
 			return
 		}
-		w.WriteHeader(http.StatusOK)
-		w.Header().Set("Content-Type", "text/plain")
-		w.Write([]byte(res))
+		c.String(http.StatusOK, res)
 	} else {
-		http.Error(w, "Forbidden", http.StatusUnauthorized)
+		c.AbortWithError(http.StatusUnauthorized, fmt.Errorf("Forbidden"))
 	}
 }
 
@@ -1053,102 +898,90 @@ type BackupListJSON struct {
 }
 
 // MatchListBackupsHandler Handler for /api/v1/match/{matchID}/backup API(GET).
-func MatchListBackupsHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("MatchListBackupsHandler")
+func MatchListBackupsHandler(c *gin.Context) {
+	log.Println("MatchListBackupsHandler")
 	var IsLoggedIn = false
 	var IsAdmin = false
-	s := db.Sess.Start(w, r)
+	s := db.Sess.Start(c.Writer, c.Request)
 	if s.Get("Loggedin") != nil {
 		IsLoggedIn = s.Get("Loggedin").(bool)
 		IsAdmin = s.Get("Admin").(bool)
 	}
 	if IsLoggedIn && IsAdmin {
-		vars := mux.Vars(r)
-		matchid, err := strconv.Atoi(vars["matchID"])
+		matchid, err := strconv.Atoi(c.Params.ByName("matchID"))
 		if err != nil {
-			http.Error(w, "matchID should be int", http.StatusBadRequest)
+			c.AbortWithError(http.StatusBadRequest, fmt.Errorf("matchID should be int"))
 			return
 		}
 		Match := db.MatchData{}
 		rec := db.SQLAccess.Gorm.First(&Match, matchid)
 		if rec.RecordNotFound() {
-			http.Error(w, "Failed to find match", http.StatusNotFound)
+			c.AbortWithError(http.StatusNotFound, fmt.Errorf("Failed to find match"))
 			return
 		}
 
 		Server := db.GameServerData{}
 		rec = db.SQLAccess.Gorm.First(&Server, Match.ServerID)
 		if rec.RecordNotFound() {
-			http.Error(w, "Failed to find server", http.StatusNotFound)
+			c.AbortWithError(http.StatusNotFound, fmt.Errorf("Failed to find server"))
 			return
 		}
 		res, err := Server.SendRcon(fmt.Sprintf("get5_listbackups %d", matchid))
 		if err != nil {
-			http.Error(w, fmt.Sprintf("Failed to send command : %s", err), http.StatusInternalServerError)
+			c.AbortWithError(http.StatusInternalServerError, err)
 			return
 		}
 		resJSON := BackupListJSON{
 			Files: strings.Split(strings.TrimSpace(res), "\n"),
 		}
-		fmt.Printf("BackupFiles : %v", resJSON)
-		jsonbyte, err := json.Marshal(resJSON)
-		if err != nil {
-			http.Error(w, "Internal ERROR", http.StatusInternalServerError)
-			return
-		}
-		w.WriteHeader(http.StatusOK)
-		w.Header().Set("Content-Type", "application/json")
-		w.Write(jsonbyte)
+		log.Printf("BackupFiles : %v", resJSON)
+		c.JSON(http.StatusOK, resJSON)
 	} else {
-		http.Error(w, "Forbidden", http.StatusUnauthorized)
+		c.AbortWithError(http.StatusUnauthorized, fmt.Errorf("Forbidden"))
 	}
 }
 
 // MatchLoadBackupsHandler Handler for /api/v1/match/{matchID}/backup API(POST).
-func MatchLoadBackupsHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("MatchLoadBackupsHandler")
+func MatchLoadBackupsHandler(c *gin.Context) {
+	log.Println("MatchLoadBackupsHandler")
 	var IsLoggedIn = false
 	var IsAdmin = false
-	s := db.Sess.Start(w, r)
+	s := db.Sess.Start(c.Writer, c.Request)
 	if s.Get("Loggedin") != nil {
 		IsLoggedIn = s.Get("Loggedin").(bool)
 		IsAdmin = s.Get("Admin").(bool)
 	}
 	if IsLoggedIn && IsAdmin {
-		q := r.URL.Query()
-		file := q.Get("file")
+		file := c.Query("file")
 		if file == "" {
-			http.Error(w, "No file specified", http.StatusBadRequest)
+			c.AbortWithError(http.StatusBadRequest, fmt.Errorf("No file specified"))
 			return
 		}
-		vars := mux.Vars(r)
-		matchid, err := strconv.Atoi(vars["matchID"])
+		matchid, err := strconv.Atoi(c.Params.ByName("matchID"))
 		if err != nil {
-			http.Error(w, "matchID should be int", http.StatusBadRequest)
+			c.AbortWithError(http.StatusBadRequest, fmt.Errorf("matchID should be int"))
 			return
 		}
 		Match := db.MatchData{}
 		rec := db.SQLAccess.Gorm.First(&Match, matchid)
 		if rec.RecordNotFound() {
-			http.Error(w, "Failed to find match", http.StatusNotFound)
+			c.AbortWithError(http.StatusNotFound, fmt.Errorf("Failed to find match"))
 			return
 		}
 
 		Server := db.GameServerData{}
 		rec = db.SQLAccess.Gorm.First(&Server, Match.ServerID)
 		if rec.RecordNotFound() {
-			http.Error(w, "Failed to find server", http.StatusNotFound)
+			c.AbortWithError(http.StatusNotFound, fmt.Errorf("Failed to find server"))
 			return
 		}
 		res, err := Server.SendRcon(fmt.Sprintf("get5_loadbackup %s", file))
 		if err != nil {
-			http.Error(w, fmt.Sprintf("Failed to load backup : %s", err), http.StatusInternalServerError)
+			c.AbortWithError(http.StatusInternalServerError, err)
 			return
 		}
-		w.WriteHeader(http.StatusOK)
-		w.Header().Set("Content-Type", "text/plain")
-		w.Write([]byte(res))
+		c.String(http.StatusOK, res)
 	} else {
-		http.Error(w, "Forbidden", http.StatusUnauthorized)
+		c.AbortWithError(http.StatusUnauthorized, fmt.Errorf("Forbidden"))
 	}
 }
