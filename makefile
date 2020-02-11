@@ -57,7 +57,7 @@ deps-go:
 	golang.org/x/sys/unix \
 	github.com/mitchellh/gox \
 	github.com/go-ini/ini \
-	github.com/gorilla/mux \
+	github.com/gin-gonic/gin \
 	github.com/hydrogen18/stalecucumber \
 	github.com/solovev/steam_go \
 	github.com/go-sql-driver/mysql \
