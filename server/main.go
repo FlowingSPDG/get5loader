@@ -95,7 +95,7 @@ func main() {
 			// GET5 API
 			match.GET("/:matchID/config", api.MatchConfigHandler)
 			match.POST("/:matchID/finish", api.MatchFinishHandler)
-			match.POST("/:matchID/start", api.MatchMapStartHandler)
+			match.POST("/:matchID/map/:mapNumber/start", api.MatchMapStartHandler)
 			match.POST("/:matchID/map/:mapNumber/update", api.MatchMapUpdateHandler)
 			match.POST("/:matchID/map/:mapNumber/finish", api.MatchMapFinishHandler)
 			match.POST("/:matchID/map/:mapNumber/player/:steamid64/update", api.MatchMapPlayerUpdateHandler)
