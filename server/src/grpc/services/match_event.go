@@ -1,7 +1,7 @@
 package services
 
 import (
-	"time"
+	"fmt"
 	// "github.com/FlowingSPDG/get5-web-go/server/src/api"
 	// "github.com/FlowingSPDG/get5-web-go/server/src/db"
 	pb "github.com/FlowingSPDG/get5-web-go/server/src/grpc/proto"
@@ -13,8 +13,8 @@ import (
 )
 
 type Events struct {
-	Finished bool // Stream is closed or not
-	Event    *pb.MatchEventReply
+	Finished chan (bool) // Stream is closed or not
+	Event    chan (*pb.MatchEventReply)
 }
 
 type EventsMap struct {
@@ -22,25 +22,42 @@ type EventsMap struct {
 	mux   sync.Mutex
 }
 
-func (e *EventsMap) Write(key int32, Event *pb.MatchEventReply) {
+func (e *EventsMap) Write(key int32, Event *pb.MatchEventReply, finished bool) error {
 	e.mux.Lock()
 	defer e.mux.Unlock()
 	if e.Event == nil {
-		e.Event = make(map[int32]*Events)
+		return fmt.Errorf("Not Found")
 	}
 	if e.Event[key] == nil {
-		e.Event[key] = &Events{}
+		return fmt.Errorf("Not Found")
 	}
-	e.Event[key].Event = Event
+	e.Event[key].Finished <- finished
+	e.Event[key].Event <- Event
+	return nil
 }
 
-func (e *EventsMap) Read(key int32) *pb.MatchEventReply {
+func (e *EventsMap) Read(key int32) (*pb.MatchEventReply, bool, error) {
 	e.mux.Lock()
 	defer e.mux.Unlock()
 	if e.Event[key] == nil {
-		e.Event[key] = &Events{}
+		return nil, false, fmt.Errorf("Not Found")
 	}
-	return e.Event[key].Event
+	return <-e.Event[key].Event, <-e.Event[key].Finished, nil
+}
+
+func (e *EventsMap) CloseChannels(key int32) error {
+	e.mux.Lock()
+	defer e.mux.Unlock()
+	if e.Event == nil {
+		return fmt.Errorf("Not Found")
+	}
+	if e.Event[key] == nil {
+		return fmt.Errorf("Not Found")
+	}
+	for _, v := range e.Event {
+		close(v.Event)
+	}
+	return nil
 }
 
 var (
@@ -58,18 +75,24 @@ func (s Server) MatchEvent(req *pb.MatchEventRequest, srv pb.Get5_MatchEventServ
 		Event: &pb.MatchEventReply_Initialized{
 			Initialized: &pb.MatchEventInitialized{},
 		},
-	}) // initialize?
-	err := srv.Send(MatchesStream.Read(matchid))
+	}, false) // initialize?
+	err := srv.Send(&pb.MatchEventReply{
+		Event: &pb.MatchEventReply_Initialized{},
+	})
 	if err != nil {
 		log.Println(err)
 		return err
 	}
 
-	lastevent := &pb.MatchEventReply{}
+	lastevent := &pb.MatchEventReply{
+		Event: &pb.MatchEventReply_Initialized{},
+	}
 	for { //go func(){}() ?
-		time.Sleep(time.Millisecond * 200) // lower value=high cpu usage, higher value may loss some events
-		senddata := MatchesStream.Read(matchid)
-		if lastevent != senddata {
+		senddata, finished, err := MatchesStream.Read(matchid)
+		if err != nil {
+			log.Printf("Unknown ERROR : %v\n", err)
+		}
+		if lastevent.Event != senddata.Event {
 			log.Printf("Data Updated! Sending data : %v\n", senddata)
 			err = srv.Send(senddata)
 			if err != nil {
@@ -77,6 +100,12 @@ func (s Server) MatchEvent(req *pb.MatchEventRequest, srv pb.Get5_MatchEventServ
 				return err
 			}
 			lastevent = senddata
+			if finished {
+				log.Println("Stream finished")
+				MatchesStream.CloseChannels(matchid)
+				return nil
+			}
 		}
 	}
+	return nil
 }

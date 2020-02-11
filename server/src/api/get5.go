@@ -110,7 +110,7 @@ func MatchFinishHandler(c *gin.Context) {
 				Forfeit: forfeitbool,
 			},
 		},
-	})
+	}, true)
 }
 
 // MatchMapStartHandler Handler for /api/v1/match/{matchID}/map/{mapNumber}/start  API.
@@ -155,7 +155,7 @@ func MatchMapStartHandler(c *gin.Context) {
 				Mapname:   mapname,
 			},
 		},
-	})
+	}, false)
 }
 
 // MatchMapUpdateHandler Handler for /api/v1/match/{matchID}/map/{mapNumber}/update API.
@@ -218,7 +218,7 @@ func MatchMapUpdateHandler(c *gin.Context) {
 				Team2Score: int32(team2score),
 			},
 		},
-	})
+	}, false)
 }
 
 // MatchMapFinishHandler Handler for /api/v1/match/{matchID}/map/{mapNumber}/finish API.
@@ -281,7 +281,7 @@ func MatchMapFinishHandler(c *gin.Context) {
 				Winner:    winner,
 			},
 		},
-	})
+	}, false)
 }
 
 // MatchMapPlayerUpdateHandler Handler for /api/v1/match/{matchID}/map/{mapNumber}/player/{steamid64}/update API.
@@ -558,7 +558,7 @@ func MatchMapPlayerUpdateHandler(c *gin.Context) {
 				FirstdeathCt:     int32(FormFirstDeathCT),
 			},
 		},
-	})
+	}, false)
 }
 
 // MatchVetoUpdateHandler Handler for /api/v1/match/{matchID}/vetoUpdate API. // TODO
