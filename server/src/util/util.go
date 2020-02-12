@@ -1,6 +1,7 @@
 package util
 
 import (
+	"bufio"
 	"bytes"
 	"encoding/json"
 	"fmt"
@@ -119,10 +120,18 @@ func CheckServerAvailability(IPString string, Port int, RconPassword string) (GE
 	if err != nil {
 		return data, fmt.Errorf("Connect fails")
 	}
-	jsonBytes := ([]byte)(resp)
+
+	sl := strings.NewReader(resp)
+	scanner := bufio.NewScanner(sl)
+	responses := make([]string, 0, 2)
+	for scanner.Scan() {
+		responses = append(responses, scanner.Text())
+	}
+
+	jsonBytes := ([]byte)(responses[0])
 	if err := json.Unmarshal(jsonBytes, &data); err != nil {
-		log.Println("JSON Unmarshal error:", err)
-		return data, fmt.Errorf("Error reading get5_web_avaliable response")
+		log.Printf("JSON Unmarshal error:%v, body:%v\n", err, responses[0])
+		return data, fmt.Errorf("Error reading get5_web_avaliable response : %s", err)
 	}
 	if strings.Contains(resp, "Unknown command") {
 		return data, fmt.Errorf("Either get5 or get5_apistats plugin missin")
