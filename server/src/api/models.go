@@ -3,6 +3,7 @@ package api
 import (
 	"database/sql"
 	"github.com/FlowingSPDG/get5-web-go/server/src/util"
+	"math"
 	"time"
 )
 
@@ -179,6 +180,9 @@ func (p *APIPlayerStatsData) GetRating() float64 { // Rating value can be more a
 	var killcount float64 = float64(p.K1 + 4*p.K2 + 9*p.K3 + 16*p.K4 + 25*p.K5)
 	var RoundsWithMultipleKillsRating float64 = killcount / float64(p.Roundsplayed) / float64(AverageRMK)
 	var rating float64 = (KillRating + 0.7*SurvivalRating + RoundsWithMultipleKillsRating) / 2.7
+	if math.IsNaN(rating) {
+		return 0.0
+	}
 	return util.Round(rating, 2)
 }
 
