@@ -12,8 +12,21 @@ export default {
     },
     async GetTeamData (teamid) {
       return new Promise(async (resolve, reject) => {
-        const res = await this.axios.get(`/api/v1/team/${teamid}/GetTeamInfo`)
-        resolve(res.data)
+        try {
+          const res = await this.axios.get(`/api/v1/team/${teamid}/GetTeamInfo`)
+          resolve(res.data)
+        } catch (err) {
+          resolve({
+            'id': 0,
+            'user_id': 0,
+            'name': 'DELETED TEAM',
+            'tag': '',
+            'flag': '',
+            'logo': '',
+            'steamids': [],
+            'public_team': false
+          })
+        }
       })
     },
     async GetServerData (serverid) {
