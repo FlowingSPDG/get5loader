@@ -11,7 +11,7 @@ import (
 )
 
 const (
-	target = "20200215131435-create_tables.sql"
+	target = "20000101000000-create_tables.sql"
 )
 
 func main() {
