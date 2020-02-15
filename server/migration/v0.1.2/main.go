@@ -12,7 +12,7 @@ import (
 
 func main() {
 	log.Println("START Migration...")
-	command := flag.String("command", "new", "Migration action. (\"new\" | \"up\" | \"down\")")
+	command := flag.String("command", "", "Migration action. (up|down)")
 
 	MySQLHost := flag.String("host", "127.0.0.1", "MySQL Host destination")
 	MySQLPort := flag.Uint("port", 3306, "MySQL Database Port")
@@ -32,7 +32,6 @@ func main() {
 	switch *command {
 	case "up":
 		log.Println("Upgrating...")
-		// Hardcoded strings in memory:
 		migrations := &migrate.FileMigrationSource{
 			Dir: "./schema",
 		}
@@ -44,7 +43,6 @@ func main() {
 		fmt.Printf("Applied %d migrations!\n", n)
 	case "down":
 		log.Println("Downgrating...")
-		// Hardcoded strings in memory:
 		migrations := &migrate.FileMigrationSource{
 			Dir: "./schema",
 		}
