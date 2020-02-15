@@ -30,9 +30,9 @@ func main() {
 	defer db.Close()
 
 	switch *command {
-	case "new":
-		log.Println("Initializing Database...")
-		// OR: Read migrations from a folder:
+	case "up":
+		log.Println("Upgrating...")
+		// Hardcoded strings in memory:
 		migrations := &migrate.FileMigrationSource{
 			Dir: "./schema",
 		}
@@ -42,38 +42,13 @@ func main() {
 			os.Exit(1)
 		}
 		fmt.Printf("Applied %d migrations!\n", n)
-
-	case "up":
-		log.Println("Upgrating...")
-		// Hardcoded strings in memory:
-		migrations := &migrate.MemoryMigrationSource{
-			Migrations: []*migrate.Migration{
-				&migrate.Migration{
-					Id: "123",
-					// Up: []string{"CREATE TABLE people (id int)"}, // TODO...
-					// Down: []string{"DROP TABLE people"}, // TODO...
-				},
-			},
-		}
-		n, err := migrate.Exec(db, "sqlite3", migrations, migrate.Up)
-		if err != nil {
-			log.Printf("Failed to migrate database! ERR : %s\n", err.Error())
-			os.Exit(1)
-		}
-		fmt.Printf("Applied %d migrations!\n", n)
 	case "down":
 		log.Println("Downgrating...")
 		// Hardcoded strings in memory:
-		migrations := &migrate.MemoryMigrationSource{
-			Migrations: []*migrate.Migration{
-				&migrate.Migration{
-					Id: "123",
-					// Up: []string{"CREATE TABLE people (id int)"}, // TODO...
-					// Down: []string{"DROP TABLE people"}, // TODO...
-				},
-			},
+		migrations := &migrate.FileMigrationSource{
+			Dir: "./schema",
 		}
-		n, err := migrate.Exec(db, "sqlite3", migrations, migrate.Up)
+		n, err := migrate.Exec(db, "mysql", migrations, migrate.Down)
 		if err != nil {
 			log.Printf("Failed to migrate database! ERR : %s\n", err.Error())
 			os.Exit(1)

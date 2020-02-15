@@ -177,3 +177,4 @@ COMMIT;
 
 
 -- +migrate Down
+DROP TABLE IF EXISTS `alembic_version`,`game_server`,`map_stats`,`match`,`player_stats`,`team`,`user`;
