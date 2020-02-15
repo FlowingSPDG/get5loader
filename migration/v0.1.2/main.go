@@ -12,13 +12,13 @@ import (
 
 func main() {
 	log.Println("START Migration...")
-	command := flag.String("command", "up", "Migration action. (up|down)")
+	direction := flag.String("direction", "up", "Migration direction. (up|down)")
 
 	MySQLHost := flag.String("host", "127.0.0.1", "MySQL Host destination")
 	MySQLPort := flag.Uint("port", 3306, "MySQL Database Port")
 	MySQLUser := flag.String("user", "user", "MySQL User ID")
 	MySQLPassword := flag.String("password", "password", "MySQL User password")
-	MySQLDB := flag.String("db", "get5", "MySQL Dtabase name")
+	MySQLDB := flag.String("db", "get5", "MySQL Database name")
 
 	flag.Parse()
 
@@ -29,7 +29,7 @@ func main() {
 	}
 	defer db.Close()
 
-	switch *command {
+	switch *direction {
 	case "up":
 		log.Println("Upgrating...")
 		migrations := &migrate.FileMigrationSource{
@@ -53,6 +53,6 @@ func main() {
 		}
 		fmt.Printf("Applied %d migrations!\n", n)
 	default:
-		log.Printf("Unsupported command. command : %s\n", *command)
+		log.Printf("Unsupported command. command : %s\n", *direction)
 	}
 }

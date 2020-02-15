@@ -21,7 +21,7 @@ func main() {
 	MySQLPort := flag.Uint("port", 3306, "MySQL Database Port")
 	MySQLUser := flag.String("user", "user", "MySQL User ID")
 	MySQLPassword := flag.String("password", "password", "MySQL User password")
-	MySQLDB := flag.String("db", "get5", "MySQL Dtabase name")
+	MySQLDB := flag.String("db", "get5", "MySQL Database name")
 
 	flag.Parse()
 
