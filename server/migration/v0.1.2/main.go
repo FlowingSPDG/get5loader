@@ -12,7 +12,7 @@ import (
 
 func main() {
 	log.Println("START Migration...")
-	command := flag.String("command", "", "Migration action. (up|down)")
+	command := flag.String("command", "up", "Migration action. (up|down)")
 
 	MySQLHost := flag.String("host", "127.0.0.1", "MySQL Host destination")
 	MySQLPort := flag.Uint("port", 3306, "MySQL Database Port")

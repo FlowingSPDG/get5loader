@@ -14,6 +14,8 @@ ALTER TABLE `match`
 
 ALTER TABLE `map_stats` ADD `dem_path` varchar(40) DEFAULT NULL ;
 
+ALTER TABLE `team` ADD `steamids` varchar(400) DEFAULT NULL ;
+
 
 CREATE TABLE `round_stats` (
   `id` int(11) NOT NULL,
