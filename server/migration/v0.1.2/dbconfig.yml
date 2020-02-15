@@ -1,0 +1,4 @@
+development:
+  dialect: mysql
+  dir: ./schema
+  datasource: user_name:password@tcp(127.0.0.1)/dbname?charset=utf8mb4&collation=utf8mb4_general_ci&parseTime=true
