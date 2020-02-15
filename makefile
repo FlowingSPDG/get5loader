@@ -5,7 +5,8 @@ GOCLEAN=$(GOCMD) clean
 GOTEST=$(GOCMD) test
 GOGET=$(GOCMD) get
 BINARY_NAME=get5
-MIGRATION_BINARY_NAME=migration
+MIGRATION_BINARY_NAME=migrate
+ORIGINAL_MIGRATION_BINARY_NAME=migrate_prepare
 DIST_DIR=build
 SERVER_DIR=server
 WEB_DIR=web
@@ -143,13 +144,25 @@ build-migration-linux:
 	-os="$(OS_Linux)" \
 	-arch="$(ARCH_386) $(ARCH_AMD64)" \
 	--output "../../$(DIST_DIR)/$(MIGRATION_BINARY_NAME)_{{.OS}}_{{.Arch}}/$(MIGRATION_BINARY_NAME)"
+	@cd ./migration/migrate_from_original && gox \
+	-os="$(OS_Linux)" \
+	-arch="$(ARCH_386) $(ARCH_AMD64)" \
+	--output "../../$(DIST_DIR)/$(ORIGINAL_MIGRATION_BINARY_NAME)_{{.OS}}_{{.Arch}}/$(ORIGINAL_MIGRATION_BINARY_NAME)"
 build-migration-windows:
 	@cd ./migration/migrate && gox \
 	-os="$(OS_Windows)" \
 	-arch="$(ARCH_386) $(ARCH_AMD64)" \
 	--output "../../$(DIST_DIR)/$(MIGRATION_BINARY_NAME)_{{.OS}}_{{.Arch}}/$(MIGRATION_BINARY_NAME)"
+	@cd ./migration/migrate_from_original && gox \
+	-os="$(OS_Windows)" \
+	-arch="$(ARCH_386) $(ARCH_AMD64)" \
+	--output "../../$(DIST_DIR)/$(ORIGINAL_MIGRATION_BINARY_NAME)_{{.OS}}_{{.Arch}}/$(ORIGINAL_MIGRATION_BINARY_NAME)"
 build-migration-mac:
 	@cd ./migration/migrate && gox \
 	-os="$(OS_Mac)" \
 	-arch="$(ARCH_386) $(ARCH_AMD64)" \
 	--output "../../$(DIST_DIR)/$(MIGRATION_BINARY_NAME)_{{.OS}}_{{.Arch}}/$(MIGRATION_BINARY_NAME)"
+	@cd ./migration/migrate_from_original && gox \
+	-os="$(OS_Mac)" \
+	-arch="$(ARCH_386) $(ARCH_AMD64)" \
+	--output "../../$(DIST_DIR)/$(ORIGINAL_MIGRATION_BINARY_NAME)_{{.OS}}_{{.Arch}}/$(ORIGINAL_MIGRATION_BINARY_NAME)"
