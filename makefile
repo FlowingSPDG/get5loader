@@ -5,6 +5,7 @@ GOCLEAN=$(GOCMD) clean
 GOTEST=$(GOCMD) test
 GOGET=$(GOCMD) get
 BINARY_NAME=get5
+MIGRATION_BINARY_NAME=migration
 DIST_DIR=build
 SERVER_DIR=server
 WEB_DIR=web
@@ -54,6 +55,7 @@ deps-web:
 deps-go:
 	-@$(RM) $(GOPATHDIR)/src/github.com/FlowingSPDG/get5-web-go
 	@$(GOGET) -v -u \
+	github.com/rubenv/sql-migrate \
 	golang.org/x/sys/unix \
 	github.com/mitchellh/gox \
 	github.com/go-ini/ini \
@@ -135,8 +137,19 @@ build-mac-server-only: build-prepare
 	@$(CP) ./server/config.ini.template ./$(DIST_DIR)/$(BINARY_NAME)_$(OS_Mac)_$(ARCH_AMD64)/config.ini.template
 build-web:
 	@cd ./web && yarn run build
-
-# Source Mod compile
-# TODO
-# build-game:
-#	@cd ./game_plugin/scripting
+build-migration-all: build-migration-linux build-migration-windows build-migration-mac
+build-migration-linux:
+	@cd ./migration/migrate && gox \
+	-os="$(OS_Linux)" \
+	-arch="$(ARCH_386) $(ARCH_AMD64)" \
+	--output "../../$(DIST_DIR)/$(MIGRATION_BINARY_NAME)_{{.OS}}_{{.Arch}}/$(MIGRATION_BINARY_NAME)"
+build-migration-windows:
+	@cd ./migration/migrate && gox \
+	-os="$(OS_Windows)" \
+	-arch="$(ARCH_386) $(ARCH_AMD64)" \
+	--output "../../$(DIST_DIR)/$(MIGRATION_BINARY_NAME)_{{.OS}}_{{.Arch}}/$(MIGRATION_BINARY_NAME)"
+build-migration-mac:
+	@cd ./migration/migrate && gox \
+	-os="$(OS_Mac)" \
+	-arch="$(ARCH_386) $(ARCH_AMD64)" \
+	--output "../../$(DIST_DIR)/$(MIGRATION_BINARY_NAME)_{{.OS}}_{{.Arch}}/$(MIGRATION_BINARY_NAME)"

@@ -3,7 +3,7 @@
 ## Preparation
 If you gonna migrate from original get5-web database, you'll need to execute preparation before start migration.  
 **This step is not required if you gonna create new database from empty MySQL database.**  
-- go to migration/migrate_from_original folder. Execute `migrate` binary with following args :
+- go to migration/migrate_from_original folder. Execute `migrate`(or ``go run main.go``) binary with following args :
   - -db - Database name. e.g. `"get5"`
   - -host - Database host destination. e.g. `"localhost"`.
   - -port - Database password `3306` by default.
@@ -14,7 +14,7 @@ If you gonna migrate from original get5-web database, you'll need to execute pre
 ## Migration
 **This step is required for all users!**  
 This will Add/Modiby Database tables to support new incoming features in get5-web-go.
-- goto migration/v0.1.2 folder. Execute `migrate` binary with following args :
+- goto migration/migrate folder. Execute `migrate`(or ``go run main.go``) binary with following args :
   - -direction - `"up"` or `"down"`. in this case, chose `"up"` or leave it by default value `"up"`.
   - -db - Database name. e.g. `"get5"`
   - -host - Database host destination. e.g. `"localhost"`.
