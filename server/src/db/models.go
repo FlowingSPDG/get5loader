@@ -670,6 +670,10 @@ func (m *MatchData) Create(userid int, team1id int, team2id int, team1string str
 	m.APIKey = util.RandString(24)
 	rec = SQLAccess.Gorm.Create(&m)
 	log.Printf("CREATE RESULT : %v\n", rec)
+	errors := rec.GetErrors()
+	if len(errors) != 0 {
+		return nil, errors[0]
+	}
 	if rec.Error != nil {
 		return nil, err
 	}
