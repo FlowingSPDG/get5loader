@@ -43,7 +43,7 @@ func (s Server) GetTeam(ctx context.Context, req *pb.GetTeamRequest) (*pb.GetTea
 			Tag:    team.Tag,
 			Flag:   team.Flag,
 			Logo:   team.Logo,
-			Auths:  team.Auths,
+			Auths:  team.SteamIDsJSON,
 		},
 	}, nil
 }
@@ -65,7 +65,7 @@ func (s Server) GetTeamsByUserID(ctx context.Context, req *pb.GetTeamsByUserIDRe
 			Tag:    teams[i].Tag,
 			Flag:   teams[i].Flag,
 			Logo:   teams[i].Logo,
-			Auths:  teams[i].Auths,
+			Auths:  teams[i].SteamIDsJSON,
 		})
 	}
 
