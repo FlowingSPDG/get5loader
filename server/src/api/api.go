@@ -661,11 +661,14 @@ func CreateMatch(c *gin.Context) {
 		var Match = db.MatchData{}
 		err := json.NewDecoder(c.Request.Body).Decode(&MatchTemp)
 		if err != nil {
+			log.Printf("ERR : %v\n", err)
 			c.AbortWithError(http.StatusBadRequest, fmt.Errorf("JSON Format invalid"))
 			return
 		}
-		_, err = Match.Create(userid, MatchTemp.Team1ID, MatchTemp.Team2ID, MatchTemp.Team1String, MatchTemp.Team2String, MatchTemp.MaxMaps, MatchTemp.SkipVeto, MatchTemp.Title, MatchTemp.VetoMapPoolJSON, MatchTemp.ServerID, MatchTemp.Cvars)
+		log.Printf("CVARS : %v\n", MatchTemp.CvarsJSON)
+		_, err = Match.Create(userid, MatchTemp.Team1ID, MatchTemp.Team2ID, MatchTemp.Team1String, MatchTemp.Team2String, MatchTemp.MaxMaps, MatchTemp.SkipVeto, MatchTemp.Title, MatchTemp.VetoMapPoolJSON, MatchTemp.ServerID, MatchTemp.CvarsJSON)
 		if err != nil {
+			log.Printf("ERR : %v\n", err)
 			c.AbortWithError(http.StatusInternalServerError, err)
 			return
 		}

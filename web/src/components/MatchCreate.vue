@@ -51,14 +51,14 @@
 
             <el-form-item style="width: 653px;">
               <el-input v-model="cvar"></el-input>
-                <el-button type="primary" @click="AddCvar()">Add CVAR</el-button>
+                <el-button icon="el-icon-plus" type="primary" @click="AddCvar()">Add CVAR</el-button>
             </el-form-item>
 
             <el-form-item label="CVARS" style="width: 653px;" prop="cvars">
-              <div v-for="(cvar, index) in form.cvars" :key="index">
-              <el-input v-model="form.cvars[index].value">
+              <div v-for="(cvar, index) in cvars" :key="index">
+              <el-input v-model="cvars[index].value">
                 <template slot="prepend">{{cvar.cvar}}</template>
-                <el-button slot="append" @click="DeleteCvar(index)">Delete this CVAR</el-button>
+                <el-button icon="el-icon-delete" slot="append" @click="DeleteCvar(index)"></el-button>
               </el-input>
               </div>
             </el-form-item>
@@ -153,6 +153,7 @@ export default {
         }
       ],
       cvar: '',
+      cvars: [],
       form: {
         server_id: 0,
         team1_id: undefined,
@@ -162,12 +163,7 @@ export default {
         skip_veto: false,
         veto_mappool: [],
         series_type: 'bo1',
-        cvars: [
-          {
-            cvar: 'hostname',
-            value: 'GET5 with Go'
-          }
-        ]
+        cvars: {}
       },
       rules: {
         server_id: [{
@@ -244,6 +240,9 @@ export default {
           this.form.max_maps = 7
           break
       }
+      for (let i = 0; i < this.cvars.length; i++) {
+        this.form.cvars[this.cvars[i].cvar] = this.cvars[i].value
+      }
       const json = JSON.stringify(this.form)
       this.$refs['form'].validate(async (valid) => {
         if (valid) {
@@ -268,11 +267,11 @@ export default {
       })
     },
     async AddCvar () {
-      this.form.cvars.push({ cvar: this.cvar, value: '' })
+      this.cvars.push({ cvar: this.cvar, value: '' })
       this.cvar = ''
     },
     async DeleteCvar (index) {
-      this.form.cvars.splice(index, 1)
+      this.cvars.splice(index, 1)
     }
   }
 }
