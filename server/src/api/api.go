@@ -17,7 +17,7 @@ import (
 
 const (
 	// VERSION get5-web-go Version
-	VERSION = "0.1.2"
+	VERSION = "0.1.3"
 )
 
 var (
@@ -35,7 +35,7 @@ func init() {
 
 // GetVersion handler for /api/v1/GetVersion API.
 func GetVersion(c *gin.Context) {
-	log.Println("CheckLoggedIn")
+	log.Println("GetVersion")
 	c.JSON(http.StatusOK, gin.H{
 		"version": VERSION,
 	})
@@ -63,7 +63,7 @@ func CheckLoggedIn(c *gin.Context) {
 		})
 		return
 	}
-	c.AbortWithError(http.StatusNotFound, fmt.Errorf("User not found"))
+	c.AbortWithError(http.StatusUnauthorized, fmt.Errorf("User not found"))
 }
 
 // GetMatchInfo Gets match info by ID
@@ -664,14 +664,14 @@ func CreateMatch(c *gin.Context) {
 			c.AbortWithError(http.StatusBadRequest, fmt.Errorf("JSON Format invalid"))
 			return
 		}
-		_, err = Match.Create(userid, MatchTemp.Team1ID, MatchTemp.Team2ID, MatchTemp.Team1String, MatchTemp.Team2String, MatchTemp.MaxMaps, MatchTemp.SkipVeto, MatchTemp.Title, MatchTemp.VetoMapPoolJSON, MatchTemp.ServerID)
+		_, err = Match.Create(userid, MatchTemp.Team1ID, MatchTemp.Team2ID, MatchTemp.Team1String, MatchTemp.Team2String, MatchTemp.MaxMaps, MatchTemp.SkipVeto, MatchTemp.Title, MatchTemp.VetoMapPoolJSON, MatchTemp.ServerID, MatchTemp.Cvars)
 		if err != nil {
 			c.AbortWithError(http.StatusInternalServerError, err)
 			return
 		}
 		c.String(http.StatusOK, "OK")
 	} else {
-		c.AbortWithError(http.StatusUnauthorized, fmt.Errorf("Forbidden"))
+		c.AbortWithError(http.StatusForbidden, fmt.Errorf("Forbidden"))
 	}
 }
 

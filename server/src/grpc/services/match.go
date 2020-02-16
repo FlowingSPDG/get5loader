@@ -25,7 +25,9 @@ func (s Server) RegisterMatch(ctx context.Context, req *pb.RegisterMatchRequest)
 		req.GetSkipveto(),
 		req.GetTitle(),
 		req.GetVetomappool(),
-		int(req.GetServerid()))
+		int(req.GetServerid()),
+		req.GetCvars(),
+	)
 	if err != nil {
 		return &pb.RegisterMatchReply{
 			Error:        true,

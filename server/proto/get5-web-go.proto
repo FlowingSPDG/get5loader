@@ -187,6 +187,7 @@ message RegisterMatchRequest {
   string title = 8;
   repeated string vetomappool = 9;
   int32 serverid = 10;
+  map<string, string> cvars = 11;
 }
 
 message RegisterMatchReply {

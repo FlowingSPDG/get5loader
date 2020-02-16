@@ -50,6 +50,20 @@
             </el-form-item>
 
             <el-form-item style="width: 653px;">
+              <el-input v-model="cvar"></el-input>
+                <el-button type="primary" @click="AddCvar()">Add CVAR</el-button>
+            </el-form-item>
+
+            <el-form-item label="CVARS" style="width: 653px;" prop="cvars">
+              <div v-for="(cvar, index) in form.cvars" :key="index">
+              <el-input v-model="form.cvars[index].value">
+                <template slot="prepend">{{cvar.cvar}}</template>
+                <el-button slot="append" @click="DeleteCvar(index)">Delete this CVAR</el-button>
+              </el-input>
+              </div>
+            </el-form-item>
+
+            <el-form-item style="width: 653px;">
                 <el-button type="primary" @click="RegisterMatch">Create Match</el-button>
             </el-form-item>
         </el-form>
@@ -138,6 +152,7 @@ export default {
           desc: 'Bo7 with map vetoes'
         }
       ],
+      cvar: '',
       form: {
         server_id: 0,
         team1_id: undefined,
@@ -146,7 +161,13 @@ export default {
         title: '',
         skip_veto: false,
         veto_mappool: [],
-        series_type: 'bo1'
+        series_type: 'bo1',
+        cvars: [
+          {
+            cvar: 'hostname',
+            value: 'GET5 with Go'
+          }
+        ]
       },
       rules: {
         server_id: [{
@@ -245,6 +266,13 @@ export default {
           this.$message.error('Please fill form')
         }
       })
+    },
+    async AddCvar () {
+      this.form.cvars.push({ cvar: this.cvar, value: '' })
+      this.cvar = ''
+    },
+    async DeleteCvar (index) {
+      this.form.cvars.splice(index, 1)
     }
   }
 }

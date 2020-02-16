@@ -538,6 +538,7 @@ type MatchConfig struct {
 
 // MatchData Struct for match table.
 type MatchData struct {
+	// Original columns...
 	ID              int           `gorm:"primary_key;column:id" json:"id"`
 	UserID          int           `gorm:"column:user_id" json:"user_id"`
 	ServerID        int           `gorm:"column:server_id" json:"server_id"`
@@ -560,6 +561,9 @@ type MatchData struct {
 	Forfeit         bool          `gorm:"column:forfeit" json:"forfeit"`
 	PluginVersion   string        `gorm:"column:plugin_version" json:"-"`
 
+	// get5-web-go columns...
+	Cvars map[string]string `gorm:"column:cvars" json:"cvars"`
+
 	MapStats []MapStatsData `gorm:"ForeignKey:MatchID" json:"-"`
 	Server   GameServerData `json:"-"`
 }
@@ -579,7 +583,7 @@ func (m *MatchData) Get(id int) (*MatchData, error) {
 }
 
 // Create Register Match information into DB.
-func (m *MatchData) Create(userid int, team1id int, team2id int, team1string string, team2string string, maxmaps int, skipveto bool, title string, vetomappool []string, serverid int) (*MatchData, error) {
+func (m *MatchData) Create(userid int, team1id int, team2id int, team1string string, team2string string, maxmaps int, skipveto bool, title string, vetomappool []string, serverid int, cvars map[string]string) (*MatchData, error) {
 	user := UserData{}
 
 	var matchnum int
@@ -626,6 +630,7 @@ func (m *MatchData) Create(userid int, team1id int, team2id int, team1string str
 	if get5res.PluginVersion == "" {
 		get5res.PluginVersion = "unknown"
 	}
+	m.Cvars = cvars
 
 	MatchServerUpdate := m.Server
 	SQLAccess.Gorm.First(&MatchServerUpdate)
