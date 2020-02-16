@@ -3,6 +3,7 @@ package db
 import (
 	"database/sql"
 	"fmt"
+	"github.com/FlowingSPDG/get5-web-go/server/src/cfg"
 	"github.com/FlowingSPDG/get5-web-go/server/src/util"
 	"log"
 	"net"
@@ -12,7 +13,6 @@ import (
 	//"github.com/Philipp15b/go-steam"
 	//"github.com/FlowingSPDG/go-steamapi"
 	"github.com/Acidic9/steam"
-	"github.com/go-ini/ini"
 	"github.com/jinzhu/gorm"
 	gosteam "github.com/kidoman/go-steam"
 
@@ -21,35 +21,6 @@ import (
 	"math"
 	"strconv"
 )
-
-type UserMaxResources struct {
-	Servers uint16
-	Teams   uint16
-	Matches uint16
-}
-
-var (
-	// MaxResource  per user
-	MaxResource UserMaxResources
-)
-
-func init() {
-	c, _ := ini.Load("config.ini")
-	Cnf = Config{
-		HOST:      c.Section("GET5").Key("HOST").MustString("localhost:8080"),
-		SQLHost:   c.Section("sql").Key("host").MustString(""),
-		SQLUser:   c.Section("sql").Key("user").MustString(""),
-		SQLPass:   c.Section("sql").Key("pass").MustString(""),
-		SQLPort:   c.Section("sql").Key("port").MustInt(3306),
-		SQLDBName: c.Section("sql").Key("database").MustString(""),
-	}
-	MaxResource = UserMaxResources{
-		Servers: uint16(c.Section("USER").Key("Max_Servers").MustUint(10)),
-		Teams:   uint16(c.Section("USER").Key("Max_Teams").MustUint(100)),
-		Matches: uint16(c.Section("USER").Key("Max_Matches").MustUint(1000)),
-	}
-	SteamAPIKey = c.Section("Steam").Key("APIKey").MustString("")
-}
 
 // UserData Struct for "user" table.
 type UserData struct {
@@ -103,7 +74,7 @@ func (u *UserData) GetOrCreate() (*UserData, bool, error) { // userdata, exist,e
 
 // GetURL Get user page URL
 func (u *UserData) GetURL() string {
-	return fmt.Sprintf("http://%s/user/%d", Cnf.HOST, u.ID)
+	return fmt.Sprintf("http://%s/user/%d", config.Cnf.HOST, u.ID)
 }
 
 // GetSteamURL Get user's steam page URL by their steamid64
@@ -152,7 +123,7 @@ func (g *GameServerData) Create(userid int, displayname string, ipstring string,
 		return nil, err
 	}
 	SQLAccess.Gorm.Model(&user).Related(&user.Servers, "Servers").Count(&servernum)
-	if uint16(servernum) >= MaxResource.Servers {
+	if uint16(servernum) >= config.Cnf.UserMaxResources.Servers {
 		return nil, fmt.Errorf("Max servers limit exceeded")
 	}
 	g.UserID = userid
@@ -283,7 +254,7 @@ func (t *TeamData) Create(userid int, name string, tag string, flag string, logo
 		return nil, err
 	}
 	SQLAccess.Gorm.Model(&user).Related(&user.Teams, "Teams").Count(&teamnum)
-	if uint16(teamnum) >= MaxResource.Teams {
+	if uint16(teamnum) >= config.Cnf.UserMaxResources.Teams {
 		return nil, fmt.Errorf("Max teams limit exceeded")
 	}
 	t.UserID = userid
@@ -488,7 +459,7 @@ func (t *TeamData) GetVSMatchResult(matchid int) (string, error) {
 
 // GetURL Get URL of team page.
 func (t *TeamData) GetURL() string {
-	return fmt.Sprintf("http://%s/team/%d", Cnf.HOST, t.ID)
+	return fmt.Sprintf("http://%s/team/%d", config.Cnf.HOST, t.ID)
 }
 
 // GetNameURLHtml Get team page and name as a-tag. for gorazor template
@@ -594,7 +565,7 @@ func (m *MatchData) Create(userid int, team1id int, team2id int, team1string str
 	if rec.Error != nil {
 		return nil, rec.Error
 	}
-	if uint16(matchnum) >= MaxResource.Matches {
+	if uint16(matchnum) >= config.Cnf.UserMaxResources.Matches {
 		return nil, fmt.Errorf("Max matches limit exceeded")
 	}
 
@@ -875,7 +846,7 @@ func (m *MatchData) SendToServer() error {
 	if m.ServerID == 0 || m.Server.ID == 0 {
 		return fmt.Errorf("Server not found")
 	}
-	res, err := m.Server.SendRcon(fmt.Sprintf("get5_loadmatch_url %s/api/v1/match/%v/config", Cnf.HOST, m.ID))
+	res, err := m.Server.SendRcon(fmt.Sprintf("get5_loadmatch_url %s/api/v1/match/%v/config", config.Cnf.HOST, m.ID))
 	res, err = m.Server.SendRcon(fmt.Sprintf("get5_web_api_key %s", m.APIKey))
 	if err != nil || res != "" {
 		return err
@@ -947,7 +918,7 @@ func (m *MatchData) BuildMatchDict() (*MatchConfig, error) {
 			cfg.Cvars[command[0]] = command[1]
 		}
 	}
-	cfg.Cvars["get5_web_api_url"] = fmt.Sprintf("http://%v/api/v1/", Cnf.HOST)
+	cfg.Cvars["get5_web_api_url"] = fmt.Sprintf("http://%v/api/v1/", config.Cnf.HOST)
 	// cfg.Cvars["hostname"] = fmt.Sprintf("Match Server #1")
 
 	return &cfg, nil
