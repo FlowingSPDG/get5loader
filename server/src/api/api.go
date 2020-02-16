@@ -3,9 +3,9 @@ package api
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/FlowingSPDG/get5-web-go/server/src/cfg"
 	"github.com/FlowingSPDG/get5-web-go/server/src/util"
 	"github.com/gin-gonic/gin"
-	"github.com/go-ini/ini"
 	"log"
 
 	"net/http"
@@ -20,19 +20,6 @@ const (
 	VERSION = "0.1.3"
 )
 
-var (
-	ActiveMapPool  []string
-	ReserveMapPool []string
-)
-
-func init() {
-	c, _ := ini.Load("config.ini")
-	active := c.Section("MAPLIST").Key("Active").MustString("de_dust2,de_mirage,de_inferno,de_overpass,de_train,de_nuke,de_vertigo")
-	reserve := c.Section("MAPLIST").Key("Reserve").MustString("de_cache,de_season")
-	ActiveMapPool = strings.Split(strings.ToLower(strings.TrimSpace(active)), ",")
-	ReserveMapPool = strings.Split(strings.ToLower(strings.TrimSpace(reserve)), ",")
-}
-
 // GetVersion handler for /api/v1/GetVersion API.
 func GetVersion(c *gin.Context) {
 	log.Println("GetVersion")
@@ -45,8 +32,8 @@ func GetVersion(c *gin.Context) {
 func GetMapList(c *gin.Context) {
 	log.Println("GetMapList")
 	c.JSON(http.StatusOK, gin.H{
-		"active":  ActiveMapPool,
-		"reserve": ReserveMapPool,
+		"active":  config.Cnf.ActiveMapPool,
+		"reserve": config.Cnf.ReserveMapPool,
 	})
 }
 

@@ -5,57 +5,18 @@ import (
 	"log"
 
 	"github.com/FlowingSPDG/get5-web-go/server/src/api"
+	"github.com/FlowingSPDG/get5-web-go/server/src/cfg"
 	"github.com/FlowingSPDG/get5-web-go/server/src/db"
 	"github.com/FlowingSPDG/get5-web-go/server/src/grpc"
 	"github.com/gin-contrib/static"
-	"github.com/go-ini/ini"
 )
-
-// Config Configration Struct for config.ini
-type Config struct {
-	SteamAPIKey string
-	DefaultPage string
-	SQLHost     string
-	SQLUser     string
-	SQLPass     string
-	SQLPort     int
-	SQLDBName   string
-	HOST        string
-	APIONLY     bool
-}
 
 var (
 	// StaticDir Directly where serves static files
 	StaticDir = "./static"
-	// HOST Server's domain name
-	HOST string
-	//Cnf Configration Data
-	Cnf Config
 	// SQLAccess SQL Access Object for MySQL and GORM things
 	SQLAccess db.DBdatas
-
-	GRPC_ADDR  string
-	EnablegRPC bool
 )
-
-func init() {
-	c, err := ini.Load("config.ini")
-	if err != nil {
-		panic(err)
-	}
-	Cnf = Config{
-		HOST:      c.Section("GET5").Key("HOST").MustString("localhost:8080"),
-		SQLHost:   c.Section("sql").Key("host").MustString(""),
-		SQLUser:   c.Section("sql").Key("user").MustString(""),
-		SQLPass:   c.Section("sql").Key("pass").MustString(""),
-		SQLPort:   c.Section("sql").Key("port").MustInt(3306),
-		SQLDBName: c.Section("sql").Key("database").MustString(""),
-		APIONLY:   c.Section("GET5").Key("API_ONLY").MustBool(false),
-	}
-	HOST = Cnf.HOST
-	GRPC_ADDR = c.Section("GET5").Key("GPRC_ADDR").MustString(":50055")
-	EnablegRPC = c.Section("GET5").Key("ENABLE_gRPC").MustBool(false)
-}
 
 func main() {
 
@@ -137,7 +98,7 @@ func main() {
 		}
 	}
 
-	if !Cnf.APIONLY {
+	if !config.Cnf.APIONLY {
 		entrypoint := "./static/index.html"
 		r.GET("/", func(c *gin.Context) { c.File(entrypoint) })
 		r.Use(static.Serve("/css", static.LocalFile("./static/css", false)))
@@ -149,16 +110,16 @@ func main() {
 		log.Println("API ONLY MODE")
 	}
 
-	if EnablegRPC {
+	if config.Cnf.EnablegRPC {
 		log.Println("EnableGRPC option enabled. Starting gRPC server...")
 		go func() {
-			err := get5grpc.StartGrpc(GRPC_ADDR)
+			err := get5grpc.StartGrpc(config.Cnf.GrpcAddr)
 			if err != nil {
 				panic(err)
 			}
 		}()
 	}
 
-	log.Panicf("Failed to listen port %s : %v\n", HOST, r.Run(HOST))
+	log.Panicf("Failed to listen port %s : %v\n", config.Cnf.HOST, r.Run(config.Cnf.HOST))
 
 }

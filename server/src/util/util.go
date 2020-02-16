@@ -5,7 +5,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/go-ini/ini"
+	"github.com/FlowingSPDG/get5-web-go/server/src/cfg"
 	"github.com/hydrogen18/stalecucumber"
 	"log"
 	"math"
@@ -18,36 +18,6 @@ import (
 	gosteam "github.com/kidoman/go-steam"
 	"strconv"
 )
-
-// Config Configration Struct for config.ini
-type Config struct {
-	SteamAPIKey string
-	DefaultPage string
-	SQLHost     string
-	SQLUser     string
-	SQLPass     string
-	SQLPort     int
-	SQLDBName   string
-	HOST        string
-}
-
-var (
-	Cnf Config
-)
-
-func init() {
-	c, _ := ini.Load("config.ini")
-	Cnf = Config{
-		SteamAPIKey: c.Section("Steam").Key("APIKey").MustString(""),
-		DefaultPage: c.Section("GET5").Key("DefaultPage").MustString(""),
-		HOST:        c.Section("GET5").Key("HOST").MustString(""),
-		SQLHost:     c.Section("sql").Key("host").MustString(""),
-		SQLUser:     c.Section("sql").Key("user").MustString(""),
-		SQLPass:     c.Section("sql").Key("pass").MustString(""),
-		SQLPort:     c.Section("sql").Key("port").MustInt(3306),
-		SQLDBName:   c.Section("sql").Key("database").MustString(""),
-	}
-}
 
 func checkIP(ip string) bool {
 	trial := net.ParseIP(ip)
@@ -188,13 +158,13 @@ func RandString(n int) string {
 func AuthToSteamID64(auth string) (string, error) {
 	auth = strings.TrimSpace(auth)
 	if strings.Contains(auth, "steamcommunity.com/id/") {
-		s := steam.SearchForID(auth, Cnf.SteamAPIKey)
+		s := steam.SearchForID(auth, config.Cnf.SteamAPIKey)
 		if s == 0 {
 			return "", fmt.Errorf("User not found")
 		}
 		return strconv.Itoa(int(s)), nil
 	} else if strings.Contains(auth, "steamcommunity.com/profiles/") {
-		s := steam.SearchForID(auth, Cnf.SteamAPIKey)
+		s := steam.SearchForID(auth, config.Cnf.SteamAPIKey)
 		if s == 0 {
 			return "", fmt.Errorf("User not found")
 		}
@@ -211,7 +181,7 @@ func AuthToSteamID64(auth string) (string, error) {
 		var s steam.SteamID3 = steam.SteamID3(auth)
 		return strconv.Itoa(int(steam.SteamID3ToSteamID64(s))), nil
 	}
-	s := steam.SearchForID(auth, Cnf.SteamAPIKey)
+	s := steam.SearchForID(auth, config.Cnf.SteamAPIKey)
 	if s == 0 {
 		return "", fmt.Errorf("User not found")
 	}

@@ -7,26 +7,12 @@ import (
 	"log"
 	"time"
 
-	"github.com/go-ini/ini"
+	"github.com/FlowingSPDG/get5-web-go/server/src/cfg"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 	"github.com/kataras/go-sessions"
 	"github.com/solovev/steam_go"
 	"net/http"
 )
-
-// Config Configration Struct for config.ini
-type Config struct {
-	SteamAPIKey  string
-	DefaultPage  string
-	SQLHost      string
-	SQLUser      string
-	SQLPass      string
-	SQLPort      int
-	SQLDBName    string
-	SQLDebugMode bool
-	HOST         string
-	Cookie       string
-}
 
 // DBdatas Struct for MySQL configration and Gorm
 type DBdatas struct {
@@ -45,35 +31,17 @@ var (
 	DefaultPage string
 	// SQLAccess SQL Access Object for MySQL and GORM things
 	SQLAccess DBdatas
-	// Cnf Configration Data
-	Cnf Config
 	// Sess Session
 	Sess *sessions.Sessions
 )
 
 func init() {
-	c, err := ini.Load("config.ini")
-	if err != nil {
-		panic(err)
-	}
-	Cnf := Config{
-		SteamAPIKey:  c.Section("Steam").Key("APIKey").MustString(""),
-		DefaultPage:  c.Section("GET5").Key("DefaultPage").MustString(""),
-		HOST:         c.Section("GET5").Key("HOST").MustString(""),
-		SQLHost:      c.Section("sql").Key("host").MustString(""),
-		SQLUser:      c.Section("sql").Key("user").MustString(""),
-		SQLPass:      c.Section("sql").Key("pass").MustString(""),
-		SQLPort:      c.Section("sql").Key("port").MustInt(3306),
-		SQLDBName:    c.Section("sql").Key("database").MustString(""),
-		SQLDebugMode: c.Section("sql").Key("debug").MustBool(false),
-		Cookie:       c.Section("GET5").Key("Cookie").MustString("SecretString"),
-	}
 	SQLAccess = DBdatas{
-		Host: Cnf.SQLHost,
-		User: Cnf.SQLUser,
-		Pass: Cnf.SQLPass,
-		Db:   Cnf.SQLDBName,
-		Port: Cnf.SQLPort,
+		Host: config.Cnf.SQLHost,
+		User: config.Cnf.SQLUser,
+		Pass: config.Cnf.SQLPass,
+		Db:   config.Cnf.SQLDBName,
+		Port: config.Cnf.SQLPort,
 	}
 	sqloption := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8mb4&parseTime=True&loc=Local", SQLAccess.User, SQLAccess.Pass, SQLAccess.Host, SQLAccess.Port, SQLAccess.Db)
 	//log.Println(sqloption)
@@ -81,19 +49,19 @@ func init() {
 	if err != nil {
 		panic(err)
 	}
-	if Cnf.SQLDebugMode {
+	if config.Cnf.SQLDebugMode {
 		log.Println("SQL Debug mode Enabled. Transaction logs active")
 	}
-	DB.LogMode(Cnf.SQLDebugMode)
+	DB.LogMode(config.Cnf.SQLDebugMode)
 	SQLAccess.Gorm = DB
-	SteamAPIKey = Cnf.SteamAPIKey
-	DefaultPage = Cnf.DefaultPage
+	SteamAPIKey = config.Cnf.SteamAPIKey
+	DefaultPage = config.Cnf.DefaultPage
 
 	Sess = sessions.New(sessions.Config{
 		// Cookie string, the session's client cookie name, for example: "mysessionid"
 		//
 		// Defaults to "gosessionid"
-		Cookie: Cnf.Cookie,
+		Cookie: config.Cnf.Cookie,
 		// it's time.Duration, from the time cookie is created, how long it can be alive?
 		// 0 means no expire.
 		// -1 means expire when browser closes
