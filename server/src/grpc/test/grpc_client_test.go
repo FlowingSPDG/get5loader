@@ -145,7 +145,11 @@ func TestGrpcRegisterMatch(t *testing.T) {
 		Title:       "",
 		Vetomappool: []string{"de_dust2", "de_mirage", "de_inferno"},
 		Serverid:    0,
+		Cvars:       make(map[string]string),
+		SideType:    "standard",
+		IsPug:       false,
 	}
+	req.Cvars["hostname"] = "get5-web-go_TEST"
 	res, err := client.RegisterMatch(context.TODO(), req)
 	if err != nil {
 		t.Errorf("error::%v \n", err)
