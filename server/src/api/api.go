@@ -455,7 +455,7 @@ func CreateTeam(c *gin.Context) {
 			c.AbortWithError(http.StatusBadRequest, fmt.Errorf("JSON Format invalid"))
 			return
 		}
-		_, err = Team.Create(userid, TeamTemp.Name, TeamTemp.Tag, TeamTemp.Flag, TeamTemp.Logo, TeamTemp.Auths, TeamTemp.PublicTeam)
+		_, err = Team.Create(userid, TeamTemp.Name, TeamTemp.Tag, TeamTemp.Flag, TeamTemp.Logo, TeamTemp.SteamIDsJSON, TeamTemp.PublicTeam)
 		if err != nil {
 			log.Printf("Failed to create team. ERR : %v\n", err)
 			c.AbortWithError(http.StatusInternalServerError, err)

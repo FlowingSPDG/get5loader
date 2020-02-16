@@ -71,12 +71,15 @@ export default {
     const teamdataPromise = this.GetTeamData(this.$route.params.teamid)
     this.matches = await this.GetRecentMatches(this.$route.params.teamid)
     this.team = await teamdataPromise
+    if (!Array.isArray(this.matches)) {
+      this.matches = []
+    }
     for (let i = 0; i < this.matches.length; i++) {
-      if (!this.matchdata) {
-        this.matchdata = []
-      }
       let res = await this.get_vs_match_result(this.matches[i])
       this.matchdata.push(res)
+    }
+    if (!Array.isArray(this.team.steamids)) {
+      this.team.steamids = []
     }
     for (let i = 0; i < this.team.steamids.length; i++) {
       this.GetSteamName(this.team.steamids[i])
@@ -118,6 +121,9 @@ export default {
           OtherTeam = await this.GetTeamData(match.team2.id)
           // for a bo1 replace series score with the map score
           if (maxmaps === 1) {
+            if (!match.map_stats) {
+              match.map_stats = []
+            }
             if (match.map_stats.length === 1) {
               if (match.team1_id === this.team.id) {
                 MyScore = parseInt(match.map_stats[0].team1_score)
@@ -148,6 +154,9 @@ export default {
           OtherTeam = await this.GetTeamData(match.team1.id)
           // for a bo1 replace series score with the map score
           if (maxmaps === 1) {
+            if (!Array.isArray(match.map_stats)) {
+              match.map_stats = []
+            }
             if (match.map_stats.length === 1) {
               if (match.team1_id === this.team.id) {
                 MyScore = parseInt(match.map_stats[0].team2_score)

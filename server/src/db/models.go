@@ -254,16 +254,17 @@ func (g *GameServerData) GetDisplay() string {
 
 // TeamData Struct for team table.
 type TeamData struct {
-	ID          int               `gorm:"primary_key;column:id" json:"id"`
-	UserID      int               `gorm:"column:user_id" json:"user_id"`
-	Name        string            `gorm:"column:name" json:"name"`
-	Tag         string            `gorm:"column:tag" json:"tag"`
-	Flag        string            `gorm:"column:flag" json:"flag"`
-	Logo        string            `gorm:"column:logo" json:"logo"`
-	AuthsPickle []byte            `gorm:"column:auths" json:"-"`
-	Auths       []string          `gorm:"-" json:"auths"` // converts pickle []byte to []string
-	Players     []PlayerStatsData `gorm:"-" json:"-"`
-	PublicTeam  bool              `gorm:"column:public_team" json:"public_team"`
+	ID           int               `gorm:"primary_key;column:id" json:"id"`
+	UserID       int               `gorm:"column:user_id" json:"user_id"`
+	Name         string            `gorm:"column:name" json:"name"`
+	Tag          string            `gorm:"column:tag" json:"tag"`
+	Flag         string            `gorm:"column:flag" json:"flag"`
+	Logo         string            `gorm:"column:logo" json:"logo"`
+	AuthsPickle  []byte            `gorm:"column:auths" json:"-"`
+	SteamIDs     string            `gorm:"column:steamids" json:"-"`
+	SteamIDsJSON []string          `gorm:"-" json:"auths"`
+	Players      []PlayerStatsData `gorm:"-" json:"-"`
+	PublicTeam   bool              `gorm:"column:public_team" json:"public_team"`
 }
 
 // TableName declairation for GORM
@@ -298,11 +299,16 @@ func (t *TeamData) Create(userid int, name string, tag string, flag string, logo
 			return nil, err
 		}
 	}
+	t.SteamIDs = strings.Join(auths, ",")
+	t.SteamIDsJSON = auths
 	t.AuthsPickle, err = util.SteamID64sToPickle(auths)
 	if err != nil {
 		return nil, err
 	}
-	SQLAccess.Gorm.Create(&t)
+	rec := SQLAccess.Gorm.Create(&t)
+	if rec.Error != nil {
+		return nil, rec.Error
+	}
 	return t, nil
 }
 
@@ -318,15 +324,16 @@ func (t *TeamData) Edit() (*TeamData, error) {
 	}
 
 	var err error
-	for i := 0; i < len(t.Auths); i++ {
-		if t.Auths[i] != "" {
-			t.Auths[i], err = util.AuthToSteamID64(t.Auths[i])
+	for i := 0; i < len(t.SteamIDsJSON); i++ {
+		if t.SteamIDsJSON[i] != "" {
+			t.SteamIDsJSON[i], err = util.AuthToSteamID64(t.SteamIDsJSON[i])
 			if err != nil {
 				return nil, err
 			}
 		}
 	}
-	t.AuthsPickle, err = util.SteamID64sToPickle(t.Auths)
+	t.AuthsPickle, err = util.SteamID64sToPickle(t.SteamIDsJSON)
+	t.SteamIDs = strings.Join(t.SteamIDsJSON, ",")
 	SQLAccess.Gorm.Model(&Team).Update(&t)
 	SQLAccess.Gorm.Save(&t)
 	return t, nil
@@ -391,7 +398,8 @@ func (t *TeamData) GetPlayers() (*[]string, error) {
 		//results = append(results, GetPlayerData{Auth: auths[i], Name: playername})
 		results = append(results, GetPlayerData{Auth: auths[i]})
 	}*/
-	t.Auths = results
+	t.SteamIDsJSON = results
+	t.SteamIDs = strings.Join(t.SteamIDsJSON, ",")
 
 	return &results, nil
 }
@@ -797,7 +805,7 @@ func (m *MatchData) GetTeam1() (TeamData, error) {
 	Team.AuthsPickle = STeam.AuthsPickle
 	Team.PublicTeam = STeam.PublicTeam
 	var err error
-	Team.Auths, err = util.PickleToSteamID64s(STeam.AuthsPickle)
+	Team.SteamIDsJSON, err = util.PickleToSteamID64s(STeam.AuthsPickle)
 	if err != nil {
 		return Team, err
 	}
@@ -817,7 +825,7 @@ func (m *MatchData) GetTeam2() (TeamData, error) {
 	Team.AuthsPickle = STeam.AuthsPickle
 	Team.PublicTeam = STeam.PublicTeam
 	var err error
-	Team.Auths, err = util.PickleToSteamID64s(STeam.AuthsPickle)
+	Team.SteamIDsJSON, err = util.PickleToSteamID64s(STeam.AuthsPickle)
 	if err != nil {
 		return Team, err
 	}
@@ -927,7 +935,7 @@ func (m *MatchData) BuildMatchDict() (*MatchConfig, error) {
 	// Note: the "players" section may be skipped if you set get5_check_auths to 0,
 	// but that is not recommended. You can also set player names that will be forced here.
 	// If you don't want to force player names, just use an empty quote "".
-	cfg.Team1.Players = team1.Auths
+	cfg.Team1.Players = team1.SteamIDsJSON
 	// cfg.Team1.Players = make(map[string]string)
 	// cfg.Team1.Players["STEAM_0:1:52245092"] = "splewis"
 
@@ -935,7 +943,7 @@ func (m *MatchData) BuildMatchDict() (*MatchConfig, error) {
 	//cfg.Team2.Logo = ""
 	cfg.Team2.Name = team2.Name
 	cfg.Team2.Tag = team2.Tag
-	cfg.Team2.Players = team2.Auths
+	cfg.Team2.Players = team2.SteamIDsJSON
 
 	cfg.Cvars = make(map[string]string)
 	commands := strings.Split(m.Cvars, "\n")
