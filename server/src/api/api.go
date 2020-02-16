@@ -439,7 +439,7 @@ func CreateTeam(c *gin.Context) {
 		TeamTemp := db.TeamData{}
 		err := json.NewDecoder(c.Request.Body).Decode(&TeamTemp)
 		if err != nil {
-			c.AbortWithError(http.StatusBadRequest, fmt.Errorf("JSON Format invalid"))
+			c.AbortWithError(http.StatusBadRequest, fmt.Errorf("JSON Format invalid %s", err.Error()))
 			return
 		}
 		_, err = Team.Create(userid, TeamTemp.Name, TeamTemp.Tag, TeamTemp.Flag, TeamTemp.Logo, TeamTemp.SteamIDsJSON, TeamTemp.PublicTeam)
@@ -477,7 +477,7 @@ func EditTeam(c *gin.Context) {
 		}
 		err = json.NewDecoder(c.Request.Body).Decode(&Team)
 		if err != nil {
-			c.AbortWithError(http.StatusBadRequest, fmt.Errorf("JSON Format Invalid"))
+			c.AbortWithError(http.StatusBadRequest, fmt.Errorf("JSON Format Invalid %s", err.Error()))
 			return
 		}
 		Team.ID = teamid
@@ -543,7 +543,7 @@ func CreateServer(c *gin.Context) {
 		ServerTemp := db.GameServerData{}
 		err := json.NewDecoder(c.Request.Body).Decode(&ServerTemp)
 		if err != nil {
-			c.AbortWithError(http.StatusBadRequest, fmt.Errorf("JSON Format invalid"))
+			c.AbortWithError(http.StatusBadRequest, fmt.Errorf("JSON Format invalid : %s", err.Error()))
 			return
 		}
 		_, err = Server.Create(userid, ServerTemp.DisplayName, ServerTemp.IPString, ServerTemp.Port, ServerTemp.RconPassword, ServerTemp.PublicServer)
@@ -580,7 +580,7 @@ func EditServer(c *gin.Context) {
 		}
 		err = json.NewDecoder(c.Request.Body).Decode(&Server)
 		if err != nil {
-			c.AbortWithError(http.StatusBadRequest, fmt.Errorf("JSON Format invalid"))
+			c.AbortWithError(http.StatusBadRequest, fmt.Errorf("JSON Format invalid %s", err.Error()))
 			return
 		}
 		Server.ID = serverID
@@ -649,7 +649,7 @@ func CreateMatch(c *gin.Context) {
 		err := json.NewDecoder(c.Request.Body).Decode(&MatchTemp)
 		if err != nil {
 			log.Printf("ERR : %v\n", err)
-			c.AbortWithError(http.StatusBadRequest, fmt.Errorf("JSON Format invalid"))
+			c.AbortWithError(http.StatusBadRequest, fmt.Errorf("JSON Format invalid %s", err.Error()))
 			return
 		}
 		log.Printf("CVARS : %v\n", MatchTemp.CvarsJSON)
