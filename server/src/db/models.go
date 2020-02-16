@@ -118,10 +118,13 @@ func (g *GameServerData) Create(userid int, displayname string, ipstring string,
 	}
 	var servernum int
 	user := UserData{}
+	// returns error if user is not valid.
 	err := SQLAccess.Gorm.First(&user, userid).Error
-	if err != nil {
+	// and ignore them. sometimes gRPC wants to regiter no-UserID server.
+	/*if err != nil {
 		return nil, err
 	}
+	*/
 	SQLAccess.Gorm.Model(&user).Related(&user.Servers, "Servers").Count(&servernum)
 	if uint16(servernum) >= config.Cnf.UserMaxResources.Servers {
 		return nil, fmt.Errorf("Max servers limit exceeded")
