@@ -498,7 +498,7 @@ type MatchConfig struct {
 	Spectators                 struct {
 		Name    string   `json:"name"`
 		Players []string `json:"players"`
-	} `json:"spectators"`
+	} `json:"spectators,omitempty"`
 	Team1 struct {
 		Flag    string   `json:"flag"`
 		Name    string   `json:"name"`
@@ -513,9 +513,9 @@ type MatchConfig struct {
 	} `json:"team2"`
 
 	Maplist  []string `json:"maplist"`
-	MapSides []string `json:"map_sides"`
+	MapSides []string `json:"map_sides,omitempty"`
 
-	Cvars map[string]string `json:"cvars"`
+	Cvars map[string]string `json:"cvars,omitempty"`
 }
 
 // MatchData Struct for match table.
@@ -857,7 +857,7 @@ func (m *MatchData) SendToServer() error {
 	if m.ServerID == 0 || m.Server.ID == 0 {
 		return fmt.Errorf("Server not found")
 	}
-	res, err := m.Server.SendRcon(fmt.Sprintf("get5_loadmatch_url %s/api/v1/match/%v/config", config.Cnf.HOST, m.ID))
+	res, err := m.Server.SendRcon(fmt.Sprintf("get5_loadmatch_url %s/api/v1/match/%d/config", config.Cnf.HOST, m.ID))
 	res, err = m.Server.SendRcon(fmt.Sprintf("get5_web_api_key %s", m.APIKey))
 	if err != nil || res != "" {
 		return err
@@ -923,7 +923,9 @@ func (m *MatchData) BuildMatchDict() (*MatchConfig, error) {
 	commands := strings.Split(m.Cvars, "\n")
 	for _, v := range commands {
 		command := strings.Split(v, " ")
-		if len(command) != 2 {
+		if len(command) == 0 {
+			// empty command...
+		} else if len(command) != 2 {
 			log.Printf("Something went wrong with match command. ERR : %v\n", command)
 		} else {
 			cfg.Cvars[command[0]] = command[1]
