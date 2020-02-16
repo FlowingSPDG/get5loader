@@ -666,7 +666,7 @@ func CreateMatch(c *gin.Context) {
 			return
 		}
 		log.Printf("CVARS : %v\n", MatchTemp.CvarsJSON)
-		_, err = Match.Create(userid, MatchTemp.Team1ID, MatchTemp.Team2ID, MatchTemp.Team1String, MatchTemp.Team2String, MatchTemp.MaxMaps, MatchTemp.SkipVeto, MatchTemp.Title, MatchTemp.VetoMapPoolJSON, MatchTemp.ServerID, MatchTemp.CvarsJSON)
+		_, err = Match.Create(userid, MatchTemp.Team1ID, MatchTemp.Team2ID, MatchTemp.Team1String, MatchTemp.Team2String, MatchTemp.MaxMaps, MatchTemp.SkipVeto, MatchTemp.Title, MatchTemp.VetoMapPoolJSON, MatchTemp.ServerID, MatchTemp.CvarsJSON, MatchTemp.SideType, MatchTemp.IsPug)
 		if err != nil {
 			log.Printf("ERR : %v\n", err)
 			c.AbortWithError(http.StatusInternalServerError, err)
