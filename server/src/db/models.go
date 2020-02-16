@@ -929,7 +929,7 @@ func (m *MatchData) BuildMatchDict() (*MatchConfig, error) {
 			cfg.Cvars[command[0]] = command[1]
 		}
 	}
-	cfg.Cvars["get5_web_api_url"] = fmt.Sprintf("http://%v/api/v1/", config.Cnf.HOST)
+	cfg.Cvars["get5_web_api_url"] = fmt.Sprintf("http://%s/api/v1", config.Cnf.HOST)
 	// cfg.Cvars["hostname"] = fmt.Sprintf("Match Server #1")
 
 	return &cfg, nil
