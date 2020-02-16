@@ -8,7 +8,7 @@ SET time_zone = "+00:00";
 
 
 ALTER TABLE `match`
-  ADD `cvars` varchar(40) DEFAULT NULL ,
+  ADD `cvars` varchar(500) DEFAULT NULL ,
   ADD `side_type` varchar(40) DEFAULT "standard" ,
   ADD `is_pug` tinyint(1) DEFAULT NULL ;
 
