@@ -538,6 +538,7 @@ type MatchConfig struct {
 
 // MatchData Struct for match table.
 type MatchData struct {
+	// Original columns...
 	ID              int           `gorm:"primary_key;column:id" json:"id"`
 	UserID          int           `gorm:"column:user_id" json:"user_id"`
 	ServerID        int           `gorm:"column:server_id" json:"server_id"`
@@ -560,6 +561,12 @@ type MatchData struct {
 	Forfeit         bool          `gorm:"column:forfeit" json:"forfeit"`
 	PluginVersion   string        `gorm:"column:plugin_version" json:"-"`
 
+	// get5-web-go columns...
+	CvarsJSON map[string]string `gorm:"-" json:"cvars"`
+	Cvars     string            `gorm:"column:cvars" json:"-"`
+	SideType  string            `gorm:"column:side_type" json:"side_type"`
+	IsPug     bool              `gorm:"column:is_pug" json:"is_pug"`
+
 	MapStats []MapStatsData `gorm:"ForeignKey:MatchID" json:"-"`
 	Server   GameServerData `json:"-"`
 }
@@ -579,21 +586,30 @@ func (m *MatchData) Get(id int) (*MatchData, error) {
 }
 
 // Create Register Match information into DB.
-func (m *MatchData) Create(userid int, team1id int, team2id int, team1string string, team2string string, maxmaps int, skipveto bool, title string, vetomappool []string, serverid int) (*MatchData, error) {
+func (m *MatchData) Create(userid int, team1id int, team2id int, team1string string, team2string string, maxmaps int, skipveto bool, title string, vetomappool []string, serverid int, cvars map[string]string, sidetype string, pug bool) (*MatchData, error) {
 	user := UserData{}
 
 	var matchnum int
-	SQLAccess.Gorm.Model(&MatchData{}).Where("user_id = ?", userid).Count(&matchnum)
+	rec := SQLAccess.Gorm.Model(&MatchData{}).Where("user_id = ?", userid).Count(&matchnum)
+	if rec.Error != nil {
+		return nil, rec.Error
+	}
 	if uint16(matchnum) >= MaxResource.Matches {
 		return nil, fmt.Errorf("Max matches limit exceeded")
 	}
 
-	SQLAccess.Gorm.First(&user, userid)
+	rec = SQLAccess.Gorm.First(&user, userid)
 	if team1id == 0 || team2id == 0 || serverid == 0 {
 		return nil, fmt.Errorf("TeamID or ServerID is empty")
 	}
+	if rec.Error != nil {
+		return nil, rec.Error
+	}
 	server := GameServerData{}
-	SQLAccess.Gorm.First(&server, serverid)
+	rec = SQLAccess.Gorm.First(&server, serverid)
+	if rec.Error != nil {
+		return nil, rec.Error
+	}
 	// returns error if user wasnt owned server,or not an admin.
 	if userid != server.UserID && !user.Admin && !server.PublicServer {
 		return nil, fmt.Errorf("This is not your server")
@@ -604,14 +620,12 @@ func (m *MatchData) Create(userid int, team1id int, team2id int, team1string str
 		return nil, err
 	}
 
-	MatchOnServer := MatchData{
-		ServerID:  serverid,
-		Cancelled: false,
+	MatchOnServer := MatchData{}
+	rec = SQLAccess.Gorm.Where("end_time = NULL AND server_id = ? AND cancelled = FALSE", serverid).First(&MatchOnServer)
+	if !rec.RecordNotFound() {
+		return nil, rec.Error
 	}
-	SQLAccess.Gorm.Where("EndTime = ?", "NULL").First(&MatchOnServer)
-	if MatchOnServer.ID != 0 {
-		return nil, fmt.Errorf("Match %v is already using this server", MatchOnServer.ID)
-	}
+
 	m.UserID = userid
 	m.ServerID = serverid
 	m.GetServer()
@@ -627,15 +641,42 @@ func (m *MatchData) Create(userid int, team1id int, team2id int, team1string str
 		get5res.PluginVersion = "unknown"
 	}
 
+	for k, v := range cvars {
+		m.Cvars += fmt.Sprintf("%s %s", k, v) // [ "hostname" = "WASD","tv_enable" = "1" ]
+		m.Cvars += "\n"
+	}
+	m.Cvars = strings.TrimRight(m.Cvars, "\n") // trim last "\n".
+	log.Printf("m.Cvars : %v\n", m.Cvars)
+
+	m.SideType = sidetype
+	m.IsPug = pug
+
 	MatchServerUpdate := m.Server
-	SQLAccess.Gorm.First(&MatchServerUpdate)
+	rec = SQLAccess.Gorm.First(&MatchServerUpdate)
+	if rec.Error != nil {
+		return nil, rec.Error
+	}
 	MatchServerUpdate.InUse = true
-	SQLAccess.Gorm.Model(&m.Server).Update(&MatchServerUpdate)
-	SQLAccess.Gorm.Save(&MatchServerUpdate)
+	rec = SQLAccess.Gorm.Model(&m.Server).Update(&MatchServerUpdate)
+	if rec.Error != nil {
+		return nil, rec.Error
+	}
+	rec = SQLAccess.Gorm.Save(&MatchServerUpdate)
+	if rec.Error != nil {
+		return nil, rec.Error
+	}
 
 	m.PluginVersion = get5res.PluginVersion
 	m.APIKey = util.RandString(24)
-	SQLAccess.Gorm.Create(&m)
+	rec = SQLAccess.Gorm.Create(&m)
+	log.Printf("CREATE RESULT : %v\n", rec)
+	errors := rec.GetErrors()
+	if len(errors) != 0 {
+		return nil, errors[0]
+	}
+	if rec.Error != nil {
+		return nil, err
+	}
 	err = m.SendToServer()
 	if err != nil {
 		return nil, err
@@ -721,7 +762,7 @@ func (m *MatchData) Live() bool {
 
 // GetServer Get match server ID as GameServerData
 func (m *MatchData) GetServer() (*GameServerData, error) {
-	rec := SQLAccess.Gorm.First(&m.Server, m.ServerID)
+	rec := SQLAccess.Gorm.Model(m).Related(&m.Server, "Servers")
 	if rec.RecordNotFound() {
 		return nil, fmt.Errorf("Server not found")
 	}
@@ -897,6 +938,15 @@ func (m *MatchData) BuildMatchDict() (*MatchConfig, error) {
 	cfg.Team2.Players = team2.Auths
 
 	cfg.Cvars = make(map[string]string)
+	commands := strings.Split(m.Cvars, "\n")
+	for _, v := range commands {
+		command := strings.Split(v, " ")
+		if len(command) != 2 {
+			log.Printf("Something went wrong with match command. ERR : %v\n", command)
+		} else {
+			cfg.Cvars[command[0]] = command[1]
+		}
+	}
 	cfg.Cvars["get5_web_api_url"] = fmt.Sprintf("http://%v/api/v1/", Cnf.HOST)
 	// cfg.Cvars["hostname"] = fmt.Sprintf("Match Server #1")
 

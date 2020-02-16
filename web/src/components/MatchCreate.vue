@@ -50,6 +50,20 @@
             </el-form-item>
 
             <el-form-item style="width: 653px;">
+              <el-input v-model="cvar"></el-input>
+                <el-button icon="el-icon-plus" type="primary" @click="AddCvar()">Add CVAR</el-button>
+            </el-form-item>
+
+            <el-form-item label="CVARS" style="width: 653px;" prop="cvars">
+              <div v-for="(cvar, index) in cvars" :key="index">
+              <el-input v-model="cvars[index].value">
+                <template slot="prepend">{{cvar.cvar}}</template>
+                <el-button icon="el-icon-delete" slot="append" @click="DeleteCvar(index)"></el-button>
+              </el-input>
+              </div>
+            </el-form-item>
+
+            <el-form-item style="width: 653px;">
                 <el-button type="primary" @click="RegisterMatch">Create Match</el-button>
             </el-form-item>
         </el-form>
@@ -138,6 +152,8 @@ export default {
           desc: 'Bo7 with map vetoes'
         }
       ],
+      cvar: '',
+      cvars: [],
       form: {
         server_id: 0,
         team1_id: undefined,
@@ -146,7 +162,8 @@ export default {
         title: '',
         skip_veto: false,
         veto_mappool: [],
-        series_type: 'bo1'
+        series_type: 'bo1',
+        cvars: {}
       },
       rules: {
         server_id: [{
@@ -223,6 +240,9 @@ export default {
           this.form.max_maps = 7
           break
       }
+      for (let i = 0; i < this.cvars.length; i++) {
+        this.form.cvars[this.cvars[i].cvar] = this.cvars[i].value
+      }
       const json = JSON.stringify(this.form)
       this.$refs['form'].validate(async (valid) => {
         if (valid) {
@@ -245,6 +265,13 @@ export default {
           this.$message.error('Please fill form')
         }
       })
+    },
+    async AddCvar () {
+      this.cvars.push({ cvar: this.cvar, value: '' })
+      this.cvar = ''
+    },
+    async DeleteCvar (index) {
+      this.cvars.splice(index, 1)
     }
   }
 }
