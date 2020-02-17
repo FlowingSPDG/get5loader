@@ -13,11 +13,13 @@ import (
 var (
 	addr    *string
 	matchid *int
+	steamid *string
 )
 
 func init() {
 	addr = flag.String("addr", "127.0.0.1:50055", "gRPC target address and port.")
 	matchid = flag.Int("matchid", 0, "Streaming API MatchID.")
+	steamid = flag.String("steamid", "76561198072054549", "User SteamID64")
 	flag.Parse()
 }
 
@@ -32,7 +34,7 @@ func main() {
 	client := pb.NewGet5Client(conn)
 	userreq := &pb.GetUserRequest{
 		Ids: &pb.GetUserRequest_Steamid{
-			Steamid: "76561198072054549",
+			Steamid: *steamid,
 		},
 	}
 	res, err := client.GetUser(context.TODO(), userreq)
