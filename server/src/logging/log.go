@@ -14,23 +14,54 @@ import (
 
 // MessageHandler handles message from CSGO Server and Gin middleware
 func MessageHandler(msg csgolog.Message, c *gin.Context) {
-	matchid := c.Params.ByName("matchID")
+	matchidstr := c.Params.ByName("matchID")
+	matchid, err := strconv.Atoi(matchidstr)
+	if err != nil {
+		log.Printf("ERR : %v\n", err)
+	}
 	auth := c.Params.ByName("auth")
 	match := &db.MatchData{}
-	db.SQLAccess.Gorm.First(&match, matchid)
+	db.SQLAccess.Gorm.First(&match, matchidstr)
 	if match.APIKey != auth {
 		c.AbortWithError(http.StatusForbidden, fmt.Errorf("Wrong auth"))
 		return
 	}
-	log.Printf("SRCDS Message handeler for match %s. Msg : [%v]\n", matchid, msg)
+	log.Printf("SRCDS Message handeler for match %d. Msg : [%v]\n", matchid, msg)
 	switch m := msg.(type) {
+	case csgolog.PlayerKill:
+		go pbservices.MatchesStream.Write(int32(matchid), &pb.MatchEventReply{
+			Event: &pb.MatchEventReply_Playerkill{
+				Playerkill: &pb.MatchEventPlayerKill{
+					Matchid: int32(matchid),
+					Attacker: &pb.Player{
+						Name: m.Attacker.Name,
+						Id:   int32(m.Attacker.ID),
+						Side: m.Attacker.Side,
+					},
+					AttackerPosition: &pb.Position{
+						X: int32(m.AttackerPosition.X),
+						Y: int32(m.AttackerPosition.Y),
+						Z: int32(m.AttackerPosition.Z),
+					},
+					Victim: &pb.Player{
+						Name: m.Victim.Name,
+						Id:   int32(m.Victim.ID),
+						Side: m.Victim.Side},
+					VictimPosition: &pb.Position{
+						X: int32(m.VictimPosition.X),
+						Y: int32(m.VictimPosition.Y),
+						Z: int32(m.VictimPosition.Z),
+					},
+					Weapon:     m.Weapon,
+					Headhot:    m.Headshot,
+					Penetrated: m.Penetrated,
+				},
+			},
+		}, false)
 	case csgolog.Get5Event:
 		log.Printf("Get5Event : [%v]\n", m)
 		var event pb.Get5Event
-		matchid, err := strconv.Atoi(m.Matchid)
-		if err != nil {
-			log.Printf("ERR : %v\n", err)
-		}
+
 		switch csgolog.Get5Events(m.Event) {
 		case csgolog.Get5SeriesStart:
 			event = pb.Get5Event_Get5SeriesStart

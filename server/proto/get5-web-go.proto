@@ -337,7 +337,7 @@ message Position {
 message MatchEventPlayerKill {
   int32 matchid = 1;
   Player Attacker = 2;
-  Player AttackerPosition = 3;
+  Position AttackerPosition = 3;
   Player Victim = 4;
   Position VictimPosition = 5;
   string weapon = 6;

@@ -864,10 +864,11 @@ func (m *MatchData) SendToServer() error {
 
 	res, err := m.Server.SendRcon(fmt.Sprintf("get5_loadmatch_url %s/api/v1/match/%d/config", config.Cnf.HOST, m.ID))
 	res, err = m.Server.SendRcon(fmt.Sprintf("get5_web_api_key %s", m.APIKey))
-	res, err = m.Server.SendRcon(fmt.Sprintf("logaddress_add_http http://%s/api/v1/match/%d/csgolog/config/%s", config.Cnf.HOST, m.ID, m.APIKey))
+	res, err = m.Server.SendRcon(fmt.Sprintf("logaddress_add_http \"http://%s/api/v1/match/%d/csgolog/%s\"", config.Cnf.HOST, m.ID, m.APIKey))
 	if err != nil || res != "" {
 		return err
 	}
+	m.Server.SendRcon("log on")
 	SQLAccess.Gorm.First(&m.Server)
 	SQLAccess.Gorm.Model(&m.Server).Update("in_use", true)
 	return nil
