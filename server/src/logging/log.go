@@ -34,9 +34,10 @@ func MessageHandler(msg csgolog.Message, c *gin.Context) {
 				Playerkill: &pb.MatchEventPlayerKill{
 					Matchid: int32(matchid),
 					Attacker: &pb.Player{
-						Name: m.Attacker.Name,
-						Id:   int32(m.Attacker.ID),
-						Side: m.Attacker.Side,
+						Name:    m.Attacker.Name,
+						Id:      int32(m.Attacker.ID),
+						Steamid: m.Attacker.SteamID,
+						Side:    m.Attacker.Side,
 					},
 					AttackerPosition: &pb.Position{
 						X: int32(m.AttackerPosition.X),
@@ -44,9 +45,10 @@ func MessageHandler(msg csgolog.Message, c *gin.Context) {
 						Z: int32(m.AttackerPosition.Z),
 					},
 					Victim: &pb.Player{
-						Name: m.Victim.Name,
-						Id:   int32(m.Victim.ID),
-						Side: m.Victim.Side},
+						Name:    m.Victim.Name,
+						Id:      int32(m.Victim.ID),
+						Steamid: m.Victim.SteamID,
+						Side:    m.Victim.Side},
 					VictimPosition: &pb.Position{
 						X: int32(m.VictimPosition.X),
 						Y: int32(m.VictimPosition.Y),
