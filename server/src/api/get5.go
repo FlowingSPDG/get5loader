@@ -102,7 +102,7 @@ func MatchFinishHandler(c *gin.Context) {
 		return
 	}
 
-	pbservices.MatchesStream.Write(int32(matchidInt), &pb.MatchEventReply{
+	go pbservices.MatchesStream.Write(int32(matchidInt), &pb.MatchEventReply{
 		Event: &pb.MatchEventReply_Matchfinish{
 			Matchfinish: &pb.MatchEventMatchFinish{
 				Matchid: int32(matchidInt),
@@ -147,7 +147,7 @@ func MatchMapStartHandler(c *gin.Context) {
 	db.SQLAccess.Gorm.Model(&m).Update(&mUpdate)
 	db.SQLAccess.Gorm.Save(&mUpdate)
 
-	pbservices.MatchesStream.Write(int32(matchid), &pb.MatchEventReply{
+	go pbservices.MatchesStream.Write(int32(matchid), &pb.MatchEventReply{
 		Event: &pb.MatchEventReply_Mapstart{
 			Mapstart: &pb.MatchEventMapStart{
 				Matchid:   int32(matchid),
@@ -211,7 +211,7 @@ func MatchMapUpdateHandler(c *gin.Context) {
 		return
 	}
 
-	pbservices.MatchesStream.Write(int32(matchid), &pb.MatchEventReply{
+	go pbservices.MatchesStream.Write(int32(matchid), &pb.MatchEventReply{
 		Event: &pb.MatchEventReply_Mapupdate{
 			Mapupdate: &pb.MatchEventMapUpdate{
 				Matchid:    int32(matchid),
@@ -275,7 +275,7 @@ func MatchMapFinishHandler(c *gin.Context) {
 		return
 	}
 
-	pbservices.MatchesStream.Write(int32(matchid), &pb.MatchEventReply{
+	go pbservices.MatchesStream.Write(int32(matchid), &pb.MatchEventReply{
 		Event: &pb.MatchEventReply_Mapfinish{
 			Mapfinish: &pb.MatchEventMapFinish{
 				Matchid:   int32(matchid),
@@ -552,7 +552,7 @@ func MatchMapPlayerUpdateHandler(c *gin.Context) {
 		c.AbortWithError(http.StatusNotFound, fmt.Errorf("Failed to find map stats object"))
 		return
 	}
-	pbservices.MatchesStream.Write(int32(matchid), &pb.MatchEventReply{
+	go pbservices.MatchesStream.Write(int32(matchid), &pb.MatchEventReply{
 		Event: &pb.MatchEventReply_Mapplayerupdate{
 			Mapplayerupdate: &pb.MatchEventMapPlayerUpdate{
 				Matchid:          int32(matchid),
