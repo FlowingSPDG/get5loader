@@ -354,7 +354,7 @@ message Get5EventParams {
   string Team2Name = 6;
   int32 Team2Score = 7;
   int32 Team2SeriesScore = 8;
-  string Headshot = 9;
+  int32 Headshot = 9;
   string Weapon = 10;
   int32 Reason = 11;
   string Message = 12;

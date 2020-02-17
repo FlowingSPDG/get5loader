@@ -82,6 +82,31 @@ func MessageHandler(msg csgolog.Message, c *gin.Context) {
 		case csgolog.Get5PlayerDeath:
 			event = pb.Get5Event_Get5PlayerDeath
 			log.Printf("Get5Event_Get5PlayerDeath : Params:[%v]\n", m.Params)
+			go pbservices.MatchesStream.Write(int32(matchid), &pb.MatchEventReply{
+				Event: &pb.MatchEventReply_Get5Event{
+					Get5Event: &pb.MatchEventGet5Event{
+						Matchid: int32(matchid),
+						Params: &pb.Get5EventParams{
+							MapNumber:        int32(m.Params.MapNumber),
+							MapName:          m.Params.MapName,
+							Team1Name:        m.Params.Team1Name,
+							Team1Score:       int32(m.Params.Team1Score),
+							Team1SeriesScore: int32(m.Params.Team1SeriesScore),
+							Team2Name:        m.Params.Team2Name,
+							Team2Score:       int32(m.Params.Team2Score),
+							Team2SeriesScore: int32(m.Params.Team2SeriesScore),
+							Headshot:         int32(m.Params.Headshot),
+							Weapon:           m.Params.Weapon,
+							Reason:           int32(m.Params.Reason),
+							Message:          m.Params.Message,
+							File:             m.Params.File,
+							Site:             int32(m.Params.Site),
+							Stage:            m.Params.Stage,
+						},
+						Event: event,
+					},
+				},
+			}, false)
 		case csgolog.Get5RoundEnd:
 			event = pb.Get5Event_Get5RoundEnd
 		case csgolog.Get5SideSwap:
@@ -111,16 +136,6 @@ func MessageHandler(msg csgolog.Message, c *gin.Context) {
 		case csgolog.Get5TeamUnready:
 			event = pb.Get5Event_Get5TeamUnready
 		}
-
-		go pbservices.MatchesStream.Write(int32(matchid), &pb.MatchEventReply{
-			Event: &pb.MatchEventReply_Get5Event{
-				Get5Event: &pb.MatchEventGet5Event{
-					Matchid: int32(matchid),
-					Params:  &pb.Get5EventParams{},
-					Event:   event,
-				},
-			},
-		}, false)
 	default:
 		// Other log types
 	}
