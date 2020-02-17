@@ -57,7 +57,7 @@ async function main() {
     });
 
     let stream_req = Get5Proto.MatchEventRequest
-    stream_req.matchid = flags.matchid
+    stream_req.matchid = args[1]
 
     let stream = await client.MatchEvent(stream_req);
     stream.on('data', function(data) {
