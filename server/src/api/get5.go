@@ -102,7 +102,7 @@ func MatchFinishHandler(c *gin.Context) {
 		return
 	}
 
-	pbservices.MatchesStream.Write(int32(matchidInt), &pb.MatchEventReply{
+	go pbservices.MatchesStream.Write(int32(matchidInt), &pb.MatchEventReply{
 		Event: &pb.MatchEventReply_Matchfinish{
 			Matchfinish: &pb.MatchEventMatchFinish{
 				Matchid: int32(matchidInt),
@@ -147,7 +147,7 @@ func MatchMapStartHandler(c *gin.Context) {
 	db.SQLAccess.Gorm.Model(&m).Update(&mUpdate)
 	db.SQLAccess.Gorm.Save(&mUpdate)
 
-	pbservices.MatchesStream.Write(int32(matchid), &pb.MatchEventReply{
+	go pbservices.MatchesStream.Write(int32(matchid), &pb.MatchEventReply{
 		Event: &pb.MatchEventReply_Mapstart{
 			Mapstart: &pb.MatchEventMapStart{
 				Matchid:   int32(matchid),
@@ -211,7 +211,7 @@ func MatchMapUpdateHandler(c *gin.Context) {
 		return
 	}
 
-	pbservices.MatchesStream.Write(int32(matchid), &pb.MatchEventReply{
+	go pbservices.MatchesStream.Write(int32(matchid), &pb.MatchEventReply{
 		Event: &pb.MatchEventReply_Mapupdate{
 			Mapupdate: &pb.MatchEventMapUpdate{
 				Matchid:    int32(matchid),
@@ -275,7 +275,7 @@ func MatchMapFinishHandler(c *gin.Context) {
 		return
 	}
 
-	pbservices.MatchesStream.Write(int32(matchid), &pb.MatchEventReply{
+	go pbservices.MatchesStream.Write(int32(matchid), &pb.MatchEventReply{
 		Event: &pb.MatchEventReply_Mapfinish{
 			Mapfinish: &pb.MatchEventMapFinish{
 				Matchid:   int32(matchid),
@@ -291,11 +291,13 @@ func MatchMapPlayerUpdateHandler(c *gin.Context) {
 	log.Println("MatchMapPlayerUpdateHandler")
 	matchid, err := strconv.Atoi(c.Params.ByName("matchID"))
 	if err != nil {
+		log.Printf("ERR : %v\n", err)
 		c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
 	mapnumber, err := strconv.Atoi(c.Params.ByName("mapNumber"))
 	if err != nil {
+		log.Println("mapNumber should be int")
 		c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
@@ -305,134 +307,158 @@ func MatchMapPlayerUpdateHandler(c *gin.Context) {
 	FormTeam := c.PostForm("team")
 	FormKills, err := strconv.Atoi(c.PostForm("kills"))
 	if err != nil {
+		log.Println("kills should be int")
 		c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
 	FormAssists, err := strconv.Atoi(c.PostForm("assists"))
 	if err != nil {
+		log.Println("assists should be int")
 		c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
 	FormDeaths, err := strconv.Atoi(c.PostForm("deaths"))
 	if err != nil {
+		log.Println("deaths should be int")
 		c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
 	FormFlashbangAssists, err := strconv.Atoi(c.PostForm("flashbang_assists"))
 	if err != nil {
+		log.Println("flashbang_assists should be int")
 		c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
 	FormTeamKills, err := strconv.Atoi(c.PostForm("teamkills"))
 	if err != nil {
+		log.Println("teamkills should be int")
 		c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
 	FormSuicides, err := strconv.Atoi(c.PostForm("suicides"))
 	if err != nil {
+		log.Println("suicides should be int")
 		c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
 	FormDamage, err := strconv.Atoi(c.PostForm("damage"))
 	if err != nil {
+		log.Println("damage should be int")
 		c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
 	FormHeadShotKills, err := strconv.Atoi(c.PostForm("headshot_kills"))
 	if err != nil {
+		log.Println("headshot_kills should be int")
 		c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
 	FormRoundsPlayed, err := strconv.Atoi(c.PostForm("roundsplayed"))
 	if err != nil {
+		log.Println("roundsplayed should be int")
 		c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
 	FormBombPlants, err := strconv.Atoi(c.PostForm("bomb_plants"))
 	if err != nil {
+		log.Println("bomb_plants should be int")
 		c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
 	FormBombDefuses, err := strconv.Atoi(c.PostForm("bomb_defuses"))
 	if err != nil {
+		log.Println("bomb_defuses should be int")
 		c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
-
 	Form1KillRounds, err := strconv.Atoi(c.PostForm("1kill_rounds"))
 	if err != nil {
+		log.Println("1kill_rounds should be int")
 		c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
 	Form2KillRounds, err := strconv.Atoi(c.PostForm("2kill_rounds"))
 	if err != nil {
+		log.Println("2kill_rounds should be int")
 		c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
 	Form3KillRounds, err := strconv.Atoi(c.PostForm("3kill_rounds"))
 	if err != nil {
+		log.Println("3kill_rounds should be int")
 		c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
 	Form4KillRounds, err := strconv.Atoi(c.PostForm("4kill_rounds"))
 	if err != nil {
+		log.Println("4kill_rounds should be int")
 		c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
 	Form5KillRounds, err := strconv.Atoi(c.PostForm("5kill_rounds"))
 	if err != nil {
+		log.Println("5kill_rounds should be int")
 		c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
 	FormV1, err := strconv.Atoi(c.PostForm("v1"))
 	if err != nil {
+		log.Println("v1 should be int")
 		c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
 	FormV2, err := strconv.Atoi(c.PostForm("v2"))
 	if err != nil {
+		log.Println("v2 should be int")
 		c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
 	FormV3, err := strconv.Atoi(c.PostForm("v3"))
 	if err != nil {
+		log.Println("v3 should be int")
 		c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
 	FormV4, err := strconv.Atoi(c.PostForm("v4"))
 	if err != nil {
+		log.Println("v4 should be int")
 		c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
 	FormV5, err := strconv.Atoi(c.PostForm("v5"))
 	if err != nil {
+		log.Println("v5 should be int")
 		c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
 	FormFirstKillT, err := strconv.Atoi(c.PostForm("firstkill_t"))
 	if err != nil {
+		log.Println("firstkill_t should be int")
 		c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
 	FormFirstKillCT, err := strconv.Atoi(c.PostForm("firstkill_ct"))
 	if err != nil {
+		log.Println("firstkill_ct should be int")
 		c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
 	FormFirstDeathT, err := strconv.Atoi(c.PostForm("firstdeath_t"))
 	if err != nil {
+		log.Println("firstdeath_t should be int")
 		c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
 	FormFirstDeathCT, err := strconv.Atoi(c.PostForm("firstdeath_ct"))
 	if err != nil {
+		log.Println("firstdeath_ct should be int")
 		c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
 	/*
 		Form, err := strconv.Atoi(c.PostForm("tradekill")) // https://github.com/FlowingSPDG/get5-webapi/blob/e41ac0ab3c698ed67dbadcd667e55feef403e074/scripting/get5_apistats.sp#L429
 		if err != nil {
-			c.AbortWithError(http.StatusBadRequest, err)
+			log.Println("tradekill should be int")
 			c.AbortWithError(http.StatusBadRequest, err)
 			return
 		}
@@ -526,7 +552,7 @@ func MatchMapPlayerUpdateHandler(c *gin.Context) {
 		c.AbortWithError(http.StatusNotFound, fmt.Errorf("Failed to find map stats object"))
 		return
 	}
-	pbservices.MatchesStream.Write(int32(matchid), &pb.MatchEventReply{
+	go pbservices.MatchesStream.Write(int32(matchid), &pb.MatchEventReply{
 		Event: &pb.MatchEventReply_Mapplayerupdate{
 			Mapplayerupdate: &pb.MatchEventMapPlayerUpdate{
 				Matchid:          int32(matchid),
