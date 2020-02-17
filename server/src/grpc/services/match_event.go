@@ -73,6 +73,17 @@ func (e *EventsMap) AddReceiver(key int32) error {
 	return fmt.Errorf("Not Found")
 }
 
+func (e *EventsMap) MinusReceiver(key int32) error {
+	log.Printf("[gRPC] Minus for key %d\n", key)
+	e.mux.Lock()
+	defer e.mux.Unlock()
+	if val, ok := e.Event[key]; ok {
+		val.Receivers--
+		return nil
+	}
+	return fmt.Errorf("Not Found")
+}
+
 func (e *EventsMap) CloseChannels(key int32) error {
 	e.mux.Lock()
 	defer e.mux.Unlock()
@@ -96,7 +107,7 @@ func init() {
 	MatchesStream = EventsMap{}
 }
 
-func (s Server) MatchEvent(req *pb.MatchEventRequest, srv pb.Get5_MatchEventServer) error {
+func (s Server) MatchEvent(req *pb.MatchEventRequest, srv pb.Get5_MatchEventServer) (err error) {
 	matchid := req.GetMatchid()
 	log.Printf("[gRPC] MatchEvent. matchid : %d\n", matchid)
 
@@ -106,9 +117,10 @@ func (s Server) MatchEvent(req *pb.MatchEventRequest, srv pb.Get5_MatchEventServ
 		},
 	}
 
+	MatchesStream.AddReceiver(matchid)
+
 	lastevent := initev
 	for { //go func(){}() ?
-		MatchesStream.AddReceiver(matchid)
 		senddata, finished, err := MatchesStream.Read(matchid)
 		if err != nil {
 			log.Printf("[gRPC] Unknown ERROR : %v\n", err)
@@ -120,14 +132,17 @@ func (s Server) MatchEvent(req *pb.MatchEventRequest, srv pb.Get5_MatchEventServ
 			err = srv.Send(senddata)
 			if err != nil {
 				log.Println(err)
-				return err
+				break
 			}
 			lastevent = senddata
 			if finished {
 				log.Println("[gRPC] Stream finished")
 				MatchesStream.CloseChannels(matchid)
-				return nil
+				break
 			}
 		}
 	}
+
+	MatchesStream.MinusReceiver(matchid)
+	return err
 }
