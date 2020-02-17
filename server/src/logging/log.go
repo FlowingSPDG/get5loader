@@ -102,6 +102,8 @@ func MessageHandler(msg csgolog.Message, c *gin.Context) {
 							File:             m.Params.File,
 							Site:             int32(m.Params.Site),
 							Stage:            m.Params.Stage,
+							Attacker:         m.Params.Attacker, // FlowingSPDG<5><STEAM_1:1:55894410><>
+							Victim:           m.Params.Victim,
 						},
 						Event: event,
 					},

@@ -361,6 +361,8 @@ message Get5EventParams {
   string File = 13;
   int32 Site = 14;
   string Stage = 15;
+  string Attacker = 16;
+  string Victim = 17;
 }
 
 enum Get5Event {
