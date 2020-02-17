@@ -63,7 +63,7 @@ func (e *EventsMap) Read(key int32) (*pb.MatchEventReply, bool, error) {
 }
 
 func (e *EventsMap) AddReceiver(key int32) error {
-	log.Printf("[gRPC] Adding for key %d\n", key)
+	log.Printf("[gRPC] Adding receiver for key %d\n", key)
 	e.mux.Lock()
 	defer e.mux.Unlock()
 	if val, ok := e.Event[key]; ok {
@@ -74,7 +74,7 @@ func (e *EventsMap) AddReceiver(key int32) error {
 }
 
 func (e *EventsMap) MinusReceiver(key int32) error {
-	log.Printf("[gRPC] Minus for key %d\n", key)
+	log.Printf("[gRPC] Minus receiver for key %d\n", key)
 	e.mux.Lock()
 	defer e.mux.Unlock()
 	if val, ok := e.Event[key]; ok {
@@ -107,7 +107,7 @@ func init() {
 	MatchesStream = EventsMap{}
 }
 
-func (s Server) MatchEvent(req *pb.MatchEventRequest, srv pb.Get5_MatchEventServer) (err error) {
+func (s Server) MatchEvent(req *pb.MatchEventRequest, srv pb.Get5_MatchEventServer) error {
 	matchid := req.GetMatchid()
 	log.Printf("[gRPC] MatchEvent. matchid : %d\n", matchid)
 
@@ -119,7 +119,9 @@ func (s Server) MatchEvent(req *pb.MatchEventRequest, srv pb.Get5_MatchEventServ
 
 	MatchesStream.AddReceiver(matchid)
 
+	var err error
 	lastevent := initev
+
 	for { //go func(){}() ?
 		senddata, finished, err := MatchesStream.Read(matchid)
 		if err != nil {
@@ -132,13 +134,13 @@ func (s Server) MatchEvent(req *pb.MatchEventRequest, srv pb.Get5_MatchEventServ
 			err = srv.Send(senddata)
 			if err != nil {
 				log.Println(err)
-				break
+				break // disconnect
 			}
 			lastevent = senddata
 			if finished {
 				log.Println("[gRPC] Stream finished")
 				MatchesStream.CloseChannels(matchid)
-				break
+				break // disconnect
 			}
 		}
 	}
