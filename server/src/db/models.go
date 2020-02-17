@@ -119,16 +119,17 @@ func (g *GameServerData) Create(userid int, displayname string, ipstring string,
 	var servernum int
 	user := UserData{}
 	// returns error if user is not valid.
-	err := SQLAccess.Gorm.First(&user, userid).Error
-	// and ignore them. sometimes gRPC wants to regiter no-UserID server.
-	/*if err != nil {
-		return nil, err
+	rec := SQLAccess.Gorm.First(&user, userid)
+	/*if rec.Error != nil {
+		return nil, rec.Error
+	}*/
+	if !rec.RecordNotFound() {
+		SQLAccess.Gorm.Model(&user).Related(&user.Servers, "Servers").Count(&servernum)
+		if uint16(servernum) > config.Cnf.UserMaxResources.Servers {
+			return nil, fmt.Errorf("Max server limit exceeded! OWNED[%d] / LIMIT:[%d]", servernum, config.Cnf.UserMaxResources.Servers)
+		}
 	}
-	*/
-	SQLAccess.Gorm.Model(&user).Related(&user.Servers, "Servers").Count(&servernum)
-	if uint16(servernum) >= config.Cnf.UserMaxResources.Servers {
-		return nil, fmt.Errorf("Max servers limit exceeded")
-	}
+
 	g.UserID = userid
 	g.DisplayName = displayname
 	g.IPString = ipstring
@@ -136,7 +137,7 @@ func (g *GameServerData) Create(userid int, displayname string, ipstring string,
 	g.RconPassword = rconpassword
 	g.PublicServer = publicserver
 
-	_, err = util.CheckServerAvailability(g.IPString, g.Port, g.RconPassword)
+	_, err := util.CheckServerAvailability(g.IPString, g.Port, g.RconPassword)
 	if err != nil {
 		return nil, err
 	}
@@ -253,13 +254,15 @@ func (t *TeamData) Create(userid int, name string, tag string, flag string, logo
 	}
 	var teamnum int
 	user := UserData{}
-	err := SQLAccess.Gorm.First(&user, userid).Error
-	if err != nil {
-		return nil, err
-	}
-	SQLAccess.Gorm.Model(&user).Related(&user.Teams, "Teams").Count(&teamnum)
-	if uint16(teamnum) >= config.Cnf.UserMaxResources.Teams {
-		return nil, fmt.Errorf("Max teams limit exceeded")
+	rec := SQLAccess.Gorm.First(&user, userid)
+	/*if rec.Error != nil {
+		return nil, rec.Error
+	}*/
+	if !rec.RecordNotFound() {
+		SQLAccess.Gorm.Model(&user).Related(&user.Teams, "Teams").Count(&teamnum)
+		if uint16(teamnum) > config.Cnf.UserMaxResources.Teams {
+			return nil, fmt.Errorf("Max teams limit exceeded! OWNED[%d] / LIMIT:[%d]", teamnum, config.Cnf.UserMaxResources.Teams)
+		}
 	}
 	t.UserID = userid
 	t.Name = name
@@ -267,6 +270,7 @@ func (t *TeamData) Create(userid int, name string, tag string, flag string, logo
 	t.Flag = flag
 	t.Logo = logo
 	t.PublicTeam = publicteam
+	var err error
 	for i := 0; i < len(auths); i++ {
 		auths[i], err = util.AuthToSteamID64(auths[i])
 		if err != nil {
@@ -279,7 +283,7 @@ func (t *TeamData) Create(userid int, name string, tag string, flag string, logo
 	if err != nil {
 		return nil, err
 	}
-	rec := SQLAccess.Gorm.Create(&t)
+	rec = SQLAccess.Gorm.Create(&t)
 	if rec.Error != nil {
 		return nil, rec.Error
 	}
@@ -573,19 +577,19 @@ func (m *MatchData) Create(userid int, team1id int, team2id int, team1string str
 
 	var matchnum int
 	rec := SQLAccess.Gorm.Model(&MatchData{}).Where("user_id = ?", userid).Count(&matchnum)
-	if rec.Error != nil {
+	/*if rec.Error != nil {
 		return nil, rec.Error
-	}
-	if uint16(matchnum) >= config.Cnf.UserMaxResources.Matches {
-		return nil, fmt.Errorf("Max matches limit exceeded")
+	}*/
+	if !rec.RecordNotFound() {
+		SQLAccess.Gorm.Model(&user).Related(&user.Matches, "Matches").Count(&matchnum)
+		if uint16(matchnum) > config.Cnf.UserMaxResources.Matches {
+			return nil, fmt.Errorf("Max match limit exceeded! OWNED[%d] / LIMIT:[%d]", matchnum, config.Cnf.UserMaxResources.Matches)
+		}
 	}
 
 	rec = SQLAccess.Gorm.First(&user, userid)
 	if team1id == 0 || team2id == 0 || serverid == 0 {
 		return nil, fmt.Errorf("TeamID or ServerID is empty")
-	}
-	if rec.Error != nil {
-		return nil, rec.Error
 	}
 	server := GameServerData{}
 	rec = SQLAccess.Gorm.First(&server, serverid)
