@@ -10,6 +10,8 @@
   "license": "MIT",
   "dependencies": {
     "@grpc/proto-loader": "^0.5.3",
+    "args": "^5.0.1",
+    "argv": "0.0.2",
     "grpc": "^1.24.2"
   }
 }
