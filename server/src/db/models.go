@@ -1153,3 +1153,48 @@ func checkIP(ip string) bool {
 	}
 	return true
 }
+
+// RoundStatsData RoundStatsData struct for map_stats table.
+type RoundStatsData struct {
+	ID                   int    `gorm:"primary_key" gorm:"column:id"`
+	MatchID              int    `gorm:"column:match_id"`
+	MapID                int    `gorm:"column:map_id"`
+	FirstKillerSteamID   string `gorm:"column:first_killer_steamid"`
+	FirstVictimSteamID   string `gorm:"column:first_killer_steamid"`
+	SecondKillerSteamID  string `gorm:"column:second_killer_steamid"`
+	SecondVictimSteamID  string `gorm:"column:second_killer_steamid"`
+	ThirdKillerSteamID   string `gorm:"column:third_killer_steamid"`
+	ThirdVictimSteamID   string `gorm:"column:third_killer_steamid"`
+	FourthKillerSteamID  string `gorm:"column:fourth_killer_steamid"`
+	FourthVictimSteamID  string `gorm:"column:fourth_killer_steamid"`
+	FifthKillerSteamID   string `gorm:"column:fifth_killer_steamid"`
+	FifthVictimSteamID   string `gorm:"column:fifth_killer_steamid"`
+	SixthKillerSteamID   string `gorm:"column:sixth_killer_steamid"`
+	SixthVictimSteamID   string `gorm:"column:sixth_killer_steamid"`
+	SeventhKillerSteamID string `gorm:"column:seventh_killer_steamid"`
+	SeventhVictimSteamID string `gorm:"column:seventh_killer_steamid"`
+	EighthKillerSteamID  string `gorm:"column:eighth_killer_steamid"`
+	EighthVictimSteamID  string `gorm:"column:eighth_killer_steamid"`
+	NinthKillerSteamID   string `gorm:"column:ninth_killer_steamid"`
+	NinthVictimSteamID   string `gorm:"column:ninth_killer_steamid"`
+	TenthKillerSteamID   string `gorm:"column:tenth_killer_steamid"`
+	TenthVictimSteamID   string `gorm:"column:tenth_killer_steamid"`
+
+	Match MatchData    `gorm:"ASSOCIATION_FOREIGNKEY:match_id"`
+	Map   MapStatsData `gorm:"ASSOCIATION_FOREIGNKEY:map_id"`
+}
+
+// TableName declairation for GORM
+func (r *RoundStatsData) TableName() string {
+	return "round_stats"
+}
+
+// GetOrCreate Get or register player stats data into DB.
+func (r *RoundStatsData) GetOrCreate(matchID int, MapNumber int) (*RoundStatsData, error) {
+	RoundStats := &RoundStatsData{}
+	if err := SQLAccess.Gorm.FirstOrCreate(RoundStats, RoundStatsData{MatchID: matchID, MapID: MapNumber}).Error; err != nil {
+		return nil, err
+	}
+	r = RoundStats
+	return r, nil
+}

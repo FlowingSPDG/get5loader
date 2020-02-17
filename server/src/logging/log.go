@@ -21,7 +21,11 @@ func MessageHandler(msg csgolog.Message, c *gin.Context) {
 	}
 	auth := c.Params.ByName("auth")
 	match := &db.MatchData{}
-	db.SQLAccess.Gorm.First(&match, matchidstr)
+	rec := db.SQLAccess.Gorm.First(&match, matchidstr)
+	if rec.Error != nil {
+		c.AbortWithError(http.StatusInternalServerError, err)
+		return
+	}
 	if match.APIKey != auth {
 		c.AbortWithError(http.StatusForbidden, fmt.Errorf("Wrong auth"))
 		return
