@@ -1,14 +1,15 @@
 package main
 
 import (
-	"github.com/gin-gonic/gin"
-	"log"
-
+	"github.com/FlowingSPDG/csgo-log-http"
 	"github.com/FlowingSPDG/get5-web-go/server/src/api"
 	"github.com/FlowingSPDG/get5-web-go/server/src/cfg"
 	"github.com/FlowingSPDG/get5-web-go/server/src/db"
 	"github.com/FlowingSPDG/get5-web-go/server/src/grpc"
+	"github.com/FlowingSPDG/get5-web-go/server/src/logging"
 	"github.com/gin-contrib/static"
+	"github.com/gin-gonic/gin"
+	"log"
 )
 
 var (
@@ -44,6 +45,9 @@ func main() {
 		v1.GET("/GetVersion", api.GetVersion)
 		v1.GET("/GetMapList", api.GetMapList)
 		v1.GET("/CheckLoggedIn", api.CheckLoggedIn)
+
+		// CSGO Server log parsing
+		v1.POST("/csgolog", csgologhttp.CSGOLogger(logging.MessageHandler))
 
 		// Match API for front(Vue)
 		match := v1.Group("/match")
