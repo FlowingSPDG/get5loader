@@ -50,11 +50,11 @@ func (e *EventsMap) Read(key int32) (*pb.MatchEventReply, bool, error) {
 	log.Printf("[gRPC] Reading for key %d\n", key)
 	e.mux.Lock()
 	defer e.mux.Unlock()
-	log.Printf("[gRPC] Received Event on Read(). Event : %v Finished : %v\n", ev, fi)
+	log.Println("[gRPC] Received Event on Read()")
 	if val, ok := e.Event[key]; ok {
 		for i := uint16(1); i < val.Receivers; i++ {
-			ev := <-val.Event
-			fi := <-val.Finished
+			_ = <-val.Event
+			_ = <-val.Finished
 			log.Printf("[gRPC] Reading for key %d DONE\n", key)
 		}
 		return <-val.Event, <-val.Finished, nil
