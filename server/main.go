@@ -46,9 +46,6 @@ func main() {
 		v1.GET("/GetMapList", api.GetMapList)
 		v1.GET("/CheckLoggedIn", api.CheckLoggedIn)
 
-		// CSGO Server log parsing
-		v1.POST("/csgolog", csgologhttp.CSGOLogger(logging.MessageHandler))
-
 		// Match API for front(Vue)
 		match := v1.Group("/match")
 		{
@@ -76,6 +73,9 @@ func main() {
 
 			// match.POST("/:matchID/vetoUpdate", api.MatchVetoUpdateHandler)
 			// match.POST("/:matchID/map/:mapNumber/demo", api.MatchDemoUploadHandler)
+
+			// CSGO Server log parsing
+			match.POST("/:matchID/csgolog/:auth", csgologhttp.CSGOLogger(logging.MessageHandler))
 		}
 
 		team := v1.Group("/team")

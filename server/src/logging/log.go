@@ -1,15 +1,28 @@
 package logging
 
 import (
+	"fmt"
 	"github.com/FlowingSPDG/csgo-log"
+	"github.com/FlowingSPDG/get5-web-go/server/src/db"
 	pb "github.com/FlowingSPDG/get5-web-go/server/src/grpc/proto"
 	pbservices "github.com/FlowingSPDG/get5-web-go/server/src/grpc/services"
+	"github.com/gin-gonic/gin"
 	"log"
+	"net/http"
 	"strconv"
 )
 
 // MessageHandler handles message from CSGO Server and Gin middleware
-func MessageHandler(msg csgolog.Message) {
+func MessageHandler(msg csgolog.Message, c *gin.Context) {
+	matchid := c.Params.ByName("matchID")
+	auth := c.Params.ByName("auth")
+	match := &db.MatchData{}
+	db.SQLAccess.Gorm.First(&match, matchid)
+	if match.APIKey != auth {
+		c.AbortWithError(http.StatusForbidden, fmt.Errorf("Wrong auth"))
+		return
+	}
+	log.Printf("SRCDS Message handeler for match %s. Msg : [%v]\n", matchid, msg)
 	switch m := msg.(type) {
 	case csgolog.Get5Event:
 		log.Printf("Get5Event : [%v]\n", m)
