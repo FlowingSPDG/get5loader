@@ -1193,12 +1193,10 @@ func (r *RoundStatsData) TableName() string {
 	return "round_stats"
 }
 
-// GetOrCreate Get or register player stats data into DB.
+// GetOrCreate Get or register round stats data into DB.
 func (r *RoundStatsData) GetOrCreate(matchID int, MapNumber int) (*RoundStatsData, error) {
-	RoundStats := &RoundStatsData{}
-	if err := SQLAccess.Gorm.FirstOrCreate(RoundStats, RoundStatsData{MatchID: matchID, MapID: MapNumber}).Error; err != nil {
+	if err := SQLAccess.Gorm.FirstOrCreate(r, RoundStatsData{MatchID: matchID, MapID: MapNumber}).Error; err != nil {
 		return nil, err
 	}
-	r = RoundStats
 	return r, nil
 }
