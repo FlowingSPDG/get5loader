@@ -67,6 +67,17 @@ func (k *KillFeeds) Clear(matchid int) error {
 
 // Register Killfeeds into DB
 func (k *KillFeeds) Register(matchid int, mapnumber int, winner string, winnerside string) error {
+	if k.KillFeed == nil {
+		return fmt.Errorf("Match not found")
+	}
+	k.Lock()
+	defer k.Unlock()
+	if _, ok := k.KillFeed[matchid]; !ok {
+		return fmt.Errorf("Match not found")
+	}
+	if k.Started[matchid] == false {
+		return fmt.Errorf("Match not started")
+	}
 	sqlwinner := sql.NullString{}
 	sqlwinner.Scan(winner)
 	sqlwinnerside := sql.NullString{}
