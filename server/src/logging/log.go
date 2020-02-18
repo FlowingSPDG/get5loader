@@ -38,10 +38,10 @@ func (k *KillFeeds) Append(matchid int, killer string, victim string) {
 	if _, ok := k.KillFeed[matchid]; !ok {
 		k.KillFeed[matchid] = make([]*KillFeed, 0, 10)
 		k.Started[matchid] = false
-	} /*
-		if k.Started[matchid] == false {
-			return
-		}*/
+	}
+	if k.Started[matchid] == false {
+		return
+	}
 	k.KillFeed[matchid] = append(k.KillFeed[matchid], &KillFeed{
 		KillerSteamID: killer,
 		VictimSteamID: victim,
