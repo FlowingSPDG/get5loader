@@ -36,7 +36,8 @@ func (k *KillFeeds) Append(matchid int, killer string, victim string) {
 	k.Lock()
 	defer k.Unlock()
 	if _, ok := k.KillFeed[matchid]; !ok {
-		k.KillFeed[matchid] = make([]*KillFeed, 0)
+		k.KillFeed[matchid] = make([]*KillFeed, 0, 10)
+		k.Started[matchid] = false
 	} /*
 		if k.Started[matchid] == false {
 			return
@@ -59,7 +60,7 @@ func (k *KillFeeds) Clear(matchid int) error {
 	if _, ok := k.KillFeed[matchid]; !ok {
 		return fmt.Errorf("Match not found")
 	}
-	k.KillFeed[matchid] = make([]*KillFeed, 0)
+	k.KillFeed[matchid] = make([]*KillFeed, 0, 10)
 	runtime.GC()
 	return nil
 }
@@ -110,10 +111,12 @@ func (k *KillFeeds) Register(matchid int, mapnumber int, winner string, winnersi
 		round.TenthVictimSteamID = k.KillFeed[matchid][9].VictimSteamID
 	}
 
-	_, err := round.GetOrCreate(matchid, mapnumber)
+	stats, err := round.Register(matchid, mapnumber)
 	if err != nil {
+		log.Printf("Failed to register round info : %v\n", err)
 		return err
 	}
+	log.Printf("STATS : %v\n", stats)
 	return nil
 }
 
@@ -175,7 +178,7 @@ func MessageHandler(msg csgolog.Message, c *gin.Context) {
 		c.AbortWithError(http.StatusForbidden, fmt.Errorf("Wrong auth"))
 		return
 	}
-	log.Printf("SRCDS Message handeler for match %d. Msg : [%v]\n", matchid, msg)
+	// log.Printf("SRCDS Message handeler for match %d. Msg : [%v]\n", matchid, msg)
 	switch m := msg.(type) {
 	case csgolog.PlayerKill:
 		KillLogs.Append(matchid, m.Attacker.SteamID, m.Victim.SteamID)
@@ -211,7 +214,7 @@ func MessageHandler(msg csgolog.Message, c *gin.Context) {
 			},
 		}, false)
 	case csgolog.Get5Event:
-		log.Printf("Get5Event : [%v]\n", m)
+		// log.Printf("Get5Event : [%v]\n", m)
 		var event pb.Get5Event
 		switch csgolog.Get5Events(m.Event) {
 		case csgolog.Get5SeriesStart:
@@ -232,6 +235,7 @@ func MessageHandler(msg csgolog.Message, c *gin.Context) {
 			event = pb.Get5Event_Get5PlayerDeath
 		case csgolog.Get5RoundEnd:
 			event = pb.Get5Event_Get5RoundEnd
+			// this misses after-round kill(such as saving), but registering on FreezeTime can't get get5's matchid/matchparams/mapnumber...
 			KillLogs.Register(matchid, m.Params.MapNumber, m.Params.Winner, m.Params.WinnerSide)
 			KillLogs.Clear(matchid)
 		case csgolog.Get5SideSwap:
