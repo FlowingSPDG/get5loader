@@ -30,7 +30,6 @@ type KillFeeds struct {
 
 // Append adds killfeeds into memory
 func (k *KillFeeds) Append(matchid int, killer string, victim string) {
-	log.Printf("Adding kill feeds for matchid %d\n,", matchid)
 	if k.KillFeed == nil {
 		k.KillFeed = make(map[int][]*KillFeed, 0)
 	}
@@ -38,14 +37,15 @@ func (k *KillFeeds) Append(matchid int, killer string, victim string) {
 	defer k.Unlock()
 	if _, ok := k.KillFeed[matchid]; !ok {
 		k.KillFeed[matchid] = make([]*KillFeed, 0)
-	}
-	if k.Started[matchid] == false {
-		return
-	}
+	} /*
+		if k.Started[matchid] == false {
+			return
+		}*/
 	k.KillFeed[matchid] = append(k.KillFeed[matchid], &KillFeed{
 		KillerSteamID: killer,
 		VictimSteamID: victim,
 	})
+	log.Printf("Adding kill feeds for matchid %d, Current stored kills:[%v]\n,", matchid, k.KillFeed[matchid])
 }
 
 // Clear Killfeeds lists
@@ -228,7 +228,6 @@ func MessageHandler(msg csgolog.Message, c *gin.Context) {
 			event = pb.Get5Event_Get5KnifeWon
 		case csgolog.Get5GoingLive:
 			event = pb.Get5Event_Get5GoingLive
-			KillLogs.MapStart(matchid)
 		case csgolog.Get5PlayerDeath:
 			event = pb.Get5Event_Get5PlayerDeath
 		case csgolog.Get5RoundEnd:
@@ -293,6 +292,8 @@ func MessageHandler(msg csgolog.Message, c *gin.Context) {
 				},
 			},
 		}, false)
+	case csgolog.WorldMatchStart:
+		KillLogs.MapStart(matchid)
 	default:
 		// Other log types
 	}

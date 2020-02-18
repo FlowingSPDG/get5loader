@@ -1164,25 +1164,25 @@ type RoundStatsData struct {
 	Winner               sql.NullInt32  `gorm:"column:winner"`
 	WinnerSide           sql.NullString `gorm:"column:winner_side"`
 	FirstKillerSteamID   string         `gorm:"column:first_killer_steamid"`
-	FirstVictimSteamID   string         `gorm:"column:first_killer_steamid"`
+	FirstVictimSteamID   string         `gorm:"column:first_victim_steamid"`
 	SecondKillerSteamID  string         `gorm:"column:second_killer_steamid"`
-	SecondVictimSteamID  string         `gorm:"column:second_killer_steamid"`
+	SecondVictimSteamID  string         `gorm:"column:second_victim_steamid"`
 	ThirdKillerSteamID   string         `gorm:"column:third_killer_steamid"`
-	ThirdVictimSteamID   string         `gorm:"column:third_killer_steamid"`
+	ThirdVictimSteamID   string         `gorm:"column:third_victim_steamid"`
 	FourthKillerSteamID  string         `gorm:"column:fourth_killer_steamid"`
-	FourthVictimSteamID  string         `gorm:"column:fourth_killer_steamid"`
+	FourthVictimSteamID  string         `gorm:"column:fourth_victim_steamid"`
 	FifthKillerSteamID   string         `gorm:"column:fifth_killer_steamid"`
-	FifthVictimSteamID   string         `gorm:"column:fifth_killer_steamid"`
+	FifthVictimSteamID   string         `gorm:"column:fifth_victim_steamid"`
 	SixthKillerSteamID   string         `gorm:"column:sixth_killer_steamid"`
-	SixthVictimSteamID   string         `gorm:"column:sixth_killer_steamid"`
+	SixthVictimSteamID   string         `gorm:"column:sixth_victim_steamid"`
 	SeventhKillerSteamID string         `gorm:"column:seventh_killer_steamid"`
-	SeventhVictimSteamID string         `gorm:"column:seventh_killer_steamid"`
+	SeventhVictimSteamID string         `gorm:"column:seventh_victim_steamid"`
 	EighthKillerSteamID  string         `gorm:"column:eighth_killer_steamid"`
-	EighthVictimSteamID  string         `gorm:"column:eighth_killer_steamid"`
+	EighthVictimSteamID  string         `gorm:"column:eighth_victim_steamid"`
 	NinthKillerSteamID   string         `gorm:"column:ninth_killer_steamid"`
-	NinthVictimSteamID   string         `gorm:"column:ninth_killer_steamid"`
+	NinthVictimSteamID   string         `gorm:"column:ninth_victim_steamid"`
 	TenthKillerSteamID   string         `gorm:"column:tenth_killer_steamid"`
-	TenthVictimSteamID   string         `gorm:"column:tenth_killer_steamid"`
+	TenthVictimSteamID   string         `gorm:"column:tenth_victim_steamid"`
 
 	Match MatchData    `gorm:"ASSOCIATION_FOREIGNKEY:match_id"`
 	Map   MapStatsData `gorm:"ASSOCIATION_FOREIGNKEY:map_id"`
@@ -1195,8 +1195,11 @@ func (r *RoundStatsData) TableName() string {
 
 // GetOrCreate Get or register round stats data into DB.
 func (r *RoundStatsData) GetOrCreate(matchID int, MapNumber int) (*RoundStatsData, error) {
-	if err := SQLAccess.Gorm.FirstOrCreate(r).Error; err != nil {
-		return nil, err
+	log.Printf("Registering round info : %v\n", *r)
+	rec := SQLAccess.Gorm.FirstOrCreate(r)
+	log.Printf("rec : %v\n", rec)
+	if len(rec.GetErrors()) > 1 {
+		return nil, rec.GetErrors()[0]
 	}
 	return r, nil
 }
