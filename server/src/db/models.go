@@ -1154,31 +1154,35 @@ func checkIP(ip string) bool {
 	return true
 }
 
+// TODO ADD JSON Meta data...
+
 // RoundStatsData RoundStatsData struct for map_stats table.
 type RoundStatsData struct {
-	ID                   int    `gorm:"primary_key" gorm:"column:id"`
-	MatchID              int    `gorm:"column:match_id"`
-	MapID                int    `gorm:"column:map_id"`
-	FirstKillerSteamID   string `gorm:"column:first_killer_steamid"`
-	FirstVictimSteamID   string `gorm:"column:first_killer_steamid"`
-	SecondKillerSteamID  string `gorm:"column:second_killer_steamid"`
-	SecondVictimSteamID  string `gorm:"column:second_killer_steamid"`
-	ThirdKillerSteamID   string `gorm:"column:third_killer_steamid"`
-	ThirdVictimSteamID   string `gorm:"column:third_killer_steamid"`
-	FourthKillerSteamID  string `gorm:"column:fourth_killer_steamid"`
-	FourthVictimSteamID  string `gorm:"column:fourth_killer_steamid"`
-	FifthKillerSteamID   string `gorm:"column:fifth_killer_steamid"`
-	FifthVictimSteamID   string `gorm:"column:fifth_killer_steamid"`
-	SixthKillerSteamID   string `gorm:"column:sixth_killer_steamid"`
-	SixthVictimSteamID   string `gorm:"column:sixth_killer_steamid"`
-	SeventhKillerSteamID string `gorm:"column:seventh_killer_steamid"`
-	SeventhVictimSteamID string `gorm:"column:seventh_killer_steamid"`
-	EighthKillerSteamID  string `gorm:"column:eighth_killer_steamid"`
-	EighthVictimSteamID  string `gorm:"column:eighth_killer_steamid"`
-	NinthKillerSteamID   string `gorm:"column:ninth_killer_steamid"`
-	NinthVictimSteamID   string `gorm:"column:ninth_killer_steamid"`
-	TenthKillerSteamID   string `gorm:"column:tenth_killer_steamid"`
-	TenthVictimSteamID   string `gorm:"column:tenth_killer_steamid"`
+	ID                   int            `gorm:"primary_key" gorm:"column:id"`
+	MatchID              int            `gorm:"column:match_id"`
+	MapID                int            `gorm:"column:map_id"`
+	Winner               sql.NullInt32  `gorm:"column:winner"`
+	WinnerSide           sql.NullString `gorm:"column:winner_side"`
+	FirstKillerSteamID   string         `gorm:"column:first_killer_steamid"`
+	FirstVictimSteamID   string         `gorm:"column:first_killer_steamid"`
+	SecondKillerSteamID  string         `gorm:"column:second_killer_steamid"`
+	SecondVictimSteamID  string         `gorm:"column:second_killer_steamid"`
+	ThirdKillerSteamID   string         `gorm:"column:third_killer_steamid"`
+	ThirdVictimSteamID   string         `gorm:"column:third_killer_steamid"`
+	FourthKillerSteamID  string         `gorm:"column:fourth_killer_steamid"`
+	FourthVictimSteamID  string         `gorm:"column:fourth_killer_steamid"`
+	FifthKillerSteamID   string         `gorm:"column:fifth_killer_steamid"`
+	FifthVictimSteamID   string         `gorm:"column:fifth_killer_steamid"`
+	SixthKillerSteamID   string         `gorm:"column:sixth_killer_steamid"`
+	SixthVictimSteamID   string         `gorm:"column:sixth_killer_steamid"`
+	SeventhKillerSteamID string         `gorm:"column:seventh_killer_steamid"`
+	SeventhVictimSteamID string         `gorm:"column:seventh_killer_steamid"`
+	EighthKillerSteamID  string         `gorm:"column:eighth_killer_steamid"`
+	EighthVictimSteamID  string         `gorm:"column:eighth_killer_steamid"`
+	NinthKillerSteamID   string         `gorm:"column:ninth_killer_steamid"`
+	NinthVictimSteamID   string         `gorm:"column:ninth_killer_steamid"`
+	TenthKillerSteamID   string         `gorm:"column:tenth_killer_steamid"`
+	TenthVictimSteamID   string         `gorm:"column:tenth_killer_steamid"`
 
 	Match MatchData    `gorm:"ASSOCIATION_FOREIGNKEY:match_id"`
 	Map   MapStatsData `gorm:"ASSOCIATION_FOREIGNKEY:map_id"`
