@@ -239,8 +239,10 @@ message MatchEventReply {
     MatchEventMapFinish mapfinish = 4;
     MatchEventMapPlayerUpdate mapplayerupdate = 5;
     MatchEventInitialized initialized = 6;
-    // MatchEventVetoUpdate vetoupdate = 7;
-    // MatchEventDemoUpload demoupload = 8;
+    MatchEventPlayerKill playerkill = 7;
+    MatchEventGet5Event get5event = 8;
+    // MatchEventVetoUpdate vetoupdate = 9;
+    // MatchEventDemoUpload demoupload = 10;
   }
 }
 
@@ -317,6 +319,83 @@ message MatchEventDemoUpload {
   int32 matchid = 1;
   int32 mapnumber = 2;
   // binary...
+}
+
+message Player {
+  string name = 1;
+  int32 id = 2;
+  string steamid = 3;
+  string side = 4;
+}
+
+message Position {
+  int32 x = 1;
+  int32 y = 2;
+  int32 z = 3;
+}
+
+message MatchEventPlayerKill {
+  int32 matchid = 1;
+  Player Attacker = 2;
+  Position AttackerPosition = 3;
+  Player Victim = 4;
+  Position VictimPosition = 5;
+  string weapon = 6;
+  bool headshot = 7;
+  bool penetrated = 8;
+}
+
+message Get5EventParams {
+  int32 MapNumber = 1;
+  string MapName = 2;
+  string Team1Name = 3;
+  int32 Team1Score = 4;
+  int32 Team1SeriesScore = 5;
+  string Team2Name = 6;
+  int32 Team2Score = 7;
+  int32 Team2SeriesScore = 8;
+  int32 Headshot = 9;
+  string Weapon = 10;
+  int32 Reason = 11;
+  string Message = 12;
+  string File = 13;
+  int32 Site = 14;
+  string Stage = 15;
+  string Attacker = 16;
+  string Victim = 17;
+  string Winner = 18;
+  string WinnerSide = 19;
+}
+
+enum Get5Event {
+  Get5SeriesStart = 0;
+  Get5MapVeto = 1;
+  Get5MapPick = 2;
+  Get5SidePicked = 3;
+  Get5KnifeStart = 4;
+  Get5KnifeWon = 5;
+  Get5GoingLive = 6;
+  Get5PlayerDeath = 7;
+  Get5RoundEnd = 8;
+  Get5SideSwap = 9;
+  Get5MapEnd = 10;
+  Get5SeriesEnd = 11;
+  Get5BackupLoaded = 12;
+  Get5MatchConfigLoadFail = 13;
+  Get5ClientSay = 14;
+  Get5BombPlanted = 15;
+  Get5BombDefused = 16;
+  Get5BombExploded = 17;
+  Get5PlayerConnected = 18;
+  Get5PlayerDisconnect = 19;
+  Get5TeamReady = 20;
+  Get5TeamUnready = 21;
+}
+
+message MatchEventGet5Event {
+  int32 matchid = 1;
+  Get5EventParams params = 2;
+  Get5Event event = 3;
 }
 
 // MapStats Data Struct

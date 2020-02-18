@@ -861,8 +861,11 @@ func (m *MatchData) SendToServer() error {
 	if m.ServerID == 0 || m.Server.ID == 0 {
 		return fmt.Errorf("Server not found")
 	}
+
+	m.Server.SendRcon("log on")
 	res, err := m.Server.SendRcon(fmt.Sprintf("get5_loadmatch_url %s/api/v1/match/%d/config", config.Cnf.HOST, m.ID))
 	res, err = m.Server.SendRcon(fmt.Sprintf("get5_web_api_key %s", m.APIKey))
+	res, err = m.Server.SendRcon(fmt.Sprintf("logaddress_add_http \"http://%s/api/v1/match/%d/csgolog/%s\"", config.Cnf.HOST, m.ID, m.APIKey))
 	if err != nil || res != "" {
 		return err
 	}
@@ -1149,4 +1152,76 @@ func checkIP(ip string) bool {
 		return false
 	}
 	return true
+}
+
+// TODO ADD JSON Meta data...
+
+// RoundStatsData RoundStatsData struct for map_stats table.
+type RoundStatsData struct {
+	ID                   int            `gorm:"primary_key" gorm:"column:id"`
+	MatchID              int            `gorm:"column:match_id"`
+	MapNumber            int            `gorm:"column:map_number"`
+	Winner               sql.NullString `gorm:"column:winner"`
+	WinnerSide           sql.NullString `gorm:"column:winner_side"`
+	FirstKillerSteamID   sql.NullString `gorm:"column:first_killer_steamid"`
+	FirstVictimSteamID   sql.NullString `gorm:"column:first_victim_steamid"`
+	SecondKillerSteamID  sql.NullString `gorm:"column:second_killer_steamid"`
+	SecondVictimSteamID  sql.NullString `gorm:"column:second_victim_steamid"`
+	ThirdKillerSteamID   sql.NullString `gorm:"column:third_killer_steamid"`
+	ThirdVictimSteamID   sql.NullString `gorm:"column:third_victim_steamid"`
+	FourthKillerSteamID  sql.NullString `gorm:"column:fourth_killer_steamid"`
+	FourthVictimSteamID  sql.NullString `gorm:"column:fourth_victim_steamid"`
+	FifthKillerSteamID   sql.NullString `gorm:"column:fifth_killer_steamid"`
+	FifthVictimSteamID   sql.NullString `gorm:"column:fifth_victim_steamid"`
+	SixthKillerSteamID   sql.NullString `gorm:"column:sixth_killer_steamid"`
+	SixthVictimSteamID   sql.NullString `gorm:"column:sixth_victim_steamid"`
+	SeventhKillerSteamID sql.NullString `gorm:"column:seventh_killer_steamid"`
+	SeventhVictimSteamID sql.NullString `gorm:"column:seventh_victim_steamid"`
+	EighthKillerSteamID  sql.NullString `gorm:"column:eighth_killer_steamid"`
+	EighthVictimSteamID  sql.NullString `gorm:"column:eighth_victim_steamid"`
+	NinthKillerSteamID   sql.NullString `gorm:"column:ninth_killer_steamid"`
+	NinthVictimSteamID   sql.NullString `gorm:"column:ninth_victim_steamid"`
+	TenthKillerSteamID   sql.NullString `gorm:"column:tenth_killer_steamid"`
+	TenthVictimSteamID   sql.NullString `gorm:"column:tenth_victim_steamid"`
+
+	Match MatchData    `gorm:"ASSOCIATION_FOREIGNKEY:match_id"`
+	Map   MapStatsData `gorm:"ASSOCIATION_FOREIGNKEY:map_id"`
+}
+
+// TableName declairation for GORM
+func (r *RoundStatsData) TableName() string {
+	return "round_stats"
+}
+
+// GetOrCreate Get or register round stats data into DB.
+func (r *RoundStatsData) GetOrCreate(matchID int, MapNumber int) (*RoundStatsData, error) {
+	log.Printf("Registering round info : %v\n", *r)
+	rec := SQLAccess.Gorm.FirstOrCreate(r)
+	log.Printf("rec : %v\n", rec)
+	if len(rec.GetErrors()) > 1 {
+		return nil, rec.GetErrors()[0]
+	}
+	return r, nil
+}
+
+// Register round stats data into DB.
+func (r *RoundStatsData) Register(matchID int, MapNumber int) (*RoundStatsData, error) {
+	match := &MatchData{}
+	match, err := match.Get(matchID)
+	if err != nil {
+		log.Printf("Failed to get match : %v\n", err)
+		return nil, err
+	}
+	log.Printf("Match : %v\n", match)
+	if !match.Live() {
+		log.Println("Match is not Live")
+		return nil, fmt.Errorf("Match is not Live")
+	}
+	log.Printf("Registering round info : %v\n", *r)
+	rec := SQLAccess.Gorm.Create(r)
+	log.Printf("rec : %v\n", rec)
+	if len(rec.GetErrors()) > 1 {
+		return nil, rec.GetErrors()[0]
+	}
+	return r, nil
 }

@@ -82,6 +82,9 @@ func MatchFinishHandler(c *gin.Context) {
 		c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
+
+	// Removes ALL HTTP log destinations
+	server.SendRcon("logaddress_delall_http")
 	serverUpdate := server
 	db.SQLAccess.Gorm.First(&serverUpdate)
 	serverUpdate.InUse = false
