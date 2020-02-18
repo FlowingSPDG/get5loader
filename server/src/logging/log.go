@@ -239,7 +239,7 @@ func MessageHandler(msg csgolog.Message, c *gin.Context) {
 						Z: int32(m.VictimPosition.Z),
 					},
 					Weapon:     m.Weapon,
-					Headhot:    m.Headshot,
+					Headshot:   m.Headshot,
 					Penetrated: m.Penetrated,
 				},
 			},

@@ -341,7 +341,7 @@ message MatchEventPlayerKill {
   Player Victim = 4;
   Position VictimPosition = 5;
   string weapon = 6;
-  bool headhot = 7;
+  bool headshot = 7;
   bool penetrated = 8;
 }
 
