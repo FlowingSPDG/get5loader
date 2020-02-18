@@ -24,7 +24,6 @@ type KillFeed struct {
 // KillFeeds contains killfeed map and locks
 type KillFeeds struct {
 	KillFeed map[int][]*KillFeed
-	Started  map[int]bool
 	sync.Mutex
 }
 
@@ -40,10 +39,6 @@ func (k *KillFeeds) Append(matchid int, killer string, victim string) {
 	defer k.Unlock()
 	if _, ok := k.KillFeed[matchid]; !ok {
 		k.KillFeed[matchid] = make([]*KillFeed, 0, 10)
-		k.Started[matchid] = false
-	}
-	if k.Started[matchid] == false {
-		return
 	}
 	k.KillFeed[matchid] = append(k.KillFeed[matchid], &KillFeed{
 		KillerSteamID: killer,
@@ -77,9 +72,6 @@ func (k *KillFeeds) Register(matchid int, mapnumber int, winner string, winnersi
 	defer k.Unlock()
 	if _, ok := k.KillFeed[matchid]; !ok {
 		return fmt.Errorf("Match not found")
-	}
-	if k.Started[matchid] == false {
-		return fmt.Errorf("Match not started")
 	}
 	sqlwinner := sql.NullString{}
 	sqlwinner.Scan(winner)
@@ -188,34 +180,6 @@ func (k *KillFeeds) Register(matchid int, mapnumber int, winner string, winnersi
 	return nil
 }
 
-func (k *KillFeeds) MapStart(matchid int) error {
-	if k.KillFeed == nil {
-		return fmt.Errorf("Match not found")
-	}
-	log.Printf("Starting kill feeds recording for matchid %d\n,", matchid)
-	k.Lock()
-	defer k.Unlock()
-	if _, ok := k.KillFeed[matchid]; !ok {
-		return fmt.Errorf("Match not found")
-	}
-	k.Started[matchid] = true
-	return nil
-}
-
-func (k *KillFeeds) MapEnd(matchid int) error {
-	if k.KillFeed == nil {
-		return fmt.Errorf("Match not found")
-	}
-	log.Printf("Starting kill feeds recording for matchid %d\n,", matchid)
-	k.Lock()
-	defer k.Unlock()
-	if _, ok := k.KillFeed[matchid]; !ok {
-		return fmt.Errorf("Match not found")
-	}
-	k.Started[matchid] = false
-	return nil
-}
-
 var (
 	// KillLogs contains Killers and victims
 	KillLogs KillFeeds
@@ -224,7 +188,6 @@ var (
 func init() {
 	KillLogs = KillFeeds{
 		KillFeed: make(map[int][]*KillFeed, 0),
-		Started:  make(map[int]bool, 0),
 	}
 }
 
@@ -313,7 +276,6 @@ func MessageHandler(msg csgolog.Message, c *gin.Context) {
 			event = pb.Get5Event_Get5SideSwap
 		case csgolog.Get5MapEnd:
 			event = pb.Get5Event_Get5MapEnd
-			KillLogs.MapEnd(matchid)
 		case csgolog.Get5SeriesEnd:
 			event = pb.Get5Event_Get5SeriesEnd
 		case csgolog.Get5BackupLoaded:
@@ -366,8 +328,6 @@ func MessageHandler(msg csgolog.Message, c *gin.Context) {
 				},
 			},
 		}, false)
-	case csgolog.WorldMatchStart:
-		KillLogs.MapStart(matchid)
 	default:
 		// Other log types
 	}
