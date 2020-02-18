@@ -247,7 +247,10 @@ func MessageHandler(msg csgolog.Message, c *gin.Context) {
 		case csgolog.Get5RoundEnd:
 			event = pb.Get5Event_Get5RoundEnd
 			// this misses after-round kill(such as saving), but registering on FreezeTime can't get get5's matchid/matchparams/mapnumber...
-			KillLogs.Register(matchid, m.Params.MapNumber, m.Params.Winner, m.Params.WinnerSide)
+			err := KillLogs.Register(matchid, m.Params.MapNumber, m.Params.Winner, m.Params.WinnerSide)
+			if err != nil {
+				log.Printf("Failed to register match info : %v\n", err)
+			}
 			KillLogs.Clear(matchid)
 		case csgolog.Get5SideSwap:
 			event = pb.Get5Event_Get5SideSwap

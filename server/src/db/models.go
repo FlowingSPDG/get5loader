@@ -1206,6 +1206,17 @@ func (r *RoundStatsData) GetOrCreate(matchID int, MapNumber int) (*RoundStatsDat
 
 // Register round stats data into DB.
 func (r *RoundStatsData) Register(matchID int, MapNumber int) (*RoundStatsData, error) {
+	match := &MatchData{}
+	match, err := match.Get(matchID)
+	if err != nil {
+		log.Printf("Failed to get match : %v\n", err)
+		return nil, err
+	}
+	log.Printf("Match : %v\n", match)
+	if match.Finished() {
+		log.Println("Match is already finished")
+		return nil, fmt.Errorf("Match is already finished")
+	}
 	log.Printf("Registering round info : %v\n", *r)
 	rec := SQLAccess.Gorm.Create(r)
 	log.Printf("rec : %v\n", rec)
