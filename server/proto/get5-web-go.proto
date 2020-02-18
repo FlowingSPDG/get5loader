@@ -363,6 +363,8 @@ message Get5EventParams {
   string Stage = 15;
   string Attacker = 16;
   string Victim = 17;
+  string Winner = 18;
+  string WinnerSide = 19;
 }
 
 enum Get5Event {
