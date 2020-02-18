@@ -1160,8 +1160,8 @@ func checkIP(ip string) bool {
 type RoundStatsData struct {
 	ID                   int            `gorm:"primary_key" gorm:"column:id"`
 	MatchID              int            `gorm:"column:match_id"`
-	MapID                int            `gorm:"column:map_id"`
-	Winner               sql.NullInt32  `gorm:"column:winner"`
+	MapNumber            int            `gorm:"column:map_number"`
+	Winner               sql.NullString `gorm:"column:winner"`
 	WinnerSide           sql.NullString `gorm:"column:winner_side"`
 	FirstKillerSteamID   string         `gorm:"column:first_killer_steamid"`
 	FirstVictimSteamID   string         `gorm:"column:first_victim_steamid"`

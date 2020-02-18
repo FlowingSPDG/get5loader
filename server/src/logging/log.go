@@ -65,14 +65,14 @@ func (k *KillFeeds) Clear(matchid int) error {
 }
 
 // Register Killfeeds into DB
-func (k *KillFeeds) Register(matchid int, mapnumber int, winner int, winnerside string) error {
-	sqlwinner := sql.NullInt32{}
+func (k *KillFeeds) Register(matchid int, mapnumber int, winner string, winnerside string) error {
+	sqlwinner := sql.NullString{}
 	sqlwinner.Scan(winner)
 	sqlwinnerside := sql.NullString{}
 	sqlwinnerside.Scan(winnerside)
 	round := &db.RoundStatsData{
 		MatchID:    matchid,
-		MapID:      mapnumber,
+		MapNumber:  mapnumber,
 		Winner:     sqlwinner,
 		WinnerSide: sqlwinnerside,
 	}
@@ -232,8 +232,7 @@ func MessageHandler(msg csgolog.Message, c *gin.Context) {
 			event = pb.Get5Event_Get5PlayerDeath
 		case csgolog.Get5RoundEnd:
 			event = pb.Get5Event_Get5RoundEnd
-			winner, _ := strconv.Atoi(m.Params.Winner)
-			KillLogs.Register(matchid, m.Params.MapNumber, winner, m.Params.WinnerSide)
+			KillLogs.Register(matchid, m.Params.MapNumber, m.Params.Winner, m.Params.WinnerSide)
 			KillLogs.Clear(matchid)
 		case csgolog.Get5SideSwap:
 			event = pb.Get5Event_Get5SideSwap
