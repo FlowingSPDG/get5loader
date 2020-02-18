@@ -1213,9 +1213,9 @@ func (r *RoundStatsData) Register(matchID int, MapNumber int) (*RoundStatsData, 
 		return nil, err
 	}
 	log.Printf("Match : %v\n", match)
-	if match.Finished() {
-		log.Println("Match is already finished")
-		return nil, fmt.Errorf("Match is already finished")
+	if !match.Live() {
+		log.Println("Match is not Live")
+		return nil, fmt.Errorf("Match is not Live")
 	}
 	log.Printf("Registering round info : %v\n", *r)
 	rec := SQLAccess.Gorm.Create(r)

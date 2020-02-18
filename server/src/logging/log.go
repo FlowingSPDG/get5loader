@@ -30,6 +30,9 @@ type KillFeeds struct {
 
 // Append adds killfeeds into memory
 func (k *KillFeeds) Append(matchid int, killer string, victim string) {
+	if killer == "" || victim == "" {
+		return
+	}
 	if k.KillFeed == nil {
 		k.KillFeed = make(map[int][]*KillFeed, 0)
 	}
