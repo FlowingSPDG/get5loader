@@ -1163,26 +1163,26 @@ type RoundStatsData struct {
 	MapNumber            int            `gorm:"column:map_number"`
 	Winner               sql.NullString `gorm:"column:winner"`
 	WinnerSide           sql.NullString `gorm:"column:winner_side"`
-	FirstKillerSteamID   string         `gorm:"column:first_killer_steamid"`
-	FirstVictimSteamID   string         `gorm:"column:first_victim_steamid"`
-	SecondKillerSteamID  string         `gorm:"column:second_killer_steamid"`
-	SecondVictimSteamID  string         `gorm:"column:second_victim_steamid"`
-	ThirdKillerSteamID   string         `gorm:"column:third_killer_steamid"`
-	ThirdVictimSteamID   string         `gorm:"column:third_victim_steamid"`
-	FourthKillerSteamID  string         `gorm:"column:fourth_killer_steamid"`
-	FourthVictimSteamID  string         `gorm:"column:fourth_victim_steamid"`
-	FifthKillerSteamID   string         `gorm:"column:fifth_killer_steamid"`
-	FifthVictimSteamID   string         `gorm:"column:fifth_victim_steamid"`
-	SixthKillerSteamID   string         `gorm:"column:sixth_killer_steamid"`
-	SixthVictimSteamID   string         `gorm:"column:sixth_victim_steamid"`
-	SeventhKillerSteamID string         `gorm:"column:seventh_killer_steamid"`
-	SeventhVictimSteamID string         `gorm:"column:seventh_victim_steamid"`
-	EighthKillerSteamID  string         `gorm:"column:eighth_killer_steamid"`
-	EighthVictimSteamID  string         `gorm:"column:eighth_victim_steamid"`
-	NinthKillerSteamID   string         `gorm:"column:ninth_killer_steamid"`
-	NinthVictimSteamID   string         `gorm:"column:ninth_victim_steamid"`
-	TenthKillerSteamID   string         `gorm:"column:tenth_killer_steamid"`
-	TenthVictimSteamID   string         `gorm:"column:tenth_victim_steamid"`
+	FirstKillerSteamID   sql.NullString `gorm:"column:first_killer_steamid"`
+	FirstVictimSteamID   sql.NullString `gorm:"column:first_victim_steamid"`
+	SecondKillerSteamID  sql.NullString `gorm:"column:second_killer_steamid"`
+	SecondVictimSteamID  sql.NullString `gorm:"column:second_victim_steamid"`
+	ThirdKillerSteamID   sql.NullString `gorm:"column:third_killer_steamid"`
+	ThirdVictimSteamID   sql.NullString `gorm:"column:third_victim_steamid"`
+	FourthKillerSteamID  sql.NullString `gorm:"column:fourth_killer_steamid"`
+	FourthVictimSteamID  sql.NullString `gorm:"column:fourth_victim_steamid"`
+	FifthKillerSteamID   sql.NullString `gorm:"column:fifth_killer_steamid"`
+	FifthVictimSteamID   sql.NullString `gorm:"column:fifth_victim_steamid"`
+	SixthKillerSteamID   sql.NullString `gorm:"column:sixth_killer_steamid"`
+	SixthVictimSteamID   sql.NullString `gorm:"column:sixth_victim_steamid"`
+	SeventhKillerSteamID sql.NullString `gorm:"column:seventh_killer_steamid"`
+	SeventhVictimSteamID sql.NullString `gorm:"column:seventh_victim_steamid"`
+	EighthKillerSteamID  sql.NullString `gorm:"column:eighth_killer_steamid"`
+	EighthVictimSteamID  sql.NullString `gorm:"column:eighth_victim_steamid"`
+	NinthKillerSteamID   sql.NullString `gorm:"column:ninth_killer_steamid"`
+	NinthVictimSteamID   sql.NullString `gorm:"column:ninth_victim_steamid"`
+	TenthKillerSteamID   sql.NullString `gorm:"column:tenth_killer_steamid"`
+	TenthVictimSteamID   sql.NullString `gorm:"column:tenth_victim_steamid"`
 
 	Match MatchData    `gorm:"ASSOCIATION_FOREIGNKEY:match_id"`
 	Map   MapStatsData `gorm:"ASSOCIATION_FOREIGNKEY:map_id"`

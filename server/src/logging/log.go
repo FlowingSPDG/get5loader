@@ -92,37 +92,91 @@ func (k *KillFeeds) Register(matchid int, mapnumber int, winner string, winnersi
 		WinnerSide: sqlwinnerside,
 	}
 	logs := k.KillFeed[matchid]
-	switch len(logs) {
-	case 1:
-		round.FirstKillerSteamID = k.KillFeed[matchid][0].KillerSteamID
-		round.FirstVictimSteamID = k.KillFeed[matchid][0].VictimSteamID
-	case 2:
-		round.SecondKillerSteamID = k.KillFeed[matchid][1].KillerSteamID
-		round.SecondVictimSteamID = k.KillFeed[matchid][1].VictimSteamID
-	case 3:
-		round.SecondKillerSteamID = k.KillFeed[matchid][2].KillerSteamID
-		round.SecondVictimSteamID = k.KillFeed[matchid][2].VictimSteamID
-	case 4:
-		round.FourthKillerSteamID = k.KillFeed[matchid][3].KillerSteamID
-		round.FourthVictimSteamID = k.KillFeed[matchid][3].VictimSteamID
-	case 5:
-		round.FifthKillerSteamID = k.KillFeed[matchid][4].KillerSteamID
-		round.FifthVictimSteamID = k.KillFeed[matchid][4].VictimSteamID
-	case 6:
-		round.SixthKillerSteamID = k.KillFeed[matchid][5].KillerSteamID
-		round.SixthVictimSteamID = k.KillFeed[matchid][5].VictimSteamID
-	case 7:
-		round.SeventhKillerSteamID = k.KillFeed[matchid][6].KillerSteamID
-		round.SeventhVictimSteamID = k.KillFeed[matchid][6].VictimSteamID
-	case 8:
-		round.EighthKillerSteamID = k.KillFeed[matchid][7].KillerSteamID
-		round.EighthVictimSteamID = k.KillFeed[matchid][7].VictimSteamID
-	case 9:
-		round.NinthKillerSteamID = k.KillFeed[matchid][8].KillerSteamID
-		round.NinthVictimSteamID = k.KillFeed[matchid][8].VictimSteamID
-	case 10:
-		round.TenthKillerSteamID = k.KillFeed[matchid][9].KillerSteamID
-		round.TenthVictimSteamID = k.KillFeed[matchid][9].VictimSteamID
+	if len(logs) >= 1 {
+		sqlfirstkiller := sql.NullString{}
+		sqlfirstvictim := sql.NullString{}
+		sqlfirstkiller.Scan(k.KillFeed[matchid][0].KillerSteamID)
+		sqlfirstvictim.Scan(k.KillFeed[matchid][0].VictimSteamID)
+		round.FirstKillerSteamID = sqlfirstkiller
+		round.FirstVictimSteamID = sqlfirstvictim
+	}
+	if len(logs) >= 2 {
+		sqlsecondkiller := sql.NullString{}
+		sqlsecondvictim := sql.NullString{}
+		sqlsecondkiller.Scan(k.KillFeed[matchid][1].KillerSteamID)
+		sqlsecondvictim.Scan(k.KillFeed[matchid][1].VictimSteamID)
+		round.SecondKillerSteamID = sqlsecondkiller
+		round.SecondVictimSteamID = sqlsecondvictim
+	}
+	if len(logs) >= 3 {
+		sqlthirdkiller := sql.NullString{}
+		sqlthirdvictim := sql.NullString{}
+		sqlthirdkiller.Scan(k.KillFeed[matchid][2].KillerSteamID)
+		sqlthirdvictim.Scan(k.KillFeed[matchid][2].VictimSteamID)
+		round.ThirdKillerSteamID = sqlthirdkiller
+		round.ThirdVictimSteamID = sqlthirdvictim
+	}
+	if len(logs) >= 4 {
+		sqlfourthkiller := sql.NullString{}
+		sqlfourthvictim := sql.NullString{}
+		sqlfourthkiller.Scan(k.KillFeed[matchid][3].KillerSteamID)
+		sqlfourthvictim.Scan(k.KillFeed[matchid][3].VictimSteamID)
+		round.FourthKillerSteamID = sqlfourthkiller
+		round.FourthVictimSteamID = sqlfourthvictim
+	}
+	if len(logs) >= 5 {
+		sqlfifthkiller := sql.NullString{}
+		sqlfifthvictim := sql.NullString{}
+		sqlfifthkiller.Scan(k.KillFeed[matchid][4].KillerSteamID)
+		sqlfifthvictim.Scan(k.KillFeed[matchid][4].VictimSteamID)
+		round.FifthKillerSteamID = sqlfifthkiller
+		round.FifthVictimSteamID = sqlfifthvictim
+	}
+
+	if len(logs) >= 6 {
+		sqlsixthkiller := sql.NullString{}
+		sqlsixthvictim := sql.NullString{}
+		sqlsixthkiller.Scan(k.KillFeed[matchid][5].KillerSteamID)
+		sqlsixthvictim.Scan(k.KillFeed[matchid][5].VictimSteamID)
+		round.SixthKillerSteamID = sqlsixthkiller
+		round.SixthVictimSteamID = sqlsixthvictim
+	}
+
+	if len(logs) >= 7 {
+		sqlseventhkiller := sql.NullString{}
+		sqlseventhvictim := sql.NullString{}
+		sqlseventhkiller.Scan(k.KillFeed[matchid][6].KillerSteamID)
+		sqlseventhvictim.Scan(k.KillFeed[matchid][6].VictimSteamID)
+		round.SeventhKillerSteamID = sqlseventhkiller
+		round.SeventhVictimSteamID = sqlseventhvictim
+	}
+
+	if len(logs) >= 8 {
+		sqleighthkiller := sql.NullString{}
+		sqleighthvictim := sql.NullString{}
+		sqleighthkiller.Scan(k.KillFeed[matchid][7].KillerSteamID)
+		sqleighthvictim.Scan(k.KillFeed[matchid][7].VictimSteamID)
+		round.EighthKillerSteamID = sqleighthkiller
+		round.EighthVictimSteamID = sqleighthvictim
+	}
+
+	if len(logs) >= 9 {
+		sqlninthkiller := sql.NullString{}
+		sqlninthvictim := sql.NullString{}
+		sqlninthkiller.Scan(k.KillFeed[matchid][8].KillerSteamID)
+		sqlninthvictim.Scan(k.KillFeed[matchid][8].VictimSteamID)
+		round.NinthKillerSteamID = sqlninthkiller
+		round.NinthVictimSteamID = sqlninthvictim
+	}
+
+	if len(logs) >= 10 {
+
+		sqltenthkiller := sql.NullString{}
+		sqltenthkictim := sql.NullString{}
+		sqltenthkiller.Scan(k.KillFeed[matchid][9].KillerSteamID)
+		sqltenthkictim.Scan(k.KillFeed[matchid][9].VictimSteamID)
+		round.TenthKillerSteamID = sqltenthkiller
+		round.TenthVictimSteamID = sqltenthkictim
 	}
 
 	stats, err := round.Register(matchid, mapnumber)
