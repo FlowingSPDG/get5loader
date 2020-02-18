@@ -1,6 +1,7 @@
 package logging
 
 import (
+	"database/sql"
 	"fmt"
 	"github.com/FlowingSPDG/csgo-log"
 	"github.com/FlowingSPDG/get5-web-go/server/src/db"
@@ -9,8 +10,119 @@ import (
 	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
+	"runtime"
 	"strconv"
+	"sync"
 )
+
+// KillFeed Contains killer and victim's steamid
+type KillFeed struct {
+	KillerSteamID string
+	VictimSteamID string
+}
+
+// KillFeeds contains killfeed map and locks
+type KillFeeds struct {
+	KillFeed map[int][]*KillFeed
+	sync.Mutex
+}
+
+// Append adds killfeeds into memory
+func (k *KillFeeds) Append(matchid int, killer string, victim string) {
+	log.Printf("Adding kill feeds for matchid %d\n,", matchid)
+	if k.KillFeed == nil {
+		k.KillFeed = make(map[int][]*KillFeed, 0)
+	}
+	k.Lock()
+	defer k.Unlock()
+	if _, ok := k.KillFeed[matchid]; !ok {
+		k.KillFeed[matchid] = make([]*KillFeed, 0)
+	}
+	k.KillFeed[matchid] = append(k.KillFeed[matchid], &KillFeed{
+		KillerSteamID: killer,
+		VictimSteamID: victim,
+	})
+}
+
+// Clear Killfeeds lists
+func (k *KillFeeds) Clear(matchid int) error {
+	if k.KillFeed == nil {
+		return fmt.Errorf("Match not found")
+	}
+	log.Printf("Clearing kill feeds for matchid %d\n,", matchid)
+	k.Lock()
+	defer k.Unlock()
+	if _, ok := k.KillFeed[matchid]; !ok {
+		return fmt.Errorf("Match not found")
+	}
+	k.KillFeed[matchid] = make([]*KillFeed, 0)
+	runtime.GC()
+	return nil
+}
+
+// Register Killfeeds into DB
+func (k *KillFeeds) Register(matchid int, mapnumber int, winner int, winnerside string) error {
+	sqlwinner := sql.NullInt32{}
+	sqlwinner.Scan(winner)
+	sqlwinnerside := sql.NullString{}
+	sqlwinnerside.Scan(winnerside)
+	round := &db.RoundStatsData{
+		MatchID:    matchid,
+		MapID:      mapnumber,
+		Winner:     sqlwinner,
+		WinnerSide: sqlwinnerside,
+	}
+	logs := k.KillFeed[matchid]
+	switch len(logs) {
+	case 1:
+		round.FirstKillerSteamID = k.KillFeed[matchid][0].KillerSteamID
+		round.FirstVictimSteamID = k.KillFeed[matchid][0].VictimSteamID
+	case 2:
+		round.SecondKillerSteamID = k.KillFeed[matchid][1].KillerSteamID
+		round.SecondVictimSteamID = k.KillFeed[matchid][1].VictimSteamID
+	case 3:
+		round.SecondKillerSteamID = k.KillFeed[matchid][2].KillerSteamID
+		round.SecondVictimSteamID = k.KillFeed[matchid][2].VictimSteamID
+	case 4:
+		round.FourthKillerSteamID = k.KillFeed[matchid][3].KillerSteamID
+		round.FourthVictimSteamID = k.KillFeed[matchid][3].VictimSteamID
+	case 5:
+		round.FifthKillerSteamID = k.KillFeed[matchid][4].KillerSteamID
+		round.FifthVictimSteamID = k.KillFeed[matchid][4].VictimSteamID
+	case 6:
+		round.SixthKillerSteamID = k.KillFeed[matchid][5].KillerSteamID
+		round.SixthVictimSteamID = k.KillFeed[matchid][5].VictimSteamID
+	case 7:
+		round.SeventhKillerSteamID = k.KillFeed[matchid][6].KillerSteamID
+		round.SeventhVictimSteamID = k.KillFeed[matchid][6].VictimSteamID
+	case 8:
+		round.EighthKillerSteamID = k.KillFeed[matchid][7].KillerSteamID
+		round.EighthVictimSteamID = k.KillFeed[matchid][7].VictimSteamID
+	case 9:
+		round.NinthKillerSteamID = k.KillFeed[matchid][8].KillerSteamID
+		round.NinthVictimSteamID = k.KillFeed[matchid][8].VictimSteamID
+	case 10:
+		round.TenthKillerSteamID = k.KillFeed[matchid][9].KillerSteamID
+		round.TenthVictimSteamID = k.KillFeed[matchid][9].VictimSteamID
+	}
+
+	_, err := round.GetOrCreate(matchid, mapnumber)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+var (
+	// KillLogs contains Killers and victims
+	KillLogs KillFeeds
+)
+
+func init() {
+	KillLogs = KillFeeds{
+		KillFeed: make(map[int][]*KillFeed, 0),
+	}
+}
 
 // MessageHandler handles message from CSGO Server and Gin middleware
 func MessageHandler(msg csgolog.Message, c *gin.Context) {
@@ -33,6 +145,7 @@ func MessageHandler(msg csgolog.Message, c *gin.Context) {
 	log.Printf("SRCDS Message handeler for match %d. Msg : [%v]\n", matchid, msg)
 	switch m := msg.(type) {
 	case csgolog.PlayerKill:
+		KillLogs.Append(matchid, m.Attacker.SteamID, m.Victim.SteamID)
 		go pbservices.MatchesStream.Write(int32(matchid), &pb.MatchEventReply{
 			Event: &pb.MatchEventReply_Playerkill{
 				Playerkill: &pb.MatchEventPlayerKill{
@@ -86,6 +199,9 @@ func MessageHandler(msg csgolog.Message, c *gin.Context) {
 			event = pb.Get5Event_Get5PlayerDeath
 		case csgolog.Get5RoundEnd:
 			event = pb.Get5Event_Get5RoundEnd
+			winner, _ := strconv.Atoi(m.Params.Winner)
+			KillLogs.Register(matchid, m.Params.MapNumber, winner, m.Params.WinnerSide)
+			KillLogs.Clear(matchid)
 		case csgolog.Get5SideSwap:
 			event = pb.Get5Event_Get5SideSwap
 		case csgolog.Get5MapEnd:
