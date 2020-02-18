@@ -1,6 +1,6 @@
 
 -- +migrate Up
-ALTER TABLE `round_stats` RENAME COLUMN `fisrt_victim_steamid` TO `first_victim_steamid`;
+ALTER TABLE `round_stats` CHANGE `fisrt_victim_steamid` `first_victim_steamid` varchar(40);
 
 -- +migrate Down
-ALTER TABLE `round_stats` RENAME COLUMN `first_victim_steamid` TO `fisrt_victim_steamid`;
+ALTER TABLE `round_stats` CHANGE `first_victim_steamid` `fisrt_victim_steamid` varchar(40);
