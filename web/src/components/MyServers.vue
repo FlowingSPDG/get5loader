@@ -50,7 +50,7 @@ export default {
         })
         let res = await this.axios.delete(`/api/v1/server/${serverid}/delete`)
         this.$message({
-          message: 'Successfully deleted server.',
+          message: this.$t('MyServers.MessageDeleteSuccess'),
           type: 'success'
         })
         this.$router.push('/myservers')

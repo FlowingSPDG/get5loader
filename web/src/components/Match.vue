@@ -373,7 +373,7 @@ export default {
         })
         const res = await this.axios.post(`/api/v1/match/${matchid}/cancel`)
         this.$message({
-          message: 'Successfully cancelled match.',
+          message: this.$t('Match.MessageCancelSuccess'),
           type: 'success'
         })
         this.$router.push('/mymatches')
@@ -399,7 +399,7 @@ export default {
       try {
         const res = await this.axios.post(`/api/v1/match/${this.matchdata.id}/adduser?team=team1&auth=${steamid.value}`)
         this.$message({
-          message: 'Successfully added player.',
+          message: this.$t('Match.MessageAddPlayerSuccess'),
           type: 'success'
         })
         this.$router.push(`/match/${this.matchdata.id}`)
@@ -425,7 +425,7 @@ export default {
       try {
         const res = await this.axios.post(`/api/v1/match/${this.matchdata.id}/adduser?team=team2&auth=${steamid.value}`)
         this.$message({
-          message: 'Successfully added player.',
+          message: this.$t('Match.MessageAddPlayerSuccess'),
           type: 'success'
         })
         this.$router.push(`/match/${this.matchdata.id}`)
@@ -451,7 +451,7 @@ export default {
       try {
         const res = await this.axios.post(`/api/v1/match/${this.matchdata.id}/adduser?team=spec&auth=${steamid.value}`)
         this.$message({
-          message: 'Successfully added player.',
+          message: this.$t('Match.MessageAddPlayerSuccess'),
           type: 'success'
         })
         this.$router.push(`/match/${this.matchdata.id}`)
@@ -477,7 +477,7 @@ export default {
       try {
         const res = await this.axios.post(`/api/v1/match/${this.matchdata.id}/rcon?command=${command.value}`)
         this.$message({
-          message: 'Successfully sent command.',
+          message: this.$t('Match.MessageSendCommandSuccess'),
           type: 'success'
         })
         this.$router.push(`/match/${this.matchdata.id}`)

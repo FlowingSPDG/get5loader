@@ -250,7 +250,7 @@ export default {
             let res = await this.axios.post('/api/v1/match/create', json)
             this.form = {}
             this.$message({
-              message: $t('MatchCreate.MessageRegisterSuccess'),
+              message: this.$t('MatchCreate.MessageRegisterSuccess'),
               type: 'success'
             })
             this.$router.push('/mymatches')

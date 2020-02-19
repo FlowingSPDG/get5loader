@@ -193,7 +193,7 @@ export default {
         })
         let res = await this.axios.delete(`/api/v1/team/${teamid}/delete`)
         this.$message({
-          message: 'Successfully deleted team.',
+          message: this.$t('Team.MessageDeleteSuccess'),
           type: 'success'
         })
         this.$router.push('/myteams')

@@ -119,7 +119,7 @@ export default {
             let res = await this.axios.post('/api/v1/server/create', json)
             this.form = {}
             this.$message({
-              message: $t('ServerCreate.MessageRegisterSuccess'),
+              message: this.$t('ServerCreate.MessageRegisterSuccess'),
               type: 'success'
             })
             this.$router.push('/matches')
@@ -143,7 +143,7 @@ export default {
             let res = await this.axios.put(`/api/v1/server/${this.$route.params.serverID}/edit`, json)
             this.form = {}
             this.$message({
-              message: $t('ServerCreate.MessageeEditSuccess'),
+              message: this.$t('ServerCreate.MessageeEditSuccess'),
               type: 'success'
             })
             this.$router.push('/myservers')

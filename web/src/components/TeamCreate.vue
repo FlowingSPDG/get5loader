@@ -211,7 +211,7 @@ export default {
             let res = await this.axios.post('/api/v1/team/create', json)
             this.form = {}
             this.$message({
-              message: $t('TeamCreate.MessageRegisterSuccess'),
+              message: this.$t('TeamCreate.MessageRegisterSuccess'),
               type: 'success'
             })
             this.$router.push('/myteams')
@@ -235,7 +235,7 @@ export default {
             let res = await this.axios.put(`/api/v1/team/${this.$route.params.teamid}/edit`, json)
             this.form = {}
             this.$message({
-              message: $t('TeamCreate.MessageeEditSuccess'),
+              message: this.$t('TeamCreate.MessageeEditSuccess'),
               type: 'success'
             })
             this.$router.push('/myteams')
