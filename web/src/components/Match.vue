@@ -11,16 +11,16 @@
             {{ matchdata.team2_score }}
             <img :src="get_logo_or_flag_link(team1,team2).team2" /> <router-link :to="'/team/'+team2.id"> {{team2.name}}</router-link>
               <el-dropdown v-if="AdminToolsAvailable()" @command="handleCommand">
-                <el-button type="primary">Admin tools<i class="el-icon-arrow-down el-icon--right"></i></el-button>
+                <el-button type="primary">{{ $t('Match.AdminTools')}}<i class="el-icon-arrow-down el-icon--right"></i></el-button>
                 <el-dropdown-menu slot="dropdown">
-                  <el-dropdown-item command="PauseMatch" v-if="matchdata.live">Pause match</el-dropdown-item><br>
-                  <el-dropdown-item command="UnpauseMatch" v-if="matchdata.live">Unpause match</el-dropdown-item><br>
-                  <el-dropdown-item command="AddPlayerToTeam1">Add player to team1</el-dropdown-item><br>
-                  <el-dropdown-item command="AddPlayerToTeam2">Add player to team2</el-dropdown-item><br>
-                  <el-dropdown-item command="AddPlayerToSpec">Add player to specator list</el-dropdown-item><br>
-                  <el-dropdown-item command="SendRcon">Send rcon command</el-dropdown-item><br>
-                  <el-dropdown-item devided command="backup_manager">Load a backup file</el-dropdown-item><br>
-                  <el-dropdown-item devided command="cancelmatch">Cancel match</el-dropdown-item><br>
+                  <el-dropdown-item command="PauseMatch" v-if="matchdata.live">{{ $t('Match.PauseMatch')}}</el-dropdown-item><br>
+                  <el-dropdown-item command="UnpauseMatch" v-if="matchdata.live">{{ $t('Match.UnpauseMatch')}}</el-dropdown-item><br>
+                  <el-dropdown-item command="AddPlayerToTeam1">{{ $t('Match.AddPlayerToTeam1')}}</el-dropdown-item><br>
+                  <el-dropdown-item command="AddPlayerToTeam2">{{ $t('Match.AddPlayerToTeam2')}}</el-dropdown-item><br>
+                  <el-dropdown-item command="AddPlayerToSpec">{{ $t('Match.AddPlayerToSpec')}}</el-dropdown-item><br>
+                  <el-dropdown-item command="SendRcon">{{ $t('Match.SendRcon')}}</el-dropdown-item><br>
+                  <el-dropdown-item devided command="backup_manager">{{ $t('Match.LoadBackupFile')}}</el-dropdown-item><br>
+                  <el-dropdown-item devided command="cancelmatch">{{ $t('Match.CancelMatch')}}</el-dropdown-item><br>
                 </el-dropdown-menu>
               </el-dropdown>
         </h1>
@@ -40,27 +40,27 @@
           </el-form>
 
           <span slot="footer" class="dialog-footer">
-            <el-button @click="chose_backup = !chose_backup">Cancel</el-button>
-            <el-button type="primary" @click="SendBackup">Confirm</el-button>
+            <el-button @click="chose_backup = !chose_backup">{{ $t('misc.Cancel')}}</el-button>
+            <el-button type="primary" @click="SendBackup">{{ $t('misc.Confirm')}}</el-button>
           </span>
         </el-dialog>
 
         <br>
         <div class="alert alert-danger" role="alert" v-if="matchdata.cancelled">
             <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
-            <span class="sr-only">Error:</span>
-            This match has been cancelled.
+            <span class="sr-only">{{$t('misc.Error')}}:</span>
+            {{$t('Match.MatchHasBeenCancelled')}}
         </div>
 
         <div class="alert alert-warning" role="alert" v-if="matchdata.forfeit">
             <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
-            <span class="sr-only">Error:</span>
-            This match was forfeit by {{get_loser(matchdata)}}.
+            <span class="sr-only">{{$t('misc.Error')}}:</span>
+            {{$t("Match.MatchForfeitedBy",get_loser(matchdata))}}.
         </div>
 
         <div class="panel panel-default" role="alert" v-if="matchdata.start_time == '0001-01-01T00:00:00Z'">
             <div class="panel-body">
-                This match is pending start.
+              {{$t('Match.MatchPendingStart')}}
             </div>
         </div>
 

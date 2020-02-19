@@ -1,6 +1,6 @@
 {
     "en": {
-        "Get5": {
+        "App": {
           "title": "Get5 Web Panel",
           "AllMatches": "All Matches",
           "MyMatches": "My Matches",
@@ -11,14 +11,37 @@
           "AddServer": "Add a Server",
           "Logout": "Logout"
         },
-        "misc": {
+        "Match": {
+          "AdminTools": "AdminTools",
+          "PauseMatch": "Pause match",
+          "UnpauseMatch": "Unpause match",
+          "AddPlayerToTeam1": "Add player to team1",
+          "AddPlayerToTeam2": "Add player to team2",
+          "AddPlayerToSpec": "Add player to spectator list",
+          "SendRcon": "Send rcon command",
+          "LoadBackupFile": "Load a backup file",
+          "CancelMatch": "Cancel match",
+          "MatchHasBeenCancelled": "This match has been cancelled.",
+          "MatchForfeitedBy": "This match was forfeit by {team}.",
+          "MatchPendingStart": "This match is pending start."
+        },
+        "MatchCreate": {
+          "AddCvar": "Add CVAR",
+          "CreateMatch": "Create Match"
+        },
+        "lang": {
           "LanguageName":"English",
           "ChangeLanguage":"Change Language",
           "LanguageChanged": "You have changed localization."
+        },
+        "misc": {
+          "Cancel": "Cancel",
+          "Confirm": "Confirm",
+          "Error": "Error"
         }
     },
     "ja": {
-      "Get5": {
+      "App": {
         "title": "Get5 Web Panel",
         "AllMatches": "マッチリスト",
         "MyMatches": "あなたのマッチ",
@@ -29,10 +52,33 @@
         "AddServer": "サーバーを追加",
         "Logout": "ログアウト"
       },
-      "misc": {
+      "Match": {
+        "AdminTools": "管理者ツール",
+        "PauseMatch": "マッチをポーズ",
+        "UnpauseMatch": "マッチポーズを解除",
+        "AddPlayerToTeam1": "team1にプレイヤーを追加",
+        "AddPlayerToTeam2": "team2にプレイヤーを追加",
+        "AddPlayerToSpec": "観戦者リストにプレイヤーを追加",
+        "SendRcon": "RCONコマンドを送信",
+        "LoadBackupFile": "バックアップファイルを読み込む",
+        "CancelMatch": "マッチキャンセル",
+        "MatchHasBeenCancelled": "このマッチはキャンセルされました。",
+        "MatchForfeitedBy": "このマッチは {team} が試合放棄しました。",
+        "MatchPendingStart": "このマッチは開始待機中です。"
+      },
+      "MatchCreate": {
+        "AddCvar": "CVARを追加",
+        "CreateMatch": "マッチ作成"
+      },
+      "lang": {
         "LanguageName": "日本語",
         "ChangeLanguage": "言語を変更",
         "LanguageChanged": "言語を変更しました。"
+      },
+      "misc": {
+        "Cancel": "キャンセル",
+        "Confirm": "確認",
+        "Error": "エラー"
       }
     }
 }

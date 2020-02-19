@@ -51,7 +51,7 @@
 
             <el-form-item style="width: 653px;">
               <el-input v-model="cvar"></el-input>
-                <el-button icon="el-icon-plus" type="primary" @click="AddCvar()">Add CVAR</el-button>
+                <el-button icon="el-icon-plus" type="primary" @click="AddCvar()">{{$t('MatchCreate.AddCvar')}}</el-button>
             </el-form-item>
 
             <el-form-item label="CVARS" style="width: 653px;" prop="cvars">
@@ -64,7 +64,7 @@
             </el-form-item>
 
             <el-form-item style="width: 653px;">
-                <el-button type="primary" @click="RegisterMatch">Create Match</el-button>
+                <el-button type="primary" @click="RegisterMatch">{{$t('MatchCreate.CreateMatch')}}</el-button>
             </el-form-item>
         </el-form>
     </div>

@@ -6,7 +6,7 @@ export default {
   methods: {
     ChangeLanguage: function (lang) {
       this.$i18n.locale = lang
-      this.$message(this.$t('misc.LanguageChanged'))
+      this.$message(this.$t('lang.LanguageChanged'))
     },
     async GetUserData (userid) {
       return new Promise(async (resolve, reject) => {

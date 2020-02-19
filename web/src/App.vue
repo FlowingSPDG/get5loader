@@ -10,7 +10,7 @@
                         <span class="icon-bar"></span>
                     </button>
                     <transition name="fade">
-                        <router-link v-if="LogoTransition" to="/" class="navbar-brand" >{{ $t("Get5.title") }}</router-link>
+                        <router-link v-if="LogoTransition" to="/" class="navbar-brand" >{{ $t("App.title") }}</router-link>
                     </transition>
                 </div>
                 <div class="collapse navbar-collapse" id="myNavbar">
@@ -20,18 +20,18 @@
                         mode="horizontal"
                         router
                     >
-                        <el-menu-item index="Matches" id="matches" :route="{ path:'/matches' }" v-if="user.isLoggedIn">{{ $t("Get5.AllMatches") }}</el-menu-item>
-                        <el-menu-item index="My matches" id="mymatches" :route="{ path:'/mymatches' }" v-if="user.isLoggedIn">{{ $t("Get5.MyMatches") }}</el-menu-item>
-                        <el-menu-item index="match_create" id="match_create" :route="{ path:'/match/create' }" v-if="user.isLoggedIn">{{ $t("Get5.CreateMatch") }}</el-menu-item>
-                        <el-menu-item index="myteams" id="myteams" :route="{ path:'/myteams' }" v-if="user.isLoggedIn">{{ $t("Get5.MyTeams") }}</el-menu-item>
-                        <el-menu-item index="team_create" id="matches" :route="{ path:'/team/create' }" v-if="user.isLoggedIn">{{ $t("Get5.CreateTeam") }}</el-menu-item>
-                        <el-menu-item index="myservers" id="myservers" :route="{ path:'/myservers' }" v-if="user.isLoggedIn">{{ $t("Get5.MyServers") }}</el-menu-item>
-                        <el-menu-item index="server_create" id="server_create" :route="{ path:'/server/create' }" v-if="user.isLoggedIn">{{ $t("Get5.AddServer") }}</el-menu-item>
-                        <el-menu-item index="logout" id="logout" v-if="user.isLoggedIn"> <a href='/api/v1/logout' v-if="user.isLoggedIn">{{ $t("Get5.Logout") }}</a> </el-menu-item>
+                        <el-menu-item index="Matches" id="matches" :route="{ path:'/matches' }" v-if="user.isLoggedIn">{{ $t("App.AllMatches") }}</el-menu-item>
+                        <el-menu-item index="My matches" id="mymatches" :route="{ path:'/mymatches' }" v-if="user.isLoggedIn">{{ $t("App.MyMatches") }}</el-menu-item>
+                        <el-menu-item index="match_create" id="match_create" :route="{ path:'/match/create' }" v-if="user.isLoggedIn">{{ $t("App.CreateMatch") }}</el-menu-item>
+                        <el-menu-item index="myteams" id="myteams" :route="{ path:'/myteams' }" v-if="user.isLoggedIn">{{ $t("App.MyTeams") }}</el-menu-item>
+                        <el-menu-item index="team_create" id="matches" :route="{ path:'/team/create' }" v-if="user.isLoggedIn">{{ $t("App.CreateTeam") }}</el-menu-item>
+                        <el-menu-item index="myservers" id="myservers" :route="{ path:'/myservers' }" v-if="user.isLoggedIn">{{ $t("App.MyServers") }}</el-menu-item>
+                        <el-menu-item index="server_create" id="server_create" :route="{ path:'/server/create' }" v-if="user.isLoggedIn">{{ $t("App.AddServer") }}</el-menu-item>
+                        <el-menu-item index="logout" id="logout" v-if="user.isLoggedIn"> <a href='/api/v1/logout' v-if="user.isLoggedIn">{{ $t("App.Logout") }}</a> </el-menu-item>
                         <el-menu-item index="login" id="login" v-if="!user.isLoggedIn"> <a href='/api/v1/login' v-if="!user.isLoggedIn"> <img src="/img/login_small.png" height="18" /></a> </el-menu-item>
                       <el-dropdown @command="handleLanguage">
                         <el-button>
-                          {{ $t("misc.ChangeLanguage") }}<i class="el-icon-arrow-down el-icon--right"></i>
+                          {{ $t("lang.ChangeLanguage") }}<i class="el-icon-arrow-down el-icon--right"></i>
                         </el-button>
                         <el-dropdown-menu slot="dropdown">
                           <el-dropdown-item command="en">English</el-dropdown-item>
