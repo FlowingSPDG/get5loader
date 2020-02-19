@@ -4,6 +4,10 @@
 export default {
   name: 'api',
   methods: {
+    ChangeLanguage: function (lang) {
+      this.$i18n.locale = lang
+      this.$message(this.$t('lang.LanguageChanged'))
+    },
     async GetUserData (userid) {
       return new Promise(async (resolve, reject) => {
         const res = await this.axios.get(`/api/v1/user/${userid}/GetUserInfo`)

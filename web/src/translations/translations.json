@@ -1,0 +1,221 @@
+{
+    "en": {
+        "App": {
+          "title": "Get5 Web Panel",
+          "AllMatches": "All Matches",
+          "MyMatches": "My Matches",
+          "MyTeams": "My Teams",
+          "CreateMatch": "Create a Match",
+          "CreateTeam": "Create a Team",
+          "MyServers": "My Servers",
+          "AddServer": "Add a Server",
+          "Logout": "Logout"
+        },
+        "Match": {
+          "AdminTools": "AdminTools",
+          "PauseMatch": "Pause match",
+          "UnpauseMatch": "Unpause match",
+          "AddPlayerToTeam1": "Add player to team1",
+          "AddPlayerToTeam2": "Add player to team2",
+          "AddPlayerToSpec": "Add player to spectator list",
+          "SendRcon": "Send rcon command",
+          "LoadBackupFile": "Load a backup file",
+          "CancelMatch": "Cancel match",
+          "MatchHasBeenCancelled": "This match has been cancelled.",
+          "MatchForfeitedBy": "This match was forfeit by {team}.",
+          "MatchPendingStart": "This match is pending start."
+        },
+        "MatchCreate": {
+          "AddCvar": "Add CVAR",
+          "CreateMatch": "Create Match",
+          "FormServer": "Server",
+          "FormTeam1": "Team 1",
+          "FormTeam1Title": "Team1 Title text",
+          "FormTeam2": "Team 2",
+          "FormTeam2Title": "Team2 Title text",
+          "FormMatchTitle": "Match Title text",
+          "FormSeriesType": "Series Type",
+          "FormMapPool": "Map Pool",
+          "FormCVARS": "CVARS",
+          "MessageRegisterSuccess": "Successfully registered match."
+        },
+        "Matches": {
+          "YourMatches": "Your matches",
+          "AllMatches": "All matches",
+          "MatchID": "MatchID",
+          "Team1": "Team1",
+          "Team2": "Team2",
+          "Status": "Status",
+          "Server": "Server",
+          "Owner": "Owner",
+          "LoadMore": "Load more..."
+        },
+        "Metrics": {
+          "Get5Metrics": "Get5 Metrics"
+        },
+        "MyServers": {
+          "NoServersFound": "No servers found.",
+          "InUse": "In Use",
+          "Free": "Free"
+        },
+        "ServerCreate": {
+          "InfoWillNotBeExplosed": "Your server information will not be exposed to other users.",
+          "Get5Help": "Make sure your server is running and has the get5 server plugins installed first.<br>See <a href=\"https://github.com/splewis/get5/wiki/Step-by-step-installation-guide\">the get5 wiki</a> for help installing the get5 and get5_apistats plugins.",
+          "FormDisplayName": "Display Name",
+          "FormServerIP": "Server IP",
+          "FormServerPort": "Server Port",
+          "FormRCONPassword": "RCON Password",
+          "FormPublicTeam": "Public Team",
+          "MessageRegisterSuccess": "Successfully registered server.",
+          "MessageeEditSuccess": "Successfully edited server."
+        },
+        "Team": {
+          "Players": "Players",
+          "RecentMatches": "Recent Matches"
+        },
+        "Teams": {
+          "YourTeams": "Your teams",
+          "NoTeamFound": "No teams found."
+        },
+        "User": {
+          "Name": "Name",
+          "SteamAccount": "Steam account",
+          "TeamsSaved": "Teams saved",
+          "MatchesCreated": "Matches created",
+          "RecentMatches": "Recent Matches"
+        },
+        "TeamCreate": {
+          "FormTeamName":"Team Name",
+          "FormTeamTag": "Team Tag",
+          "FormLogoName": "Logo Name",
+          "FormCountryFlag": "Country Flag",
+          "FormPlayer": "Player",
+          "FormPublicTeam":"Public Team",
+          "MessageRegisterSuccess": "Successfully registered team.",
+          "MessageeEditSuccess": "Successfully edited team."
+        },
+        "lang": {
+          "LanguageName":"English",
+          "ChangeLanguage":"Change Language",
+          "LanguageChanged": "You have changed localization."
+        },
+        "misc": {
+          "Cancel": "Cancel",
+          "Confirm": "Confirm",
+          "Error": "Error",
+          "Create": "Create",
+          "Update": "Update",
+          "Delete": "Delete"
+        }
+    },
+    "ja": {
+      "App": {
+        "title": "Get5 Web Panel",
+        "AllMatches": "マッチリスト",
+        "MyMatches": "あなたのマッチ",
+        "CreateMatch": "マッチを作成",
+        "MyTeams": "あなたのチーム",
+        "CreateTeam": "チーム作成",
+        "MyServers": "あなたのサーバー",
+        "AddServer": "サーバーを追加",
+        "Logout": "ログアウト"
+      },
+      "Match": {
+        "AdminTools": "管理者ツール",
+        "PauseMatch": "マッチをポーズ",
+        "UnpauseMatch": "マッチポーズを解除",
+        "AddPlayerToTeam1": "team1にプレイヤーを追加",
+        "AddPlayerToTeam2": "team2にプレイヤーを追加",
+        "AddPlayerToSpec": "観戦者リストにプレイヤーを追加",
+        "SendRcon": "RCONコマンドを送信",
+        "LoadBackupFile": "バックアップファイルを読み込む",
+        "CancelMatch": "マッチキャンセル",
+        "MatchHasBeenCancelled": "このマッチはキャンセルされました。",
+        "MatchForfeitedBy": "このマッチは {team} が試合放棄しました。",
+        "MatchPendingStart": "このマッチは開始待機中です。"
+      },
+      "MatchCreate": {
+        "AddCvar": "CVARを追加",
+        "CreateMatch": "マッチ作成",
+        "FormServer": "サーバー",
+        "FormTeam1": "チーム1",
+        "FormTeam1Title": "Team1 タイトル",
+        "FormTeam2": "チーム2",
+        "FormTeam2Title": "Team2 タイトル",
+        "FormMatchTitle": "マッチタイトル",
+        "FormSeriesType": "シリーズ",
+        "FormMapPool": "マッププール",
+        "FormCVARS": "CVARS",
+        "MessageRegisterSuccess": "マッチの作成に成功しました！"
+      },
+      "Matches": {
+        "YourMatches": "あなたのマッチ",
+        "AllMatches": "全マッチ",
+        "MatchFor": "{user} のマッチ",
+        "MatchID": "マッチID",
+        "Team1": "チーム1",
+        "Team2": "チーム2",
+        "Status": "状況",
+        "Server": "サーバー",
+        "Owner": "オーナー",
+        "LoadMore": "更に読み込む..."
+      },
+      "Metrics": {
+        "Get5Metrics": "Get5統計"
+      },
+      "MyServers": {
+        "NoServersFound": "サーバーが見つかりませんでした。",
+        "InUse": "使用中",
+        "Free": "空き"
+      },
+      "ServerCreate": {
+        "InfoWillNotBeExplosed": "あなたのサーバー情報は他のユーザーには公開されません。",
+        "Get5Help": "サーバーが稼働中でGet5プラグインがインストールされていることを確認してください。<br>Get5のインストールは<a href=\"https://github.com/splewis/get5/wiki/Step-by-step-installation-guide\">get5 wiki</a>を参考にしてください。",
+        "FormDisplayName": "表示名",
+        "FormServerIP": "サーバーIP",
+        "FormServerPort": "サーバーポート",
+        "FormRCONPassword": "RCONパスワード",
+        "FormPublicTeam": "チームを公開する",
+        "MessageRegisterSuccess": "チームの登録に成功しました！",
+        "MessageeEditSuccess": "チームの編集に成功しました！"
+      },
+      "Team": {
+        "Players": "プレイヤー",
+        "RecentMatches": "マッチ履歴"
+      },
+      "Teams": {
+        "YourTeams": "あなたのチーム",
+        "NoTeamFound": "チームが見つかりませんでした。"
+      },
+      "User": {
+        "Name": "名前",
+        "SteamAccount": "Steamアカウント",
+        "TeamsSaved": "作成したチーム数",
+        "MatchesCreated": "作成したマッチ数",
+        "RecentMatches": "マッチ履歴"
+      },
+      "TeamCreate": {
+        "FormTeamName":"チーム名",
+        "FormTeamTag": "チームタグ",
+        "FormLogoName": "ロゴ名",
+        "FormCountryFlag": "国旗",
+        "FormPlayer": "プレイヤー",
+        "FormPublicTeam":"チームを公開する",
+        "MessageRegisterSuccess": "チームの登録に成功しました！",
+        "MessageeEditSuccess": "チームの編集に成功しました！"
+      },
+      "lang": {
+        "LanguageName": "日本語",
+        "ChangeLanguage": "言語を変更",
+        "LanguageChanged": "言語を変更しました。"
+      },
+      "misc": {
+        "Cancel": "キャンセル",
+        "Confirm": "確認",
+        "Error": "エラー",
+        "Create": "作成",
+        "Update": "更新",
+        "Delete": "削除"
+      }
+    }
+}

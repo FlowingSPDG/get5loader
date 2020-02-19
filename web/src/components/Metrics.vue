@@ -1,6 +1,6 @@
 <template>
   <div id="metrics">
-    <h1>Get5 Metrics</h1>
+    <h1>{{$t('Metrics.Get5Metrics')}}</h1>
     <el-table :data="metrics">
       <el-table-column
         prop="users"

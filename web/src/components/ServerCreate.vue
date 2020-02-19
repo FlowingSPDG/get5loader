@@ -2,33 +2,33 @@
 <div id="container">
 <div id="content">
   <el-form ref="form" :model="form" :rules="rules" label-position="left" label-width="120px">
-  <el-form-item label="Display Name" style="width: 653px;" prop="display_name">
+  <el-form-item :label="$t('ServerCreate.FormDisplayName')" style="width: 653px;" prop="display_name">
     <el-input v-model="form.display_name"></el-input>
   </el-form-item>
 
-  <el-form-item label="Server IP" style="width: 653px;" prop="ip_string">
+  <el-form-item :label="$t('ServerCreate.FormServerIP')" style="width: 653px;" prop="ip_string">
     <el-input v-model="form.ip_string"></el-input>
   </el-form-item>
 
-  <el-form-item label="Server Port" style="width: 653px;" prop="port">
+  <el-form-item :label="$t('ServerCreate.FormServerPort')" style="width: 653px;" prop="port">
     <el-input v-model="form.port" placeholder=27015></el-input>
   </el-form-item>
 
-  <el-form-item label="RCON Password" style="width: 653px;" prop="rcon_password">
+  <el-form-item :label="$t('ServerCreate.FormRCONPassword')" style="width: 653px;" prop="rcon_password">
     <el-input type="password"  v-model="form.rcon_password"></el-input>
-    <p class="help-block">Your server information will not be exposed to other users.</p>
+    <p class="help-block">{{$t('ServerCreate.InfoWillNotBeExplosed')}}</p>
   </el-form-item>
 
-  <el-form-item label="Public Team" style="width: 653px;" prop="public_server" v-if="user.admin">
+  <el-form-item :label="$t('ServerCreate.FormPublicTeam')" style="width: 653px;" prop="public_server" v-if="user.admin">
     <el-switch v-model="form.public_server"></el-switch>
   </el-form-item>
 
   <el-form-item style="width: 653px;" v-if="edit">
-    <el-button type="primary" v-if="edit" @click="UpdateServer">Update</el-button>
+    <el-button type="primary" v-if="edit" @click="UpdateServer">{{$t('misc.Update')}}</el-button>
   </el-form-item>
 
   <el-form-item style="width: 653px;" v-else>
-    <el-button type="primary" v-if="!edit" @click="RegisterServer">Create</el-button>
+    <el-button type="primary" v-if="!edit" @click="RegisterServer">{{$t('misc.Create')}}</el-button>
   </el-form-item>
 </el-form>
 
@@ -87,7 +87,7 @@ export default {
   async created () {
     this.$message({
       dangerouslyUseHTMLString: true,
-      message: `Make sure your server is running and has the get5 server plugins installed first.<br>See <a href="https://github.com/splewis/get5/wiki/Step-by-step-installation-guide">the get5 wiki</a> for help installing the get5 and get5_apistats plugins.`,
+      message: this.$t('ServerCreate.Get5Help'),
       type: 'info',
       duration: 1000 * 10,
       showClose: true
@@ -119,7 +119,7 @@ export default {
             let res = await this.axios.post('/api/v1/server/create', json)
             this.form = {}
             this.$message({
-              message: 'Successfully registered server.',
+              message: $t('ServerCreate.MessageRegisterSuccess'),
               type: 'success'
             })
             this.$router.push('/matches')
@@ -143,7 +143,7 @@ export default {
             let res = await this.axios.put(`/api/v1/server/${this.$route.params.serverID}/edit`, json)
             this.form = {}
             this.$message({
-              message: 'Successfully edited server.',
+              message: $t('ServerCreate.MessageeEditSuccess'),
               type: 'success'
             })
             this.$router.push('/myservers')

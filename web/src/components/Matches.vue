@@ -1,19 +1,19 @@
 <template>
   <div id="content" class="matches" v-if="match_owner" v-loading="!match_owner">
-    <h1 v-if="my_matches">Your matches</h1>
-    <h1 v-else-if="all_matches">All matches</h1>
+    <h1 v-if="my_matches">{{$t('Matches.YourMatches')}}</h1>
+    <h1 v-else-if="all_matches">{{$t('Matches.AllMatches')}}</h1>
     <h1 v-else>Matches for <router-link :to="'/user/'+match_owner.id">{{match_owner.name}}</router-link></h1>
 
   <table class="table table-striped">
     <thead>
       <tr>
-        <th>Match ID</th>
-        <th>Team 1</th>
-        <th>Team 2</th>
-        <th>Status</th>
-        <th v-if="my_matches">Server</th>
+        <th>{{$t('Matches.MatchID')}}</th>
+        <th>{{$t('Matches.Team1')}}</th>
+        <th>{{$t('Matches.Team2')}}</th>
+        <th>{{$t('Matches.Status')}}</th>
+        <th v-if="my_matches">{{$t('Matches.Server')}}</th>
         <th v-if="my_matches"></th>
-        <th v-else>Owner</th>
+        <th v-else>{{$t('Matches.Owner')}}</th>
       </tr>
     </thead>
     <tbody style="overflow:auto">
@@ -35,13 +35,13 @@
 
         <td v-if="my_matches && matchinfo[match.id].server">{{ matchinfo[match.id].server.display }} </td>
         <td v-if="my_matches && matchinfo[match.id]">
-          <a v-if="(match.pending || match.live)" :href="'/match/'+match.id+'cancel'" class="btn btn-danger btn-xs align-right">Cancel</a>
+          <a v-if="(match.pending || match.live)" :href="'/match/'+match.id+'cancel'" class="btn btn-danger btn-xs align-right">{{$t('misc.Cancel')}}</a>
         </td>
         <td v-if="!my_matches && matchinfo[match.id]">
           <router-link :to="'/user/'+matchinfo[match.id].user.id">{{ matchinfo[match.id].user.name }}</router-link>
         </td>
       </tr>
-    <el-button type="primary" v-if="!limit" :loading="loadingmore" @click="GetMatches()">Load more...</el-button>
+    <el-button type="primary" v-if="!limit" :loading="loadingmore" @click="GetMatches()">{{$t('Matches.LoadMore')}}</el-button>
     </tbody>
   </table>
 

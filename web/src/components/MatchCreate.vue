@@ -2,7 +2,7 @@
 <div id="container">
     <div id="content">
         <el-form ref="form" :model="form" :rules="rules" label-position="left" label-width="120px">
-            <el-form-item label="Server" style="width: 653px;" prop="display_name">
+            <el-form-item :label="$t('MatchCreate.FormServer')" style="width: 653px;" prop="display_name">
                 <el-select v-model="form.server_id" filterable>
                     <el-option v-for="(server, index) in servers" :label="server.display_name" :key="index" :value="server.id"></el-option>
                 </el-select>
@@ -10,39 +10,39 @@
 
             </el-form-item>
 
-            <el-form-item label="Team 1" style="width: 653px;" prop="team1_id">
+            <el-form-item :label="$t('MatchCreate.FormTeam1')" style="width: 653px;" prop="team1_id">
                 <el-select v-model="form.team1_id" filterable>
                     <el-option v-for="(team, index) in teams" :label="team.name" :key="index" :value="team.id"></el-option>
                 </el-select>
                 <el-button icon="el-icon-plus" @click="$router.push('/team/create')"></el-button>
             </el-form-item>
 
-            <el-form-item v-if="match_text_option" label="Team 1 title text" style="width: 653px;" prop="team1_string">
+            <el-form-item v-if="match_text_option" :label="$t('MatchCreate.FormTeam1Title')" style="width: 653px;" prop="team1_string">
                 <el-input v-model="form.team1_string"></el-input>
             </el-form-item>
 
-            <el-form-item label="Team2" style="width: 653px;" prop="team2_id">
+            <el-form-item :label="$t('MatchCreate.FormTeam2')" style="width: 653px;" prop="team2_id">
                 <el-select v-model="form.team2_id" filterable>
                     <el-option v-for="(team, index) in teams" :label="team.name" :key="index" :value="team.id"></el-option>
                 </el-select>
                 <el-button icon="el-icon-plus" @click="$router.push('/team/create')"></el-button>
             </el-form-item>
 
-            <el-form-item v-if="match_text_option" label="Team 2 title text" style="width: 653px;" prop="team2_string">
+            <el-form-item v-if="match_text_option" :label="$t('MatchCreate.FormTeam2Title')" style="width: 653px;" prop="team2_string">
                 <el-input v-model="form.team2_string"></el-input>
             </el-form-item>
 
-            <el-form-item v-if="match_text_option" label="Match title text" style="width: 653px;" prop="match_title">
+            <el-form-item v-if="match_text_option" :label="$t('MatchCreate.FormMatchTitle')" style="width: 653px;" prop="match_title">
                 <el-input v-model="form.match_title"></el-input>
             </el-form-item>
 
-            <el-form-item label="Series Type" style="width: 653px;" prop="series_type">
+            <el-form-item :label="$t('MatchCreate.FormSeriesType')" style="width: 653px;" prop="series_type">
                 <el-radio-group v-model="form.series_type" v-on:change="form.veto_mappool = []">
                     <el-radio v-for="(option, index) in series_type" :label="option.type" :key="index"></el-radio>
                 </el-radio-group>
             </el-form-item>
 
-            <el-form-item label="Map Pool" style="width: 653px;" prop="veto_mappool">
+            <el-form-item :label="$t('MatchCreate.FormMapPool')" style="width: 653px;" prop="veto_mappool">
                 <el-checkbox-group v-if="form.series_type !== 'bo1-preset'" v-model="form.veto_mappool">
                     <el-checkbox v-for="(map, index) in mappool.active" :label="map" :key="index"></el-checkbox >
                 </el-checkbox-group>
@@ -51,10 +51,10 @@
 
             <el-form-item style="width: 653px;">
               <el-input v-model="cvar"></el-input>
-                <el-button icon="el-icon-plus" type="primary" @click="AddCvar()">Add CVAR</el-button>
+                <el-button icon="el-icon-plus" type="primary" @click="AddCvar()">{{$t('MatchCreate.AddCvar')}}</el-button>
             </el-form-item>
 
-            <el-form-item label="CVARS" style="width: 653px;" prop="cvars">
+            <el-form-item :label="$t('MatchCreate.FormCVARS')" style="width: 653px;" prop="cvars">
               <div v-for="(cvar, index) in cvars" :key="index">
               <el-input v-model="cvars[index].value">
                 <template slot="prepend">{{cvar.cvar}}</template>
@@ -64,7 +64,7 @@
             </el-form-item>
 
             <el-form-item style="width: 653px;">
-                <el-button type="primary" @click="RegisterMatch">Create Match</el-button>
+                <el-button type="primary" @click="RegisterMatch">{{$t('MatchCreate.CreateMatch')}}</el-button>
             </el-form-item>
         </el-form>
     </div>
@@ -250,7 +250,7 @@ export default {
             let res = await this.axios.post('/api/v1/match/create', json)
             this.form = {}
             this.$message({
-              message: 'Successfully registered match.',
+              message: $t('MatchCreate.MessageRegisterSuccess'),
               type: 'success'
             })
             this.$router.push('/mymatches')

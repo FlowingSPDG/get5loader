@@ -1,19 +1,19 @@
 <template>
   <div id="content" class="matches">
-    <h1 v-if="my_matches">Your matches</h1>
-    <h1 v-else-if="all_matches">All matches</h1>
+    <h1 v-if="my_matches">{{$t('Matches.YourMatches')}}</h1>
+    <h1 v-else-if="all_matches">{{$t('Matches.AllMatches')}}</h1>
     <h1 v-else>Matches for <router-link :to="'/user/'+match_owner.id">{{match_owner.name}}</router-link></h1>
 
   <table class="table table-striped">
     <thead>
       <tr>
-        <th>Match ID</th>
-        <th>Team 1</th>
-        <th>Team 2</th>
-        <th>Status</th>
-        <th v-if="my_matches">Server</th>
+        <th>{{$t('Matches.MatchID')}}</th>
+        <th>{{$t('Matches.Team1')}}</th>
+        <th>{{$t('Matches.Team2')}}</th>
+        <th>{{$t('Matches.Status')}}</th>
+        <th v-if="my_matches">{{$t('Matches.Server')}}</th>
         <th v-if="my_matches"></th>
-        <th v-else>Owner</th>
+        <th v-else>{{$t('Matches.Owner')}}</th>
       </tr>
     </thead>
     <tbody>
