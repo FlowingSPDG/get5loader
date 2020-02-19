@@ -14,7 +14,7 @@
     <br>
 
     <div class="panel panel-default">
-      <div class="panel-heading">Players</div>
+      <div class="panel-heading">{{$t('Team.Players')}}</div>
       <div class="panel-body" v-cloak>
         <el-table :data="players">
           <el-table-column label="SteamID" prop="steamid" width="400">
@@ -32,7 +32,7 @@
     </div>
 
     <div class="panel panel-default">
-      <div class="panel-heading">Recent Matches</div>
+      <div class="panel-heading">{{$t('Team.RecentMatches')}}</div>
         <div class="panel-body"  v-if="team">
           <div v-for="(match, index) in matches" :key="index" >
             <router-link :to="'/match/'+match.id">#{{match.id}}</router-link>: {{ matchdata[index] }}
