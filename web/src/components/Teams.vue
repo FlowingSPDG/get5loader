@@ -2,7 +2,7 @@
 <div id="content">
 
   <h1 v-if="my_teams">{{$t('Teams.YourTeams')}}</h1>
-  <h1 v-else-if="owner">Teams for <a :href="'/user/'+owner.id"> {{ owner.name }}</a></h1>
+  <h1 v-else-if="owner">Teams for <router-link :to="'/user/'+owner.id"> {{ owner.name }}</router-link ></h1>
 
   <ul class="list-group">
     <li class="list-group-item" v-if="owner.teams.length == 0">
@@ -15,7 +15,7 @@
       <router-link :to="'/team/'+team.id" class="col-sm-offset-1">{{team.name}}</router-link>
 
       <div class="pull-right" v-if="CheckTeamDeletable(team)">
-        <a :href="'/team'+team.id+'/delete'" class="btn btn-danger btn-xs">{{$t('misc.Delete')}}</a>
+        <router-link :to="'/team/'+team.id+'/delete'" class="col-sm-offset-1">{{$t('misc.Delete')}}</router-link>
       </div>
 
       <div class="pull-right" v-if="CheckTeamEditable(team)">
