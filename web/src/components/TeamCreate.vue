@@ -120,10 +120,10 @@
   </el-form-item>
 
   <el-form-item v-if="!edit" style="width: 653px;">
-    <el-button type="primary" @click="RegisterTeam">Create</el-button>
+    <el-button type="primary" @click="RegisterTeam">{{$t('misc.Create')}}</el-button>
   </el-form-item>
   <el-form-item v-if="edit" style="width: 653px;">
-    <el-button type="primary" @click="UpdateTeam">Update</el-button>
+    <el-button type="primary" @click="UpdateTeam">{{$t('misc.Update')}}</el-button>
   </el-form-item>
 </el-form>
 
