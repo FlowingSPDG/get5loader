@@ -2,21 +2,21 @@
 <div id="container">
 <div id="content">
   <el-form ref="form" :model="form" :rules="rules" label-position="left" label-width="120px">
-  <el-form-item label="Team Name" style="width: 653px;" prop="name">
+  <el-form-item :label="$t('TeamCreate.FormTeamName')" style="width: 653px;" prop="name">
     <el-input v-model="form.name"></el-input>
   </el-form-item>
 
-  <el-form-item label="Team Tag" style="width: 653px;" prop="tag">
+  <el-form-item :label="$t('TeamCreate.FormTeamTag')" style="width: 653px;" prop="tag">
     <el-input v-model="form.tag"></el-input>
   </el-form-item>
 
-  <el-form-item label="Logo Name" style="width: 653px;" prop="logo_name">
+  <el-form-item :label="$t('TeamCreate.FormLogoName')" style="width: 653px;" prop="logo_name">
     <el-select v-model="form.logo_name" placeholder="None" style="width: 653px;">
       <el-option selected value="">None</el-option>
     </el-select>
   </el-form-item>
 
-  <el-form-item label="Country Flag" style="width: 653px;" prop="flag">
+  <el-form-item :label="$t('TeamCreate.FormCountryFlag')" style="width: 653px;" prop="flag">
     <el-select v-model="form.flag" placeholder="None" style="width: 653px;" filterable>
       <el-option selected value="" >None</el-option>
       <el-option label="Algeria" value="dz">Algeria - DZ</el-option>
@@ -93,29 +93,29 @@
     </el-select>
   </el-form-item>
 
-  <el-form-item label="Player 1" style="width: 653px;" prop="auths[0]">
+  <el-form-item :label="$t('TeamCreate.FormPlayer')+' 1'" style="width: 653px;" prop="auths[0]">
     <el-input v-model="form.auths[0]"></el-input>
   </el-form-item>
-  <el-form-item label="Player 2" style="width: 653px;" prop="auths[1]">
+  <el-form-item :label="$t('TeamCreate.FormPlayer')+' 2'" style="width: 653px;" prop="auths[1]">
     <el-input v-model="form.auths[1]"></el-input>
   </el-form-item>
-  <el-form-item label="Player 3" style="width: 653px;" prop="auths[2]">
+  <el-form-item :label="$t('TeamCreate.FormPlayer')+' 3'" style="width: 653px;" prop="auths[2]">
     <el-input v-model="form.auths[2]"></el-input>
   </el-form-item>
-  <el-form-item label="Player 4" style="width: 653px;" prop="auths[3]">
+  <el-form-item :label="$t('TeamCreate.FormPlayer')+' 4'" style="width: 653px;" prop="auths[3]">
     <el-input v-model="form.auths[3]"></el-input>
   </el-form-item>
-  <el-form-item label="Player 5" style="width: 653px;" prop="auths[4]">
+  <el-form-item :label="$t('TeamCreate.FormPlayer')+' 5'" style="width: 653px;" prop="auths[4]">
     <el-input v-model="form.auths[4]"></el-input>
   </el-form-item>
-  <el-form-item label="Player 6" style="width: 653px;" prop="auths[5]">
+  <el-form-item :label="$t('TeamCreate.FormPlayer')+' 6'" style="width: 653px;" prop="auths[5]">
     <el-input v-model="form.auths[5]"></el-input>
   </el-form-item>
-  <el-form-item label="Player 7" style="width: 653px;" prop="auths[6]">
+  <el-form-item :label="$t('TeamCreate.FormPlayer')+' 7'" style="width: 653px;" prop="auths[6]">
     <el-input v-model="form.auths[6]"></el-input>
   </el-form-item>
 
-  <el-form-item label="Public Team" style="width: 653px;">
+  <el-form-item :label="$t('TeamCreate.FormPublicTeam')" style="width: 653px;">
     <el-switch v-model="form.public_team"></el-switch>
   </el-form-item>
 
@@ -211,7 +211,7 @@ export default {
             let res = await this.axios.post('/api/v1/team/create', json)
             this.form = {}
             this.$message({
-              message: 'Successfully registered team.',
+              message: $t('TeamCreate.MessageRegisterSuccess'),
               type: 'success'
             })
             this.$router.push('/myteams')
@@ -235,7 +235,7 @@ export default {
             let res = await this.axios.put(`/api/v1/team/${this.$route.params.teamid}/edit`, json)
             this.form = {}
             this.$message({
-              message: 'Successfully edited team.',
+              message: $t('TeamCreate.MessageeEditSuccess'),
               type: 'success'
             })
             this.$router.push('/myteams')

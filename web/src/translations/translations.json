@@ -84,6 +84,16 @@
           "MatchesCreated": "Matches created",
           "RecentMatches": "Recent Matches"
         },
+        "TeamCreate": {
+          "FormTeamName":"Team Name",
+          "FormTeamTag": "Team Tag",
+          "FormLogoName": "Logo Name",
+          "FormCountryFlag": "Country Flag",
+          "FormPlayer": "Player",
+          "FormPublicTeam":"Public Team",
+          "MessageRegisterSuccess": "Successfully registered team.",
+          "MessageeEditSuccess": "Successfully edited team."
+        },
         "lang": {
           "LanguageName":"English",
           "ChangeLanguage":"Change Language",
@@ -183,6 +193,16 @@
         "TeamsSaved": "作成したチーム数",
         "MatchesCreated": "作成したマッチ数",
         "RecentMatches": "マッチ履歴"
+      },
+      "TeamCreate": {
+        "FormTeamName":"チーム名",
+        "FormTeamTag": "チームタグ",
+        "FormLogoName": "ロゴ名",
+        "FormCountryFlag": "国旗",
+        "FormPlayer": "プレイヤー",
+        "FormPublicTeam":"チームを公開する",
+        "MessageRegisterSuccess": "チームの登録に成功しました！",
+        "MessageeEditSuccess": "チームの編集に成功しました！"
       },
       "lang": {
         "LanguageName": "日本語",
