@@ -60,6 +60,13 @@
           "YourTeams": "Your teams",
           "NoTeamFound": "No teams found."
         },
+        "User": {
+          "Name": "Name",
+          "SteamAccount": "Steam account",
+          "TeamsSaved": "Teams saved",
+          "MatchesCreated": "Matches created",
+          "RecentMatches": "Recent Matches"
+        },
         "lang": {
           "LanguageName":"English",
           "ChangeLanguage":"Change Language",
@@ -70,7 +77,8 @@
           "Confirm": "Confirm",
           "Error": "Error",
           "Create": "Create",
-          "Update": "Update"
+          "Update": "Update",
+          "Delete": "Delete"
         }
     },
     "ja": {
@@ -135,6 +143,13 @@
         "YourTeams": "あなたのチーム",
         "NoTeamFound": "チームが見つかりませんでした。"
       },
+      "User": {
+        "Name": "名前",
+        "SteamAccount": "Steamアカウント",
+        "TeamsSaved": "作成したチーム数",
+        "MatchesCreated": "作成したマッチ数",
+        "RecentMatches": "マッチ履歴"
+      },
       "lang": {
         "LanguageName": "日本語",
         "ChangeLanguage": "言語を変更",
@@ -145,7 +160,8 @@
         "Confirm": "確認",
         "Error": "エラー",
         "Create": "作成",
-        "Update": "更新"
+        "Update": "更新",
+        "Delete": "削除"
       }
     }
 }

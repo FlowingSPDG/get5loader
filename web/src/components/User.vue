@@ -3,16 +3,16 @@
 
   <div class="panel panel-default">
     <div class="panel-heading">User information</div>
-    <div class="panel-body">
-      Name: {{displaying_user.name}}<br>
-      Steam account: <a :href="GetSteamURL(displaying_user.steam_id)"> {{displaying_user.steam_id}}</a> <br>
-      Teams saved: <router-link :to="'/teams/'+displaying_user.id"> {{displaying_user.teams.length}}</router-link> <br>
-      Matches created: <router-link :to="'/matches/'+displaying_user.id">{{displaying_user.matches.length}}</router-link> <br>
+    <div class="panel-body" v-if="displaying_user">
+      {{$t('User.Name')}}: {{displaying_user.name}}<br>
+      {{$t('User.SteamAccount')}}: <a :href="GetSteamURL(displaying_user.steam_id)"> {{displaying_user.steam_id}}</a> <br>
+      {{$t('User.TeamsSaved')}}: <router-link :to="'/teams/'+displaying_user.id"> {{displaying_user.teams.length}}</router-link> <br>
+      {{$t('User.MatchesCreated')}}: <router-link :to="'/matches/'+displaying_user.id">{{displaying_user.matches.length}}</router-link> <br>
     </div>
   </div>
 
   <div class="panel panel-default" v-if="displaying_user">
-    <div class="panel-heading">Recent Matches</div>
+    <div class="panel-heading">{{$t('User.RecentMatches')}}</div>
     <span class="panel-body" v-for="(match, index) in matches" :key=match.id>
         <router-link :to="'/match/'+match.id">#{{match.id}}</router-link> {{ matchdata[index] }}
     </span>
