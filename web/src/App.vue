@@ -36,6 +36,7 @@
                         <el-dropdown-menu slot="dropdown">
                           <el-dropdown-item command="en">English</el-dropdown-item>
                           <el-dropdown-item command="ja">Japanese</el-dropdown-item>
+                          <el-dropdown-item command="da">Danish</el-dropdown-item>
                         </el-dropdown-menu>
                       </el-dropdown>
                     </el-menu>

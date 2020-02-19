@@ -227,5 +227,119 @@
         "Update": "更新",
         "Delete": "削除"
       }
+    },
+    "da": {
+        "App": {
+          "title": "Get5 Web Panel",
+          "AllMatches": "Alle Kampe",
+          "MyMatches": "Mine Kampe",
+          "MyTeams": "Mine Hold",
+          "CreateMatch": "Opret en kamp",
+          "CreateTeam": "Opret et hold",
+          "MyServers": "Mine Servere",
+          "AddServer": "Tilføj en server",
+          "Logout": "Logud"
+        },
+        "Match": {
+          "AdminTools": "Administrationsværktøjer",
+          "PauseMatch": "Pause kamp",
+          "UnpauseMatch": "Unpause match",
+          "AddPlayerToTeam1": "Føj spiller til team1",
+          "AddPlayerToTeam2": "Føj spiller til team2",
+          "AddPlayerToSpec": "Føj spiller til tilskuerliste",
+          "SendRcon": "Send rcon kommado",
+          "LoadBackupFile": "Load a backup file",
+          "CancelMatch": "Annuller kamp",
+          "MatchHasBeenCancelled": "Denne kamp er annulleret.",
+          "MatchForfeitedBy": "Denne kamp blev fortabt af {team}.",
+          "MatchPendingStart": "Denne kamp afventer start.",
+          "MessageCancelSuccess": "Kamp annulleret.",
+          "MessageAddPlayerSuccess": "Spiller med succes tilføjet.",
+          "MessageSendCommandSuccess": "Sendt kommando."
+        },
+        "MatchCreate": {
+          "AddCvar": "Tilføj CVAR",
+          "CreateMatch": "Opret Kamp",
+          "FormServer": "Server",
+          "FormTeam1": "Hold 1",
+          "FormTeam1Title": "Team1 Title text",
+          "FormTeam2": "Hold 2",
+          "FormTeam2Title": "Team2 Title text",
+          "FormMatchTitle": "Match Title text",
+          "FormSeriesType": "Series Type",
+          "FormMapPool": "Map Pool",
+          "FormCVARS": "CVARS",
+          "MessageRegisterSuccess": "Succesfuld registreret kamp."
+        },
+        "Matches": {
+          "YourMatches": "Dine kampe",
+          "AllMatches": "Alle kampe",
+          "MatchID": "MatchID",
+          "Team1": "Team1",
+          "Team2": "Team2",
+          "Status": "Status",
+          "Server": "Server",
+          "Owner": "Owner",
+          "LoadMore": "Indlæs mere..."
+        },
+        "Metrics": {
+          "Get5Metrics": "Get5 Metrics"
+        },
+        "MyServers": {
+          "NoServersFound": "Ingen servere fundet.",
+          "InUse": "I brug",
+          "Free": "Ledig",
+		  "MessageDeleteSuccess": "Server blev slettet."
+        },
+        "ServerCreate": {
+          "InfoWillNotBeExplosed": "Dine serveroplysninger udsættes ikke for andre brugere.",
+          "Get5Help": "Sørg for, at din server kører og først har get5-serverplugins installeret.<br>Se <a href=\"https://github.com/splewis/get5/wiki/Step-by-step-installation-guide\">get5-wikien</a> for hjælp til installation af get5 og get5_apistats plugins.",
+          "FormDisplayName": "Visningsnavn",
+          "FormServerIP": "Server IP",
+          "FormServerPort": "Server Port",
+          "FormRCONPassword": "RCON Adgangskode",
+          "FormPublicTeam": "Public Team",
+          "MessageRegisterSuccess": "Succesfuld registreret server.",
+          "MessageeEditSuccess": "Server er redigeret."
+        },
+        "Team": {
+          "Players": "Spillere",
+          "RecentMatches": "Seneste Kampe"
+        },
+        "Teams": {
+          "YourTeams": "Dine Hold",
+          "NoTeamFound": "Ingen hold fundet.",
+		  "MessageDeleteSuccess": "Teamet blev slettet."
+        },
+        "User": {
+          "Name": "Navn",
+          "SteamAccount": "Steam konto",
+          "TeamsSaved": "Hold gemt",
+          "MatchesCreated": "Kampe oprettet",
+          "RecentMatches": "Seneste kampe"
+        },
+        "TeamCreate": {
+          "FormTeamName":"Hold navn",
+          "FormTeamTag": "Hold tag",
+          "FormLogoName": "Logo navn",
+          "FormCountryFlag": "Landsflag",
+          "FormPlayer": "Spiller",
+          "FormPublicTeam":"Offentligt hold",
+          "MessageRegisterSuccess": "Succesfuld registrerede hold.",
+          "MessageeEditSuccess": "Hold redigeret."
+        },
+        "lang": {
+          "LanguageName":"Danish",
+          "ChangeLanguage":"Skift sprog",
+          "LanguageChanged": "Du har ændret lokalisering."
+        },
+        "misc": {
+          "Cancel": "Annullere",
+          "Confirm": "Bekræft",
+          "Error": "Fejl",
+          "Create": "Opret",
+          "Update": "Opdatering",
+          "Delete": "Slet"
+        }
     }
 }
