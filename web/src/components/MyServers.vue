@@ -1,7 +1,7 @@
 <template>
   <ul class="list-group" v-if="servers">
     <li class="list-group-item" v-if="servers.length == 0">
-      No servers found.
+      {{$t('MyServers.NoServersFound')}}
     </li>
 
     <el-table :data="servers" style="width: 100%" v-else>
@@ -11,8 +11,8 @@
       <el-table-column prop="port" label="Port"></el-table-column>
       <el-table-column label="Status">
         <template slot-scope="scope">
-          <template v-if="scope.row.in_use"> In use </template>
-          <template v-else> Free  </template>
+          <template v-if="scope.row.in_use"> {{$t('MyServers.InUse')}} </template>
+          <template v-else> {{$t('MyServers.Free')}}  </template>
         </template>
       </el-table-column>
       <el-table-column>

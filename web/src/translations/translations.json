@@ -43,6 +43,11 @@
         "Metrics": {
           "Get5Metrics": "Get5 Metrics"
         },
+        "MyServers": {
+          "NoServersFound": "No servers found.",
+          "InUse": "In Use",
+          "Free": "Free"
+        },
         "lang": {
           "LanguageName":"English",
           "ChangeLanguage":"Change Language",
@@ -98,6 +103,11 @@
       },
       "Metrics": {
         "Get5Metrics": "Get5統計"
+      },
+      "MyServers": {
+        "NoServersFound": "サーバーが見つかりませんでした。",
+        "InUse": "使用中",
+        "Free": "空き"
       },
       "lang": {
         "LanguageName": "日本語",
