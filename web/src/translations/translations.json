@@ -27,7 +27,17 @@
         },
         "MatchCreate": {
           "AddCvar": "Add CVAR",
-          "CreateMatch": "Create Match"
+          "CreateMatch": "Create Match",
+          "FormServer": "Server",
+          "FormTeam1": "Team 1",
+          "FormTeam1Title": "Team1 Title text",
+          "FormTeam2": "Team 2",
+          "FormTeam2Title": "Team2 Title text",
+          "FormMatchTitle": "Match Title text",
+          "FormSeriesType": "Series Type",
+          "FormMapPool": "Map Pool",
+          "FormCVARS": "CVARS",
+          "MessageRegisterSuccess": "Successfully registered match."
         },
         "Matches": {
           "YourMatches": "Your matches",
@@ -116,7 +126,17 @@
       },
       "MatchCreate": {
         "AddCvar": "CVARを追加",
-        "CreateMatch": "マッチ作成"
+        "CreateMatch": "マッチ作成",
+        "FormServer": "サーバー",
+        "FormTeam1": "チーム1",
+        "FormTeam1Title": "Team1 タイトル",
+        "FormTeam2": "チーム2",
+        "FormTeam2Title": "Team2 タイトル",
+        "FormMatchTitle": "マッチタイトル",
+        "FormSeriesType": "シリーズ",
+        "FormMapPool": "マッププール",
+        "FormCVARS": "CVARS",
+        "MessageRegisterSuccess": "マッチの作成に成功しました！"
       },
       "Matches": {
         "YourMatches": "あなたのマッチ",
