@@ -23,7 +23,10 @@
           "CancelMatch": "Cancel match",
           "MatchHasBeenCancelled": "This match has been cancelled.",
           "MatchForfeitedBy": "This match was forfeit by {team}.",
-          "MatchPendingStart": "This match is pending start."
+          "MatchPendingStart": "This match is pending start.",
+          "MessageCancelSuccess": "Successfully cancelled match.",
+          "MessageAddPlayerSuccess": "Successfully added player.",
+          "MessageSendCommandSuccess": "Successfully sent command."
         },
         "MatchCreate": {
           "AddCvar": "Add CVAR",
@@ -56,7 +59,8 @@
         "MyServers": {
           "NoServersFound": "No servers found.",
           "InUse": "In Use",
-          "Free": "Free"
+          "Free": "Free",
+          "MessageDeleteSuccess": "Successfully deleted server."
         },
         "ServerCreate": {
           "InfoWillNotBeExplosed": "Your server information will not be exposed to other users.",
@@ -71,7 +75,8 @@
         },
         "Team": {
           "Players": "Players",
-          "RecentMatches": "Recent Matches"
+          "RecentMatches": "Recent Matches",
+          "MessageDeleteSuccess": "Successfully deleted team."
         },
         "Teams": {
           "YourTeams": "Your teams",
@@ -132,7 +137,10 @@
         "CancelMatch": "マッチキャンセル",
         "MatchHasBeenCancelled": "このマッチはキャンセルされました。",
         "MatchForfeitedBy": "このマッチは {team} が試合放棄しました。",
-        "MatchPendingStart": "このマッチは開始待機中です。"
+        "MatchPendingStart": "このマッチは開始待機中です。",
+        "MessageCancelSuccess": "マッチをキャンセルしました。",
+        "MessageAddPlayerSuccess": "プレイヤーの追加に成功しました。",
+        "MessageSendCommandSuccess": "コマンドの送信に成功しました。"
       },
       "MatchCreate": {
         "AddCvar": "CVARを追加",
@@ -166,7 +174,8 @@
       "MyServers": {
         "NoServersFound": "サーバーが見つかりませんでした。",
         "InUse": "使用中",
-        "Free": "空き"
+        "Free": "空き",
+        "MessageDeleteSuccess":"サーバーの削除に成功しました。"
       },
       "ServerCreate": {
         "InfoWillNotBeExplosed": "あなたのサーバー情報は他のユーザーには公開されません。",
@@ -181,7 +190,8 @@
       },
       "Team": {
         "Players": "プレイヤー",
-        "RecentMatches": "マッチ履歴"
+        "RecentMatches": "マッチ履歴",
+        "MessageDeleteSuccess": "チームの削除に成功しました。"
       },
       "Teams": {
         "YourTeams": "あなたのチーム",
@@ -242,7 +252,10 @@
           "CancelMatch": "Annuller kamp",
           "MatchHasBeenCancelled": "Denne kamp er annulleret.",
           "MatchForfeitedBy": "Denne kamp blev fortabt af {team}.",
-          "MatchPendingStart": "Denne kamp afventer start."
+          "MatchPendingStart": "Denne kamp afventer start.",
+          "MessageCancelSuccess": "Kamp annulleret.",
+          "MessageAddPlayerSuccess": "Spiller med succes tilføjet.",
+          "MessageSendCommandSuccess": "Sendt kommando."
         },
         "MatchCreate": {
           "AddCvar": "Tilføj CVAR",
@@ -275,7 +288,8 @@
         "MyServers": {
           "NoServersFound": "Ingen servere fundet.",
           "InUse": "I brug",
-          "Free": "Ledig"
+          "Free": "Ledig",
+		  "MessageDeleteSuccess": "Server blev slettet."
         },
         "ServerCreate": {
           "InfoWillNotBeExplosed": "Dine serveroplysninger udsættes ikke for andre brugere.",
@@ -294,7 +308,8 @@
         },
         "Teams": {
           "YourTeams": "Dine Hold",
-          "NoTeamFound": "Ingen hold fundet."
+          "NoTeamFound": "Ingen hold fundet.",
+		  "MessageDeleteSuccess": "Teamet blev slettet."
         },
         "User": {
           "Name": "Navn",
