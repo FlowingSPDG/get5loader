@@ -1,0 +1,38 @@
+{
+    "en": {
+        "Get5": {
+          "title": "Get5 Web Panel",
+          "AllMatches": "All Matches",
+          "MyMatches": "My Matches",
+          "MyTeams": "My Teams",
+          "CreateMatch": "Create a Match",
+          "CreateTeam": "Create a Team",
+          "MyServers": "My Servers",
+          "AddServer": "Add a Server",
+          "Logout": "Logout"
+        },
+        "misc": {
+          "LanguageName":"English",
+          "ChangeLanguage":"Change Language",
+          "LanguageChanged": "You have changed localization."
+        }
+    },
+    "ja": {
+      "Get5": {
+        "title": "Get5 Web Panel",
+        "AllMatches": "マッチリスト",
+        "MyMatches": "あなたのマッチ",
+        "CreateMatch": "マッチを作成",
+        "MyTeams": "あなたのチーム",
+        "CreateTeam": "チーム作成",
+        "MyServers": "あなたのサーバー",
+        "AddServer": "サーバーを追加",
+        "Logout": "ログアウト"
+      },
+      "misc": {
+        "LanguageName": "日本語",
+        "ChangeLanguage": "言語を変更",
+        "LanguageChanged": "言語を変更しました。"
+      }
+    }
+}
