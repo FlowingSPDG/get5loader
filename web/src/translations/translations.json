@@ -29,6 +29,17 @@
           "AddCvar": "Add CVAR",
           "CreateMatch": "Create Match"
         },
+        "Matches": {
+          "YourMatches": "Your matches",
+          "AllMatches": "All matches",
+          "MatchID": "MatchID",
+          "Team1": "Team1",
+          "Team2": "Team2",
+          "Status": "Status",
+          "Server": "Server",
+          "Owner": "Owner",
+          "LoadMore": "Load more..."
+        },
         "lang": {
           "LanguageName":"English",
           "ChangeLanguage":"Change Language",
@@ -69,6 +80,18 @@
       "MatchCreate": {
         "AddCvar": "CVARを追加",
         "CreateMatch": "マッチ作成"
+      },
+      "Matches": {
+        "YourMatches": "あなたのマッチ",
+        "AllMatches": "全マッチ",
+        "MatchFor": "{user} のマッチ",
+        "MatchID": "マッチID",
+        "Team1": "チーム1",
+        "Team2": "チーム2",
+        "Status": "状況",
+        "Server": "サーバー",
+        "Owner": "オーナー",
+        "LoadMore": "更に読み込む..."
       },
       "lang": {
         "LanguageName": "日本語",
