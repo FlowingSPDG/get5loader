@@ -56,6 +56,10 @@
           "Players": "Players",
           "RecentMatches": "Recent Matches"
         },
+        "Teams": {
+          "YourTeams": "Your teams",
+          "NoTeamFound": "No teams found."
+        },
         "lang": {
           "LanguageName":"English",
           "ChangeLanguage":"Change Language",
@@ -126,6 +130,10 @@
       "Team": {
         "Players": "プレイヤー",
         "RecentMatches": "マッチ履歴"
+      },
+      "Teams": {
+        "YourTeams": "あなたのチーム",
+        "NoTeamFound": "チームが見つかりませんでした。"
       },
       "lang": {
         "LanguageName": "日本語",

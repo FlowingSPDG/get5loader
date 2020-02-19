@@ -1,12 +1,12 @@
 <template>
 <div id="content">
 
-  <h1 v-if="my_teams">Your teams</h1>
+  <h1 v-if="my_teams">{{$t('Teams.YourTeams')}}</h1>
   <h1 v-else-if="owner">Teams for <a :href="'/user/'+owner.id"> {{ owner.name }}</a></h1>
 
   <ul class="list-group">
     <li class="list-group-item" v-if="owner.teams.length == 0">
-    No teams found.
+    {{$t('Teams.NoTeamFound')}}
     </li>
 
     <li class="list-group-item" v-else v-for="(team,index) in owner.teams" :key="index">
@@ -15,11 +15,11 @@
       <router-link :to="'/team/'+team.id" class="col-sm-offset-1">{{team.name}}</router-link>
 
       <div class="pull-right" v-if="CheckTeamDeletable(team)">
-        <a :href="'/team'+team.id+'/delete'" class="btn btn-danger btn-xs">Delete</a>
+        <a :href="'/team'+team.id+'/delete'" class="btn btn-danger btn-xs">{{$t('misc.Delete')}}</a>
       </div>
 
       <div class="pull-right" v-if="CheckTeamEditable(team)">
-        <router-link :to="'/team/'+team.id+'/edit'" class="btn btn-primary btn-xs">Edit</router-link>
+        <router-link :to="'/team/'+team.id+'/edit'" class="btn btn-primary btn-xs">{{$t('misc.Edit')}}</router-link>
       </div>
 
     </li>
