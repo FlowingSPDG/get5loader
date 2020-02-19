@@ -40,6 +40,9 @@
           "Owner": "Owner",
           "LoadMore": "Load more..."
         },
+        "Metrics": {
+          "Get5Metrics": "Get5 Metrics"
+        },
         "lang": {
           "LanguageName":"English",
           "ChangeLanguage":"Change Language",
@@ -92,6 +95,9 @@
         "Server": "サーバー",
         "Owner": "オーナー",
         "LoadMore": "更に読み込む..."
+      },
+      "Metrics": {
+        "Get5Metrics": "Get5統計"
       },
       "lang": {
         "LanguageName": "日本語",
