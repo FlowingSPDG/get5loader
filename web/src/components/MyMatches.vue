@@ -72,18 +72,25 @@ export default {
         name: 'hoge'
       },
       teamdatas: {},
-      userdatas: {},
       serverdatas: {}
     }
   },
   async created () {
     let self = this
-    const res = await this.axios.get('/api/v1/CheckLoggedIn')
-    this.user = res.data
-    const matches = await this.GetMatches(this.user.userid)
-    for (let i = 0; i < matches.length; i++) {
-      this.$set(this.matchinfo, matches[i].id, res.data)
-      this.matchinfo[matches[i].id] = await self.GetMatchData(matches[i].id)
+    try {
+      const res = await this.axios.get('/api/v1/CheckLoggedIn')
+      this.user = res.data
+    } catch (err) {
+      this.user = {
+        isLoggedIn: false,
+        steamid: '',
+        userid: ''
+      }
+    } finally {
+      const matches = await this.GetMatches(this.user.userid)
+      for (let i = 0; i < matches.length; i++) {
+        this.matchinfo[matches[i].id] = await self.GetMatchData(matches[i].id)
+      }
     }
   },
   methods: {

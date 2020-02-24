@@ -247,7 +247,7 @@ func GetMatches(c *gin.Context) {
 	response := []db.MatchData{}
 	if userID != "" {
 		db.SQLAccess.Gorm.Limit(20).First(&user, userID)
-		db.SQLAccess.Gorm.Model(&user).Related(&response, "Matches")
+		db.SQLAccess.Gorm.Model(&user).Order("id DESC").Related(&response, "Matches")
 	} else {
 		db.SQLAccess.Gorm.Limit(20).Order("id DESC").Offset(offset).Find(&response)
 	}
