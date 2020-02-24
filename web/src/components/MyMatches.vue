@@ -72,7 +72,6 @@ export default {
         name: 'hoge'
       },
       teamdatas: {},
-      userdatas: {},
       serverdatas: {}
     }
   },
