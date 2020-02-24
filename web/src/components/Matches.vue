@@ -99,19 +99,29 @@ export default {
         this.matches = []
         if (this.$route.params.userid) {
           this.all_matches = false
-          let res = await this.axios.get('/api/v1/CheckLoggedIn')
-          this.user = res.data
-          this.my_matches = this.$route.params.userid === this.user.userid
-          this.GetMatches(this.$route.params.userid)
-          this.userdatas[this.$route.params.userid] = await this.GetUserData(this.$route.params.userid)
-          this.match_owner = this.userdatas[this.$route.params.userid]
-          resolve()
+          try {
+            let res = await this.axios.get('/api/v1/CheckLoggedIn')
+            this.user = res.data
+            resolve()
+          } catch (err) {
+            this.user = {}
+          } finally {
+            this.my_matches = this.$route.params.userid === this.user.userid
+            this.GetMatches(this.$route.params.userid)
+            this.userdatas[this.$route.params.userid] = await this.GetUserData(this.$route.params.userid)
+            this.match_owner = this.userdatas[this.$route.params.userid]
+          }
         } else {
-          const res = await this.axios.get('/api/v1/CheckLoggedIn')
-          this.user = res.data
-          this.my_matches = this.$route.params.userid === this.user.userid
-          await this.GetMatches()
-          resolve()
+          try {
+            const res = await this.axios.get('/api/v1/CheckLoggedIn')
+            this.user = res.data
+            this.my_matches = this.$route.params.userid === this.user.userid
+          } catch (err) {
+            this.my_matches = false
+          } finally {
+            await this.GetMatches()
+            resolve()
+          }
         }
         this.activeIndex = this.$route.name
       })
