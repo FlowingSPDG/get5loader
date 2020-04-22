@@ -1,6 +1,8 @@
 [![Build Status](https://travis-ci.org/FlowingSPDG/get5-web-go.svg?branch=master)](https://travis-ci.org/FlowingSPDG/get5-web-go)
-![Downloads](https://img.shields.io/github/downloads/flowingspdg/get5-web-go/total?style=flat-square)
-![LICENSE](https://img.shields.io/github/license/flowingspdg/get5-web-go?style=flat-square)  
+[![Downloads](https://img.shields.io/github/downloads/flowingspdg/get5-web-go/total?style=flat-square)](https://github.com/FlowingSPDG/get5-web-go/releases)
+[![LICENSE](https://img.shields.io/github/license/flowingspdg/get5-web-go?style=flat-square)](https://github.com/FlowingSPDG/get5-web-go/blob/master/LICENSE)
+
+
 <img src="https://user-images.githubusercontent.com/30292185/73354117-3f43d280-42d8-11ea-8831-989033973649.png" width=130px> 
 <img src="https://user-images.githubusercontent.com/30292185/73354115-3e12a580-42d8-11ea-9155-a6c83340daf7.png" width=70px>  
 GET5-WEB Go
@@ -13,7 +15,7 @@ Github : [**FlowingSPDG**](http://github.com/FlowingSPDG)
 Twitter : [**@FlowingSPDG**](http://twitter.com/FlowingSPDG) / [**@FlowingSPDG_EN**](http://twitter.com/FlowingSPDG_EN)
 
 ## About
-This is recreation of [get5 web panel](https://github.com/splewis/get5-web)(Python2.7) with Go and Vue.  
+This is recreation of [get5 web panel](https://github.com/splewis/get5-web) (Python2.7) with Go and Vue.  
 Front-end looks pretty same with original get5-web. but API logic is not exactly the same. but most functions should be compatible.
 
 
