@@ -2,10 +2,7 @@
 [![Downloads](https://img.shields.io/github/downloads/flowingspdg/get5-web-go/total?style=flat-square)](https://github.com/FlowingSPDG/get5-web-go/releases)
 [![LICENSE](https://img.shields.io/github/license/flowingspdg/get5-web-go?style=flat-square)](https://github.com/FlowingSPDG/get5-web-go/blob/master/LICENSE)
 
-
-<img src="https://user-images.githubusercontent.com/30292185/73354117-3f43d280-42d8-11ea-8831-989033973649.png" width=130px> 
-<img src="https://user-images.githubusercontent.com/30292185/73354115-3e12a580-42d8-11ea-9155-a6c83340daf7.png" width=70px>  
-GET5-WEB Go
+GET5-WEB GO
 ===========================
 **Status: Experimental, Not Supported**
 
