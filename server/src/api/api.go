@@ -1,7 +1,6 @@
 package api
 
 import (
-	"encoding/json"
 	"fmt"
 	"github.com/FlowingSPDG/get5-web-go/server/src/cfg"
 	"github.com/FlowingSPDG/get5-web-go/server/src/util"
@@ -437,7 +436,7 @@ func CreateTeam(c *gin.Context) {
 		userid := s.Get("UserID").(int)
 		Team := db.TeamData{}
 		TeamTemp := db.TeamData{}
-		err := json.NewDecoder(c.Request.Body).Decode(&TeamTemp)
+		err := c.BindJSON(&TeamTemp)
 		if err != nil {
 			c.AbortWithError(http.StatusBadRequest, fmt.Errorf("JSON Format invalid %s", err.Error()))
 			return
@@ -466,7 +465,7 @@ func EditTeam(c *gin.Context) {
 		userid := s.Get("UserID").(int)
 		teamid, err := strconv.Atoi(c.Params.ByName("teamID"))
 		if err != nil {
-			c.AbortWithError(http.StatusBadRequest, fmt.Errorf("teamid should be int."))
+			c.AbortWithError(http.StatusBadRequest, fmt.Errorf("teamid should be int"))
 			return
 		}
 		Team := db.TeamData{}
@@ -475,7 +474,7 @@ func EditTeam(c *gin.Context) {
 			c.AbortWithError(http.StatusUnauthorized, fmt.Errorf("You do not have permission to edit this team"))
 			return
 		}
-		err = json.NewDecoder(c.Request.Body).Decode(&Team)
+		err = c.BindJSON(&Team)
 		if err != nil {
 			c.AbortWithError(http.StatusBadRequest, fmt.Errorf("JSON Format Invalid %s", err.Error()))
 			return
@@ -508,7 +507,7 @@ func DeleteTeam(c *gin.Context) {
 		userid := s.Get("UserID").(int)
 		teamID, err := strconv.Atoi(c.Params.ByName("teamID"))
 		if err != nil {
-			c.AbortWithError(http.StatusBadRequest, fmt.Errorf("teamID should be int."))
+			c.AbortWithError(http.StatusBadRequest, fmt.Errorf("teamID should be int"))
 			return
 		}
 		Team := db.TeamData{ID: teamID}
@@ -541,7 +540,7 @@ func CreateServer(c *gin.Context) {
 		userid := s.Get("UserID").(int)
 		Server := db.GameServerData{}
 		ServerTemp := db.GameServerData{}
-		err := json.NewDecoder(c.Request.Body).Decode(&ServerTemp)
+		err := c.BindJSON(&ServerTemp)
 		if err != nil {
 			c.AbortWithError(http.StatusBadRequest, fmt.Errorf("JSON Format invalid : %s", err.Error()))
 			return
@@ -578,7 +577,7 @@ func EditServer(c *gin.Context) {
 			c.AbortWithError(http.StatusForbidden, fmt.Errorf("You do not have permission to edit this server"))
 			return
 		}
-		err = json.NewDecoder(c.Request.Body).Decode(&Server)
+		err = c.BindJSON(&Server)
 		if err != nil {
 			c.AbortWithError(http.StatusBadRequest, fmt.Errorf("JSON Format invalid %s", err.Error()))
 			return
@@ -644,9 +643,9 @@ func CreateMatch(c *gin.Context) {
 	}
 	if IsLoggedIn {
 		userid := s.Get("UserID").(int)
-		var MatchTemp = db.MatchData{}
-		var Match = db.MatchData{}
-		err := json.NewDecoder(c.Request.Body).Decode(&MatchTemp)
+		MatchTemp := db.MatchData{}
+		Match := db.MatchData{}
+		err := c.BindJSON(&MatchTemp)
 		if err != nil {
 			log.Printf("ERR : %v\n", err)
 			c.AbortWithError(http.StatusBadRequest, fmt.Errorf("JSON Format invalid %s", err.Error()))
@@ -857,7 +856,7 @@ func MatchAddUserHandler(c *gin.Context) {
 		auth := c.Query("auth")
 		newauth, err := util.AuthToSteamID64(auth)
 		if err != nil {
-			c.AbortWithError(http.StatusBadRequest, fmt.Errorf("Auth format invalid."))
+			c.AbortWithError(http.StatusBadRequest, fmt.Errorf("Auth format invalid"))
 			return
 		}
 		log.Printf("auth : %s", newauth)

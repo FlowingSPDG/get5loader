@@ -72,7 +72,6 @@ func init() {
 		DisableSubdomainPersistence: false,
 		// want to be crazy safe? Take a look at the "securecookie" example folder.
 	})
-
 }
 
 // LoginHandler HTTP Handler for /login page.
