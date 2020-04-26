@@ -555,8 +555,8 @@ type MatchData struct {
 	SideType  string            `gorm:"column:side_type" json:"side_type"`
 	IsPug     bool              `gorm:"column:is_pug" json:"is_pug"`
 
-	MapStats []MapStatsData `gorm:"ForeignKey:MatchID" json:"-"`
-	Server   GameServerData `json:"-"`
+	MapStats []MapStatsData  `gorm:"ForeignKey:MatchID" json:"-"`
+	Server   *GameServerData `json:"-"`
 }
 
 // TableName declairation for GORM
@@ -617,6 +617,7 @@ func (m *MatchData) Create(userid int, team1id int, team2id int, team1string str
 	m.UserID = userid
 	m.ServerID = serverid
 	m.GetServer()
+	log.Printf("Server : %v", m.Server)
 	m.Team1ID = team1id
 	m.Team2ID = team2id
 	m.MaxMaps = maxmaps
@@ -750,11 +751,11 @@ func (m *MatchData) Live() bool {
 
 // GetServer Get match server ID as GameServerData
 func (m *MatchData) GetServer() (*GameServerData, error) {
-	rec := SQLAccess.Gorm.Model(m).Related(&m.Server, "Servers")
+	rec := SQLAccess.Gorm.Model(m).Related(m.Server, "Servers")
 	if rec.RecordNotFound() {
 		return nil, fmt.Errorf("Server not found")
 	}
-	return &m.Server, nil
+	return m.Server, nil
 }
 
 // GetCurrentScore Returns current match score. returns map-score if match is BO1.
