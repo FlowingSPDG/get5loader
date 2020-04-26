@@ -85,7 +85,7 @@ type GET5AvailableDatas struct {
 
 // CheckServerAvailability if server is usable for get5_web
 func CheckServerAvailability(IPString string, Port int, RconPassword string) (GET5AvailableDatas, error) { // available or error string
-	var data = GET5AvailableDatas{}
+	data := GET5AvailableDatas{}
 	resp, err := SendRCON(IPString, Port, RconPassword, "get5_web_avaliable")
 	if err != nil {
 		return data, fmt.Errorf("Connect fails")
@@ -107,7 +107,7 @@ func CheckServerAvailability(IPString string, Port int, RconPassword string) (GE
 		return data, fmt.Errorf("Either get5 or get5_apistats plugin missin")
 	}
 	if data.Gamestate != 0 {
-		return data, fmt.Errorf("Server already has a get5 match setup")
+		return data, fmt.Errorf("Server already has a get5 match setup %v", data)
 	}
 	return data, nil
 
