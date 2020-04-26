@@ -13,8 +13,9 @@ import (
 )
 
 func (s Server) RegisterMatch(ctx context.Context, req *pb.RegisterMatchRequest) (*pb.RegisterMatchReply, error) {
-	match := &db.MatchData{}
+	log.Println("RegisterMatch")
 	log.Printf("req : %v\n", req)
+	match := &db.MatchData{}
 	match, err := match.Create(
 		int(req.GetUserid()),
 		int(req.GetTeam1Id()),
@@ -30,6 +31,8 @@ func (s Server) RegisterMatch(ctx context.Context, req *pb.RegisterMatchRequest)
 		req.GetSideType(),
 		req.GetIsPug(),
 	)
+
+	log.Printf("match : %v\n", match)
 	if err != nil {
 		return &pb.RegisterMatchReply{
 			Error:        true,
