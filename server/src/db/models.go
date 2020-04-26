@@ -751,10 +751,12 @@ func (m *MatchData) Live() bool {
 
 // GetServer Get match server ID as GameServerData
 func (m *MatchData) GetServer() (*GameServerData, error) {
-	rec := SQLAccess.Gorm.Model(m).Related(m.Server, "Servers")
+	server := GameServerData{}
+	rec := SQLAccess.Gorm.Model(m).Related(&server, "Servers")
 	if rec.RecordNotFound() {
 		return nil, fmt.Errorf("Server not found")
 	}
+	m.Server = &server
 	return m.Server, nil
 }
 
