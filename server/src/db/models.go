@@ -658,7 +658,6 @@ func (m *MatchData) Create(userid int, team1id int, team2id int, team1string str
 	m.PluginVersion = get5res.PluginVersion
 	m.APIKey = util.RandString(24)
 	rec = SQLAccess.Gorm.Create(&m)
-	log.Printf("CREATE RESULT : %v\n", *rec)
 	errors := rec.GetErrors()
 	if len(errors) != 0 {
 		return nil, errors[0]
@@ -752,7 +751,7 @@ func (m *MatchData) Live() bool {
 // GetServer Get match server ID as GameServerData
 func (m *MatchData) GetServer() (*GameServerData, error) {
 	server := GameServerData{}
-	rec := SQLAccess.Gorm.Model(m).Related(&server, "Servers")
+	rec := SQLAccess.Gorm.First(&server, m.ServerID)
 	if rec.RecordNotFound() {
 		return nil, fmt.Errorf("Server not found")
 	}
