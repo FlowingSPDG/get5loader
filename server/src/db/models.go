@@ -148,6 +148,8 @@ func (g *GameServerData) Create(userid int, displayname string, ipstring string,
 	if len(errors) >= 1 {
 		return nil, errors[0]
 	}
+	SQLAccess.Gorm.First(&g, "ip_string = ?", g.IPString) // refresh PK
+
 	return g, result.Error
 }
 
@@ -655,7 +657,7 @@ func (m *MatchData) Create(userid int, team1id int, team2id int, team1string str
 	m.PluginVersion = get5res.PluginVersion
 	m.APIKey = util.RandString(24)
 	rec = SQLAccess.Gorm.Create(&m)
-	log.Printf("CREATE RESULT : %v\n", rec)
+	log.Printf("CREATE RESULT : %v\n", *rec)
 	errors := rec.GetErrors()
 	if len(errors) != 0 {
 		return nil, errors[0]
