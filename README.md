@@ -4,7 +4,7 @@
 
 GET5-WEB GO
 ===========================
-**Status: Experimental, Not Supported**
+**Status: DEPRECATED. Use [G5API](https://github.com/PhlexPlexico/G5API) insted.**
 
 ## Author
 Shugo Kawamura  
