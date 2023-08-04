@@ -7,8 +7,8 @@ import (
 	"net"
 	"time"
 
-	config "github.com/FlowingSPDG/get5-web-go/server/src/cfg"
-	"github.com/FlowingSPDG/get5-web-go/server/src/util"
+	config "github.com/FlowingSPDG/get5-web-go/backend/src/cfg"
+	"github.com/FlowingSPDG/get5-web-go/backend/src/util"
 
 	"strings"
 	//"github.com/Philipp15b/go-steam"

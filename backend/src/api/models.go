@@ -2,9 +2,10 @@ package api
 
 import (
 	"database/sql"
-	"github.com/FlowingSPDG/get5-web-go/server/src/util"
 	"math"
 	"time"
+
+	"github.com/FlowingSPDG/get5-web-go/backend/src/util"
 )
 
 // UserData Struct for "user" table.

@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/FlowingSPDG/get5-web-go/server/src/db"
+	"github.com/FlowingSPDG/get5-web-go/backend/src/db"
 	"github.com/gin-gonic/gin"
 )
 

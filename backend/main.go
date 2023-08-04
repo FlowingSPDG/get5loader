@@ -3,9 +3,9 @@ package main
 import (
 	"log"
 
-	"github.com/FlowingSPDG/get5-web-go/server/src/api"
-	config "github.com/FlowingSPDG/get5-web-go/server/src/cfg"
-	"github.com/FlowingSPDG/get5-web-go/server/src/db"
+	"github.com/FlowingSPDG/get5-web-go/backend/src/api"
+	config "github.com/FlowingSPDG/get5-web-go/backend/src/cfg"
+	"github.com/FlowingSPDG/get5-web-go/backend/src/db"
 	"github.com/gin-contrib/static"
 	"github.com/gin-gonic/gin"
 )

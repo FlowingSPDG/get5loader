@@ -5,7 +5,7 @@ import (
 	"log"
 	"time"
 
-	config "github.com/FlowingSPDG/get5-web-go/server/src/cfg"
+	config "github.com/FlowingSPDG/get5-web-go/backend/src/cfg"
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
 

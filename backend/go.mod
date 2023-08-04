@@ -1,4 +1,4 @@
-module github.com/FlowingSPDG/get5-web-go
+module github.com/FlowingSPDG/get5-web-go/backend
 
 go 1.20
 

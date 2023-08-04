@@ -12,7 +12,7 @@ import (
 	"os/exec"
 	"strings"
 
-	config "github.com/FlowingSPDG/get5-web-go/server/src/cfg"
+	config "github.com/FlowingSPDG/get5-web-go/backend/src/cfg"
 	"github.com/hydrogen18/stalecucumber"
 
 	"strconv"

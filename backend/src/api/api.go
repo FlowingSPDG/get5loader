@@ -2,16 +2,17 @@ package api
 
 import (
 	"fmt"
-	"github.com/FlowingSPDG/get5-web-go/server/src/cfg"
-	"github.com/FlowingSPDG/get5-web-go/server/src/util"
-	"github.com/gin-gonic/gin"
 	"log"
+
+	config "github.com/FlowingSPDG/get5-web-go/backend/src/cfg"
+	"github.com/FlowingSPDG/get5-web-go/backend/src/util"
+	"github.com/gin-gonic/gin"
 
 	"net/http"
 	"strconv"
 	"strings"
 
-	"github.com/FlowingSPDG/get5-web-go/server/src/db"
+	"github.com/FlowingSPDG/get5-web-go/backend/src/db"
 )
 
 const (
