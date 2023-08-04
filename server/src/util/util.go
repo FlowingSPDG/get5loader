@@ -5,8 +5,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/FlowingSPDG/get5-web-go/server/src/cfg"
-	"github.com/hydrogen18/stalecucumber"
 	"log"
 	"math"
 	"math/rand"
@@ -14,9 +12,13 @@ import (
 	"os/exec"
 	"strings"
 
-	"github.com/Acidic9/steam"
-	gosteam "github.com/kidoman/go-steam"
+	config "github.com/FlowingSPDG/get5-web-go/server/src/cfg"
+	"github.com/hydrogen18/stalecucumber"
+
 	"strconv"
+
+	"github.com/Acidic9/steam"
+	gosteam "github.com/FlowingSPDG/go-steam"
 )
 
 func checkIP(ip string) bool {

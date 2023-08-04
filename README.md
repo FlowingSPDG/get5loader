@@ -4,12 +4,12 @@
 
 GET5-WEB GO
 ===========================
-**Status: DEPRECATED. Use [G5API](https://github.com/PhlexPlexico/G5API) insted.**
+**Status: UNDER DEVELOPMENT**
 
 ## Author
 Shugo Kawamura  
 Github : [**FlowingSPDG**](http://github.com/FlowingSPDG)  
-Twitter : [**@FlowingSPDG**](http://twitter.com/FlowingSPDG) / [**@FlowingSPDG_EN**](http://twitter.com/FlowingSPDG_EN)
+Twitter : [**@FlowingSPDG**](http://twitter.com/FlowingSPDG)
 
 ## About
 This is recreation of [get5 web panel](https://github.com/splewis/get5-web) (Python2.7) with Go and Vue.  

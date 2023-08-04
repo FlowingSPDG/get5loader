@@ -3,18 +3,19 @@ package db
 import (
 	"database/sql"
 	"fmt"
-	"github.com/FlowingSPDG/get5-web-go/server/src/cfg"
-	"github.com/FlowingSPDG/get5-web-go/server/src/util"
 	"log"
 	"net"
 	"time"
+
+	config "github.com/FlowingSPDG/get5-web-go/server/src/cfg"
+	"github.com/FlowingSPDG/get5-web-go/server/src/util"
 
 	"strings"
 	//"github.com/Philipp15b/go-steam"
 	//"github.com/FlowingSPDG/go-steamapi"
 	"github.com/Acidic9/steam"
+	gosteam "github.com/FlowingSPDG/go-steam"
 	"github.com/jinzhu/gorm"
-	gosteam "github.com/kidoman/go-steam"
 
 	//"github.com/solovev/steam_go"
 	//_ "html/template"
