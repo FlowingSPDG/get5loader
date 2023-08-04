@@ -17,7 +17,7 @@ import (
 
 const (
 	// VERSION get5-web-go Version
-	VERSION = "0.1.3"
+	VERSION = "0.2.0"
 )
 
 // GetVersion handler for /api/v1/GetVersion API.
