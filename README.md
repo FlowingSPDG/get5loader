@@ -19,15 +19,15 @@ Front-end looks pretty same with original get5-web. but API logic is not exactly
 ## WHY
 1. Python2.7,which is used in original get5-web is not supported anymore  
 2. Current get5-web needs so many steps to launch(DB migration,python2.7 install,pip package management and venv,etc...). this webpanel may need fewer steps to launch.
-3. GOLANG has better performance than Python in some case
-4. To support local file-DB insted of MySQL DB for better performance and easy to deploy(this would be optional).
+3. Cloud Native System.
+4. Go has better performance than Python in some case
 5. To support SPA and better UI/UX design with React
 
 ## How to use
-0. Login by your SteamID.
-1. Register your CS:GO servers on the "Add a server" section.
-2. Register teams on the "Create a Team" section with steamids.
-3. Go to the "Create a Match" page.
+1. Login by your SteamID.
+2. Register your CS:GO servers on the "Add a server" section.
+3. Register teams on the "Create a Team" section with steamids.
+4. Go to the "Create a Match" page.
 
 API Server will send rcon command to load match config( ``get5_loadmatch_url <webserver>/api/v1/match/<matchid>/config`` ) Then game server loads match and wait for players.
 
@@ -36,22 +36,22 @@ API Server will send rcon command to load match config( ``get5_loadmatch_url <we
 ![Match Stats Page](/screenshots/Match.PNG?raw=true "Match Stats Page")
 
 ## Requirements
-- Open HTTP access to access web-panel
-- Steam WebAPI Token for handling Steam-Login. (Get it [here](https://steamcommunity.com/dev/apikey)!)
-- original MySQL [get5-web](https://github.com/splewis/get5-web) DB
+- Open HTTP access to access API.
+- Setup environment variables.
+- Migrate database.
 
 ## Requirements(Developers)
-- Go v1.13.5
-- NodeJS v10.18.0
-- original MySQL [get5-web](https://github.com/splewis/get5-web) DB
-- CSGO Server with GET5 v0.7.1 [GET5](https://github.com/splewis/get5/releases)
-- Yarn v1.16.0
+- Docker
+- Go v1.20
+- NodeJS and Yarn(Volta)
+- MySQL DB(came
+- CSGO Server with GET5 v0.15.0 [GET5](https://github.com/splewis/get5/releases)
 - Steam WebAPI Token for handling Steam-Login. ([here](https://steamcommunity.com/dev/apikey))
 
 ## Setup(Developers)
 - ``git clone https://github.com/FlowingSPDG/get5-web-go.git $GOPATH/src/github.com/FlowingSPDG/get5-web-go`` (you can fork your own)  
 - ``cd $GOPATH/src/github.com/FlowingSPDG/get5-web-go && make deps``
-- You're good to GO! edit each `.go` files to fix/add something nice!
+- You're good to Go! edit each `.go` files to fix/add something nice!
 - You can test your server by ``go run ./main.go``,and build them by ``make``.You may get binary files in ``./build``.
 - To test Vue rendering,``cd ./web/ && yarn run serve`` and open http://localhost:8081/# by your browser.  
 
@@ -74,8 +74,8 @@ You can use following scripts as your needs :
 I'm [releasing](https://github.com/FlowingSPDG/get5-web-go/releases) compiled-files for people who feel lazy to build for each major update.
 
 ## Deploy and Launch
-- Copy `config.ini.template` to `config.ini` and edit it for your MySQL DB and SteamAPI keys
-- `./get5`
+- Setup environment variables
+- Start your compiled binary
 - Now it's up!
 
 ## License
