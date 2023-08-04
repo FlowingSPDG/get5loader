@@ -1,15 +1,13 @@
 package main
 
 import (
-	"github.com/FlowingSPDG/csgo-log-http"
+	"log"
+
 	"github.com/FlowingSPDG/get5-web-go/server/src/api"
-	"github.com/FlowingSPDG/get5-web-go/server/src/cfg"
+	config "github.com/FlowingSPDG/get5-web-go/server/src/cfg"
 	"github.com/FlowingSPDG/get5-web-go/server/src/db"
-	"github.com/FlowingSPDG/get5-web-go/server/src/grpc"
-	"github.com/FlowingSPDG/get5-web-go/server/src/logging"
 	"github.com/gin-contrib/static"
 	"github.com/gin-gonic/gin"
-	"log"
 )
 
 var (
@@ -73,9 +71,6 @@ func main() {
 
 			// match.POST("/:matchID/vetoUpdate", api.MatchVetoUpdateHandler)
 			// match.POST("/:matchID/map/:mapNumber/demo", api.MatchDemoUploadHandler)
-
-			// CSGO Server log parsing
-			match.POST("/:matchID/csgolog/:auth", csgologhttp.CSGOLogger(logging.MessageHandler))
 		}
 
 		team := v1.Group("/team")
@@ -112,16 +107,6 @@ func main() {
 
 	} else {
 		log.Println("API ONLY MODE")
-	}
-
-	if config.Cnf.EnablegRPC {
-		log.Println("EnableGRPC option enabled. Starting gRPC server...")
-		go func() {
-			err := get5grpc.StartGrpc(config.Cnf.GrpcAddr)
-			if err != nil {
-				panic(err)
-			}
-		}()
 	}
 
 	log.Panicf("Failed to listen port %s : %v\n", config.Cnf.HOST, r.Run(config.Cnf.HOST))

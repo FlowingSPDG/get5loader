@@ -13,8 +13,6 @@ APIKey = "YOURSTEAMAPIKEY"
 HOST = "localhost:8080"
 DefaultPage = "/matches"
 API_ONLY = False
-ENABLE_gRPC = False
-GPRC_ADDR = "localhost:50055"
 Cookie = "YourSuperSecuretStringDoNotShare"
 
 [MAPLIST]

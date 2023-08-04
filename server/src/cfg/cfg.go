@@ -2,8 +2,9 @@ package config
 
 import (
 	"flag"
-	"github.com/go-ini/ini"
 	"strings"
+
+	"github.com/go-ini/ini"
 )
 
 // Config Configration Struct for config.ini
@@ -19,8 +20,6 @@ type Config struct {
 	HOST             string
 	Cookie           string
 	APIONLY          bool
-	GrpcAddr         string
-	EnablegRPC       bool
 	ActiveMapPool    []string
 	ReserveMapPool   []string
 	UserMaxResources UserMaxResources
@@ -59,8 +58,6 @@ func init() {
 		SQLDebugMode:   c.Section("sql").Key("debug").MustBool(false),
 		Cookie:         c.Section("GET5").Key("Cookie").MustString("SecretString"),
 		APIONLY:        c.Section("GET5").Key("API_ONLY").MustBool(false),
-		GrpcAddr:       c.Section("GET5").Key("GPRC_ADDR").MustString(":50055"),
-		EnablegRPC:     c.Section("GET5").Key("ENABLE_gRPC").MustBool(false),
 		ActiveMapPool:  strings.Split(strings.ToLower(strings.TrimSpace(active)), ","),
 		ReserveMapPool: strings.Split(strings.ToLower(strings.TrimSpace(reserve)), ","),
 		UserMaxResources: UserMaxResources{

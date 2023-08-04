@@ -4,20 +4,16 @@ go 1.20
 
 require (
 	github.com/Acidic9/steam v0.0.0-20190412033621-27a1aa06614d
-	github.com/FlowingSPDG/csgo-log v1.1.2
-	github.com/FlowingSPDG/csgo-log-http v0.0.0-20200217191304-7b96ab04f0e9
 	github.com/FlowingSPDG/go-steam v0.0.0-20200304111708-e30ea2f91a83
 	github.com/gin-contrib/static v0.0.1
 	github.com/gin-gonic/gin v1.9.1
 	github.com/go-ini/ini v1.67.0
 	github.com/go-sql-driver/mysql v1.7.1
-	github.com/golang/protobuf v1.5.3
 	github.com/hydrogen18/stalecucumber v0.0.0-20180226003526-6de214d141dd
 	github.com/jinzhu/gorm v1.9.16
 	github.com/kataras/go-sessions v3.0.0+incompatible
 	github.com/rubenv/sql-migrate v1.5.2
 	github.com/solovev/steam_go v0.0.0-20170222182106-48eb5aae6c50
-	google.golang.org/grpc v1.57.0
 )
 
 require (
@@ -34,6 +30,7 @@ require (
 	github.com/go-playground/universal-translator v0.18.1 // indirect
 	github.com/go-playground/validator/v10 v10.14.0 // indirect
 	github.com/goccy/go-json v0.10.2 // indirect
+	github.com/google/go-cmp v0.5.9 // indirect
 	github.com/google/go-querystring v1.1.0 // indirect
 	github.com/gorilla/securecookie v1.1.1 // indirect
 	github.com/imkira/go-interpol v1.1.0 // indirect
@@ -67,7 +64,6 @@ require (
 	golang.org/x/net v0.12.0 // indirect
 	golang.org/x/sys v0.10.0 // indirect
 	golang.org/x/text v0.11.0 // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20230525234030-28d5490b6b19 // indirect
 	google.golang.org/protobuf v1.30.0 // indirect
 	gopkg.in/kataras/go-serializer.v0 v0.0.4 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect

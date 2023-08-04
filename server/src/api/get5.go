@@ -2,14 +2,13 @@ package api
 
 import (
 	"fmt"
-	"github.com/FlowingSPDG/get5-web-go/server/src/db"
-	pb "github.com/FlowingSPDG/get5-web-go/server/src/grpc/proto"
-	pbservices "github.com/FlowingSPDG/get5-web-go/server/src/grpc/services"
-	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
 	"strconv"
 	"time"
+
+	"github.com/FlowingSPDG/get5-web-go/server/src/db"
+	"github.com/gin-gonic/gin"
 )
 
 // MatchConfigHandler Handler for /api/v1/match/{matchID}/config API.
@@ -93,27 +92,6 @@ func MatchFinishHandler(c *gin.Context) {
 	db.SQLAccess.Gorm.Model(&Match).Update(&MatchUpdate)
 	db.SQLAccess.Gorm.Save(&MatchUpdate)
 	log.Printf("Finished match %v, winner = %v\n", MatchUpdate.ID, winner)
-
-	forfeitbool, err := strconv.ParseBool(forfeit)
-	if err != nil {
-		log.Println("Failed to parse forfeit value,interuppting streaming")
-		return
-	}
-	matchidInt, err := strconv.Atoi(matchid)
-	if err != nil {
-		log.Println("match id is not int,interuppting streaming")
-		return
-	}
-
-	go pbservices.MatchesStream.Write(int32(matchidInt), &pb.MatchEventReply{
-		Event: &pb.MatchEventReply_Matchfinish{
-			Matchfinish: &pb.MatchEventMatchFinish{
-				Matchid: int32(matchidInt),
-				Winner:  winner,
-				Forfeit: forfeitbool,
-			},
-		},
-	}, true)
 }
 
 // MatchMapStartHandler Handler for /api/v1/match/{matchID}/map/{mapNumber}/start  API.
@@ -149,16 +127,6 @@ func MatchMapStartHandler(c *gin.Context) {
 	mUpdate.StartTime.Scan(time.Now())
 	db.SQLAccess.Gorm.Model(&m).Update(&mUpdate)
 	db.SQLAccess.Gorm.Save(&mUpdate)
-
-	go pbservices.MatchesStream.Write(int32(matchid), &pb.MatchEventReply{
-		Event: &pb.MatchEventReply_Mapstart{
-			Mapstart: &pb.MatchEventMapStart{
-				Matchid:   int32(matchid),
-				Mapnumber: int32(mapnumber),
-				Mapname:   mapname,
-			},
-		},
-	}, false)
 }
 
 // MatchMapUpdateHandler Handler for /api/v1/match/{matchID}/map/{mapNumber}/update API.
@@ -213,17 +181,6 @@ func MatchMapUpdateHandler(c *gin.Context) {
 		c.AbortWithError(http.StatusBadRequest, fmt.Errorf("Failed to find map stats object"))
 		return
 	}
-
-	go pbservices.MatchesStream.Write(int32(matchid), &pb.MatchEventReply{
-		Event: &pb.MatchEventReply_Mapupdate{
-			Mapupdate: &pb.MatchEventMapUpdate{
-				Matchid:    int32(matchid),
-				Mapnumber:  int32(mapnumber),
-				Team1Score: int32(team1score),
-				Team2Score: int32(team2score),
-			},
-		},
-	}, false)
 }
 
 // MatchMapFinishHandler Handler for /api/v1/match/{matchID}/map/{mapNumber}/finish API.
@@ -277,16 +234,6 @@ func MatchMapFinishHandler(c *gin.Context) {
 		c.AbortWithError(http.StatusBadRequest, fmt.Errorf("Failed to find map stats object"))
 		return
 	}
-
-	go pbservices.MatchesStream.Write(int32(matchid), &pb.MatchEventReply{
-		Event: &pb.MatchEventReply_Mapfinish{
-			Mapfinish: &pb.MatchEventMapFinish{
-				Matchid:   int32(matchid),
-				Mapnumber: int32(mapnumber),
-				Winner:    winner,
-			},
-		},
-	}, false)
 }
 
 // MatchMapPlayerUpdateHandler Handler for /api/v1/match/{matchID}/map/{mapNumber}/player/{steamid64}/update API.
@@ -555,42 +502,6 @@ func MatchMapPlayerUpdateHandler(c *gin.Context) {
 		c.AbortWithError(http.StatusNotFound, fmt.Errorf("Failed to find map stats object"))
 		return
 	}
-	go pbservices.MatchesStream.Write(int32(matchid), &pb.MatchEventReply{
-		Event: &pb.MatchEventReply_Mapplayerupdate{
-			Mapplayerupdate: &pb.MatchEventMapPlayerUpdate{
-				Matchid:          int32(matchid),
-				Mapnumber:        int32(mapnumber),
-				Steamid:          steamid64,
-				Name:             FormName,
-				Team:             FormTeam,
-				Kills:            int32(FormKills),
-				Assists:          int32(FormAssists),
-				Deaths:           int32(FormDeaths),
-				FlashbangAssists: int32(FormFlashbangAssists),
-				Teamkills:        int32(FormTeamKills),
-				Suicides:         int32(FormSuicides),
-				Damage:           int32(FormDamage),
-				HeadshotKills:    int32(FormHeadShotKills),
-				Roundsplayed:     int32(FormRoundsPlayed),
-				BombPlants:       int32(FormBombPlants),
-				BombDefuses:      int32(FormBombDefuses),
-				OneKillRounds:    int32(Form1KillRounds),
-				TwoKillRounds:    int32(Form2KillRounds),
-				ThreeKillRounds:  int32(Form3KillRounds),
-				FourKillRounds:   int32(Form4KillRounds),
-				FiveKillRounds:   int32(Form5KillRounds),
-				V1:               int32(FormV1),
-				V2:               int32(FormV2),
-				V3:               int32(FormV3),
-				V4:               int32(FormV4),
-				V5:               int32(FormV5),
-				FirstkillT:       int32(FormFirstKillT),
-				FirstkillCt:      int32(FormFirstKillCT),
-				FirstdeathT:      int32(FormFirstDeathT),
-				FirstdeathCt:     int32(FormFirstDeathCT),
-			},
-		},
-	}, false)
 }
 
 // MatchVetoUpdateHandler Handler for /api/v1/match/{matchID}/vetoUpdate API. // TODO
