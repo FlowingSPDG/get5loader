@@ -5,9 +5,9 @@ go 1.20
 require (
 	github.com/Acidic9/steam v0.0.0-20190412033621-27a1aa06614d
 	github.com/FlowingSPDG/go-steam v0.0.0-20200304111708-e30ea2f91a83
+	github.com/caarlos0/env/v9 v9.0.0
 	github.com/gin-contrib/static v0.0.1
 	github.com/gin-gonic/gin v1.9.1
-	github.com/go-ini/ini v1.67.0
 	github.com/hydrogen18/stalecucumber v0.0.0-20180226003526-6de214d141dd
 	github.com/jinzhu/gorm v1.9.16
 	github.com/kataras/go-sessions/v3 v3.3.1
@@ -17,7 +17,6 @@ require (
 require (
 	github.com/andybalholm/brotli v1.0.5 // indirect
 	github.com/bytedance/sonic v1.9.1 // indirect
-	github.com/caarlos0/env/v9 v9.0.0 // indirect
 	github.com/chenzhuoyu/base64x v0.0.0-20221115062448-fe3a3abad311 // indirect
 	github.com/denisenkom/go-mssqldb v0.9.0 // indirect
 	github.com/gabriel-vasile/mimetype v1.4.2 // indirect
