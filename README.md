@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/FlowingSPDG/get5-web-go.svg?branch=master)](https://travis-ci.org/FlowingSPDG/get5-web-go)
+[![Build Status](https://github.com/FlowingSPDG/get5-web-go/actions/workflows/go_build/badge.svg)
 [![Downloads](https://img.shields.io/github/downloads/flowingspdg/get5-web-go/total?style=flat-square)](https://github.com/FlowingSPDG/get5-web-go/releases)
 [![LICENSE](https://img.shields.io/github/license/flowingspdg/get5-web-go?style=flat-square)](https://github.com/FlowingSPDG/get5-web-go/blob/master/LICENSE)
 
