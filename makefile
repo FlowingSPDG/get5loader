@@ -56,6 +56,8 @@ up:
 	docker compose up -d
 down:
 	docker compose down
+generate:
+	@cd ./backend && go generate ./...
 # Cross compile for go
 build-all: clean build-prepare build-web
 	@cd ./server && gox \

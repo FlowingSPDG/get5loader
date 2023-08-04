@@ -18,4 +18,5 @@ type MapStat struct {
 	Winner     sql.NullInt64
 	Team1Score int32
 	Team2Score int32
+	Forfeit    sql.NullBool
 }

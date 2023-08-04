@@ -48,6 +48,7 @@ type TeamsRepository interface {
 	AddTeam(ctx context.Context, userID int64, name string, tag string, flag string, logo string) (*entity.Team, error)
 	GetTeam(ctx context.Context, id int64) (*entity.Team, error)
 	GetTeamsByUser(ctx context.Context, userID int64) ([]*entity.Team, error)
+	GetPublicTeams(ctx context.Context) ([]*entity.Team, error)
 }
 
 type PlayersRepository interface {

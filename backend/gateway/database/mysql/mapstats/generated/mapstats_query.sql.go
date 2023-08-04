@@ -10,7 +10,7 @@ import (
 )
 
 const getMapStats = `-- name: GetMapStats :one
-SELECT id, match_id, map_number, map_name, start_time, end_time, winner, team1_score, team2_score FROM map_stats
+SELECT id, match_id, map_number, map_name, start_time, end_time, winner, team1_score, team2_score, forfeit FROM map_stats
 WHERE id = ? LIMIT 1
 `
 
@@ -27,12 +27,13 @@ func (q *Queries) GetMapStats(ctx context.Context, id int64) (MapStat, error) {
 		&i.Winner,
 		&i.Team1Score,
 		&i.Team2Score,
+		&i.Forfeit,
 	)
 	return i, err
 }
 
 const getMapStatsByMatch = `-- name: GetMapStatsByMatch :many
-SELECT id, match_id, map_number, map_name, start_time, end_time, winner, team1_score, team2_score FROM map_stats
+SELECT id, match_id, map_number, map_name, start_time, end_time, winner, team1_score, team2_score, forfeit FROM map_stats
 WHERE match_id = ?
 `
 
@@ -55,6 +56,7 @@ func (q *Queries) GetMapStatsByMatch(ctx context.Context, matchID int64) ([]MapS
 			&i.Winner,
 			&i.Team1Score,
 			&i.Team2Score,
+			&i.Forfeit,
 		); err != nil {
 			return nil, err
 		}

@@ -9,5 +9,7 @@ CREATE TABLE `map_stats` (
   `team1_score` int(11) NOT NULL,
   `team2_score` int(11) NOT NULL,
   `forfeit` BOOLEAN DEFAULT NULL,
-  FOREIGN KEY (`match_id`) REFERENCES matches(`id`)
+  FOREIGN KEY (`match_id`) REFERENCES matches(`id`),
+  FOREIGN KEY (`winner`) REFERENCES teams(`id`),
+  UNIQUE KEY `match_id_map_number` (`match_id`, `map_number`)
 );

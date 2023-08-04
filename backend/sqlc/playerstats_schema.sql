@@ -32,5 +32,6 @@ CREATE TABLE `player_stats` (
   `firstkill_t` int(11) NOT NULL,
   FOREIGN KEY (`match_id`) REFERENCES matches(`id`),
   FOREIGN KEY (`map_id`) REFERENCES map_stats(`id`),
-  FOREIGN KEY (`team_id`) REFERENCES teams(`id`)
+  FOREIGN KEY (`team_id`) REFERENCES teams(`id`),
+  UNIQUE KEY `unique_player_stats` (`match_id`, `map_id`, `team_id`, `steam_id`)
 );
