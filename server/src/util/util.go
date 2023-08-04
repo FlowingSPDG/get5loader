@@ -170,7 +170,7 @@ func AuthToSteamID64(auth string) (string, error) {
 		if s == 0 {
 			return "", fmt.Errorf("User not found")
 		}
-		return string(s), nil
+		return string(rune(s)), nil
 	} else if strings.HasPrefix(auth, "1:0") || strings.HasPrefix(auth, "1:1") {
 		var s steam.SteamID = steam.SteamID("STEAM_" + auth)
 		return strconv.Itoa(int(steam.SteamIDToSteamID64(s))), nil
