@@ -1,4 +1,5 @@
-[![Build Status](https://github.com/FlowingSPDG/get5-web-go/actions/workflows/go_build/badge.svg)
+[![Go Build](https://github.com/FlowingSPDG/get5-web-go/actions/workflows/go_build.yaml/badge.svg)](https://github.com/FlowingSPDG/get5-web-go/actions/workflows/go_build.yaml)
+[![Go Test](https://github.com/FlowingSPDG/get5-web-go/actions/workflows/go_test.yaml/badge.svg)](https://github.com/FlowingSPDG/get5-web-go/actions/workflows/go_test.yaml)
 [![Downloads](https://img.shields.io/github/downloads/flowingspdg/get5-web-go/total?style=flat-square)](https://github.com/FlowingSPDG/get5-web-go/releases)
 [![LICENSE](https://img.shields.io/github/license/flowingspdg/get5-web-go?style=flat-square)](https://github.com/FlowingSPDG/get5-web-go/blob/master/LICENSE)
 
