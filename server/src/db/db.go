@@ -2,16 +2,18 @@ package db
 
 import (
 	"fmt"
-	"github.com/gin-gonic/gin"
-	"github.com/jinzhu/gorm"
 	"log"
 	"time"
 
-	"github.com/FlowingSPDG/get5-web-go/server/src/cfg"
-	_ "github.com/jinzhu/gorm/dialects/mysql"
-	"github.com/kataras/go-sessions"
-	"github.com/solovev/steam_go"
+	config "github.com/FlowingSPDG/get5-web-go/server/src/cfg"
+	"github.com/gin-gonic/gin"
+	"github.com/jinzhu/gorm"
+
 	"net/http"
+
+	_ "github.com/jinzhu/gorm/dialects/mysql"
+	"github.com/kataras/go-sessions/v3"
+	"github.com/solovev/steam_go"
 )
 
 // DBdatas Struct for MySQL configration and Gorm
