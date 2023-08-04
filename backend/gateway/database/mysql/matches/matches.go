@@ -126,7 +126,7 @@ func (mr *matchRepository) GetMatchesByUser(ctx context.Context, userID int64) (
 		return nil, err
 	}
 
-	var ret []*entity.Match
+	ret := make([]*entity.Match, 0, len(matches))
 	for _, match := range matches {
 		ret = append(ret, &entity.Match{
 			ID:         match.ID,
@@ -186,7 +186,7 @@ func (mr *matchRepository) GetMatchesByTeam(ctx context.Context, teamID int64) (
 		return nil, err
 	}
 
-	var ret []*entity.Match
+	ret := make([]*entity.Match, 0, len(matches))
 	for _, match := range matches {
 		ret = append(ret, &entity.Match{
 			ID:         match.ID,
@@ -226,7 +226,7 @@ func (mr *matchRepository) GetMatchesByWinner(ctx context.Context, teamID int64)
 		return nil, err
 	}
 
-	var ret []*entity.Match
+	ret := make([]*entity.Match, 0, len(matches))
 	for _, match := range matches {
 		ret = append(ret, &entity.Match{
 			ID:         match.ID,

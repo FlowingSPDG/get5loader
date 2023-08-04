@@ -99,7 +99,7 @@ func (pr *playersRepository) GetPlayersByTeam(ctx context.Context, teamID int64)
 		return nil, err
 	}
 
-	var players []*entity.Player
+	players := make([]*entity.Player, 0, len(res))
 	for _, p := range res {
 		players = append(players, &entity.Player{
 			ID:      p.ID,

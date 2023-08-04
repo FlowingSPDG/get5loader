@@ -87,7 +87,7 @@ func (psr *playerStatsRepository) GetPlayerStatsByMatch(ctx context.Context, mat
 		return nil, err
 	}
 
-	var playerStats []*entity.PlayerStats
+	playerStats := make([]*entity.PlayerStats, 0, len(stats))
 	for _, stat := range stats {
 		playerStats = append(playerStats, &entity.PlayerStats{
 			ID:               stat.ID,
@@ -139,7 +139,7 @@ func (psr *playerStatsRepository) GetPlayerStatsBySteamID(ctx context.Context, s
 		return nil, err
 	}
 
-	var playerStats []*entity.PlayerStats
+	playerStats := make([]*entity.PlayerStats, 0, len(stats))
 	for _, stat := range stats {
 		playerStats = append(playerStats, &entity.PlayerStats{
 			ID:               stat.ID,

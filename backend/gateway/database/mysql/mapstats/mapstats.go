@@ -66,7 +66,7 @@ func (msr *mapStatsRepository) GetMapStatsByMatch(ctx context.Context, matchID i
 		return nil, err
 	}
 
-	var mapStats []*entity.MapStats
+	mapStats := make([]*entity.MapStats, 0, len(res))
 	for _, m := range res {
 		mapStats = append(mapStats, &entity.MapStats{
 			ID:         m.ID,

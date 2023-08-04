@@ -7,7 +7,36 @@ package teams_gen
 
 import (
 	"context"
+	"database/sql"
 )
+
+const addTeam = `-- name: AddTeam :execresult
+INSERT INTO teams (
+  user_id, name, flag, logo, tag, public_team
+) VALUES (
+  ?, ?, ?, ?, ?, ?
+)
+`
+
+type AddTeamParams struct {
+	UserID     int64
+	Name       string
+	Flag       string
+	Logo       string
+	Tag        string
+	PublicTeam sql.NullBool
+}
+
+func (q *Queries) AddTeam(ctx context.Context, arg AddTeamParams) (sql.Result, error) {
+	return q.db.ExecContext(ctx, addTeam,
+		arg.UserID,
+		arg.Name,
+		arg.Flag,
+		arg.Logo,
+		arg.Tag,
+		arg.PublicTeam,
+	)
+}
 
 const getPublicTeams = `-- name: GetPublicTeams :many
 SELECT id, user_id, name, flag, logo, tag, public_team FROM teams
@@ -65,22 +94,38 @@ func (q *Queries) GetTeam(ctx context.Context, id int64) (Team, error) {
 	return i, err
 }
 
-const getTeamByUserID = `-- name: GetTeamByUserID :one
+const getTeamByUserID = `-- name: GetTeamByUserID :many
 SELECT id, user_id, name, flag, logo, tag, public_team FROM teams
 WHERE user_id = ?
 `
 
-func (q *Queries) GetTeamByUserID(ctx context.Context, userID int64) (Team, error) {
-	row := q.db.QueryRowContext(ctx, getTeamByUserID, userID)
-	var i Team
-	err := row.Scan(
-		&i.ID,
-		&i.UserID,
-		&i.Name,
-		&i.Flag,
-		&i.Logo,
-		&i.Tag,
-		&i.PublicTeam,
-	)
-	return i, err
+func (q *Queries) GetTeamByUserID(ctx context.Context, userID int64) ([]Team, error) {
+	rows, err := q.db.QueryContext(ctx, getTeamByUserID, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Team
+	for rows.Next() {
+		var i Team
+		if err := rows.Scan(
+			&i.ID,
+			&i.UserID,
+			&i.Name,
+			&i.Flag,
+			&i.Logo,
+			&i.Tag,
+			&i.PublicTeam,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }
