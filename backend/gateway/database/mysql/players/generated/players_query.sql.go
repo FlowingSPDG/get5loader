@@ -7,7 +7,30 @@ package players_gen
 
 import (
 	"context"
+	"database/sql"
 )
+
+const addPlayer = `-- name: AddPlayer :execresult
+INSERT INTO players (
+  team_id,
+  steam_id,
+  name
+) VALUES (
+  ?,
+  ?,
+  ?
+)
+`
+
+type AddPlayerParams struct {
+	TeamID  int64
+	SteamID string
+	Name    string
+}
+
+func (q *Queries) AddPlayer(ctx context.Context, arg AddPlayerParams) (sql.Result, error) {
+	return q.db.ExecContext(ctx, addPlayer, arg.TeamID, arg.SteamID, arg.Name)
+}
 
 const getPlayer = `-- name: GetPlayer :one
 SELECT id, team_id, steam_id, name FROM players

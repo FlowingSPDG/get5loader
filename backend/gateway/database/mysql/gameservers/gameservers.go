@@ -19,13 +19,13 @@ func NewGameServerRepository(dsn string) database.GameServersRepository {
 	}
 }
 
-func (gsr *gameServerRepository) Open() (*sql.DB, error) {
+func (gsr *gameServerRepository) open() (*sql.DB, error) {
 	return sql.Open("mysql", gsr.dsn)
 }
 
 // AddGameServer implements database.GameServerRepository.
 func (gr *gameServerRepository) AddGameServer(ctx context.Context, userID int64, ip string, port int32, rconPassword string, displayName string, isPublic bool) (*entity.GameServer, error) {
-	db, err := gr.Open()
+	db, err := gr.open()
 	if err != nil {
 		return nil, err
 	}
@@ -68,7 +68,7 @@ func (gr *gameServerRepository) AddGameServer(ctx context.Context, userID int64,
 
 // DeleteGameServer implements database.GameServerRepository.
 func (gr *gameServerRepository) DeleteGameServer(ctx context.Context, id int64) error {
-	db, err := gr.Open()
+	db, err := gr.open()
 	if err != nil {
 		return err
 	}
@@ -84,7 +84,7 @@ func (gr *gameServerRepository) DeleteGameServer(ctx context.Context, id int64) 
 
 // GetGameServer implements database.GameServerRepository.
 func (gr *gameServerRepository) GetGameServer(ctx context.Context, id int64) (*entity.GameServer, error) {
-	db, err := gr.Open()
+	db, err := gr.open()
 	if err != nil {
 		return nil, err
 	}
@@ -110,7 +110,7 @@ func (gr *gameServerRepository) GetGameServer(ctx context.Context, id int64) (*e
 
 // GetGameServersByUser implements database.GameServerRepository.
 func (gr *gameServerRepository) GetGameServersByUser(ctx context.Context, userID int64) ([]*entity.GameServer, error) {
-	db, err := gr.Open()
+	db, err := gr.open()
 	if err != nil {
 		return nil, err
 	}
@@ -141,7 +141,7 @@ func (gr *gameServerRepository) GetGameServersByUser(ctx context.Context, userID
 
 // GetPublicGameServers implements database.GameServerRepository.
 func (gr *gameServerRepository) GetPublicGameServers(ctx context.Context) ([]*entity.GameServer, error) {
-	db, err := gr.Open()
+	db, err := gr.open()
 	if err != nil {
 		return nil, err
 	}

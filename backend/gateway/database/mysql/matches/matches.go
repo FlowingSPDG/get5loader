@@ -20,13 +20,13 @@ func NewMatchRepository(dsn string) database.MatchesRepository {
 	}
 }
 
-func (mr *matchRepository) Open() (*sql.DB, error) {
+func (mr *matchRepository) open() (*sql.DB, error) {
 	return sql.Open("mysql", mr.dsn)
 }
 
 // AddMatch implements database.MatchRepository.
 func (mr *matchRepository) AddMatch(ctx context.Context, userID int64, serverID int64, team1ID int64, team2ID int64, startTime time.Time, endTime time.Time, maxMaps int32, title string, skipVeto bool, apiKey string) (*entity.Match, error) {
-	db, err := mr.Open()
+	db, err := mr.open()
 	if err != nil {
 		return nil, err
 	}
@@ -78,7 +78,7 @@ func (mr *matchRepository) AddMatch(ctx context.Context, userID int64, serverID 
 
 // GetMatch implements database.MatchRepository.
 func (mr *matchRepository) GetMatch(ctx context.Context, id int64) (*entity.Match, error) {
-	db, err := mr.Open()
+	db, err := mr.open()
 	if err != nil {
 		return nil, err
 	}
@@ -113,7 +113,7 @@ func (mr *matchRepository) GetMatch(ctx context.Context, id int64) (*entity.Matc
 
 // GetMatchesByUser implements database.MatchRepository.
 func (mr *matchRepository) GetMatchesByUser(ctx context.Context, userID int64) ([]*entity.Match, error) {
-	db, err := mr.Open()
+	db, err := mr.open()
 	if err != nil {
 		return nil, err
 	}
@@ -153,7 +153,7 @@ func (mr *matchRepository) GetMatchesByUser(ctx context.Context, userID int64) (
 
 // CancelMatch implements database.MatchRepository.
 func (mr *matchRepository) CancelMatch(ctx context.Context, matchID int64) error {
-	db, err := mr.Open()
+	db, err := mr.open()
 	if err != nil {
 		return err
 	}
@@ -170,7 +170,7 @@ func (mr *matchRepository) CancelMatch(ctx context.Context, matchID int64) error
 
 // GetMatchesByTeam implements database.MatchRepository.
 func (mr *matchRepository) GetMatchesByTeam(ctx context.Context, teamID int64) ([]*entity.Match, error) {
-	db, err := mr.Open()
+	db, err := mr.open()
 	if err != nil {
 		return nil, err
 	}
@@ -213,7 +213,7 @@ func (mr *matchRepository) GetMatchesByTeam(ctx context.Context, teamID int64) (
 
 // GetMatchesByWinner implements database.MatchRepository.
 func (mr *matchRepository) GetMatchesByWinner(ctx context.Context, teamID int64) ([]*entity.Match, error) {
-	db, err := mr.Open()
+	db, err := mr.open()
 	if err != nil {
 		return nil, err
 	}
@@ -253,7 +253,7 @@ func (mr *matchRepository) GetMatchesByWinner(ctx context.Context, teamID int64)
 
 // StartMatch implements database.MatchRepository.
 func (mr *matchRepository) StartMatch(ctx context.Context, matchID int64) error {
-	db, err := mr.Open()
+	db, err := mr.open()
 	if err != nil {
 		return err
 	}
@@ -273,7 +273,7 @@ func (mr *matchRepository) StartMatch(ctx context.Context, matchID int64) error 
 
 // UpdateMatchWinner implements database.MatchRepository.
 func (mr *matchRepository) UpdateMatchWinner(ctx context.Context, matchID int64, winnerID int64) error {
-	db, err := mr.Open()
+	db, err := mr.open()
 	if err != nil {
 		return err
 	}
@@ -293,7 +293,7 @@ func (mr *matchRepository) UpdateMatchWinner(ctx context.Context, matchID int64,
 
 // UpdateTeam1Score implements database.MatchRepository.
 func (mr *matchRepository) UpdateTeam1Score(ctx context.Context, matchID int64, score int32) error {
-	db, err := mr.Open()
+	db, err := mr.open()
 	if err != nil {
 		return err
 	}
@@ -313,7 +313,7 @@ func (mr *matchRepository) UpdateTeam1Score(ctx context.Context, matchID int64, 
 
 // UpdateTeam2Score implements database.MatchRepository.
 func (mr *matchRepository) UpdateTeam2Score(ctx context.Context, matchID int64, score int32) error {
-	db, err := mr.Open()
+	db, err := mr.open()
 	if err != nil {
 		return err
 	}

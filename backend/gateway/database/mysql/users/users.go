@@ -19,13 +19,13 @@ func NewUsersRepositry(dsn string) database.UsersRepositry {
 	}
 }
 
-func (ur *usersRepositry) Open() (*sql.DB, error) {
+func (ur *usersRepositry) open() (*sql.DB, error) {
 	return sql.Open("mysql", ur.dsn)
 }
 
 // CreateUser implements database.UsersRepositry.
 func (ur *usersRepositry) CreateUser(ctx context.Context, steamID string, name string, admin bool) (*entity.User, error) {
-	db, err := ur.Open()
+	db, err := ur.open()
 	if err != nil {
 		return nil, err
 	}
@@ -63,7 +63,7 @@ func (ur *usersRepositry) CreateUser(ctx context.Context, steamID string, name s
 
 // GetUser implements database.UsersRepositry.
 func (ur *usersRepositry) GetUser(ctx context.Context, id int64) (*entity.User, error) {
-	db, err := ur.Open()
+	db, err := ur.open()
 	if err != nil {
 		return nil, err
 	}

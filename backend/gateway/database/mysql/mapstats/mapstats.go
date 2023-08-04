@@ -19,13 +19,13 @@ func NewMapStatsRepository(dsn string) database.MapStatsRepository {
 	}
 }
 
-func (mr *mapStatsRepository) Open() (*sql.DB, error) {
+func (mr *mapStatsRepository) open() (*sql.DB, error) {
 	return sql.Open("mysql", mr.dsn)
 }
 
 // GetMapStats implements database.MapStatsRepository.
 func (msr *mapStatsRepository) GetMapStats(ctx context.Context, id int64) (*entity.MapStats, error) {
-	db, err := msr.Open()
+	db, err := msr.open()
 	if err != nil {
 		return nil, err
 	}
@@ -53,7 +53,7 @@ func (msr *mapStatsRepository) GetMapStats(ctx context.Context, id int64) (*enti
 
 // GetMapStatsByMatch implements database.MapStatsRepository.
 func (msr *mapStatsRepository) GetMapStatsByMatch(ctx context.Context, matchID int64) ([]*entity.MapStats, error) {
-	db, err := msr.Open()
+	db, err := msr.open()
 	if err != nil {
 		return nil, err
 	}

@@ -35,13 +35,13 @@ type MatchesRepository interface {
 
 type MapStatsRepository interface {
 	GetMapStats(ctx context.Context, id int64) (*entity.MapStats, error)
-	GetMapStatsByMatch(ctx context.Context, matchID int64) ([]*entity.MapStats, error)
+	GetMapStatsByMatch(ctx context.Context, mapStatsID int64) ([]*entity.MapStats, error)
 }
 
 type PlayerStatsRepository interface {
-	GetPlayerStatsBySteamID(ctx context.Context, steamID string) (*entity.PlayerStats, error)
+	GetPlayerStatsBySteamID(ctx context.Context, steamID string) ([]*entity.PlayerStats, error)
 	GetPlayerStatsByMatch(ctx context.Context, matchID int64) ([]*entity.PlayerStats, error)
-	GetPlayerStatsByMapstats(ctx context.Context, matchID int64) ([]*entity.PlayerStats, error)
+	GetPlayerStatsByMapstats(ctx context.Context, mapStatsID int64) (*entity.PlayerStats, error)
 }
 
 type TeamsRepository interface {

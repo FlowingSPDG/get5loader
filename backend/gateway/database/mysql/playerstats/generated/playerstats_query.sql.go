@@ -53,64 +53,48 @@ func (q *Queries) GetPlayerStats(ctx context.Context, id int64) (PlayerStat, err
 	return i, err
 }
 
-const getPlayerStatsByMap = `-- name: GetPlayerStatsByMap :many
+const getPlayerStatsByMap = `-- name: GetPlayerStatsByMap :one
 SELECT id, match_id, map_id, team_id, steam_id, name, kills, deaths, roundsplayed, assists, flashbang_assists, teamkills, suicides, headshot_kills, damage, bomb_plants, bomb_defuses, v1, v2, v3, v4, v5, k1, k2, k3, k4, k5, firstdeath_ct, firstdeath_t, firstkill_ct, firstkill_t FROM player_stats
 WHERE map_id = ?
 `
 
-func (q *Queries) GetPlayerStatsByMap(ctx context.Context, mapID int64) ([]PlayerStat, error) {
-	rows, err := q.db.QueryContext(ctx, getPlayerStatsByMap, mapID)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	var items []PlayerStat
-	for rows.Next() {
-		var i PlayerStat
-		if err := rows.Scan(
-			&i.ID,
-			&i.MatchID,
-			&i.MapID,
-			&i.TeamID,
-			&i.SteamID,
-			&i.Name,
-			&i.Kills,
-			&i.Deaths,
-			&i.Roundsplayed,
-			&i.Assists,
-			&i.FlashbangAssists,
-			&i.Teamkills,
-			&i.Suicides,
-			&i.HeadshotKills,
-			&i.Damage,
-			&i.BombPlants,
-			&i.BombDefuses,
-			&i.V1,
-			&i.V2,
-			&i.V3,
-			&i.V4,
-			&i.V5,
-			&i.K1,
-			&i.K2,
-			&i.K3,
-			&i.K4,
-			&i.K5,
-			&i.FirstdeathCt,
-			&i.FirstdeathT,
-			&i.FirstkillCt,
-			&i.FirstkillT,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Close(); err != nil {
-		return nil, err
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
+func (q *Queries) GetPlayerStatsByMap(ctx context.Context, mapID int64) (PlayerStat, error) {
+	row := q.db.QueryRowContext(ctx, getPlayerStatsByMap, mapID)
+	var i PlayerStat
+	err := row.Scan(
+		&i.ID,
+		&i.MatchID,
+		&i.MapID,
+		&i.TeamID,
+		&i.SteamID,
+		&i.Name,
+		&i.Kills,
+		&i.Deaths,
+		&i.Roundsplayed,
+		&i.Assists,
+		&i.FlashbangAssists,
+		&i.Teamkills,
+		&i.Suicides,
+		&i.HeadshotKills,
+		&i.Damage,
+		&i.BombPlants,
+		&i.BombDefuses,
+		&i.V1,
+		&i.V2,
+		&i.V3,
+		&i.V4,
+		&i.V5,
+		&i.K1,
+		&i.K2,
+		&i.K3,
+		&i.K4,
+		&i.K5,
+		&i.FirstdeathCt,
+		&i.FirstdeathT,
+		&i.FirstkillCt,
+		&i.FirstkillT,
+	)
+	return i, err
 }
 
 const getPlayerStatsByMatch = `-- name: GetPlayerStatsByMatch :many
