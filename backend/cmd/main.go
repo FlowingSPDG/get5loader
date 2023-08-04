@@ -10,20 +10,8 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-var (
-	// StaticDir Directly where serves static files
-	StaticDir = "./static"
-	// SQLAccess SQL Access Object for MySQL and GORM things
-	SQLAccess db.DBdatas
-)
-
 func main() {
-
-	defer SQLAccess.Gorm.Close()
-
 	r := gin.Default()
-
-	//s := r.Host(HOST).Subrouter() // in-case if we need vhost thing
 
 	// misc
 	r.GET("/login", db.LoginHandler)

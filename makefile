@@ -48,11 +48,10 @@ test:
 clean:
 	@$(GOCLEAN)
 	-@$(RM) $(DIST_DIR)/*
-deps: deps-web deps-go
-	@git submodule update
+deps: deps-web
 deps-web:
 	@yarn global add @vue/cli
-	@cd ./web && yarn
+	@cd ./front && yarn
 # Cross compile for go
 build-all: clean build-prepare build-web
 	@cd ./server && gox \
