@@ -1,0 +1,17 @@
+version: 1
+packages:
+  - path: "../gateway/database/mysql/users/generated"
+    name: "users_gen"
+    engine: "mysql"
+    schema: "users_schema.sql"
+    queries: "users_query.sql"
+  - path: "../gateway/database/mysql/gameservers/generated"
+    name: "gameservers_gen"
+    engine: "mysql"
+    schema: "gameserver_schema.sql"
+    queries: "gameserver_query.sql"
+  - path: "../gateway/database/mysql/matches/generated"
+    name: "matches_gen"
+    engine: "mysql"
+    schema: "matches_schema.sql"
+    queries: "matches_query.sql"
