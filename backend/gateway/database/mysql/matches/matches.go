@@ -14,7 +14,7 @@ type matchRepository struct {
 	dsn string
 }
 
-func NewMatchRepository(dsn string) database.MatchRepository {
+func NewMatchRepository(dsn string) database.MatchesRepository {
 	return &matchRepository{
 		dsn: dsn,
 	}

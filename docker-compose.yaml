@@ -36,6 +36,9 @@ services:
       - type: bind
         source: ./docker/db/init
         target: /docker-entrypoint-initdb.d
+      - type: bind 
+        source: ./backend/sqlc
+        target: /docker-init-sqlc-definitions.d
     networks:
       - backend_network
 

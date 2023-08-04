@@ -15,3 +15,8 @@ packages:
     engine: "mysql"
     schema: "matches_schema.sql"
     queries: "matches_query.sql"
+  - path: "../gateway/database/mysql/mapstats/generated"
+    name: "mapstats_gen"
+    engine: "mysql"
+    schema: "mapstats_schema.sql"
+    queries: "mapstats_query.sql"

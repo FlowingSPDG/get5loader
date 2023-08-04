@@ -42,13 +42,13 @@ type Match struct {
 type MapStats struct {
 	ID         int64
 	MatchID    int64
-	MapNumber  int64
+	MapNumber  int32
 	MapName    string
-	StartTime  time.Time
-	EndTime    time.Time
-	Winner     int64
-	Team1Score int64
-	Team2Score int64
+	StartTime  *time.Time
+	EndTime    *time.Time
+	Winner     *int64
+	Team1Score int32
+	Team2Score int32
 }
 
 type PlayerStats struct {

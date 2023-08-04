@@ -52,6 +52,10 @@ deps: deps-web
 deps-web:
 	@yarn global add @vue/cli
 	@cd ./front && yarn
+up:
+	docker compose up -d
+down:
+	docker compose down
 # Cross compile for go
 build-all: clean build-prepare build-web
 	@cd ./server && gox \

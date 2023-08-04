@@ -16,7 +16,7 @@ CREATE TABLE `matches` (
   `team2_score` int(11) NOT NULL,
   `forfeit` tinyint(1) DEFAULT NULL,
   FOREIGN KEY (`user_id`) REFERENCES users(`id`),
-  FOREIGN KEY (`server_id`) REFERENCES servers(`id`),
+  FOREIGN KEY (`server_id`) REFERENCES game_servers(`id`),
   FOREIGN KEY (`team1_id`) REFERENCES teams(`id`),
   FOREIGN KEY (`team2_id`) REFERENCES teams(`id`),
   FOREIGN KEY (`winner`) REFERENCES teams(`id`)

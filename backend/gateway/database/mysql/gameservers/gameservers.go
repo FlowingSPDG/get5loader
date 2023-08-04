@@ -13,7 +13,7 @@ type gameServerRepository struct {
 	dsn string
 }
 
-func NewGameServerRepository(dsn string) database.GameServerRepository {
+func NewGameServerRepository(dsn string) database.GameServersRepository {
 	return &gameServerRepository{
 		dsn: dsn,
 	}
