@@ -1,70 +1,57 @@
 package config
 
 import (
-	"flag"
-	"strings"
+	"github.com/caarlos0/env/v9"
+)
 
-	"github.com/go-ini/ini"
+var (
+	mapPool = []string{
+		"de_inferno",
+		"de_mirage",
+		"de_nuke",
+		"de_overpass",
+		"de_vertigo",
+		"de_ancient",
+		"de_anubis",
+	}
 )
 
 // Config Configration Struct for config.ini
 type Config struct {
-	SteamAPIKey      string
-	DefaultPage      string
-	SQLHost          string
-	SQLUser          string
-	SQLPass          string
-	SQLPort          int
-	SQLDBName        string
-	SQLDebugMode     bool
-	HOST             string
-	Cookie           string
-	APIONLY          bool
-	ActiveMapPool    []string
-	ReserveMapPool   []string
-	UserMaxResources UserMaxResources
+	SteamAPIKey string `env:"STEAM_API_KEY"`
+	DefaultPage string `env:"DEFAULT_PAGE"`
+
+	// Database writing
+	DBWriteHost string `env:"DB_WRITE_HOST"`
+	DBWritePort int    `env:"DB_WRITE_PORT" envDefault:"3306"`
+	DBWriteUser string `env:"DB_WRITE_USER"`
+	DBWritePass string `env:"DB_WRITE_PASS,unset"`
+	DBWriteName string `env:"DB_WRITE_NAME"`
+
+	// Database reading
+	DBReadHost string `env:"DB_READ_HOST"`
+	DBReadPort int    `env:"DB_READ_PORT" envDefault:"3306"`
+	DBReadUser string `env:"DB_READ_USER"`
+	DBReadPass string `env:"DB_READ_PASS,unset"`
+	DBReadName string `env:"DB_READ_NAME"`
+
+	Cookie  string `env:"COOKIE"`
+	APIONLY bool   `env:"API_ONLY" envDefault:"false"`
+	// UserMaxResources UserMaxResources
 }
 
+/*
 type UserMaxResources struct {
 	Servers uint16
 	Teams   uint16
 	Matches uint16
 }
+*/
 
-var (
-	// Cnf is configration struct
-	Cnf        Config
-	ConfigPath *string
-)
-
-func init() {
-	ConfigPath = flag.String("cfg", "config.ini", "path to config.ini")
-	flag.Parse()
-	c, err := ini.Load(*ConfigPath)
-	if err != nil {
+func GetConfig() Config {
+	cfg := Config{}
+	if err := env.Parse(&cfg); err != nil {
 		panic(err)
 	}
-	active := c.Section("MAPLIST").Key("Active").MustString("de_dust2,de_mirage,de_inferno,de_overpass,de_train,de_nuke,de_vertigo")
-	reserve := c.Section("MAPLIST").Key("Reserve").MustString("de_cache,de_season")
-	Cnf = Config{
-		SteamAPIKey:    c.Section("Steam").Key("APIKey").MustString(""),
-		DefaultPage:    c.Section("GET5").Key("DefaultPage").MustString(""),
-		HOST:           c.Section("GET5").Key("HOST").MustString(""),
-		SQLHost:        c.Section("sql").Key("host").MustString(""),
-		SQLUser:        c.Section("sql").Key("user").MustString(""),
-		SQLPass:        c.Section("sql").Key("pass").MustString(""),
-		SQLPort:        c.Section("sql").Key("port").MustInt(3306),
-		SQLDBName:      c.Section("sql").Key("database").MustString(""),
-		SQLDebugMode:   c.Section("sql").Key("debug").MustBool(false),
-		Cookie:         c.Section("GET5").Key("Cookie").MustString("SecretString"),
-		APIONLY:        c.Section("GET5").Key("API_ONLY").MustBool(false),
-		ActiveMapPool:  strings.Split(strings.ToLower(strings.TrimSpace(active)), ","),
-		ReserveMapPool: strings.Split(strings.ToLower(strings.TrimSpace(reserve)), ","),
-		UserMaxResources: UserMaxResources{
-			Servers: uint16(c.Section("USER").Key("Max_Servers").MustUint(10)),
-			Teams:   uint16(c.Section("USER").Key("Max_Teams").MustUint(100)),
-			Matches: uint16(c.Section("USER").Key("Max_Matches").MustUint(1000)),
-		},
-	}
-
+	return cfg
 }
