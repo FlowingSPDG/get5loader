@@ -21,8 +21,7 @@ Front-end looks pretty same with original get5-web. but API logic is not exactly
 2. Current get5-web needs so many steps to launch(DB migration,python2.7 install,pip package management and venv,etc...). this webpanel may need fewer steps to launch.
 3. GOLANG has better performance than Python in some case
 4. To support local file-DB insted of MySQL DB for better performance and easy to deploy(this would be optional).
-5. To support SPA and better UI/UX design with Vue
-6. To support Get5 HTTP/gRPC Streaming API for developers
+5. To support SPA and better UI/UX design with React
 
 ## How to use
 0. Login by your SteamID.

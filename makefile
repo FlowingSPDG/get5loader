@@ -150,5 +150,3 @@ build-migration-mac:
 	-os="$(OS_Mac)" \
 	-arch="$(ARCH_386) $(ARCH_AMD64)" \
 	--output "../../$(DIST_DIR)/$(ORIGINAL_MIGRATION_BINARY_NAME)_{{.OS}}_{{.Arch}}/$(ORIGINAL_MIGRATION_BINARY_NAME)"
-build-protobuf:
-	@cd ./server/proto && protoc --go_out=plugins=grpc:../src/grpc/proto ./get5-web-go.proto
