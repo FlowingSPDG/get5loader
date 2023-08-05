@@ -11,30 +11,26 @@ import (
 )
 
 type matchRepository struct {
-	dsn string
+	queries *matches_gen.Queries
 }
 
-func NewMatchRepository(dsn string) database.MatchesRepository {
+func NewMatchRepository(db *sql.DB) database.MatchesRepository {
+	queries := matches_gen.New(db)
 	return &matchRepository{
-		dsn: dsn,
+		queries: queries,
 	}
 }
 
-func (mr *matchRepository) open() (*sql.DB, error) {
-	return sql.Open("mysql", mr.dsn)
+func NewMatchRepositoryWithTx(db *sql.DB, tx *sql.Tx) database.MatchesRepository {
+	queries := matches_gen.New(db).WithTx(tx)
+	return &matchRepository{
+		queries: queries,
+	}
 }
 
 // AddMatch implements database.MatchRepository.
 func (mr *matchRepository) AddMatch(ctx context.Context, userID int64, serverID int64, team1ID int64, team2ID int64, startTime time.Time, endTime time.Time, maxMaps int32, title string, skipVeto bool, apiKey string) (*entity.Match, error) {
-	db, err := mr.open()
-	if err != nil {
-		return nil, err
-	}
-	defer db.Close()
-
-	queries := matches_gen.New(db)
-
-	res, err := queries.AddMatch(ctx, matches_gen.AddMatchParams{
+	res, err := mr.queries.AddMatch(ctx, matches_gen.AddMatchParams{
 		UserID:    userID,
 		ServerID:  serverID,
 		Team1ID:   team1ID,
@@ -56,7 +52,7 @@ func (mr *matchRepository) AddMatch(ctx context.Context, userID int64, serverID 
 		return nil, err
 	}
 
-	match, err := queries.GetMatch(ctx, insertedID)
+	match, err := mr.queries.GetMatch(ctx, insertedID)
 	if err != nil {
 		return nil, err
 	}
@@ -78,15 +74,7 @@ func (mr *matchRepository) AddMatch(ctx context.Context, userID int64, serverID 
 
 // GetMatch implements database.MatchRepository.
 func (mr *matchRepository) GetMatch(ctx context.Context, id int64) (*entity.Match, error) {
-	db, err := mr.open()
-	if err != nil {
-		return nil, err
-	}
-	defer db.Close()
-
-	queries := matches_gen.New(db)
-
-	match, err := queries.GetMatch(ctx, id)
+	match, err := mr.queries.GetMatch(ctx, id)
 	if err != nil {
 		return nil, err
 	}
@@ -113,15 +101,7 @@ func (mr *matchRepository) GetMatch(ctx context.Context, id int64) (*entity.Matc
 
 // GetMatchesByUser implements database.MatchRepository.
 func (mr *matchRepository) GetMatchesByUser(ctx context.Context, userID int64) ([]*entity.Match, error) {
-	db, err := mr.open()
-	if err != nil {
-		return nil, err
-	}
-	defer db.Close()
-
-	queries := matches_gen.New(db)
-
-	matches, err := queries.GetMatchesByUser(ctx, userID)
+	matches, err := mr.queries.GetMatchesByUser(ctx, userID)
 	if err != nil {
 		return nil, err
 	}
@@ -153,15 +133,7 @@ func (mr *matchRepository) GetMatchesByUser(ctx context.Context, userID int64) (
 
 // CancelMatch implements database.MatchRepository.
 func (mr *matchRepository) CancelMatch(ctx context.Context, matchID int64) error {
-	db, err := mr.open()
-	if err != nil {
-		return err
-	}
-	defer db.Close()
-
-	queries := matches_gen.New(db)
-
-	if _, err = queries.CancelMatch(ctx, matchID); err != nil {
+	if _, err := mr.queries.CancelMatch(ctx, matchID); err != nil {
 		return err
 	}
 
@@ -170,15 +142,7 @@ func (mr *matchRepository) CancelMatch(ctx context.Context, matchID int64) error
 
 // GetMatchesByTeam implements database.MatchRepository.
 func (mr *matchRepository) GetMatchesByTeam(ctx context.Context, teamID int64) ([]*entity.Match, error) {
-	db, err := mr.open()
-	if err != nil {
-		return nil, err
-	}
-	defer db.Close()
-
-	queries := matches_gen.New(db)
-
-	matches, err := queries.GetMatchesByTeam(ctx, matches_gen.GetMatchesByTeamParams{
+	matches, err := mr.queries.GetMatchesByTeam(ctx, matches_gen.GetMatchesByTeamParams{
 		Team1ID: teamID,
 		Team2ID: teamID,
 	})
@@ -213,15 +177,7 @@ func (mr *matchRepository) GetMatchesByTeam(ctx context.Context, teamID int64) (
 
 // GetMatchesByWinner implements database.MatchRepository.
 func (mr *matchRepository) GetMatchesByWinner(ctx context.Context, teamID int64) ([]*entity.Match, error) {
-	db, err := mr.open()
-	if err != nil {
-		return nil, err
-	}
-	defer db.Close()
-
-	queries := matches_gen.New(db)
-
-	matches, err := queries.GetMatchesByWinner(ctx, sql.NullInt64{Int64: teamID, Valid: true})
+	matches, err := mr.queries.GetMatchesByWinner(ctx, sql.NullInt64{Int64: teamID, Valid: true})
 	if err != nil {
 		return nil, err
 	}
@@ -253,15 +209,7 @@ func (mr *matchRepository) GetMatchesByWinner(ctx context.Context, teamID int64)
 
 // StartMatch implements database.MatchRepository.
 func (mr *matchRepository) StartMatch(ctx context.Context, matchID int64) error {
-	db, err := mr.open()
-	if err != nil {
-		return err
-	}
-	defer db.Close()
-
-	queries := matches_gen.New(db)
-
-	if _, err = queries.StartMatch(ctx, matches_gen.StartMatchParams{
+	if _, err := mr.queries.StartMatch(ctx, matches_gen.StartMatchParams{
 		ID:        matchID,
 		StartTime: sql.NullTime{Valid: true, Time: time.Now()},
 	}); err != nil {
@@ -273,15 +221,7 @@ func (mr *matchRepository) StartMatch(ctx context.Context, matchID int64) error 
 
 // UpdateMatchWinner implements database.MatchRepository.
 func (mr *matchRepository) UpdateMatchWinner(ctx context.Context, matchID int64, winnerID int64) error {
-	db, err := mr.open()
-	if err != nil {
-		return err
-	}
-	defer db.Close()
-
-	queries := matches_gen.New(db)
-
-	if _, err = queries.UpdateMatchWinner(ctx, matches_gen.UpdateMatchWinnerParams{
+	if _, err := mr.queries.UpdateMatchWinner(ctx, matches_gen.UpdateMatchWinnerParams{
 		ID:     matchID,
 		Winner: sql.NullInt64{Int64: winnerID, Valid: true},
 	}); err != nil {
@@ -293,15 +233,7 @@ func (mr *matchRepository) UpdateMatchWinner(ctx context.Context, matchID int64,
 
 // UpdateTeam1Score implements database.MatchRepository.
 func (mr *matchRepository) UpdateTeam1Score(ctx context.Context, matchID int64, score int32) error {
-	db, err := mr.open()
-	if err != nil {
-		return err
-	}
-	defer db.Close()
-
-	queries := matches_gen.New(db)
-
-	if _, err = queries.UpdateTeam1Score(ctx, matches_gen.UpdateTeam1ScoreParams{
+	if _, err := mr.queries.UpdateTeam1Score(ctx, matches_gen.UpdateTeam1ScoreParams{
 		ID:         matchID,
 		Team1Score: score,
 	}); err != nil {
@@ -313,15 +245,7 @@ func (mr *matchRepository) UpdateTeam1Score(ctx context.Context, matchID int64, 
 
 // UpdateTeam2Score implements database.MatchRepository.
 func (mr *matchRepository) UpdateTeam2Score(ctx context.Context, matchID int64, score int32) error {
-	db, err := mr.open()
-	if err != nil {
-		return err
-	}
-	defer db.Close()
-
-	queries := matches_gen.New(db)
-
-	if _, err = queries.UpdateTeam2Score(ctx, matches_gen.UpdateTeam2ScoreParams{
+	if _, err := mr.queries.UpdateTeam2Score(ctx, matches_gen.UpdateTeam2ScoreParams{
 		ID:         matchID,
 		Team2Score: score,
 	}); err != nil {

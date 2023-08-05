@@ -10,30 +10,26 @@ import (
 )
 
 type mapStatsRepository struct {
-	dsn string
+	queries *mapstats_gen.Queries
 }
 
-func NewMapStatsRepository(dsn string) database.MapStatsRepository {
+func NewMapStatsRepository(db *sql.DB) database.MapStatsRepository {
+	queries := mapstats_gen.New(db)
 	return &mapStatsRepository{
-		dsn: dsn,
+		queries: queries,
 	}
 }
 
-func (mr *mapStatsRepository) open() (*sql.DB, error) {
-	return sql.Open("mysql", mr.dsn)
+func NewMapStatsRepositoryWithTx(db *sql.DB, tx *sql.Tx) database.MapStatsRepository {
+	queries := mapstats_gen.New(db).WithTx(tx)
+	return &mapStatsRepository{
+		queries: queries,
+	}
 }
 
 // GetMapStats implements database.MapStatsRepository.
 func (msr *mapStatsRepository) GetMapStats(ctx context.Context, id int64) (*entity.MapStats, error) {
-	db, err := msr.open()
-	if err != nil {
-		return nil, err
-	}
-	defer db.Close()
-
-	queries := mapstats_gen.New(db)
-
-	res, err := queries.GetMapStats(ctx, id)
+	res, err := msr.queries.GetMapStats(ctx, id)
 	if err != nil {
 		return nil, err
 	}
@@ -53,15 +49,7 @@ func (msr *mapStatsRepository) GetMapStats(ctx context.Context, id int64) (*enti
 
 // GetMapStatsByMatch implements database.MapStatsRepository.
 func (msr *mapStatsRepository) GetMapStatsByMatch(ctx context.Context, matchID int64) ([]*entity.MapStats, error) {
-	db, err := msr.open()
-	if err != nil {
-		return nil, err
-	}
-	defer db.Close()
-
-	queries := mapstats_gen.New(db)
-
-	res, err := queries.GetMapStatsByMatch(ctx, matchID)
+	res, err := msr.queries.GetMapStatsByMatch(ctx, matchID)
 	if err != nil {
 		return nil, err
 	}

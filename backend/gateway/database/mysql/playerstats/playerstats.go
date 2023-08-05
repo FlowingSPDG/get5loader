@@ -10,30 +10,26 @@ import (
 )
 
 type playerStatsRepository struct {
-	dsn string
+	queries *playerstats_gen.Queries
 }
 
-func NewPlayerStatsRepository(dsn string) database.PlayerStatsRepository {
+func NewPlayerStatsRepository(db *sql.DB) database.PlayerStatsRepository {
+	queries := playerstats_gen.New(db)
 	return &playerStatsRepository{
-		dsn: dsn,
+		queries: queries,
 	}
 }
 
-func (mr *playerStatsRepository) open() (*sql.DB, error) {
-	return sql.Open("mysql", mr.dsn)
+func NewPlayerStatsRepositoryWithTx(db *sql.DB, tx *sql.Tx) database.PlayerStatsRepository {
+	queries := playerstats_gen.New(db).WithTx(tx)
+	return &playerStatsRepository{
+		queries: queries,
+	}
 }
 
 // GetPlayerStatsByMapstats implements database.PlayerStatsRepository.
 func (psr *playerStatsRepository) GetPlayerStatsByMapstats(ctx context.Context, matchID int64) (*entity.PlayerStats, error) {
-	db, err := psr.open()
-	if err != nil {
-		return nil, err
-	}
-	defer db.Close()
-
-	queries := playerstats_gen.New(db)
-
-	stat, err := queries.GetPlayerStatsByMap(ctx, matchID)
+	stat, err := psr.queries.GetPlayerStatsByMap(ctx, matchID)
 	if err != nil {
 		return nil, err
 	}
@@ -74,15 +70,7 @@ func (psr *playerStatsRepository) GetPlayerStatsByMapstats(ctx context.Context, 
 
 // GetPlayerStatsByMatch implements database.PlayerStatsRepository.
 func (psr *playerStatsRepository) GetPlayerStatsByMatch(ctx context.Context, matchID int64) ([]*entity.PlayerStats, error) {
-	db, err := psr.open()
-	if err != nil {
-		return nil, err
-	}
-	defer db.Close()
-
-	queries := playerstats_gen.New(db)
-
-	stats, err := queries.GetPlayerStatsByMatch(ctx, matchID)
+	stats, err := psr.queries.GetPlayerStatsByMatch(ctx, matchID)
 	if err != nil {
 		return nil, err
 	}
@@ -92,7 +80,7 @@ func (psr *playerStatsRepository) GetPlayerStatsByMatch(ctx context.Context, mat
 		playerStats = append(playerStats, &entity.PlayerStats{
 			ID:               stat.ID,
 			MatchID:          stat.MatchID,
-			MapID:            0,
+			MapID:            stat.MapID,
 			TeamID:           stat.TeamID,
 			SteamID:          stat.SteamID,
 			Name:             stat.Name,
@@ -126,15 +114,7 @@ func (psr *playerStatsRepository) GetPlayerStatsByMatch(ctx context.Context, mat
 
 // GetPlayerStatsBySteamID implements database.PlayerStatsRepository.
 func (psr *playerStatsRepository) GetPlayerStatsBySteamID(ctx context.Context, steamID string) ([]*entity.PlayerStats, error) {
-	db, err := psr.open()
-	if err != nil {
-		return nil, err
-	}
-	defer db.Close()
-
-	queries := playerstats_gen.New(db)
-
-	stats, err := queries.GetPlayerStatsBySteamID(ctx, steamID)
+	stats, err := psr.queries.GetPlayerStatsBySteamID(ctx, steamID)
 	if err != nil {
 		return nil, err
 	}
@@ -144,7 +124,7 @@ func (psr *playerStatsRepository) GetPlayerStatsBySteamID(ctx context.Context, s
 		playerStats = append(playerStats, &entity.PlayerStats{
 			ID:               stat.ID,
 			MatchID:          stat.MatchID,
-			MapID:            0,
+			MapID:            stat.MapID,
 			TeamID:           stat.TeamID,
 			SteamID:          stat.SteamID,
 			Name:             stat.Name,

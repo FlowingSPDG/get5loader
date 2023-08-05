@@ -10,30 +10,26 @@ import (
 )
 
 type playersRepository struct {
-	dsn string
+	queries *players_gen.Queries
 }
 
-func NewPlayersRepository(dsn string) database.PlayersRepository {
+func NewPlayersRepository(db *sql.DB) database.PlayersRepository {
+	queries := players_gen.New(db)
 	return &playersRepository{
-		dsn: dsn,
+		queries: queries,
 	}
 }
 
-func (pr *playersRepository) open() (*sql.DB, error) {
-	return sql.Open("mysql", pr.dsn)
+func NewPlayersRepositoryWithTx(db *sql.DB, tx *sql.Tx) database.PlayersRepository {
+	queries := players_gen.New(db).WithTx(tx)
+	return &playersRepository{
+		queries: queries,
+	}
 }
 
 // AddPlayer implements database.PlayersRepository.
 func (pr *playersRepository) AddPlayer(ctx context.Context, teamID int64, steamID string, name string) (*entity.Player, error) {
-	db, err := pr.open()
-	if err != nil {
-		return nil, err
-	}
-	defer db.Close()
-
-	queries := players_gen.New(db)
-
-	res, err := queries.AddPlayer(ctx, players_gen.AddPlayerParams{
+	res, err := pr.queries.AddPlayer(ctx, players_gen.AddPlayerParams{
 		TeamID:  teamID,
 		SteamID: steamID,
 		Name:    name,
@@ -48,7 +44,7 @@ func (pr *playersRepository) AddPlayer(ctx context.Context, teamID int64, steamI
 		return nil, err
 	}
 
-	player, err := queries.GetPlayer(ctx, insertedID)
+	player, err := pr.queries.GetPlayer(ctx, insertedID)
 	if err != nil {
 		return nil, err
 	}
@@ -63,15 +59,7 @@ func (pr *playersRepository) AddPlayer(ctx context.Context, teamID int64, steamI
 
 // GetPlayer implements database.PlayersRepository.
 func (pr *playersRepository) GetPlayer(ctx context.Context, id int64) (*entity.Player, error) {
-	db, err := pr.open()
-	if err != nil {
-		return nil, err
-	}
-	defer db.Close()
-
-	queries := players_gen.New(db)
-
-	res, err := queries.GetPlayer(ctx, id)
+	res, err := pr.queries.GetPlayer(ctx, id)
 	if err != nil {
 		return nil, err
 	}
@@ -86,15 +74,7 @@ func (pr *playersRepository) GetPlayer(ctx context.Context, id int64) (*entity.P
 
 // GetPlayersByTeam implements database.PlayersRepository.
 func (pr *playersRepository) GetPlayersByTeam(ctx context.Context, teamID int64) ([]*entity.Player, error) {
-	db, err := pr.open()
-	if err != nil {
-		return nil, err
-	}
-	defer db.Close()
-
-	queries := players_gen.New(db)
-
-	res, err := queries.GetPlayersByTeam(ctx, teamID)
+	res, err := pr.queries.GetPlayersByTeam(ctx, teamID)
 	if err != nil {
 		return nil, err
 	}
