@@ -4,18 +4,6 @@ import (
 	"github.com/caarlos0/env/v9"
 )
 
-var (
-	mapPool = []string{
-		"de_inferno",
-		"de_mirage",
-		"de_nuke",
-		"de_overpass",
-		"de_vertigo",
-		"de_ancient",
-		"de_anubis",
-	}
-)
-
 // Config Configration Struct for config.ini
 type Config struct {
 	Port        int    `env:"PORT" envDefault:"8080"`

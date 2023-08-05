@@ -20,6 +20,8 @@ func main() {
 
 	v1 := r.Group("/api/v1")
 	{
+		v1.GET("/version", di.InitializeGetVersionController().Handle)
+		v1.GET("/maps", di.InitializeGetMaplistController().Handle)
 		/*
 			// session handling
 			v1.GET("/login", db.LoginHandler)
@@ -30,15 +32,13 @@ func main() {
 			v1.GET("/GetSteamName", api.GetSteamName)
 			v1.GET("/GetTeamList", api.GetTeamList)
 			v1.GET("/GetServerList", api.GetServerList)
-			v1.GET("/GetVersion", api.GetVersion)
-			v1.GET("/GetMapList", api.GetMapList)
 			v1.GET("/CheckLoggedIn", api.CheckLoggedIn)
 		*/
 
 		// Match API for front(Vue)
 		match := v1.Group("/match")
 		{
-			match.GET("/:matchID/GetMatchInfo", di.InitializeGetMatchController(cfg).Handle)
+			match.GET("/:matchID", di.InitializeGetMatchController(cfg).Handle)
 			/*
 				match.GET("/:matchID/GetPlayerStatInfo", api.GetPlayerStatInfo)
 
