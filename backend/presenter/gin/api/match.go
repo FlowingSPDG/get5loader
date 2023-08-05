@@ -36,7 +36,7 @@ func (mp *matchPresenter) Handle(m *entity.Match) ([]byte, error) {
 		Team2Score: int(m.Team2Score),
 		Forfeit:    *m.Forfeit,
 		ServerID:   int(m.ServerID),
-		Status:     string(m.Status),
+		Status:     m.Status.String(),
 	}
 
 	b, err := json.Marshal(data)

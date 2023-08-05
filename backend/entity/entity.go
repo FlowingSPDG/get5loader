@@ -2,24 +2,6 @@ package entity
 
 import "time"
 
-type SERVER_STATUS int // TODO: Stringer
-
-const (
-	SERVER_STATUS_UNKNOWN SERVER_STATUS = iota
-	SERVER_STATUS_STANDBY
-	SERVER_STATUS_INUSE
-)
-
-type MATCH_STATUS int // TODO: Stringer
-
-const (
-	MATCH_STATUS_UNKNOWN MATCH_STATUS = iota
-	MATCH_STATUS_PENDING
-	MATCH_STATUS_LIVE
-	MATCH_STATUS_FINISHED
-	MATCH_STATUS_CANCELLED
-)
-
 type User struct {
 	ID      int64
 	SteamID string
