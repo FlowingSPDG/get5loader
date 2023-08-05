@@ -18,186 +18,186 @@ func NewGot5EventController() g5controller.EventHandler {
 }
 
 // Close implements controller.EventHandler.
-func (*eventController) Close() error {
-	panic("unimplemented")
+func (ec *eventController) Close() error {
+	return nil
 }
 
 // HandleOnBackupRestore implements controller.EventHandler.
-func (*eventController) HandleOnBackupRestore(ctx context.Context, p models.OnBackupRestorePayload) error {
-	panic("unimplemented")
+func (ec *eventController) HandleOnBackupRestore(ctx context.Context, p models.OnBackupRestorePayload) error {
+	return nil
 }
 
 // HandleOnBombDefused implements controller.EventHandler.
-func (*eventController) HandleOnBombDefused(ctx context.Context, p models.OnBombDefusedPayload) error {
-	panic("unimplemented")
+func (ec *eventController) HandleOnBombDefused(ctx context.Context, p models.OnBombDefusedPayload) error {
+	return nil
 }
 
 // HandleOnBombExploded implements controller.EventHandler.
-func (*eventController) HandleOnBombExploded(ctx context.Context, p models.OnBombExplodedPayload) error {
-	panic("unimplemented")
+func (ec *eventController) HandleOnBombExploded(ctx context.Context, p models.OnBombExplodedPayload) error {
+	return nil
 }
 
 // HandleOnBombPlanted implements controller.EventHandler.
-func (*eventController) HandleOnBombPlanted(ctx context.Context, p models.OnBombPlantedPayload) error {
-	panic("unimplemented")
+func (ec *eventController) HandleOnBombPlanted(ctx context.Context, p models.OnBombPlantedPayload) error {
+	return nil
 }
 
 // HandleOnDecoyStarted implements controller.EventHandler.
-func (*eventController) HandleOnDecoyStarted(ctx context.Context, p models.OnDecoyStartedPayload) error {
-	panic("unimplemented")
+func (ec *eventController) HandleOnDecoyStarted(ctx context.Context, p models.OnDecoyStartedPayload) error {
+	return nil
 }
 
 // HandleOnDemoFinished implements controller.EventHandler.
-func (*eventController) HandleOnDemoFinished(ctx context.Context, p models.OnDemoFinishedPayload) error {
-	panic("unimplemented")
+func (ec *eventController) HandleOnDemoFinished(ctx context.Context, p models.OnDemoFinishedPayload) error {
+	return nil
 }
 
 // HandleOnDemoUploadEnded implements controller.EventHandler.
-func (*eventController) HandleOnDemoUploadEnded(ctx context.Context, p models.OnDemoUploadEndedPayload) error {
-	panic("unimplemented")
+func (ec *eventController) HandleOnDemoUploadEnded(ctx context.Context, p models.OnDemoUploadEndedPayload) error {
+	return nil
 }
 
 // HandleOnFlashbangDetonated implements controller.EventHandler.
-func (*eventController) HandleOnFlashbangDetonated(ctx context.Context, p models.OnFlashbangDetonatedPayload) error {
-	panic("unimplemented")
+func (ec *eventController) HandleOnFlashbangDetonated(ctx context.Context, p models.OnFlashbangDetonatedPayload) error {
+	return nil
 }
 
 // HandleOnGameStateChanged implements controller.EventHandler.
-func (*eventController) HandleOnGameStateChanged(ctx context.Context, p models.OnGameStateChangedPayload) error {
-	panic("unimplemented")
+func (ec *eventController) HandleOnGameStateChanged(ctx context.Context, p models.OnGameStateChangedPayload) error {
+	return nil
 }
 
 // HandleOnGoingLive implements controller.EventHandler.
-func (*eventController) HandleOnGoingLive(ctx context.Context, p models.OnGoingLivePayload) error {
-	panic("unimplemented")
+func (ec *eventController) HandleOnGoingLive(ctx context.Context, p models.OnGoingLivePayload) error {
+	return nil
 }
 
 // HandleOnGrenadeThrown implements controller.EventHandler.
-func (*eventController) HandleOnGrenadeThrown(ctx context.Context, p models.OnGrenadeThrownPayload) error {
-	panic("unimplemented")
+func (ec *eventController) HandleOnGrenadeThrown(ctx context.Context, p models.OnGrenadeThrownPayload) error {
+	return nil
 }
 
 // HandleOnHEGrenadeDetonated implements controller.EventHandler.
-func (*eventController) HandleOnHEGrenadeDetonated(ctx context.Context, p models.OnHEGrenadeDetonatedPayload) error {
-	panic("unimplemented")
+func (ec *eventController) HandleOnHEGrenadeDetonated(ctx context.Context, p models.OnHEGrenadeDetonatedPayload) error {
+	return nil
 }
 
 // HandleOnKnifeRoundStarted implements controller.EventHandler.
-func (*eventController) HandleOnKnifeRoundStarted(ctx context.Context, p models.OnKnifeRoundStartedPayload) error {
-	panic("unimplemented")
+func (ec *eventController) HandleOnKnifeRoundStarted(ctx context.Context, p models.OnKnifeRoundStartedPayload) error {
+	return nil
 }
 
 // HandleOnKnifeRoundWon implements controller.EventHandler.
-func (*eventController) HandleOnKnifeRoundWon(ctx context.Context, p models.OnKnifeRoundWonPayload) error {
-	panic("unimplemented")
+func (ec *eventController) HandleOnKnifeRoundWon(ctx context.Context, p models.OnKnifeRoundWonPayload) error {
+	return nil
 }
 
 // HandleOnLoadMatchConfigFailed implements controller.EventHandler.
-func (*eventController) HandleOnLoadMatchConfigFailed(ctx context.Context, p models.OnLoadMatchConfigFailedPayload) error {
-	panic("unimplemented")
+func (ec *eventController) HandleOnLoadMatchConfigFailed(ctx context.Context, p models.OnLoadMatchConfigFailedPayload) error {
+	return nil
 }
 
 // HandleOnMapPicked implements controller.EventHandler.
-func (*eventController) HandleOnMapPicked(ctx context.Context, p models.OnMapPickedPayload) error {
-	panic("unimplemented")
+func (ec *eventController) HandleOnMapPicked(ctx context.Context, p models.OnMapPickedPayload) error {
+	return nil
 }
 
 // HandleOnMapResult implements controller.EventHandler.
-func (*eventController) HandleOnMapResult(ctx context.Context, p models.OnMapResultPayload) error {
-	panic("unimplemented")
+func (ec *eventController) HandleOnMapResult(ctx context.Context, p models.OnMapResultPayload) error {
+	return nil
 }
 
 // HandleOnMapVetoed implements controller.EventHandler.
-func (*eventController) HandleOnMapVetoed(ctx context.Context, p models.OnMapVetoedPayload) error {
-	panic("unimplemented")
+func (ec *eventController) HandleOnMapVetoed(ctx context.Context, p models.OnMapVetoedPayload) error {
+	return nil
 }
 
 // HandleOnMatchPaused implements controller.EventHandler.
-func (*eventController) HandleOnMatchPaused(ctx context.Context, p models.OnMatchPausedPayload) error {
-	panic("unimplemented")
+func (ec *eventController) HandleOnMatchPaused(ctx context.Context, p models.OnMatchPausedPayload) error {
+	return nil
 }
 
 // HandleOnMatchUnpaused implements controller.EventHandler.
-func (*eventController) HandleOnMatchUnpaused(ctx context.Context, p models.OnMatchUnpausedPayload) error {
-	panic("unimplemented")
+func (ec *eventController) HandleOnMatchUnpaused(ctx context.Context, p models.OnMatchUnpausedPayload) error {
+	return nil
 }
 
 // HandleOnMolotovDetonated implements controller.EventHandler.
-func (*eventController) HandleOnMolotovDetonated(ctx context.Context, p models.OnMolotovDetonatedPayload) error {
-	panic("unimplemented")
+func (ec *eventController) HandleOnMolotovDetonated(ctx context.Context, p models.OnMolotovDetonatedPayload) error {
+	return nil
 }
 
 // HandleOnPauseBegan implements controller.EventHandler.
-func (*eventController) HandleOnPauseBegan(ctx context.Context, p models.OnPauseBeganPayload) error {
-	panic("unimplemented")
+func (ec *eventController) HandleOnPauseBegan(ctx context.Context, p models.OnPauseBeganPayload) error {
+	return nil
 }
 
 // HandleOnPlayerBecameMVP implements controller.EventHandler.
-func (*eventController) HandleOnPlayerBecameMVP(ctx context.Context, p models.OnPlayerBecameMVPPayload) error {
-	panic("unimplemented")
+func (ec *eventController) HandleOnPlayerBecameMVP(ctx context.Context, p models.OnPlayerBecameMVPPayload) error {
+	return nil
 }
 
 // HandleOnPlayerConnected implements controller.EventHandler.
-func (*eventController) HandleOnPlayerConnected(ctx context.Context, p models.OnPlayerConnectedPayload) error {
-	panic("unimplemented")
+func (ec *eventController) HandleOnPlayerConnected(ctx context.Context, p models.OnPlayerConnectedPayload) error {
+	return nil
 }
 
 // HandleOnPlayerDeath implements controller.EventHandler.
-func (*eventController) HandleOnPlayerDeath(ctx context.Context, p models.OnPlayerDeathPayload) error {
-	panic("unimplemented")
+func (ec *eventController) HandleOnPlayerDeath(ctx context.Context, p models.OnPlayerDeathPayload) error {
+	return nil
 }
 
 // HandleOnPlayerDisconnected implements controller.EventHandler.
-func (*eventController) HandleOnPlayerDisconnected(ctx context.Context, p models.OnPlayerDisconnectedPayload) error {
-	panic("unimplemented")
+func (ec *eventController) HandleOnPlayerDisconnected(ctx context.Context, p models.OnPlayerDisconnectedPayload) error {
+	return nil
 }
 
 // HandleOnPlayerSay implements controller.EventHandler.
-func (*eventController) HandleOnPlayerSay(ctx context.Context, p models.OnPlayerSayPayload) error {
-	panic("unimplemented")
+func (ec *eventController) HandleOnPlayerSay(ctx context.Context, p models.OnPlayerSayPayload) error {
+	return nil
 }
 
 // HandleOnPreLoadMatchConfig implements controller.EventHandler.
-func (*eventController) HandleOnPreLoadMatchConfig(ctx context.Context, p models.OnPreLoadMatchConfigPayload) error {
-	panic("unimplemented")
+func (ec *eventController) HandleOnPreLoadMatchConfig(ctx context.Context, p models.OnPreLoadMatchConfigPayload) error {
+	return nil
 }
 
 // HandleOnRoundEnd implements controller.EventHandler.
-func (*eventController) HandleOnRoundEnd(ctx context.Context, p models.OnRoundEndPayload) error {
-	panic("unimplemented")
+func (ec *eventController) HandleOnRoundEnd(ctx context.Context, p models.OnRoundEndPayload) error {
+	return nil
 }
 
 // HandleOnRoundStart implements controller.EventHandler.
-func (*eventController) HandleOnRoundStart(ctx context.Context, p models.OnRoundStartPayload) error {
-	panic("unimplemented")
+func (ec *eventController) HandleOnRoundStart(ctx context.Context, p models.OnRoundStartPayload) error {
+	return nil
 }
 
 // HandleOnRoundStatsUpdated implements controller.EventHandler.
-func (*eventController) HandleOnRoundStatsUpdated(ctx context.Context, p models.OnRoundStatsUpdatedPayload) error {
-	panic("unimplemented")
+func (ec *eventController) HandleOnRoundStatsUpdated(ctx context.Context, p models.OnRoundStatsUpdatedPayload) error {
+	return nil
 }
 
 // HandleOnSeriesInit implements controller.EventHandler.
-func (*eventController) HandleOnSeriesInit(ctx context.Context, p models.OnSeriesInitPayload) error {
-	panic("unimplemented")
+func (ec *eventController) HandleOnSeriesInit(ctx context.Context, p models.OnSeriesInitPayload) error {
+	return nil
 }
 
 // HandleOnSeriesResult implements controller.EventHandler.
-func (*eventController) HandleOnSeriesResult(ctx context.Context, p models.OnSeriesResultPayload) error {
-	panic("unimplemented")
+func (ec *eventController) HandleOnSeriesResult(ctx context.Context, p models.OnSeriesResultPayload) error {
+	return nil
 }
 
 // HandleOnSidePicked implements controller.EventHandler.
-func (*eventController) HandleOnSidePicked(ctx context.Context, p models.OnSidePickedPayload) error {
-	panic("unimplemented")
+func (ec *eventController) HandleOnSidePicked(ctx context.Context, p models.OnSidePickedPayload) error {
+	return nil
 }
 
 // HandleOnSmokeGrenadeDetonated implements controller.EventHandler.
-func (*eventController) HandleOnSmokeGrenadeDetonated(ctx context.Context, p models.OnSmokeGrenadeDetonatedPayload) error {
-	panic("unimplemented")
+func (ec *eventController) HandleOnSmokeGrenadeDetonated(ctx context.Context, p models.OnSmokeGrenadeDetonatedPayload) error {
+	return nil
 }
 
 // HandleOnTeamReadyStatusChanged implements controller.EventHandler.
-func (*eventController) HandleOnTeamReadyStatusChanged(ctx context.Context, p models.OnTeamReadyStatusChangedPayload) error {
-	panic("unimplemented")
+func (ec *eventController) HandleOnTeamReadyStatusChanged(ctx context.Context, p models.OnTeamReadyStatusChangedPayload) error {
+	return nil
 }
