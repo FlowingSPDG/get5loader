@@ -15,7 +15,8 @@ WHERE user_id = ?;
 
 -- name: GetPublicGameServers :many
 SELECT * FROM game_servers
-WHERE is_public = TRUE;
+WHERE is_public = TRUE
+AND in_use = FALSE;
 
 -- name: DeleteGameServer :execresult
 DELETE FROM game_servers
