@@ -2,7 +2,7 @@ package entity
 
 import "time"
 
-type SERVER_STATUS int
+type SERVER_STATUS int // TODO: Stringer
 
 const (
 	SERVER_STATUS_UNKNOWN SERVER_STATUS = iota
@@ -10,7 +10,7 @@ const (
 	SERVER_STATUS_INUSE
 )
 
-type MATCH_STATUS int
+type MATCH_STATUS int // TODO: Stringer
 
 const (
 	MATCH_STATUS_UNKNOWN MATCH_STATUS = iota

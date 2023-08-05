@@ -1,102 +1,98 @@
 package main
 
 import (
+	"fmt"
 	"log"
 
-	"github.com/FlowingSPDG/get5-web-go/backend/src/api"
-	config "github.com/FlowingSPDG/get5-web-go/backend/src/cfg"
-	"github.com/FlowingSPDG/get5-web-go/backend/src/db"
-	"github.com/gin-contrib/static"
+	config "github.com/FlowingSPDG/get5-web-go/backend/cfg"
+	"github.com/FlowingSPDG/get5-web-go/backend/cmd/di"
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
 	r := gin.Default()
 
+	cfg := config.GetConfig()
+
 	// misc
-	r.GET("/login", db.LoginHandler)
-	r.GET("/logout", db.LogoutHandler)
+	// r.GET("/login", db.LoginHandler)
+	// r.GET("/logout", db.LogoutHandler)
 
 	v1 := r.Group("/api/v1")
 	{
-		// session handling
-		v1.GET("/login", db.LoginHandler)
-		v1.GET("/logout", db.LogoutHandler)
+		/*
+			// session handling
+			v1.GET("/login", db.LoginHandler)
+			v1.GET("/logout", db.LogoutHandler)
 
-		v1.GET("/GetMatches", api.GetMatches)
-		v1.GET("/GetMetrics", api.GetMetrics)
-		v1.GET("/GetSteamName", api.GetSteamName)
-		v1.GET("/GetTeamList", api.GetTeamList)
-		v1.GET("/GetServerList", api.GetServerList)
-		v1.GET("/GetVersion", api.GetVersion)
-		v1.GET("/GetMapList", api.GetMapList)
-		v1.GET("/CheckLoggedIn", api.CheckLoggedIn)
+			v1.GET("/GetMatches", api.GetMatches)
+			v1.GET("/GetMetrics", api.GetMetrics)
+			v1.GET("/GetSteamName", api.GetSteamName)
+			v1.GET("/GetTeamList", api.GetTeamList)
+			v1.GET("/GetServerList", api.GetServerList)
+			v1.GET("/GetVersion", api.GetVersion)
+			v1.GET("/GetMapList", api.GetMapList)
+			v1.GET("/CheckLoggedIn", api.CheckLoggedIn)
+		*/
 
 		// Match API for front(Vue)
 		match := v1.Group("/match")
 		{
-			match.GET("/:matchID/GetMatchInfo", api.GetMatchInfo)
-			match.GET("/:matchID/GetPlayerStatInfo", api.GetPlayerStatInfo)
-			match.GET("/:matchID/GetStatusString", api.GetStatusString)
-			match.POST("/:matchID", api.CreateMatch) // avoid conflicts...
+			match.GET("/:matchID/GetMatchInfo", di.InitializeGetMatchController(cfg).Handle)
+			/*
+				match.GET("/:matchID/GetPlayerStatInfo", api.GetPlayerStatInfo)
 
-			// GET5 API
-			match.GET("/:matchID/config", api.MatchConfigHandler)
-			match.POST("/:matchID/finish", api.MatchFinishHandler)
-			match.POST("/:matchID/map/:mapNumber/start", api.MatchMapStartHandler)
-			match.POST("/:matchID/map/:mapNumber/update", api.MatchMapUpdateHandler)
-			match.POST("/:matchID/map/:mapNumber/finish", api.MatchMapFinishHandler)
-			match.POST("/:matchID/map/:mapNumber/player/:steamid64/update", api.MatchMapPlayerUpdateHandler)
+					match.GET("/:matchID/GetStatusString", api.GetStatusString)
+					match.POST("/:matchID", api.CreateMatch) // avoid conflicts...
 
-			match.POST("/:matchID/cancel", api.MatchCancelHandler)
-			match.POST("/:matchID/rcon", api.MatchRconHandler)
-			match.POST("/:matchID/pause", api.MatchPauseHandler)
-			match.POST("/:matchID/unpause", api.MatchUnpauseHandler)
-			match.POST("/:matchID/adduser", api.MatchAddUserHandler)
-			// // match.POST("/:matchID/sendconfig", api.MatchSendConfigHandler) // ? // I won't implement this
-			match.GET("/:matchID/backup", api.MatchListBackupsHandler)
-			match.POST("/:matchID/backup", api.MatchLoadBackupsHandler)
+					// GET5 API
+					match.GET("/:matchID/config", api.MatchConfigHandler)
+					match.POST("/:matchID/finish", api.MatchFinishHandler)
+					match.POST("/:matchID/map/:mapNumber/start", api.MatchMapStartHandler)
+					match.POST("/:matchID/map/:mapNumber/update", api.MatchMapUpdateHandler)
+					match.POST("/:matchID/map/:mapNumber/finish", api.MatchMapFinishHandler)
+					match.POST("/:matchID/map/:mapNumber/player/:steamid64/update", api.MatchMapPlayerUpdateHandler)
 
-			// match.POST("/:matchID/vetoUpdate", api.MatchVetoUpdateHandler)
-			// match.POST("/:matchID/map/:mapNumber/demo", api.MatchDemoUploadHandler)
+					match.POST("/:matchID/cancel", api.MatchCancelHandler)
+					match.POST("/:matchID/rcon", api.MatchRconHandler)
+					match.POST("/:matchID/pause", api.MatchPauseHandler)
+					match.POST("/:matchID/unpause", api.MatchUnpauseHandler)
+					match.POST("/:matchID/adduser", api.MatchAddUserHandler)
+					// // match.POST("/:matchID/sendconfig", api.MatchSendConfigHandler) // ? // I won't implement this
+					match.GET("/:matchID/backup", api.MatchListBackupsHandler)
+					match.POST("/:matchID/backup", api.MatchLoadBackupsHandler)
+
+					// match.POST("/:matchID/vetoUpdate", api.MatchVetoUpdateHandler)
+					// match.POST("/:matchID/map/:mapNumber/demo", api.MatchDemoUploadHandler)
+			*/
 		}
 
-		team := v1.Group("/team")
-		{
-			team.GET("/:teamID/GetTeamInfo", api.GetTeamInfo)
-			team.GET("/:teamID/GetRecentMatches", api.GetRecentMatches)
-			team.GET("/:teamID/CheckUserCanEdit", api.CheckUserCanEdit)
-			team.POST("/create", api.CreateTeam)
-			team.PUT("/:teamID/edit", api.EditTeam)
-			team.DELETE("/:teamID/delete", api.DeleteTeam)
-		}
+		/*
+			team := v1.Group("/team")
+			{
+				team.GET("/:teamID/GetTeamInfo", api.GetTeamInfo)
+				team.GET("/:teamID/GetRecentMatches", api.GetRecentMatches)
+				team.GET("/:teamID/CheckUserCanEdit", api.CheckUserCanEdit)
+				team.POST("/create", api.CreateTeam)
+				team.PUT("/:teamID/edit", api.EditTeam)
+				team.DELETE("/:teamID/delete", api.DeleteTeam)
+			}
 
-		user := v1.Group("/user")
-		{
-			user.GET("/:userID/GetUserInfo", api.GetUserInfo)
-		}
+			user := v1.Group("/user")
+			{
+				user.GET("/:userID/GetUserInfo", api.GetUserInfo)
+			}
 
-		server := v1.Group("/server")
-		{
-			server.GET("/:serverID/GetServerInfo", api.GetServerInfo)
-			server.POST("/create", api.CreateServer)
-			server.PUT("/:serverID/edit", api.EditServer)
-			server.DELETE("/:serverID/delete", api.DeleteServer)
-		}
+			server := v1.Group("/server")
+			{
+				server.GET("/:serverID/GetServerInfo", api.GetServerInfo)
+				server.POST("/create", api.CreateServer)
+				server.PUT("/:serverID/edit", api.EditServer)
+				server.DELETE("/:serverID/delete", api.DeleteServer)
+			}
+		*/
 	}
-
-	if !config.Cnf.APIONLY {
-		entrypoint := "./static/index.html"
-		r.GET("/", func(c *gin.Context) { c.File(entrypoint) })
-		r.Use(static.Serve("/css", static.LocalFile("./static/css", false)))
-		r.Use(static.Serve("/js", static.LocalFile("./static/js", false)))
-		r.Use(static.Serve("/img", static.LocalFile("./static/img", false)))
-		r.Use(static.Serve("/fonts", static.LocalFile("./static/fonts", false)))
-
-	} else {
-		log.Println("API ONLY MODE")
-	}
-
-	log.Panicf("Failed to listen port %s : %v\n", config.Cnf.HOST, r.Run(config.Cnf.HOST))
+	addr := fmt.Sprintf(":%s", cfg.Port)
+	log.Panicf("Failed to listen port %s : %v\n", r.Run(addr))
 
 }

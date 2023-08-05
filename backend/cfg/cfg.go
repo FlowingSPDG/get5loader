@@ -18,6 +18,7 @@ var (
 
 // Config Configration Struct for config.ini
 type Config struct {
+	Port        int    `env:"PORT" envDefault:"8080"`
 	SteamAPIKey string `env:"STEAM_API_KEY"`
 	DefaultPage string `env:"DEFAULT_PAGE"`
 
@@ -35,8 +36,7 @@ type Config struct {
 	DBReadPass string `env:"DB_READ_PASS,unset"`
 	DBReadName string `env:"DB_READ_NAME"`
 
-	Cookie  string `env:"COOKIE"`
-	APIONLY bool   `env:"API_ONLY" envDefault:"false"`
+	Cookie string `env:"COOKIE"`
 	// UserMaxResources UserMaxResources
 }
 

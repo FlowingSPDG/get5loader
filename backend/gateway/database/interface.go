@@ -2,10 +2,15 @@ package database
 
 import (
 	"context"
+	"database/sql"
 	"time"
 
 	"github.com/FlowingSPDG/get5-web-go/backend/entity"
 )
+
+type DBConnector interface {
+	Connect() (*sql.DB, error)
+}
 
 type UsersRepositry interface {
 	CreateUser(ctx context.Context, steamID string, name string, admin bool) (*entity.User, error)

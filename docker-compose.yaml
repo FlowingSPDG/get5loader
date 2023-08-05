@@ -13,8 +13,8 @@ services:
       - db
     volumes:
       - type: bind
-        source: ./backend/
-        target: /go/src
+        source: ./backend
+        target: /go/src"
     networks:
       - backend_network
 
