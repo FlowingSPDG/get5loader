@@ -13,8 +13,22 @@ services:
       - db
     volumes:
       - type: bind
-        source: ./backend/
+        source: ./backend
         target: /go/src
+    environment:
+      - "GO111MODULES=on"
+      - "PORT=8080"
+
+      - "DB_WRITE_HOST=db"
+      - "DB_WRITE_PORT=3306"
+      - "DB_WRITE_USER=root"
+      - "DB_WRITE_PASS=root_password"
+      - "DB_WRITE_NAME=get5_go"
+
+      - "DB_READ_HOST=db"
+      - "DB_READ_PORT=3306"
+      - "DB_READ_USER=root"
+      - "DB_READ_PASS=root_password"
     networks:
       - backend_network
 
@@ -36,6 +50,9 @@ services:
       - type: bind
         source: ./docker/db/init
         target: /docker-entrypoint-initdb.d
+      - type: bind 
+        source: ./backend/sqlc
+        target: /docker-init-sqlc-definitions.d
     networks:
       - backend_network
 

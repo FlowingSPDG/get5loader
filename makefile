@@ -52,6 +52,15 @@ deps: deps-web
 deps-web:
 	@yarn global add @vue/cli
 	@cd ./front && yarn
+up:
+	docker compose up -d
+down:
+	docker compose down
+generate:
+	@cd backend && \
+	go install golang.org/x/tools/cmd/stringer@v0.11.1 \
+	go install github.com/sqlc-dev/sqlc/cmd/sqlc@latest \
+	go generate ./...
 # Cross compile for go
 build-all: clean build-prepare build-web
 	@cd ./server && gox \

@@ -1,0 +1,10 @@
+package entity
+
+//go:generate stringer -type=SERVER_STATUS
+type SERVER_STATUS int
+
+const (
+	SERVER_STATUS_UNKNOWN SERVER_STATUS = iota
+	SERVER_STATUS_STANDBY
+	SERVER_STATUS_INUSE
+)
