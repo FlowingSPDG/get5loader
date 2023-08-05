@@ -35,7 +35,8 @@ type MatchesRepository interface {
 
 type MapStatsRepository interface {
 	GetMapStats(ctx context.Context, id int64) (*entity.MapStats, error)
-	GetMapStatsByMatch(ctx context.Context, mapStatsID int64) ([]*entity.MapStats, error)
+	GetMapStatsByMatch(ctx context.Context, matchID int64) ([]*entity.MapStats, error)
+	GetMapStatsByMatchAndMap(ctx context.Context, matchID int64, mapNumber int32) (*entity.MapStats, error)
 }
 
 type PlayerStatsRepository interface {

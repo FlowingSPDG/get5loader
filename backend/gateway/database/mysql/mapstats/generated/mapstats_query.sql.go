@@ -70,3 +70,31 @@ func (q *Queries) GetMapStatsByMatch(ctx context.Context, matchID int64) ([]MapS
 	}
 	return items, nil
 }
+
+const getMapStatsByMatchAndMap = `-- name: GetMapStatsByMatchAndMap :one
+SELECT id, match_id, map_number, map_name, start_time, end_time, winner, team1_score, team2_score, forfeit FROM map_stats
+WHERE match_id = ? AND map_number = ? LIMIT 1
+`
+
+type GetMapStatsByMatchAndMapParams struct {
+	MatchID   int64
+	MapNumber int32
+}
+
+func (q *Queries) GetMapStatsByMatchAndMap(ctx context.Context, arg GetMapStatsByMatchAndMapParams) (MapStat, error) {
+	row := q.db.QueryRowContext(ctx, getMapStatsByMatchAndMap, arg.MatchID, arg.MapNumber)
+	var i MapStat
+	err := row.Scan(
+		&i.ID,
+		&i.MatchID,
+		&i.MapNumber,
+		&i.MapName,
+		&i.StartTime,
+		&i.EndTime,
+		&i.Winner,
+		&i.Team1Score,
+		&i.Team2Score,
+		&i.Forfeit,
+	)
+	return i, err
+}
