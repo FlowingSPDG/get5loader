@@ -38,10 +38,10 @@ WHERE id = ?;
 
 -- name: CancelMatch :execresult
 UPDATE matches
-SET cancelled = TRUE
+SET status = 4
 WHERE id = ?;
 
 -- name: StartMatch :execresult
 UPDATE matches
-SET start_time = ?
+SET start_time = ?, status = 2
 WHERE id = ?;

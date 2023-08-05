@@ -73,7 +73,7 @@ func (msr *mapStatsRepository) GetMapStatsByMatch(ctx context.Context, matchID i
 }
 
 // GetMapStatsByMatchAndMap implements database.MapStatsRepository.
-func (msr *mapStatsRepository) GetMapStatsByMatchAndMap(ctx context.Context, matchID int64, mapNumber int32) (*entity.MapStats, error) {
+func (msr *mapStatsRepository) GetMapStatsByMatchAndMap(ctx context.Context, matchID int64, mapNumber uint32) (*entity.MapStats, error) {
 	res, err := msr.queries.GetMapStatsByMatchAndMap(ctx, mapstats_gen.GetMapStatsByMatchAndMapParams{
 		MatchID:   matchID,
 		MapNumber: mapNumber,

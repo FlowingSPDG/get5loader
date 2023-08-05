@@ -28,7 +28,7 @@ func NewGameServerRepositoryWithTx(db *sql.DB, tx *sql.Tx) database.GameServersR
 }
 
 // AddGameServer implements database.GameServerRepository.
-func (gr *gameServerRepository) AddGameServer(ctx context.Context, userID int64, ip string, port int32, rconPassword string, displayName string, isPublic bool) (*entity.GameServer, error) {
+func (gr *gameServerRepository) AddGameServer(ctx context.Context, userID int64, ip string, port uint32, rconPassword string, displayName string, isPublic bool) (*entity.GameServer, error) {
 	result, err := gr.queries.AddGameServer(ctx, gameservers_gen.AddGameServerParams{
 		UserID:       userID,
 		Ip:           ip,

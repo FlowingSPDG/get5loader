@@ -48,7 +48,7 @@ func (q *Queries) AddMatch(ctx context.Context, arg AddMatchParams) (sql.Result,
 
 const cancelMatch = `-- name: CancelMatch :execresult
 UPDATE matches
-SET cancelled = TRUE
+SET status = 4
 WHERE id = ?
 `
 
@@ -57,7 +57,7 @@ func (q *Queries) CancelMatch(ctx context.Context, id int64) (sql.Result, error)
 }
 
 const getMatch = `-- name: GetMatch :one
-SELECT id, user_id, server_id, team1_id, team2_id, winner, cancelled, start_time, end_time, max_maps, title, skip_veto, api_key, team1_score, team2_score, forfeit FROM matches
+SELECT id, user_id, server_id, team1_id, team2_id, winner, cancelled, start_time, end_time, max_maps, title, skip_veto, api_key, team1_score, team2_score, forfeit, status FROM matches
 WHERE id = ? LIMIT 1
 `
 
@@ -81,12 +81,13 @@ func (q *Queries) GetMatch(ctx context.Context, id int64) (Match, error) {
 		&i.Team1Score,
 		&i.Team2Score,
 		&i.Forfeit,
+		&i.Status,
 	)
 	return i, err
 }
 
 const getMatchesByTeam = `-- name: GetMatchesByTeam :many
-SELECT id, user_id, server_id, team1_id, team2_id, winner, cancelled, start_time, end_time, max_maps, title, skip_veto, api_key, team1_score, team2_score, forfeit FROM matches
+SELECT id, user_id, server_id, team1_id, team2_id, winner, cancelled, start_time, end_time, max_maps, title, skip_veto, api_key, team1_score, team2_score, forfeit, status FROM matches
 WHERE team1_id = ? OR team2_id = ?
 `
 
@@ -121,6 +122,7 @@ func (q *Queries) GetMatchesByTeam(ctx context.Context, arg GetMatchesByTeamPara
 			&i.Team1Score,
 			&i.Team2Score,
 			&i.Forfeit,
+			&i.Status,
 		); err != nil {
 			return nil, err
 		}
@@ -136,7 +138,7 @@ func (q *Queries) GetMatchesByTeam(ctx context.Context, arg GetMatchesByTeamPara
 }
 
 const getMatchesByUser = `-- name: GetMatchesByUser :many
-SELECT id, user_id, server_id, team1_id, team2_id, winner, cancelled, start_time, end_time, max_maps, title, skip_veto, api_key, team1_score, team2_score, forfeit FROM matches
+SELECT id, user_id, server_id, team1_id, team2_id, winner, cancelled, start_time, end_time, max_maps, title, skip_veto, api_key, team1_score, team2_score, forfeit, status FROM matches
 WHERE user_id = ?
 `
 
@@ -166,6 +168,7 @@ func (q *Queries) GetMatchesByUser(ctx context.Context, userID int64) ([]Match, 
 			&i.Team1Score,
 			&i.Team2Score,
 			&i.Forfeit,
+			&i.Status,
 		); err != nil {
 			return nil, err
 		}
@@ -181,7 +184,7 @@ func (q *Queries) GetMatchesByUser(ctx context.Context, userID int64) ([]Match, 
 }
 
 const getMatchesByWinner = `-- name: GetMatchesByWinner :many
-SELECT id, user_id, server_id, team1_id, team2_id, winner, cancelled, start_time, end_time, max_maps, title, skip_veto, api_key, team1_score, team2_score, forfeit FROM matches
+SELECT id, user_id, server_id, team1_id, team2_id, winner, cancelled, start_time, end_time, max_maps, title, skip_veto, api_key, team1_score, team2_score, forfeit, status FROM matches
 WHERE winner = ?
 `
 
@@ -211,6 +214,7 @@ func (q *Queries) GetMatchesByWinner(ctx context.Context, winner sql.NullInt64) 
 			&i.Team1Score,
 			&i.Team2Score,
 			&i.Forfeit,
+			&i.Status,
 		); err != nil {
 			return nil, err
 		}
@@ -227,7 +231,7 @@ func (q *Queries) GetMatchesByWinner(ctx context.Context, winner sql.NullInt64) 
 
 const startMatch = `-- name: StartMatch :execresult
 UPDATE matches
-SET start_time = ?
+SET start_time = ?, status = 2
 WHERE id = ?
 `
 
@@ -250,8 +254,8 @@ type UpdateMatchWinnerParams struct {
 	Winner     sql.NullInt64
 	EndTime    sql.NullTime
 	Forfeit    sql.NullBool
-	Team1Score int32
-	Team2Score int32
+	Team1Score uint32
+	Team2Score uint32
 	ID         int64
 }
 
@@ -273,7 +277,7 @@ WHERE id = ?
 `
 
 type UpdateTeam1ScoreParams struct {
-	Team1Score int32
+	Team1Score uint32
 	ID         int64
 }
 
@@ -288,7 +292,7 @@ WHERE id = ?
 `
 
 type UpdateTeam2ScoreParams struct {
-	Team2Score int32
+	Team2Score uint32
 	ID         int64
 }
 

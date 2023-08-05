@@ -22,7 +22,8 @@ type Match struct {
 	Title      string
 	SkipVeto   bool
 	ApiKey     string
-	Team1Score int32
-	Team2Score int32
+	Team1Score uint32
+	Team2Score uint32
 	Forfeit    sql.NullBool
+	Status     int32
 }

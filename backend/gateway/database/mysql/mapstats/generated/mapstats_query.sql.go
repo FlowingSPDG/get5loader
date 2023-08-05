@@ -78,7 +78,7 @@ WHERE match_id = ? AND map_number = ? LIMIT 1
 
 type GetMapStatsByMatchAndMapParams struct {
 	MatchID   int64
-	MapNumber int32
+	MapNumber uint32
 }
 
 func (q *Queries) GetMapStatsByMatchAndMap(ctx context.Context, arg GetMapStatsByMatchAndMapParams) (MapStat, error) {

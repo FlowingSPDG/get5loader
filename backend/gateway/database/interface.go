@@ -13,7 +13,7 @@ type UsersRepositry interface {
 }
 
 type GameServersRepository interface {
-	AddGameServer(ctx context.Context, userID int64, ip string, port int32, rconPassword string, displayName string, isPublic bool) (*entity.GameServer, error)
+	AddGameServer(ctx context.Context, userID int64, ip string, port uint32, rconPassword string, displayName string, isPublic bool) (*entity.GameServer, error)
 	GetGameServer(ctx context.Context, id int64) (*entity.GameServer, error)
 	GetPublicGameServers(ctx context.Context) ([]*entity.GameServer, error)
 	GetGameServersByUser(ctx context.Context, userID int64) ([]*entity.GameServer, error)
@@ -27,8 +27,8 @@ type MatchesRepository interface {
 	GetMatchesByTeam(ctx context.Context, teamID int64) ([]*entity.Match, error)
 	GetMatchesByWinner(ctx context.Context, teamID int64) ([]*entity.Match, error)
 	UpdateMatchWinner(ctx context.Context, matchID int64, winnerID int64) error
-	UpdateTeam1Score(ctx context.Context, matchID int64, score int32) error
-	UpdateTeam2Score(ctx context.Context, matchID int64, score int32) error
+	UpdateTeam1Score(ctx context.Context, matchID int64, score uint32) error
+	UpdateTeam2Score(ctx context.Context, matchID int64, score uint32) error
 	CancelMatch(ctx context.Context, matchID int64) error
 	StartMatch(ctx context.Context, matchID int64) error
 }
@@ -36,7 +36,7 @@ type MatchesRepository interface {
 type MapStatsRepository interface {
 	GetMapStats(ctx context.Context, id int64) (*entity.MapStats, error)
 	GetMapStatsByMatch(ctx context.Context, matchID int64) ([]*entity.MapStats, error)
-	GetMapStatsByMatchAndMap(ctx context.Context, matchID int64, mapNumber int32) (*entity.MapStats, error)
+	GetMapStatsByMatchAndMap(ctx context.Context, matchID int64, mapNumber uint32) (*entity.MapStats, error)
 }
 
 type PlayerStatsRepository interface {

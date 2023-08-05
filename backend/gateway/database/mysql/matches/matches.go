@@ -86,7 +86,6 @@ func (mr *matchRepository) GetMatch(ctx context.Context, id int64) (*entity.Matc
 		Team1ID:    match.Team1ID,
 		Team2ID:    match.Team2ID,
 		Winner:     &match.Winner.Int64,
-		Cancelled:  match.Cancelled,
 		StartTime:  &match.StartTime.Time,
 		EndTime:    &match.EndTime.Time,
 		MaxMaps:    match.MaxMaps,
@@ -96,6 +95,7 @@ func (mr *matchRepository) GetMatch(ctx context.Context, id int64) (*entity.Matc
 		Team1Score: match.Team1Score,
 		Team2Score: match.Team2Score,
 		Forfeit:    &match.Forfeit.Bool,
+		Status:     entity.MATCH_STATUS(match.Status),
 	}, nil
 }
 
@@ -115,7 +115,6 @@ func (mr *matchRepository) GetMatchesByUser(ctx context.Context, userID int64) (
 			Team1ID:    match.Team1ID,
 			Team2ID:    match.Team2ID,
 			Winner:     &match.Winner.Int64,
-			Cancelled:  match.Cancelled,
 			StartTime:  &match.StartTime.Time,
 			EndTime:    &match.EndTime.Time,
 			MaxMaps:    match.MaxMaps,
@@ -125,6 +124,7 @@ func (mr *matchRepository) GetMatchesByUser(ctx context.Context, userID int64) (
 			Team1Score: match.Team1Score,
 			Team2Score: match.Team2Score,
 			Forfeit:    &match.Forfeit.Bool,
+			Status:     entity.MATCH_STATUS(match.Status),
 		})
 	}
 
@@ -159,7 +159,6 @@ func (mr *matchRepository) GetMatchesByTeam(ctx context.Context, teamID int64) (
 			Team1ID:    match.Team1ID,
 			Team2ID:    match.Team2ID,
 			Winner:     &match.Winner.Int64,
-			Cancelled:  match.Cancelled,
 			StartTime:  &match.StartTime.Time,
 			EndTime:    &match.EndTime.Time,
 			MaxMaps:    match.MaxMaps,
@@ -169,6 +168,7 @@ func (mr *matchRepository) GetMatchesByTeam(ctx context.Context, teamID int64) (
 			Team1Score: match.Team1Score,
 			Team2Score: match.Team2Score,
 			Forfeit:    &match.Forfeit.Bool,
+			Status:     entity.MATCH_STATUS(match.Status),
 		})
 	}
 
@@ -191,7 +191,6 @@ func (mr *matchRepository) GetMatchesByWinner(ctx context.Context, teamID int64)
 			Team1ID:    match.Team1ID,
 			Team2ID:    match.Team2ID,
 			Winner:     &match.Winner.Int64,
-			Cancelled:  match.Cancelled,
 			StartTime:  &match.StartTime.Time,
 			EndTime:    &match.EndTime.Time,
 			MaxMaps:    match.MaxMaps,
@@ -201,6 +200,7 @@ func (mr *matchRepository) GetMatchesByWinner(ctx context.Context, teamID int64)
 			Team1Score: match.Team1Score,
 			Team2Score: match.Team2Score,
 			Forfeit:    &match.Forfeit.Bool,
+			Status:     entity.MATCH_STATUS(match.Status),
 		})
 	}
 
@@ -232,7 +232,7 @@ func (mr *matchRepository) UpdateMatchWinner(ctx context.Context, matchID int64,
 }
 
 // UpdateTeam1Score implements database.MatchRepository.
-func (mr *matchRepository) UpdateTeam1Score(ctx context.Context, matchID int64, score int32) error {
+func (mr *matchRepository) UpdateTeam1Score(ctx context.Context, matchID int64, score uint32) error {
 	if _, err := mr.queries.UpdateTeam1Score(ctx, matches_gen.UpdateTeam1ScoreParams{
 		ID:         matchID,
 		Team1Score: score,
@@ -244,7 +244,7 @@ func (mr *matchRepository) UpdateTeam1Score(ctx context.Context, matchID int64, 
 }
 
 // UpdateTeam2Score implements database.MatchRepository.
-func (mr *matchRepository) UpdateTeam2Score(ctx context.Context, matchID int64, score int32) error {
+func (mr *matchRepository) UpdateTeam2Score(ctx context.Context, matchID int64, score uint32) error {
 	if _, err := mr.queries.UpdateTeam2Score(ctx, matches_gen.UpdateTeam2ScoreParams{
 		ID:         matchID,
 		Team2Score: score,

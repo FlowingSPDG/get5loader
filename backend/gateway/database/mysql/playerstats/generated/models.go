@@ -15,27 +15,27 @@ type PlayerStat struct {
 	Name             string
 	Kills            int32
 	Deaths           int32
-	Roundsplayed     int32
+	Roundsplayed     uint32
 	Assists          int32
-	FlashbangAssists int32
-	Teamkills        int32
-	Suicides         int32
-	HeadshotKills    int32
-	Damage           int32
-	BombPlants       int32
-	BombDefuses      int32
-	V1               int32
-	V2               int32
-	V3               int32
-	V4               int32
-	V5               int32
-	K1               int32
-	K2               int32
-	K3               int32
-	K4               int32
-	K5               int32
-	FirstdeathCt     int32
-	FirstdeathT      int32
-	FirstkillCt      int32
-	FirstkillT       int32
+	FlashbangAssists uint32
+	Teamkills        uint32
+	Suicides         uint32
+	HeadshotKills    uint32
+	Damage           uint32
+	BombPlants       uint32
+	BombDefuses      uint32
+	V1               uint32
+	V2               uint32
+	V3               uint32
+	V4               uint32
+	V5               uint32
+	K1               uint32
+	K2               uint32
+	K3               uint32
+	K4               uint32
+	K5               uint32
+	FirstdeathCt     uint32
+	FirstdeathT      uint32
+	FirstkillCt      uint32
+	FirstkillT       uint32
 }

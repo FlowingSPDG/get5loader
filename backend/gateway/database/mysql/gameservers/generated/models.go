@@ -9,10 +9,10 @@ import ()
 type GameServer struct {
 	ID           int64
 	UserID       int64
-	InUse        bool
 	Ip           string
-	Port         int32
+	Port         uint32
 	RconPassword string
 	DisplayName  string
 	IsPublic     bool
+	Status       int32
 }

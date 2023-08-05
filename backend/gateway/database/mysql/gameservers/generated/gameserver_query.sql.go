@@ -21,7 +21,7 @@ INSERT INTO game_servers (
 type AddGameServerParams struct {
 	UserID       int64
 	Ip           string
-	Port         int32
+	Port         uint32
 	RconPassword string
 	DisplayName  string
 	IsPublic     bool
@@ -48,7 +48,7 @@ func (q *Queries) DeleteGameServer(ctx context.Context, id int64) (sql.Result, e
 }
 
 const getGameServers = `-- name: GetGameServers :one
-SELECT id, user_id, in_use, ip, port, rcon_password, display_name, is_public FROM game_servers
+SELECT id, user_id, ip, port, rcon_password, display_name, is_public, status FROM game_servers
 WHERE id = ? LIMIT 1
 `
 
@@ -58,18 +58,18 @@ func (q *Queries) GetGameServers(ctx context.Context, id int64) (GameServer, err
 	err := row.Scan(
 		&i.ID,
 		&i.UserID,
-		&i.InUse,
 		&i.Ip,
 		&i.Port,
 		&i.RconPassword,
 		&i.DisplayName,
 		&i.IsPublic,
+		&i.Status,
 	)
 	return i, err
 }
 
 const getGameServersByUser = `-- name: GetGameServersByUser :many
-SELECT id, user_id, in_use, ip, port, rcon_password, display_name, is_public FROM game_servers
+SELECT id, user_id, ip, port, rcon_password, display_name, is_public, status FROM game_servers
 WHERE user_id = ?
 `
 
@@ -85,12 +85,12 @@ func (q *Queries) GetGameServersByUser(ctx context.Context, userID int64) ([]Gam
 		if err := rows.Scan(
 			&i.ID,
 			&i.UserID,
-			&i.InUse,
 			&i.Ip,
 			&i.Port,
 			&i.RconPassword,
 			&i.DisplayName,
 			&i.IsPublic,
+			&i.Status,
 		); err != nil {
 			return nil, err
 		}
@@ -106,9 +106,9 @@ func (q *Queries) GetGameServersByUser(ctx context.Context, userID int64) ([]Gam
 }
 
 const getPublicGameServers = `-- name: GetPublicGameServers :many
-SELECT id, user_id, in_use, ip, port, rcon_password, display_name, is_public FROM game_servers
+SELECT id, user_id, ip, port, rcon_password, display_name, is_public, status FROM game_servers
 WHERE is_public = TRUE
-AND in_use = FALSE
+AND status = 1
 `
 
 func (q *Queries) GetPublicGameServers(ctx context.Context) ([]GameServer, error) {
@@ -123,12 +123,12 @@ func (q *Queries) GetPublicGameServers(ctx context.Context) ([]GameServer, error
 		if err := rows.Scan(
 			&i.ID,
 			&i.UserID,
-			&i.InUse,
 			&i.Ip,
 			&i.Port,
 			&i.RconPassword,
 			&i.DisplayName,
 			&i.IsPublic,
+			&i.Status,
 		); err != nil {
 			return nil, err
 		}
