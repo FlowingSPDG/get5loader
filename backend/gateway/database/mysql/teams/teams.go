@@ -10,30 +10,26 @@ import (
 )
 
 type teamsRepository struct {
-	dsn string
+	queries *teams_gen.Queries
 }
 
-func NewPlayersRepository(dsn string) database.TeamsRepository {
+func NewPlayersRepository(db *sql.DB) database.TeamsRepository {
+	queries := teams_gen.New(db)
 	return &teamsRepository{
-		dsn: dsn,
+		queries: queries,
 	}
 }
 
-func (pr *teamsRepository) open() (*sql.DB, error) {
-	return sql.Open("mysql", pr.dsn)
+func NewPlayerRepositoryWithTx(db *sql.DB, tx *sql.Tx) database.TeamsRepository {
+	queries := teams_gen.New(db).WithTx(tx)
+	return &teamsRepository{
+		queries: queries,
+	}
 }
 
 // AddTeam implements database.TeamsRepository.
 func (tr *teamsRepository) AddTeam(ctx context.Context, userID int64, name string, tag string, flag string, logo string) (*entity.Team, error) {
-	db, err := tr.open()
-	if err != nil {
-		return nil, err
-	}
-	defer db.Close()
-
-	queries := teams_gen.New(db)
-
-	res, err := queries.AddTeam(ctx, teams_gen.AddTeamParams{
+	res, err := tr.queries.AddTeam(ctx, teams_gen.AddTeamParams{
 		UserID: userID,
 		Name:   name,
 		Tag:    tag,
@@ -49,7 +45,7 @@ func (tr *teamsRepository) AddTeam(ctx context.Context, userID int64, name strin
 		return nil, err
 	}
 
-	team, err := queries.GetTeam(ctx, insertedID)
+	team, err := tr.queries.GetTeam(ctx, insertedID)
 	if err != nil {
 		return nil, err
 	}
@@ -66,15 +62,7 @@ func (tr *teamsRepository) AddTeam(ctx context.Context, userID int64, name strin
 
 // GetPublicTeams implements database.TeamsRepository.
 func (tr *teamsRepository) GetPublicTeams(ctx context.Context) ([]*entity.Team, error) {
-	db, err := tr.open()
-	if err != nil {
-		return nil, err
-	}
-	defer db.Close()
-
-	queries := teams_gen.New(db)
-
-	teams, err := queries.GetPublicTeams(ctx)
+	teams, err := tr.queries.GetPublicTeams(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -96,15 +84,7 @@ func (tr *teamsRepository) GetPublicTeams(ctx context.Context) ([]*entity.Team, 
 
 // GetTeam implements database.TeamsRepository.
 func (tr *teamsRepository) GetTeam(ctx context.Context, id int64) (*entity.Team, error) {
-	db, err := tr.open()
-	if err != nil {
-		return nil, err
-	}
-	defer db.Close()
-
-	queries := teams_gen.New(db)
-
-	team, err := queries.GetTeam(ctx, id)
+	team, err := tr.queries.GetTeam(ctx, id)
 	if err != nil {
 		return nil, err
 	}
@@ -121,15 +101,7 @@ func (tr *teamsRepository) GetTeam(ctx context.Context, id int64) (*entity.Team,
 
 // GetTeamsByUser implements database.TeamsRepository.
 func (tr *teamsRepository) GetTeamsByUser(ctx context.Context, userID int64) ([]*entity.Team, error) {
-	db, err := tr.open()
-	if err != nil {
-		return nil, err
-	}
-	defer db.Close()
-
-	queries := teams_gen.New(db)
-
-	teams, err := queries.GetTeamByUserID(ctx, userID)
+	teams, err := tr.queries.GetTeamByUserID(ctx, userID)
 	if err != nil {
 		return nil, err
 	}

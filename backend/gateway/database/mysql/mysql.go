@@ -4,6 +4,8 @@ import (
 	"database/sql"
 
 	"github.com/FlowingSPDG/get5-web-go/backend/gateway/database"
+
+	_ "github.com/go-sql-driver/mysql" // mysql driver
 )
 
 // Connectorを作成する

@@ -10,30 +10,26 @@ import (
 )
 
 type usersRepositry struct {
-	dsn string
+	queries *users_gen.Queries
 }
 
-func NewUsersRepositry(dsn string) database.UsersRepositry {
+func NewUsersRepositry(db *sql.DB) database.UsersRepositry {
+	queries := users_gen.New(db)
 	return &usersRepositry{
-		dsn: dsn,
+		queries: queries,
 	}
 }
 
-func (ur *usersRepositry) open() (*sql.DB, error) {
-	return sql.Open("mysql", ur.dsn)
+func NewUsersRepositryWithTx(db *sql.DB, tx *sql.Tx) database.UsersRepositry {
+	queries := users_gen.New(db).WithTx(tx)
+	return &usersRepositry{
+		queries: queries,
+	}
 }
 
 // CreateUser implements database.UsersRepositry.
 func (ur *usersRepositry) CreateUser(ctx context.Context, steamID string, name string, admin bool) (*entity.User, error) {
-	db, err := ur.open()
-	if err != nil {
-		return nil, err
-	}
-	defer db.Close()
-
-	queries := users_gen.New(db)
-
-	result, err := queries.CreateUser(ctx, users_gen.CreateUserParams{
+	result, err := ur.queries.CreateUser(ctx, users_gen.CreateUserParams{
 		SteamID: steamID,
 		Name:    name,
 		Admin:   admin,
@@ -47,7 +43,7 @@ func (ur *usersRepositry) CreateUser(ctx context.Context, steamID string, name s
 		return nil, err
 	}
 
-	user, err := queries.GetUser(ctx, insertedID)
+	user, err := ur.queries.GetUser(ctx, insertedID)
 	if err != nil {
 		return nil, err
 	}
@@ -63,15 +59,7 @@ func (ur *usersRepositry) CreateUser(ctx context.Context, steamID string, name s
 
 // GetUser implements database.UsersRepositry.
 func (ur *usersRepositry) GetUser(ctx context.Context, id int64) (*entity.User, error) {
-	db, err := ur.open()
-	if err != nil {
-		return nil, err
-	}
-	defer db.Close()
-
-	queries := users_gen.New(db)
-
-	user, err := queries.GetUser(ctx, id)
+	user, err := ur.queries.GetUser(ctx, id)
 	if err != nil {
 		return nil, err
 	}

@@ -92,7 +92,6 @@ func main() {
 			}
 		*/
 	}
-	addr := fmt.Sprintf(":%s", cfg.Port)
-	log.Panicf("Failed to listen port %s : %v\n", r.Run(addr))
-
+	addr := fmt.Sprintf(":%d", cfg.Port)
+	log.Panicf("Failed to listen port %v", r.Run(addr))
 }
