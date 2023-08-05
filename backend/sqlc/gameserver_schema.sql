@@ -6,7 +6,7 @@ CREATE TABLE `game_servers` (
   `rcon_password` varchar(32) NOT NULL,
   `display_name` varchar(32) NOT NULL,
   `is_public` BOOLEAN NOT NULL DEFAULT FALSE,
-  `status` TINYINT NOT NULL DEFAULT 'offline',
+  `status` TINYINT NOT NULL,
   FOREIGN KEY (`user_id`) REFERENCES users(`id`),
   UNIQUE KEY `unique_ip_port` (`ip`, `port`)
 );
