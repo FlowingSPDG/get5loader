@@ -7,6 +7,7 @@ import (
 	route "github.com/FlowingSPDG/Got5/route/gin"
 	config "github.com/FlowingSPDG/get5-web-go/backend/cfg"
 	"github.com/FlowingSPDG/get5-web-go/backend/cmd/di"
+	"github.com/FlowingSPDG/get5-web-go/backend/controller/got5"
 	"github.com/gin-gonic/gin"
 )
 
@@ -83,7 +84,9 @@ func main() {
 	*/
 
 	g5 := v1.Group("/get5_event")
-	route.SetupEventHandlers(nil, nil, g5)
+	evh := got5.NewGot5EventController()
+	ah := got5.NewGot5AuthController()
+	route.SetupEventHandlers(evh, ah, g5)
 
 	addr := fmt.Sprintf(":%d", cfg.Port)
 	log.Panicf("Failed to listen port %v", r.Run(addr))
