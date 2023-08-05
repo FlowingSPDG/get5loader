@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"log"
 
-	config "github.com/FlowingSPDG/get5-web-go/backend/src/cfg"
 	"github.com/FlowingSPDG/get5-web-go/backend/src/util"
 	"github.com/gin-gonic/gin"
 
@@ -14,28 +13,6 @@ import (
 
 	"github.com/FlowingSPDG/get5-web-go/backend/src/db"
 )
-
-const (
-	// VERSION get5-web-go Version
-	VERSION = "0.2.0"
-)
-
-// GetVersion handler for /api/v1/GetVersion API.
-func GetVersion(c *gin.Context) {
-	log.Println("GetVersion")
-	c.JSON(http.StatusOK, gin.H{
-		"version": VERSION,
-	})
-}
-
-// GetMapList handler for /api/v1/GetMapList API.
-func GetMapList(c *gin.Context) {
-	log.Println("GetMapList")
-	c.JSON(http.StatusOK, gin.H{
-		"active":  config.Cnf.ActiveMapPool,
-		"reserve": config.Cnf.ReserveMapPool,
-	})
-}
 
 // CheckLoggedIn handler for /api/v1/CheckLoggedIn API.
 func CheckLoggedIn(c *gin.Context) {
