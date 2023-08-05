@@ -1,0 +1,65 @@
+version: '3.8'
+
+services:
+  go:
+    container_name: go
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    tty: true
+    ports:
+      - 8080:8080
+    depends_on:
+      - db
+    volumes:
+      - type: bind
+        source: ./backend
+        target: /go/src
+    environment:
+      - "GO111MODULES=on"
+      - "PORT=8080"
+
+      - "DB_WRITE_HOST=db"
+      - "DB_WRITE_PORT=3306"
+      - "DB_WRITE_USER=root"
+      - "DB_WRITE_PASS=root_password"
+      - "DB_WRITE_NAME=get5_go"
+
+      - "DB_READ_HOST=db"
+      - "DB_READ_PORT=3306"
+      - "DB_READ_USER=root"
+      - "DB_READ_PASS=root_password"
+    networks:
+      - backend_network
+
+  db:
+    container_name: db
+    build:
+      context: ./docker/db
+      dockerfile: Dockerfile
+    tty: true
+    platform: linux/x86_64
+    ports:
+      - 3306:3306
+    env_file:
+      - ./docker/db/.env
+    volumes:
+      - type: volume
+        source: mysql_test_volume
+        target: /var/lib/mysql
+      - type: bind
+        source: ./docker/db/init
+        target: /docker-entrypoint-initdb.d
+      - type: bind 
+        source: ./backend/sqlc
+        target: /docker-init-sqlc-definitions.d
+    networks:
+      - backend_network
+
+volumes:
+  mysql_test_volume:
+    name: mysql_test_volume
+
+networks:
+  backend_network:
+    external: false
