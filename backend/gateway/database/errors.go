@@ -2,13 +2,11 @@ package database
 
 import (
 	"errors"
-
-	"golang.org/x/xerrors"
 )
 
 var (
-	ErrNotFound = xerrors.New("specified resource not found")
-	ErrInternal = xerrors.New("internal error")
+	ErrNotFound = errors.New("specified resource not found")
+	ErrInternal = errors.New("internal error")
 )
 
 func IsNotFound(err error) bool {
