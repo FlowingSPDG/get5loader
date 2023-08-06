@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"context"
+	"errors"
 
 	"golang.org/x/crypto/bcrypt"
 
@@ -41,6 +42,10 @@ func (ur *userRegister) RegisterUser(ctx context.Context, steamID string, name s
 	hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
 		return "", err
+	}
+
+	if _, err := repository.GetUserBySteamID(ctx, steamID); err == nil {
+		return "", errors.New("user already exists")
 	}
 
 	user, err := repository.CreateUser(ctx, steamID, name, admin, string(hash))

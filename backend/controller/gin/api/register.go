@@ -47,7 +47,7 @@ func (urc *userRegisterController) Handle(c *gin.Context) {
 	jwt, err := urc.uc.RegisterUser(c, req.SteamID, req.Name, false, req.Password)
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
-			"error": "unauthorized" + err.Error(),
+			"error": "unauthorized",
 		})
 		return
 	}
