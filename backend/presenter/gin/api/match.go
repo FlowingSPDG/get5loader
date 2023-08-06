@@ -1,7 +1,7 @@
 package api
 
 import (
-	"encoding/json"
+	"github.com/gin-gonic/gin"
 
 	"github.com/FlowingSPDG/get5-web-go/backend/entity"
 )
@@ -9,7 +9,7 @@ import (
 // 受け取ったentityを特定の形式に変換して返す
 
 type MatchPresenter interface {
-	Handle(m *entity.Match) ([]byte, error)
+	Handle(c *gin.Context, m *entity.Match)
 }
 type matchPresenter struct {
 }
@@ -19,7 +19,7 @@ func NewMatchPresenter() MatchPresenter {
 }
 
 // Handle implements MatchPresenter.
-func (mp *matchPresenter) Handle(m *entity.Match) ([]byte, error) {
+func (mp *matchPresenter) Handle(c *gin.Context, m *entity.Match) {
 	data := match{
 		ID:         int(m.ID),
 		UserID:     int(m.UserID),
@@ -39,9 +39,5 @@ func (mp *matchPresenter) Handle(m *entity.Match) ([]byte, error) {
 		Status:     m.Status.String(),
 	}
 
-	b, err := json.Marshal(data)
-	if err != nil {
-		return nil, err
-	}
-	return b, nil
+	c.JSON(200, data)
 }
