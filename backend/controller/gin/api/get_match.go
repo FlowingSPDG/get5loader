@@ -1,10 +1,12 @@
 package api
 
 import (
+	"net/http"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
 
+	"github.com/FlowingSPDG/get5-web-go/backend/gateway/database"
 	"github.com/FlowingSPDG/get5-web-go/backend/presenter/gin/api"
 	"github.com/FlowingSPDG/get5-web-go/backend/usecase"
 )
@@ -33,7 +35,7 @@ func (gmc *getMatchController) Handle(c *gin.Context) {
 	matchidStr := c.Params.ByName("matchID")
 	matchid, err := strconv.Atoi(matchidStr)
 	if err != nil {
-		c.JSON(400, gin.H{
+		c.JSON(http.StatusBadRequest, gin.H{
 			"error": "matchID is not int",
 		})
 		return
@@ -41,20 +43,25 @@ func (gmc *getMatchController) Handle(c *gin.Context) {
 
 	match, err := gmc.uc.Handle(c, int64(matchid))
 	if err != nil {
-		// TODO: エラーハンドリング
-		c.JSON(400, gin.H{
-			"error": err.Error(),
+		if database.IsNotFound(err) {
+			c.JSON(http.StatusNotFound, gin.H{
+				"error": "match not found",
+			})
+			return
+		}
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "internal error",
 		})
 		return
 	}
 
 	b, err := gmc.presenter.Handle(match)
 	if err != nil {
-		c.JSON(500, gin.H{
-			"error": err.Error(),
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "internal error",
 		})
 		return
 	}
 
-	c.JSON(200, b)
+	c.JSON(http.StatusOK, b)
 }
