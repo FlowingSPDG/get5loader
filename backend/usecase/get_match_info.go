@@ -12,11 +12,11 @@ type GetMatch interface {
 }
 
 type getMatch struct {
-	matchesRepositoryConnector database.MatchesRepositoryConnector
+	matchesRepositoryConnector database.RepositoryConnector[database.MatchesRepository]
 }
 
 func NewGetMatch(
-	matchesRepositoryConnector database.MatchesRepositoryConnector,
+	matchesRepositoryConnector database.RepositoryConnector[database.MatchesRepository],
 ) GetMatch {
 	return &getMatch{
 		matchesRepositoryConnector: matchesRepositoryConnector,

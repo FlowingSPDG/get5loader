@@ -10,7 +10,7 @@ type mysqlUsersRepositoryConnector struct {
 	connector database.DBConnector
 }
 
-func NewMySQLUsersRepositoryConnector(connector database.DBConnector) database.UserRepositoryConnector {
+func NewMySQLUsersRepositoryConnector(connector database.DBConnector) database.RepositoryConnector[database.UsersRepositry] {
 	return &mysqlUsersRepositoryConnector{connector: connector}
 }
 

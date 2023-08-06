@@ -10,7 +10,7 @@ type mysqlMatchesRepositoryConnector struct {
 	connector database.DBConnector
 }
 
-func NewMySQLMatchesRepositoryConnector(connector database.DBConnector) database.MatchesRepositoryConnector {
+func NewMySQLMatchesRepositoryConnector(connector database.DBConnector) database.RepositoryConnector[database.MatchesRepository] {
 	return &mysqlMatchesRepositoryConnector{connector: connector}
 }
 
