@@ -1,8 +1,6 @@
 package mysqlconnector
 
 import (
-	"database/sql"
-
 	"github.com/FlowingSPDG/get5-web-go/backend/gateway/database"
 	"github.com/FlowingSPDG/get5-web-go/backend/gateway/database/mysql/gameservers"
 	"github.com/FlowingSPDG/get5-web-go/backend/gateway/database/mysql/mapstats"
@@ -15,7 +13,6 @@ import (
 
 type mysqlRepositoryConnector struct {
 	connector database.DBConnector
-	db        *sql.DB
 }
 
 func NewMySQLRepositoryConnector(connector database.DBConnector) database.RepositoryConnector {
@@ -31,49 +28,47 @@ func (mrc *mysqlRepositoryConnector) Open() error {
 	if err := mrc.connector.Open(); err != nil {
 		return err
 	}
-
-	mrc.db = mrc.connector.GetConnection()
 	return nil
 }
 
 // OpenGameServersRepository implements database.RepositoryConnector.
-func (mrc *mysqlRepositoryConnector) GetGameServersRepository() (database.GameServersRepository, error) {
-	repository := gameservers.NewGameServerRepository(mrc.db)
-	return repository, nil
+func (mrc *mysqlRepositoryConnector) GetGameServersRepository() database.GameServersRepository {
+	conn := mrc.connector.GetConnection()
+	return gameservers.NewGameServerRepository(conn)
 }
 
 // OpenMapStatsRepository implements database.RepositoryConnector.
-func (mrc *mysqlRepositoryConnector) GetMapStatsRepository() (database.MapStatsRepository, error) {
-	repository := mapstats.NewMapStatsRepository(mrc.db)
-	return repository, nil
+func (mrc *mysqlRepositoryConnector) GetMapStatsRepository() database.MapStatsRepository {
+	conn := mrc.connector.GetConnection()
+	return mapstats.NewMapStatsRepository(conn)
 }
 
 // OpenMatchesRepository implements database.RepositoryConnector.
-func (mrc *mysqlRepositoryConnector) GetMatchesRepository() (database.MatchesRepository, error) {
-	repository := matches.NewMatchRepository(mrc.db)
-	return repository, nil
+func (mrc *mysqlRepositoryConnector) GetMatchesRepository() database.MatchesRepository {
+	conn := mrc.connector.GetConnection()
+	return matches.NewMatchRepository(conn)
 }
 
 // OpenPlayerStatsRepository implements database.RepositoryConnector.
-func (mrc *mysqlRepositoryConnector) GetPlayerStatsRepository() (database.PlayerStatsRepository, error) {
-	repository := playerstats.NewPlayerStatsRepository(mrc.db)
-	return repository, nil
+func (mrc *mysqlRepositoryConnector) GetPlayerStatsRepository() database.PlayerStatsRepository {
+	conn := mrc.connector.GetConnection()
+	return playerstats.NewPlayerStatsRepository(conn)
 }
 
 // OpenPlayersRepository implements database.RepositoryConnector.
-func (mrc *mysqlRepositoryConnector) GetPlayersRepository() (database.PlayersRepository, error) {
-	repository := players.NewPlayersRepository(mrc.db)
-	return repository, nil
+func (mrc *mysqlRepositoryConnector) GetPlayersRepository() database.PlayersRepository {
+	conn := mrc.connector.GetConnection()
+	return players.NewPlayersRepository(conn)
 }
 
 // OpenTeamsRepository implements database.RepositoryConnector.
-func (mrc *mysqlRepositoryConnector) GetTeamsRepository() (database.TeamsRepository, error) {
-	repository := teams.NewTeamsRepository(mrc.db)
-	return repository, nil
+func (mrc *mysqlRepositoryConnector) GetTeamsRepository() database.TeamsRepository {
+	conn := mrc.connector.GetConnection()
+	return teams.NewTeamsRepository(conn)
 }
 
 // OpenUserRepository implements database.RepositoryConnector.
-func (mrc *mysqlRepositoryConnector) GetUserRepository() (database.UsersRepositry, error) {
-	repository := users.NewUsersRepositry(mrc.db)
-	return repository, nil
+func (mrc *mysqlRepositoryConnector) GetUserRepository() database.UsersRepositry {
+	conn := mrc.connector.GetConnection()
+	return users.NewUsersRepositry(conn)
 }

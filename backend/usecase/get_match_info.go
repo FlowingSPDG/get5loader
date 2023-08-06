@@ -30,10 +30,7 @@ func (gm *getMatch) Handle(ctx context.Context, matchID int64) (*entity.Match, e
 	}
 	defer gm.repositoryConnector.Close()
 
-	repository, err := gm.repositoryConnector.GetMatchesRepository()
-	if err != nil {
-		return nil, err
-	}
+	repository := gm.repositoryConnector.GetMatchesRepository()
 
 	match, err := repository.GetMatch(ctx, matchID)
 	if err != nil {

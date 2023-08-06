@@ -9,8 +9,11 @@ import (
 	"github.com/FlowingSPDG/get5-web-go/backend/gateway/database"
 	mysqlconnector "github.com/FlowingSPDG/get5-web-go/backend/gateway/database/mysql/connector"
 	api_presenter "github.com/FlowingSPDG/get5-web-go/backend/presenter/gin/api"
+	"github.com/FlowingSPDG/get5-web-go/backend/service/jwt"
 	"github.com/FlowingSPDG/get5-web-go/backend/usecase"
 )
+
+// TODO: wire
 
 var (
 	mapPool = []string{
@@ -43,4 +46,22 @@ func InitializeGetVersionController() api.GetVersionController {
 
 func InitializeGetMaplistController() api.GetMaplistController {
 	return api_controller.NewGetMaplistController(mapPool, []string{})
+}
+
+func InitializeUserLoginController(cfg config.Config) api.UserLoginController {
+	mysqlConnector := mustGetWriteConnector(cfg)
+	mysqlUsersRepositoryConnector := mysqlconnector.NewMySQLRepositoryConnector(mysqlConnector)
+	jwtService := jwt.NewJWTGateway([]byte(cfg.SecretMey))
+	uc := usecase.NewUserLogin(jwtService, mysqlUsersRepositoryConnector)
+	presenter := api_presenter.NewJWTPresenter()
+	return api_controller.NewUserLoginController(uc, presenter)
+}
+
+func InitializeUserRegisterController(cfg config.Config) api.UserRegisterController {
+	mysqlConnector := mustGetWriteConnector(cfg)
+	mysqlUsersRepositoryConnector := mysqlconnector.NewMySQLRepositoryConnector(mysqlConnector)
+	jwtService := jwt.NewJWTGateway([]byte(cfg.SecretMey))
+	uc := usecase.NewUserRegister(jwtService, mysqlUsersRepositoryConnector)
+	presenter := api_presenter.NewJWTPresenter()
+	return api_controller.NewUserRegisterController(uc, presenter)
 }

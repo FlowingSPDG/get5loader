@@ -1,8 +1,6 @@
 package mysqlconnector
 
 import (
-	"database/sql"
-
 	"github.com/FlowingSPDG/get5-web-go/backend/gateway/database"
 	"github.com/FlowingSPDG/get5-web-go/backend/gateway/database/mysql/gameservers"
 	"github.com/FlowingSPDG/get5-web-go/backend/gateway/database/mysql/mapstats"
@@ -15,8 +13,6 @@ import (
 
 type mysqlRepositoryConnectorWithTx struct {
 	connector database.DBConnectorWithTx
-	db        *sql.DB
-	tx        *sql.Tx
 }
 
 func NewMySQLRepositoryConnectorWithTx(connector database.DBConnectorWithTx) database.RepositoryConnectorWithTx {
@@ -28,11 +24,10 @@ func (mrctx *mysqlRepositoryConnectorWithTx) Open() error {
 		return err
 	}
 
-	mrctx.db = mrctx.connector.GetConnection()
 	if err := mrctx.connector.BeginTx(); err != nil {
 		return err
 	}
-	mrctx.tx = mrctx.connector.GetTx()
+
 	return nil
 }
 
@@ -43,52 +38,61 @@ func (mrctx *mysqlRepositoryConnectorWithTx) Close() error {
 
 // Commit implements database.RepositoryConnectorWithTx.
 func (mrctx *mysqlRepositoryConnectorWithTx) Commit() error {
-	return mrctx.tx.Commit()
+	tx := mrctx.connector.GetTx()
+	return tx.Commit()
 }
 
 // Rollback implements database.RepositoryConnectorWithTx.
 func (mrctx *mysqlRepositoryConnectorWithTx) Rollback() error {
-	return mrctx.tx.Rollback()
+	tx := mrctx.connector.GetTx()
+	return tx.Rollback()
 }
 
 // OpenGameServersRepository implements database.RepositoryConnector.
-func (mrctx *mysqlRepositoryConnectorWithTx) GetGameServersRepository() (database.GameServersRepository, error) {
-	repository := gameservers.NewGameServerRepositoryWithTx(mrctx.db, mrctx.tx)
-	return repository, nil
+func (mrctx *mysqlRepositoryConnectorWithTx) GetGameServersRepository() database.GameServersRepository {
+	conn := mrctx.connector.GetConnection()
+	tx := mrctx.connector.GetTx()
+	return gameservers.NewGameServerRepositoryWithTx(conn, tx)
 }
 
 // OpenMapStatsRepository implements database.RepositoryConnector.
-func (mrctx *mysqlRepositoryConnectorWithTx) GetMapStatsRepository() (database.MapStatsRepository, error) {
-	repository := mapstats.NewMapStatsRepositoryWithTx(mrctx.db, mrctx.tx)
-	return repository, nil
+func (mrctx *mysqlRepositoryConnectorWithTx) GetMapStatsRepository() database.MapStatsRepository {
+	conn := mrctx.connector.GetConnection()
+	tx := mrctx.connector.GetTx()
+	return mapstats.NewMapStatsRepositoryWithTx(conn, tx)
 }
 
 // OpenMatchesRepository implements database.RepositoryConnector.
-func (mrctx *mysqlRepositoryConnectorWithTx) GetMatchesRepository() (database.MatchesRepository, error) {
-	repository := matches.NewMatchRepositoryWithTx(mrctx.db, mrctx.tx)
-	return repository, nil
+func (mrctx *mysqlRepositoryConnectorWithTx) GetMatchesRepository() database.MatchesRepository {
+	conn := mrctx.connector.GetConnection()
+	tx := mrctx.connector.GetTx()
+	return matches.NewMatchRepositoryWithTx(conn, tx)
 }
 
 // OpenPlayerStatsRepository implements database.RepositoryConnector.
-func (mrctx *mysqlRepositoryConnectorWithTx) GetPlayerStatsRepository() (database.PlayerStatsRepository, error) {
-	repository := playerstats.NewPlayerStatsRepositoryWithTx(mrctx.db, mrctx.tx)
-	return repository, nil
+func (mrctx *mysqlRepositoryConnectorWithTx) GetPlayerStatsRepository() database.PlayerStatsRepository {
+	conn := mrctx.connector.GetConnection()
+	tx := mrctx.connector.GetTx()
+	return playerstats.NewPlayerStatsRepositoryWithTx(conn, tx)
 }
 
 // OpenPlayersRepository implements database.RepositoryConnector.
-func (mrctx *mysqlRepositoryConnectorWithTx) GetPlayersRepository() (database.PlayersRepository, error) {
-	repository := players.NewPlayersRepositoryWithTx(mrctx.db, mrctx.tx)
-	return repository, nil
+func (mrctx *mysqlRepositoryConnectorWithTx) GetPlayersRepository() database.PlayersRepository {
+	conn := mrctx.connector.GetConnection()
+	tx := mrctx.connector.GetTx()
+	return players.NewPlayersRepositoryWithTx(conn, tx)
 }
 
 // OpenTeamsRepository implements database.RepositoryConnector.
-func (mrctx *mysqlRepositoryConnectorWithTx) GetTeamsRepository() (database.TeamsRepository, error) {
-	repository := teams.NewTeamsRepositoryWithTx(mrctx.db, mrctx.tx)
-	return repository, nil
+func (mrctx *mysqlRepositoryConnectorWithTx) GetTeamsRepository() database.TeamsRepository {
+	conn := mrctx.connector.GetConnection()
+	tx := mrctx.connector.GetTx()
+	return teams.NewTeamsRepositoryWithTx(conn, tx)
 }
 
 // OpenUserRepository implements database.RepositoryConnector.
-func (mrctx *mysqlRepositoryConnectorWithTx) GetUserRepository() (database.UsersRepositry, error) {
-	repository := users.NewUsersRepositryWithTx(mrctx.db, mrctx.tx)
-	return repository, nil
+func (mrctx *mysqlRepositoryConnectorWithTx) GetUserRepository() database.UsersRepositry {
+	conn := mrctx.connector.GetConnection()
+	tx := mrctx.connector.GetTx()
+	return users.NewUsersRepositryWithTx(conn, tx)
 }
