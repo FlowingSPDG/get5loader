@@ -12,6 +12,8 @@ import (
 	"github.com/FlowingSPDG/get5-web-go/backend/usecase"
 )
 
+// TODO: wire
+
 var (
 	mapPool = []string{
 		"de_inferno",
@@ -43,4 +45,12 @@ func InitializeGetVersionController() api.GetVersionController {
 
 func InitializeGetMaplistController() api.GetMaplistController {
 	return api_controller.NewGetMaplistController(mapPool, []string{})
+}
+
+func InitializeUserLoginController(cfg config.Config) api.UserLoginController {
+	mysqlConnector := mustGetWriteConnector(cfg)
+	mysqlUsersRepositoryConnector := mysqlconnector.NewMySQLRepositoryConnector(mysqlConnector)
+	uc := usecase.NewUserLogin(mysqlUsersRepositoryConnector)
+	presenter := api_presenter.NewJWTPresenter()
+	return api_controller.NewUserLoginController(uc, presenter)
 }

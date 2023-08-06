@@ -16,12 +16,11 @@ func main() {
 
 	cfg := config.GetConfig()
 
-	// misc
-	// r.GET("/login", db.LoginHandler)
-	// r.GET("/logout", db.LogoutHandler)
-
 	v1 := r.Group("/api/v1")
 
+	// misc
+	v1.POST("/login", di.InitializeUserLoginController(cfg).Handle)
+	// v1.POST("/logout", db.LogoutHandler)
 	v1.GET("/version", di.InitializeGetVersionController().Handle)
 	v1.GET("/maps", di.InitializeGetMaplistController().Handle)
 	/*
