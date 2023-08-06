@@ -3,6 +3,7 @@ package gameservers
 import (
 	"context"
 	"database/sql"
+	"errors"
 
 	"github.com/FlowingSPDG/get5-web-go/backend/entity"
 	"github.com/FlowingSPDG/get5-web-go/backend/gateway/database"
@@ -38,17 +39,20 @@ func (gr *gameServerRepository) AddGameServer(ctx context.Context, userID int64,
 		IsPublic:     isPublic,
 	})
 	if err != nil {
-		return nil, err
+		return nil, database.NewInternalError(err)
 	}
 
 	insertedID, err := result.LastInsertId()
 	if err != nil {
-		return nil, err
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, database.NewNotFoundError(err)
+		}
+		return nil, database.NewInternalError(err)
 	}
 
 	gameserver, err := gr.queries.GetGameServers(ctx, insertedID)
 	if err != nil {
-		return nil, err
+		return nil, database.NewInternalError(err)
 	}
 
 	return &entity.GameServer{
@@ -65,7 +69,10 @@ func (gr *gameServerRepository) AddGameServer(ctx context.Context, userID int64,
 // DeleteGameServer implements database.GameServerRepository.
 func (gr *gameServerRepository) DeleteGameServer(ctx context.Context, id int64) error {
 	if _, err := gr.queries.DeleteGameServer(ctx, id); err != nil {
-		return err
+		if errors.Is(err, sql.ErrNoRows) {
+			return database.NewNotFoundError(err)
+		}
+		return database.NewInternalError(err)
 	}
 	return nil
 }
@@ -74,7 +81,10 @@ func (gr *gameServerRepository) DeleteGameServer(ctx context.Context, id int64) 
 func (gr *gameServerRepository) GetGameServer(ctx context.Context, id int64) (*entity.GameServer, error) {
 	gameserver, err := gr.queries.GetGameServers(ctx, id)
 	if err != nil {
-		return nil, err
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, database.NewNotFoundError(err)
+		}
+		return nil, database.NewInternalError(err)
 	}
 
 	return &entity.GameServer{
@@ -92,7 +102,10 @@ func (gr *gameServerRepository) GetGameServer(ctx context.Context, id int64) (*e
 func (gr *gameServerRepository) GetGameServersByUser(ctx context.Context, userID int64) ([]*entity.GameServer, error) {
 	gameservers, err := gr.queries.GetGameServersByUser(ctx, userID)
 	if err != nil {
-		return nil, err
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, database.NewNotFoundError(err)
+		}
+		return nil, database.NewInternalError(err)
 	}
 
 	ret := make([]*entity.GameServer, 0, len(gameservers))
@@ -115,7 +128,7 @@ func (gr *gameServerRepository) GetGameServersByUser(ctx context.Context, userID
 func (gr *gameServerRepository) GetPublicGameServers(ctx context.Context) ([]*entity.GameServer, error) {
 	gameservers, err := gr.queries.GetPublicGameServers(ctx)
 	if err != nil {
-		return nil, err
+		return nil, database.NewInternalError(err)
 	}
 
 	ret := make([]*entity.GameServer, 0, len(gameservers))

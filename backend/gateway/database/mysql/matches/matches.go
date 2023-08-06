@@ -3,6 +3,7 @@ package matches
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"time"
 
 	"github.com/FlowingSPDG/get5-web-go/backend/entity"
@@ -44,17 +45,17 @@ func (mr *matchRepository) AddMatch(ctx context.Context, userID int64, serverID 
 	})
 
 	if err != nil {
-		return nil, err
+		return nil, database.NewInternalError(err)
 	}
 
 	insertedID, err := res.LastInsertId()
 	if err != nil {
-		return nil, err
+		return nil, database.NewInternalError(err)
 	}
 
 	match, err := mr.queries.GetMatch(ctx, insertedID)
 	if err != nil {
-		return nil, err
+		return nil, database.NewInternalError(err)
 	}
 
 	return &entity.Match{
@@ -76,7 +77,10 @@ func (mr *matchRepository) AddMatch(ctx context.Context, userID int64, serverID 
 func (mr *matchRepository) GetMatch(ctx context.Context, id int64) (*entity.Match, error) {
 	match, err := mr.queries.GetMatch(ctx, id)
 	if err != nil {
-		return nil, err
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, database.NewNotFoundError(err)
+		}
+		return nil, database.NewInternalError(err)
 	}
 
 	return &entity.Match{
@@ -103,7 +107,10 @@ func (mr *matchRepository) GetMatch(ctx context.Context, id int64) (*entity.Matc
 func (mr *matchRepository) GetMatchesByUser(ctx context.Context, userID int64) ([]*entity.Match, error) {
 	matches, err := mr.queries.GetMatchesByUser(ctx, userID)
 	if err != nil {
-		return nil, err
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, database.NewNotFoundError(err)
+		}
+		return nil, database.NewInternalError(err)
 	}
 
 	ret := make([]*entity.Match, 0, len(matches))
@@ -134,7 +141,7 @@ func (mr *matchRepository) GetMatchesByUser(ctx context.Context, userID int64) (
 // CancelMatch implements database.MatchRepository.
 func (mr *matchRepository) CancelMatch(ctx context.Context, matchID int64) error {
 	if _, err := mr.queries.CancelMatch(ctx, matchID); err != nil {
-		return err
+		return database.NewInternalError(err)
 	}
 
 	return nil
@@ -147,7 +154,10 @@ func (mr *matchRepository) GetMatchesByTeam(ctx context.Context, teamID int64) (
 		Team2ID: teamID,
 	})
 	if err != nil {
-		return nil, err
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, database.NewNotFoundError(err)
+		}
+		return nil, database.NewInternalError(err)
 	}
 
 	ret := make([]*entity.Match, 0, len(matches))
@@ -179,7 +189,10 @@ func (mr *matchRepository) GetMatchesByTeam(ctx context.Context, teamID int64) (
 func (mr *matchRepository) GetMatchesByWinner(ctx context.Context, teamID int64) ([]*entity.Match, error) {
 	matches, err := mr.queries.GetMatchesByWinner(ctx, sql.NullInt64{Int64: teamID, Valid: true})
 	if err != nil {
-		return nil, err
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, database.NewNotFoundError(err)
+		}
+		return nil, database.NewInternalError(err)
 	}
 
 	ret := make([]*entity.Match, 0, len(matches))
@@ -213,7 +226,7 @@ func (mr *matchRepository) StartMatch(ctx context.Context, matchID int64) error 
 		ID:        matchID,
 		StartTime: sql.NullTime{Valid: true, Time: time.Now()},
 	}); err != nil {
-		return err
+		return database.NewInternalError(err)
 	}
 
 	return nil
@@ -225,7 +238,7 @@ func (mr *matchRepository) UpdateMatchWinner(ctx context.Context, matchID int64,
 		ID:     matchID,
 		Winner: sql.NullInt64{Int64: winnerID, Valid: true},
 	}); err != nil {
-		return err
+		return database.NewInternalError(err)
 	}
 
 	return nil
@@ -237,7 +250,7 @@ func (mr *matchRepository) UpdateTeam1Score(ctx context.Context, matchID int64, 
 		ID:         matchID,
 		Team1Score: score,
 	}); err != nil {
-		return err
+		return database.NewInternalError(err)
 	}
 
 	return nil
@@ -249,7 +262,7 @@ func (mr *matchRepository) UpdateTeam2Score(ctx context.Context, matchID int64, 
 		ID:         matchID,
 		Team2Score: score,
 	}); err != nil {
-		return err
+		return database.NewInternalError(err)
 	}
 
 	return nil

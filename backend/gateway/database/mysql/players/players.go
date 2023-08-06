@@ -3,6 +3,7 @@ package players
 import (
 	"context"
 	"database/sql"
+	"errors"
 
 	"github.com/FlowingSPDG/get5-web-go/backend/entity"
 	"github.com/FlowingSPDG/get5-web-go/backend/gateway/database"
@@ -36,17 +37,17 @@ func (pr *playersRepository) AddPlayer(ctx context.Context, teamID int64, steamI
 	})
 
 	if err != nil {
-		return nil, err
+		return nil, database.NewInternalError(err)
 	}
 
 	insertedID, err := res.LastInsertId()
 	if err != nil {
-		return nil, err
+		return nil, database.NewInternalError(err)
 	}
 
 	player, err := pr.queries.GetPlayer(ctx, insertedID)
 	if err != nil {
-		return nil, err
+		return nil, database.NewInternalError(err)
 	}
 
 	return &entity.Player{
@@ -61,7 +62,10 @@ func (pr *playersRepository) AddPlayer(ctx context.Context, teamID int64, steamI
 func (pr *playersRepository) GetPlayer(ctx context.Context, id int64) (*entity.Player, error) {
 	res, err := pr.queries.GetPlayer(ctx, id)
 	if err != nil {
-		return nil, err
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, database.NewNotFoundError(err)
+		}
+		return nil, database.NewInternalError(err)
 	}
 
 	return &entity.Player{
@@ -76,7 +80,10 @@ func (pr *playersRepository) GetPlayer(ctx context.Context, id int64) (*entity.P
 func (pr *playersRepository) GetPlayersByTeam(ctx context.Context, teamID int64) ([]*entity.Player, error) {
 	res, err := pr.queries.GetPlayersByTeam(ctx, teamID)
 	if err != nil {
-		return nil, err
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, database.NewNotFoundError(err)
+		}
+		return nil, database.NewInternalError(err)
 	}
 
 	players := make([]*entity.Player, 0, len(res))
