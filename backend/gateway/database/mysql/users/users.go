@@ -77,3 +77,20 @@ func (ur *usersRepositry) GetUser(ctx context.Context, id int64) (*entity.User, 
 		UpdatedAt: user.UpdatedAt,
 	}, nil
 }
+
+// GetUserBySteamID implements database.UsersRepositry.
+func (ur *usersRepositry) GetUserBySteamID(ctx context.Context, steamID string) (*entity.User, error) {
+	user, err := ur.queries.GetUserBySteamID(ctx, steamID)
+	if err != nil {
+		return nil, database.NewInternalError(err)
+	}
+	return &entity.User{
+		ID:        user.ID,
+		SteamID:   user.SteamID,
+		Name:      user.Name,
+		Admin:     user.Admin,
+		Hash:      user.PasswordHash,
+		CreatedAt: user.CreatedAt,
+		UpdatedAt: user.UpdatedAt,
+	}, nil
+}

@@ -53,3 +53,23 @@ func (q *Queries) GetUser(ctx context.Context, id int64) (User, error) {
 	)
 	return i, err
 }
+
+const getUserBySteamID = `-- name: GetUserBySteamID :one
+SELECT id, steam_id, name, admin, created_at, updated_at, password_hash FROM users
+WHERE steam_id = ? LIMIT 1
+`
+
+func (q *Queries) GetUserBySteamID(ctx context.Context, steamID string) (User, error) {
+	row := q.db.QueryRowContext(ctx, getUserBySteamID, steamID)
+	var i User
+	err := row.Scan(
+		&i.ID,
+		&i.SteamID,
+		&i.Name,
+		&i.Admin,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.PasswordHash,
+	)
+	return i, err
+}
