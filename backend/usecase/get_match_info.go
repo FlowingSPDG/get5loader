@@ -5,7 +5,6 @@ import (
 
 	"github.com/FlowingSPDG/get5-web-go/backend/entity"
 	"github.com/FlowingSPDG/get5-web-go/backend/gateway/database"
-	"github.com/FlowingSPDG/get5-web-go/backend/gateway/database/mysql/matches"
 )
 
 type GetMatch interface {
@@ -13,26 +12,29 @@ type GetMatch interface {
 }
 
 type getMatch struct {
-	mysqlConnector database.DBConnector
+	repositoryConnector database.RepositoryConnector
 }
 
 func NewGetMatch(
-	mysqlConnector database.DBConnector,
+	repositoryConnector database.RepositoryConnector,
 ) GetMatch {
 	return &getMatch{
-		mysqlConnector: mysqlConnector,
+		repositoryConnector: repositoryConnector,
 	}
 }
 
 // Handle implements GetMatchInfo.
 func (gm *getMatch) Handle(ctx context.Context, matchID int64) (*entity.Match, error) {
-	db, err := gm.mysqlConnector.Connect()
+	if err := gm.repositoryConnector.Open(); err != nil {
+		return nil, err
+	}
+	defer gm.repositoryConnector.Close()
+
+	repository, err := gm.repositoryConnector.GetMatchesRepository()
 	if err != nil {
 		return nil, err
 	}
-	defer db.Close()
 
-	repository := matches.NewMatchRepository(db)
 	match, err := repository.GetMatch(ctx, matchID)
 	if err != nil {
 		return nil, err

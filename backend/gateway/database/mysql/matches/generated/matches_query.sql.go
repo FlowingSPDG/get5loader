@@ -12,9 +12,9 @@ import (
 
 const addMatch = `-- name: AddMatch :execresult
 INSERT INTO matches (
-  user_id, server_id, team1_id, team2_id, start_time, end_time, max_maps, title, skip_veto, api_key
+  user_id, server_id, team1_id, team2_id, start_time, end_time, max_maps, title, skip_veto, api_key, status
 ) VALUES (
-    ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
+    ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
 )
 `
 
@@ -29,6 +29,7 @@ type AddMatchParams struct {
 	Title     string
 	SkipVeto  bool
 	ApiKey    string
+	Status    int32
 }
 
 func (q *Queries) AddMatch(ctx context.Context, arg AddMatchParams) (sql.Result, error) {
@@ -43,6 +44,7 @@ func (q *Queries) AddMatch(ctx context.Context, arg AddMatchParams) (sql.Result,
 		arg.Title,
 		arg.SkipVeto,
 		arg.ApiKey,
+		arg.Status,
 	)
 }
 
