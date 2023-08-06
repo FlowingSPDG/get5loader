@@ -1,7 +1,7 @@
 package database_test
 
 import (
-	"fmt"
+	"errors"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -34,13 +34,13 @@ func TestErrors(t *testing.T) {
 		{
 			name:     "wrapped ErrNotFound",
 			method:   database.IsNotFound,
-			input:    fmt.Errorf("User not found %w", database.ErrNotFound),
+			input:    errors.Join(errors.New("Not Found Error"), database.ErrNotFound),
 			expected: true,
 		},
 		{
 			name:     "wrapped ErrInternal",
 			method:   database.IsInternal,
-			input:    fmt.Errorf("User not found %w", database.ErrInternal),
+			input:    errors.Join(errors.New("Internal Error"), database.ErrInternal),
 			expected: true,
 		},
 
@@ -48,13 +48,13 @@ func TestErrors(t *testing.T) {
 		{
 			name:     "wrapped wrapped ErrNotFound",
 			method:   database.IsNotFound,
-			input:    fmt.Errorf("User not found %w", fmt.Errorf("User not found %w", database.ErrNotFound)),
+			input:    errors.Join(errors.New("User not found"), database.ErrNotFound),
 			expected: true,
 		},
 		{
 			name:     "wrapped wrapped ErrInternal",
 			method:   database.IsInternal,
-			input:    fmt.Errorf("User not found %w", fmt.Errorf("User not found %w", database.ErrInternal)),
+			input:    errors.Join(errors.New("User not found"), database.ErrInternal),
 			expected: true,
 		},
 
@@ -62,7 +62,7 @@ func TestErrors(t *testing.T) {
 		{
 			name:     "different error",
 			method:   database.IsNotFound,
-			input:    fmt.Errorf("Unknown error!"),
+			input:    errors.New("Unknown error!"),
 			expected: false,
 		},
 
