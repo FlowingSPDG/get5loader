@@ -36,11 +36,6 @@ func (mc *mysqlConnector) GetConnection() *sql.DB {
 	return mc.db
 }
 
-// BeginTx implements database.DBConnector.
-func (mc *mysqlConnector) BeginTx() (*sql.Tx, error) {
-	return mc.db.Begin()
-}
-
 func (mc *mysqlConnector) Close() error {
 	if err := mc.db.Close(); err != nil {
 		return err

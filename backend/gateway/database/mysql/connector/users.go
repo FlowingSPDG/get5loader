@@ -13,8 +13,6 @@ func NewMySQLUsersRepositoryConnector(connector database.DBConnector) database.R
 	return &mysqlUsersRepositoryConnector{connector: connector}
 }
 
-// TODO: トランザクション処理を含んだバージョンを作成する
-
 // Open implements database.UserRepositoryConnector.
 func (murc *mysqlUsersRepositoryConnector) Open() (database.UsersRepositry, error) {
 	if err := murc.connector.Open(); err != nil {

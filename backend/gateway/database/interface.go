@@ -1,3 +1,4 @@
+// Package database provides interfaces for database connection and repositories for various entities.
 package database
 
 import (
@@ -8,65 +9,148 @@ import (
 	"github.com/FlowingSPDG/get5-web-go/backend/entity"
 )
 
+// DBConnector is a database connection initiator.
 type DBConnector interface {
+	// Open opens a database connection.
+	// You must call Close after using the database.
 	Open() error
+	// GetConnection returns a opened database connection. Potentially returns nil.
 	GetConnection() *sql.DB
-	BeginTx() (*sql.Tx, error)
+	// Close closes a database connection.
 	Close() error
 }
 
+// DBConnectorWithTx is a database connection initiator with transaction.
+type DBConnectorWithTx interface {
+	// Open opens a database connection.
+	// You must call Close after using the database.
+	Open() error
+	// GetConnection returns a opened database connection. Potentially returns nil.
+	GetConnection() *sql.DB
+	// Close closes a database connection.
+	Close() error
+	// BeginTx starts a transaction.
+	BeginTx() error
+	// GetTx returns a transaction. Potentially returns nil.
+	GetTx() *sql.Tx
+	// Commit commits a transaction.
+	Commit() error
+	// Rollback rollbacks a transaction.
+	Rollback() error
+}
+
+// RepositoryConnector is a generic interface for opening and closing a repository connection.
 type RepositoryConnector[R any] interface {
+	// Open opens a repository connection.
+	// You must call Close after using the repository.
 	Open() (R, error)
+	// Close closes a repository connection.
 	Close() error
 }
 
+// RepositoryConnectorWithTx is a generic interface for opening and closing a repository connection with transaction.
+type RepositoryConnectorWithTx[R any] interface {
+	// Open opens a repository connection. Transaction starts immediately after opening.
+	// You must call Close and Commit or Rollback after using the repository.
+	Open() (R, error)
+	// Close closes a repository connection.
+	Close() error
+	// Commit commits a transaction.
+	Commit() error
+	// Rollback rollbacks a transaction.
+	Rollback() error
+}
+
+// UsersRepositry is an interface for user repository.
 type UsersRepositry interface {
+	// CreateUser creates a user.
 	CreateUser(ctx context.Context, steamID string, name string, admin bool) (*entity.User, error)
+	// GetUser returns a user.
 	GetUser(ctx context.Context, id int64) (*entity.User, error)
 }
 
+// GameServersRepository is an interface for game server repository.
 type GameServersRepository interface {
+	// AddGameServer adds a game server.
 	AddGameServer(ctx context.Context, userID int64, ip string, port uint32, rconPassword string, displayName string, isPublic bool) (*entity.GameServer, error)
+	// GetGameServer returns a game server.
 	GetGameServer(ctx context.Context, id int64) (*entity.GameServer, error)
+	// GetPublicGameServers returns public game servers.
 	GetPublicGameServers(ctx context.Context) ([]*entity.GameServer, error)
+	// GetGameServersByUser returns game servers owned by a user.
 	GetGameServersByUser(ctx context.Context, userID int64) ([]*entity.GameServer, error)
+	// DeleteGameServer deletes a game server.
 	DeleteGameServer(ctx context.Context, id int64) error
 }
 
+// MatchesRepository is an interface for match repository.
 type MatchesRepository interface {
+	// AddMatch adds a match.
 	AddMatch(ctx context.Context, userID int64, serverID int64, team1ID int64, team2ID int64, startTime time.Time, endTime time.Time, maxMaps int32, title string, skipVeto bool, apiKey string) (*entity.Match, error)
+	// GetMatch returns a match.
 	GetMatch(ctx context.Context, id int64) (*entity.Match, error)
+	// GetMatchesByUser returns matches owned by a user.
 	GetMatchesByUser(ctx context.Context, userID int64) ([]*entity.Match, error)
+	// GetMatchesByTeam returns matches owned by a team.
 	GetMatchesByTeam(ctx context.Context, teamID int64) ([]*entity.Match, error)
+	// GetMatchesByWinner returns matches won by a team.
 	GetMatchesByWinner(ctx context.Context, teamID int64) ([]*entity.Match, error)
+	// UpdateMatchWinner updates a match winner.
 	UpdateMatchWinner(ctx context.Context, matchID int64, winnerID int64) error
+	// UpdateTeam1Score updates a match team1 score.
 	UpdateTeam1Score(ctx context.Context, matchID int64, score uint32) error
+	// UpdateTeam2Score updates a match team2 score.
 	UpdateTeam2Score(ctx context.Context, matchID int64, score uint32) error
+	// CancelMatch cancels a match.
 	CancelMatch(ctx context.Context, matchID int64) error
+	// StartMatch starts a match.
 	StartMatch(ctx context.Context, matchID int64) error
 }
 
+// MapStatsRepository is an interface for map stats repository.
 type MapStatsRepository interface {
+	// TODO.
+	// AddMapStats(ctx context.Context, matchID int64, mapNumber uint32, mapName string, winnerID int64, team1Score uint32, team2Score uint32) (*entity.MapStats, error)
+	// GetMapStats returns map stats.
 	GetMapStats(ctx context.Context, id int64) (*entity.MapStats, error)
+	// GetMapStatsByMatch returns map stats owned by a match.
 	GetMapStatsByMatch(ctx context.Context, matchID int64) ([]*entity.MapStats, error)
+	// GetMapStatsByMatchAndMap returns map stats owned by a match and map number.
 	GetMapStatsByMatchAndMap(ctx context.Context, matchID int64, mapNumber uint32) (*entity.MapStats, error)
 }
 
+// PlayerStatsRepository is an interface for player stats repository.
 type PlayerStatsRepository interface {
+	// TODO.
+	// AddPlayerStats(ctx context.Context, mapStatsID int64, steamID string, name string, teamID int64, kills uint32, assists uint32, deaths uint32, hs uint32, flashAssists uint32, kast float32, rating float32) (*entity.PlayerStats, error)
+	// GetPlayerStatsBySteamID returns player stats owned by a steam ID.
 	GetPlayerStatsBySteamID(ctx context.Context, steamID string) ([]*entity.PlayerStats, error)
+	// GetPlayerStatsByMatch returns player stats owned by a match.
 	GetPlayerStatsByMatch(ctx context.Context, matchID int64) ([]*entity.PlayerStats, error)
+	// GetPlayerStatsByMapstats returns player stats owned by a map stats.
 	GetPlayerStatsByMapstats(ctx context.Context, mapStatsID int64) (*entity.PlayerStats, error)
 }
 
+// TeamsRepository is an interface for team repository.
 type TeamsRepository interface {
+	// AddTeam adds a team.
 	AddTeam(ctx context.Context, userID int64, name string, tag string, flag string, logo string) (*entity.Team, error)
+	// GetTeam returns a team.
 	GetTeam(ctx context.Context, id int64) (*entity.Team, error)
+	// GetTeamsByUser returns teams owned by a user.
 	GetTeamsByUser(ctx context.Context, userID int64) ([]*entity.Team, error)
+	// GetPublicTeams returns public teams.
 	GetPublicTeams(ctx context.Context) ([]*entity.Team, error)
 }
 
+// PlayersRepository is an interface for player repository.
 type PlayersRepository interface {
+	// AddPlayer adds a player.
 	AddPlayer(ctx context.Context, teamID int64, steamID string, name string) (*entity.Player, error)
+	// GetPlayer returns a player.
 	GetPlayer(ctx context.Context, id int64) (*entity.Player, error)
+	// GetPlayersByTeam returns players owned by a team.
 	GetPlayersByTeam(ctx context.Context, teamID int64) ([]*entity.Player, error)
+	// DeletePlayer deletes a player.
+	// DeletePlayer(ctx context.Context, id int64) error
 }
