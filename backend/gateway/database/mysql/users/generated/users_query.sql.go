@@ -12,24 +12,30 @@ import (
 
 const createUser = `-- name: CreateUser :execresult
 INSERT INTO users (
-  steam_id, name, admin
+  steam_id, name, admin, password_hash
 ) VALUES (
-  ?, ?, ?
+  ?, ?, ?, ?
 )
 `
 
 type CreateUserParams struct {
-	SteamID string
-	Name    string
-	Admin   bool
+	SteamID      string
+	Name         string
+	Admin        bool
+	PasswordHash string
 }
 
 func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (sql.Result, error) {
-	return q.db.ExecContext(ctx, createUser, arg.SteamID, arg.Name, arg.Admin)
+	return q.db.ExecContext(ctx, createUser,
+		arg.SteamID,
+		arg.Name,
+		arg.Admin,
+		arg.PasswordHash,
+	)
 }
 
 const getUser = `-- name: GetUser :one
-SELECT id, steam_id, name, admin FROM users
+SELECT id, steam_id, name, admin, created_at, updated_at, password_hash FROM users
 WHERE id = ? LIMIT 1
 `
 
@@ -41,6 +47,9 @@ func (q *Queries) GetUser(ctx context.Context, id int64) (User, error) {
 		&i.SteamID,
 		&i.Name,
 		&i.Admin,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.PasswordHash,
 	)
 	return i, err
 }

@@ -3,10 +3,13 @@ package entity
 import "time"
 
 type User struct {
-	ID      int64
-	SteamID string
-	Name    string
-	Admin   bool
+	ID        int64
+	SteamID   string
+	Name      string
+	Admin     bool
+	Hash      string
+	CreatedAt time.Time
+	UpdatedAt time.Time
 }
 
 type GameServer struct {

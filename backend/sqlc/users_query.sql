@@ -4,7 +4,7 @@ WHERE id = ? LIMIT 1;
 
 -- name: CreateUser :execresult
 INSERT INTO users (
-  steam_id, name, admin
+  steam_id, name, admin, password_hash
 ) VALUES (
-  ?, ?, ?
+  ?, ?, ?, ?
 );

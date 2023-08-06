@@ -13,7 +13,7 @@ type DBConnector interface {
 }
 
 type UsersRepositry interface {
-	CreateUser(ctx context.Context, steamID string, name string, admin bool) (*entity.User, error)
+	CreateUser(ctx context.Context, steamID string, name string, admin bool, hash string) (*entity.User, error)
 	GetUser(ctx context.Context, id int64) (*entity.User, error)
 }
 
