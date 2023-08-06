@@ -16,3 +16,11 @@ func IsNotFound(err error) bool {
 func IsInternal(err error) bool {
 	return errors.Is(err, ErrInternal)
 }
+
+func NewNotFoundError(err error) error {
+	return errors.Join((err), ErrNotFound)
+}
+
+func NewInternalError(err error) error {
+	return errors.Join(err, ErrInternal)
+}
