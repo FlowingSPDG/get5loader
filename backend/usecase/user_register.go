@@ -3,9 +3,10 @@ package usecase
 import (
 	"context"
 
-	"github.com/FlowingSPDG/get5-web-go/backend/gateway/database"
-	"github.com/golang-jwt/jwt/v5"
 	"golang.org/x/crypto/bcrypt"
+
+	"github.com/FlowingSPDG/get5-web-go/backend/gateway/database"
+	"github.com/FlowingSPDG/get5-web-go/backend/service/jwt"
 )
 
 type UserRegister interface {
@@ -14,16 +15,16 @@ type UserRegister interface {
 }
 
 type userRegister struct {
-	key                 []byte
+	jwtService          jwt.JWTService
 	repositoryConnector database.RepositoryConnector
 }
 
 func NewUserRegister(
-	key []byte,
+	jwtService jwt.JWTService,
 	repositoryConnector database.RepositoryConnector,
 ) UserRegister {
 	return &userRegister{
-		key:                 key,
+		jwtService:          jwtService,
 		repositoryConnector: repositoryConnector,
 	}
 }
@@ -47,12 +48,7 @@ func (ur *userRegister) RegisterUser(ctx context.Context, steamID string, name s
 		return "", err
 	}
 
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"steamID": user.SteamID,
-		"admin":   user.Admin,
-	})
-
-	signed, err := token.SignedString(ur.key)
+	signed, err := ur.jwtService.IssueJWT(user)
 	if err != nil {
 		return "", err
 	}

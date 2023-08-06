@@ -15,16 +15,16 @@ type UserLogin interface {
 }
 
 type userLogin struct {
-	jwtService          jwt.JWTGateway
+	jwtService          jwt.JWTService
 	repositoryConnector database.RepositoryConnector
 }
 
 func NewUserLogin(
-	key []byte,
+	jwtService jwt.JWTService,
 	repositoryConnector database.RepositoryConnector,
 ) UserLogin {
 	return &userLogin{
-		key:                 key,
+		jwtService:          jwtService,
 		repositoryConnector: repositoryConnector,
 	}
 }
@@ -47,12 +47,7 @@ func (ul *userLogin) IssueJWTBySteamID(ctx context.Context, steamID string, pass
 		return "", err
 	}
 
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"steamID": user.SteamID,
-		"admin":   user.Admin,
-	})
-
-	signed, err := token.SignedString(ul.key)
+	signed, err := ul.jwtService.IssueJWT(user)
 	if err != nil {
 		return "", err
 	}

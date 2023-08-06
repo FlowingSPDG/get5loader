@@ -6,22 +6,22 @@ import (
 	"github.com/FlowingSPDG/get5-web-go/backend/entity"
 )
 
-type JWTGateway interface {
+type JWTService interface {
 	IssueJWT(user *entity.User) (string, error)
 	ValidateJWT(token string) (*TokenUser, error)
 }
 
-type jwtGateway struct {
+type jwtService struct {
 	key []byte
 }
 
-func NewJWTGateway(key []byte) JWTGateway {
-	return &jwtGateway{
+func NewJWTGateway(key []byte) JWTService {
+	return &jwtService{
 		key: key,
 	}
 }
 
-func (j *jwtGateway) IssueJWT(user *entity.User) (string, error) {
+func (j *jwtService) IssueJWT(user *entity.User) (string, error) {
 	token := jwt.NewWithClaims(jwt.GetSigningMethod("HS256"), &TokenUser{
 		SteamID: user.SteamID,
 		Admin:   user.Admin,
@@ -35,9 +35,9 @@ func (j *jwtGateway) IssueJWT(user *entity.User) (string, error) {
 	return signed, nil
 }
 
-func (j *jwtGateway) ValidateJWT(token string) (*TokenUser, error) {
+func (j *jwtService) ValidateJWT(token string) (*TokenUser, error) {
 	claims := &TokenUser{}
-	_, err := jwt.ParseWithClaims(token, claims, func(token *jwt.Token) (interface{}, error) {
+	_, err := jwt.ParseWithClaims(token, claims, func(token *jwt.Token) (any, error) {
 		return j.key, nil
 	})
 	if err != nil {
