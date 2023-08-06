@@ -29,6 +29,8 @@ services:
       - "DB_READ_PORT=3306"
       - "DB_READ_USER=root"
       - "DB_READ_PASS=root_password"
+
+      - "SECRET_KEY=get5_secret_key"
     networks:
       - backend_network
 

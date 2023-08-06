@@ -50,7 +50,15 @@ func InitializeGetMaplistController() api.GetMaplistController {
 func InitializeUserLoginController(cfg config.Config) api.UserLoginController {
 	mysqlConnector := mustGetWriteConnector(cfg)
 	mysqlUsersRepositoryConnector := mysqlconnector.NewMySQLRepositoryConnector(mysqlConnector)
-	uc := usecase.NewUserLogin(mysqlUsersRepositoryConnector)
+	uc := usecase.NewUserLogin([]byte(cfg.SecretMey), mysqlUsersRepositoryConnector)
 	presenter := api_presenter.NewJWTPresenter()
 	return api_controller.NewUserLoginController(uc, presenter)
+}
+
+func InitializeUserRegisterController(cfg config.Config) api.UserRegisterController {
+	mysqlConnector := mustGetWriteConnector(cfg)
+	mysqlUsersRepositoryConnector := mysqlconnector.NewMySQLRepositoryConnector(mysqlConnector)
+	uc := usecase.NewUserRegister([]byte(cfg.SecretMey), mysqlUsersRepositoryConnector)
+	presenter := api_presenter.NewJWTPresenter()
+	return api_controller.NewUserRegisterController(uc, presenter)
 }

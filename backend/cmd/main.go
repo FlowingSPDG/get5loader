@@ -19,7 +19,9 @@ func main() {
 	v1 := r.Group("/api/v1")
 
 	// misc
+	// TODO: Steamでログイン・会員登録できるようにする
 	v1.POST("/login", di.InitializeUserLoginController(cfg).Handle)
+	v1.POST("/register", di.InitializeUserRegisterController(cfg).Handle)
 	// v1.POST("/logout", db.LogoutHandler)
 	v1.GET("/version", di.InitializeGetVersionController().Handle)
 	v1.GET("/maps", di.InitializeGetMaplistController().Handle)

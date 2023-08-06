@@ -11,11 +11,11 @@ type Config struct {
 	DefaultPage string `env:"DEFAULT_PAGE"`
 
 	// Database writing
-	DBWriteHost string `env:"DB_WRITE_HOST"`
-	DBWritePort int    `env:"DB_WRITE_PORT" envDefault:"3306"`
-	DBWriteUser string `env:"DB_WRITE_USER"`
-	DBWritePass string `env:"DB_WRITE_PASS,unset"`
-	DBWriteName string `env:"DB_WRITE_NAME"`
+	DBWriteHost string `env:"DB_WRITE_HOST,required"`
+	DBWritePort int    `env:"DB_WRITE_PORT" envDefault:"3306,required"`
+	DBWriteUser string `env:"DB_WRITE_USER,required"`
+	DBWritePass string `env:"DB_WRITE_PASS,unset,required"`
+	DBWriteName string `env:"DB_WRITE_NAME,required"`
 
 	// Database reading
 	DBReadHost string `env:"DB_READ_HOST"`
@@ -24,8 +24,8 @@ type Config struct {
 	DBReadPass string `env:"DB_READ_PASS,unset"`
 	DBReadName string `env:"DB_READ_NAME"`
 
-	Cookie string `env:"COOKIE"`
 	// UserMaxResources UserMaxResources
+	SecretMey string `env:"SECRET_KEY,unset,required"`
 }
 
 /*

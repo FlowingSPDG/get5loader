@@ -20,9 +20,11 @@ type userLogin struct {
 }
 
 func NewUserLogin(
+	key []byte,
 	repositoryConnector database.RepositoryConnector,
 ) UserLogin {
 	return &userLogin{
+		key:                 key,
 		repositoryConnector: repositoryConnector,
 	}
 }
