@@ -7,32 +7,20 @@ import (
 )
 
 type mysqlConnectorWithTx struct {
-	dsn string
-	db  *sql.DB
-	tx  *sql.Tx // since mysqlConnectorWithTx only stores one transaction, only up to one transaction can be used at a time.
+	mysqlConnector
+	tx *sql.Tx // since mysqlConnectorWithTx only stores one transaction, only up to one transaction can be used at a time.
 }
 
 func NewMysqlConnectorWithTx(dsn string) database.DBConnectorWithTx {
-	return &mysqlConnectorWithTx{dsn: dsn}
+	return &mysqlConnectorWithTx{mysqlConnector: mysqlConnector{dsn: dsn}}
 }
 
 func (mctx *mysqlConnectorWithTx) Open() error {
-	// すでに接続済みの場合は何もしない
-	if mctx.db != nil {
-		return nil
-	}
-
-	db, err := sql.Open("mysql", mctx.dsn)
-	if err != nil {
-		return err
-	}
-	mctx.db = db
-
-	return nil
+	return mctx.mysqlConnector.Open()
 }
 
 func (mctx *mysqlConnectorWithTx) GetConnection() *sql.DB {
-	return mctx.db
+	return mctx.mysqlConnector.GetConnection()
 }
 
 // BeginTx implements database.DBConnectorWithTx.
@@ -51,11 +39,7 @@ func (mctx *mysqlConnectorWithTx) GetTx() *sql.Tx {
 }
 
 func (mctx *mysqlConnectorWithTx) Close() error {
-	if err := mctx.db.Close(); err != nil {
-		return err
-	}
-	mctx.db = nil
-	return nil
+	return mctx.mysqlConnector.Close()
 }
 
 // Commit implements database.DBConnectorWithTx.
