@@ -34,13 +34,13 @@ func TestErrors(t *testing.T) {
 		{
 			name:     "wrapped ErrNotFound",
 			method:   database.IsNotFound,
-			input:    errors.Join(errors.New("Not Found Error"), database.ErrNotFound),
+			input:    database.NewNotFoundError(errors.New("Not Found Error")),
 			expected: true,
 		},
 		{
 			name:     "wrapped ErrInternal",
 			method:   database.IsInternal,
-			input:    errors.Join(errors.New("Internal Error"), database.ErrInternal),
+			input:    database.NewInternalError(errors.New("Internal Error")),
 			expected: true,
 		},
 
@@ -48,7 +48,7 @@ func TestErrors(t *testing.T) {
 		{
 			name:     "wrapped wrapped ErrNotFound",
 			method:   database.IsNotFound,
-			input:    errors.Join(errors.New("User not found"), database.ErrNotFound),
+			input:    database.NewNotFoundError(errors.New("Not Found Error")),
 			expected: true,
 		},
 		{
