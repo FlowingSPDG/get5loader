@@ -6,7 +6,6 @@ import (
 )
 
 type mysqlUsersRepositoryConnector struct {
-	dsn       string
 	connector database.DBConnector
 }
 
