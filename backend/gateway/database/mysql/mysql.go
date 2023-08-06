@@ -22,7 +22,7 @@ func NewMysqlConnector(dsn string) database.DBConnector {
 func (mc *mysqlConnector) Connect() (*sql.DB, error) {
 	db, err := sql.Open("mysql", mc.dsn)
 	if err != nil {
-		return nil, err
+		return nil, database.NewInternalError(err)
 	}
 
 	return db, nil

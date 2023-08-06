@@ -3,6 +3,7 @@ package playerstats
 import (
 	"context"
 	"database/sql"
+	"errors"
 
 	"github.com/FlowingSPDG/get5-web-go/backend/entity"
 	"github.com/FlowingSPDG/get5-web-go/backend/gateway/database"
@@ -31,7 +32,10 @@ func NewPlayerStatsRepositoryWithTx(db *sql.DB, tx *sql.Tx) database.PlayerStats
 func (psr *playerStatsRepository) GetPlayerStatsByMapstats(ctx context.Context, matchID int64) (*entity.PlayerStats, error) {
 	stat, err := psr.queries.GetPlayerStatsByMap(ctx, matchID)
 	if err != nil {
-		return nil, err
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, database.NewNotFoundError(err)
+		}
+		return nil, database.NewInternalError(err)
 	}
 
 	return &entity.PlayerStats{
@@ -72,7 +76,10 @@ func (psr *playerStatsRepository) GetPlayerStatsByMapstats(ctx context.Context, 
 func (psr *playerStatsRepository) GetPlayerStatsByMatch(ctx context.Context, matchID int64) ([]*entity.PlayerStats, error) {
 	stats, err := psr.queries.GetPlayerStatsByMatch(ctx, matchID)
 	if err != nil {
-		return nil, err
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, database.NewNotFoundError(err)
+		}
+		return nil, database.NewInternalError(err)
 	}
 
 	playerStats := make([]*entity.PlayerStats, 0, len(stats))
@@ -116,7 +123,10 @@ func (psr *playerStatsRepository) GetPlayerStatsByMatch(ctx context.Context, mat
 func (psr *playerStatsRepository) GetPlayerStatsBySteamID(ctx context.Context, steamID string) ([]*entity.PlayerStats, error) {
 	stats, err := psr.queries.GetPlayerStatsBySteamID(ctx, steamID)
 	if err != nil {
-		return nil, err
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, database.NewNotFoundError(err)
+		}
+		return nil, database.NewInternalError(err)
 	}
 
 	playerStats := make([]*entity.PlayerStats, 0, len(stats))

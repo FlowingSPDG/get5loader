@@ -3,6 +3,7 @@ package teams
 import (
 	"context"
 	"database/sql"
+	"errors"
 
 	"github.com/FlowingSPDG/get5-web-go/backend/entity"
 	"github.com/FlowingSPDG/get5-web-go/backend/gateway/database"
@@ -37,17 +38,17 @@ func (tr *teamsRepository) AddTeam(ctx context.Context, userID int64, name strin
 		Logo:   logo,
 	})
 	if err != nil {
-		return nil, err
+		return nil, database.NewInternalError(err)
 	}
 
 	insertedID, err := res.LastInsertId()
 	if err != nil {
-		return nil, err
+		return nil, database.NewInternalError(err)
 	}
 
 	team, err := tr.queries.GetTeam(ctx, insertedID)
 	if err != nil {
-		return nil, err
+		return nil, database.NewInternalError(err)
 	}
 
 	return &entity.Team{
@@ -64,7 +65,10 @@ func (tr *teamsRepository) AddTeam(ctx context.Context, userID int64, name strin
 func (tr *teamsRepository) GetPublicTeams(ctx context.Context) ([]*entity.Team, error) {
 	teams, err := tr.queries.GetPublicTeams(ctx)
 	if err != nil {
-		return nil, err
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, database.NewNotFoundError(err)
+		}
+		return nil, database.NewInternalError(err)
 	}
 
 	ret := make([]*entity.Team, 0, len(teams))
@@ -86,7 +90,10 @@ func (tr *teamsRepository) GetPublicTeams(ctx context.Context) ([]*entity.Team, 
 func (tr *teamsRepository) GetTeam(ctx context.Context, id int64) (*entity.Team, error) {
 	team, err := tr.queries.GetTeam(ctx, id)
 	if err != nil {
-		return nil, err
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, database.NewNotFoundError(err)
+		}
+		return nil, database.NewInternalError(err)
 	}
 
 	return &entity.Team{
@@ -103,7 +110,10 @@ func (tr *teamsRepository) GetTeam(ctx context.Context, id int64) (*entity.Team,
 func (tr *teamsRepository) GetTeamsByUser(ctx context.Context, userID int64) ([]*entity.Team, error) {
 	teams, err := tr.queries.GetTeamByUserID(ctx, userID)
 	if err != nil {
-		return nil, err
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, database.NewNotFoundError(err)
+		}
+		return nil, database.NewInternalError(err)
 	}
 
 	ret := make([]*entity.Team, 0, len(teams))

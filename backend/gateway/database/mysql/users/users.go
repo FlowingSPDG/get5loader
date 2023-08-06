@@ -35,17 +35,17 @@ func (ur *usersRepositry) CreateUser(ctx context.Context, steamID string, name s
 		Admin:   admin,
 	})
 	if err != nil {
-		return nil, err
+		return nil, database.NewInternalError(err)
 	}
 
 	insertedID, err := result.LastInsertId()
 	if err != nil {
-		return nil, err
+		return nil, database.NewInternalError(err)
 	}
 
 	user, err := ur.queries.GetUser(ctx, insertedID)
 	if err != nil {
-		return nil, err
+		return nil, database.NewInternalError(err)
 	}
 
 	return &entity.User{
@@ -61,7 +61,7 @@ func (ur *usersRepositry) CreateUser(ctx context.Context, steamID string, name s
 func (ur *usersRepositry) GetUser(ctx context.Context, id int64) (*entity.User, error) {
 	user, err := ur.queries.GetUser(ctx, id)
 	if err != nil {
-		return nil, err
+		return nil, database.NewInternalError(err)
 	}
 	return &entity.User{
 		ID:      user.ID,

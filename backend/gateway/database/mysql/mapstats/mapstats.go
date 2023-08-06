@@ -3,6 +3,7 @@ package mapstats
 import (
 	"context"
 	"database/sql"
+	"errors"
 
 	"github.com/FlowingSPDG/get5-web-go/backend/entity"
 	"github.com/FlowingSPDG/get5-web-go/backend/gateway/database"
@@ -31,7 +32,10 @@ func NewMapStatsRepositoryWithTx(db *sql.DB, tx *sql.Tx) database.MapStatsReposi
 func (msr *mapStatsRepository) GetMapStats(ctx context.Context, id int64) (*entity.MapStats, error) {
 	res, err := msr.queries.GetMapStats(ctx, id)
 	if err != nil {
-		return nil, err
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, database.NewNotFoundError(err)
+		}
+		return nil, database.NewInternalError(err)
 	}
 
 	return &entity.MapStats{
@@ -51,7 +55,10 @@ func (msr *mapStatsRepository) GetMapStats(ctx context.Context, id int64) (*enti
 func (msr *mapStatsRepository) GetMapStatsByMatch(ctx context.Context, matchID int64) ([]*entity.MapStats, error) {
 	res, err := msr.queries.GetMapStatsByMatch(ctx, matchID)
 	if err != nil {
-		return nil, err
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, database.NewNotFoundError(err)
+		}
+		return nil, database.NewInternalError(err)
 	}
 
 	mapStats := make([]*entity.MapStats, 0, len(res))
@@ -79,7 +86,10 @@ func (msr *mapStatsRepository) GetMapStatsByMatchAndMap(ctx context.Context, mat
 		MapNumber: mapNumber,
 	})
 	if err != nil {
-		return nil, err
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, database.NewNotFoundError(err)
+		}
+		return nil, database.NewInternalError(err)
 	}
 
 	return &entity.MapStats{
