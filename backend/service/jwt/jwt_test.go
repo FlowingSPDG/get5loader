@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/FlowingSPDG/get5-web-go/backend/entity"
-	"github.com/FlowingSPDG/get5-web-go/backend/gateway/jwt"
+	"github.com/FlowingSPDG/get5-web-go/backend/service/jwt"
 	"github.com/stretchr/testify/assert"
 )
 
