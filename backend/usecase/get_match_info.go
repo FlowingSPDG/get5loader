@@ -25,7 +25,12 @@ func NewGetMatch(
 
 // Handle implements GetMatchInfo.
 func (gm *getMatch) Handle(ctx context.Context, matchID int64) (*entity.Match, error) {
-	repository, err := gm.repositoryConnector.OpenMatchesRepository()
+	if err := gm.repositoryConnector.Open(); err != nil {
+		return nil, err
+	}
+	defer gm.repositoryConnector.Close()
+
+	repository, err := gm.repositoryConnector.GetMatchesRepository()
 	if err != nil {
 		return nil, err
 	}

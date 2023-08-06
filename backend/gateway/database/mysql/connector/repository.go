@@ -27,7 +27,7 @@ func (mrc *mysqlRepositoryConnector) Close() error {
 	return mrc.connector.Close()
 }
 
-func (mrc *mysqlRepositoryConnector) open() error {
+func (mrc *mysqlRepositoryConnector) Open() error {
 	if err := mrc.connector.Open(); err != nil {
 		return err
 	}
@@ -37,66 +37,43 @@ func (mrc *mysqlRepositoryConnector) open() error {
 }
 
 // OpenGameServersRepository implements database.RepositoryConnector.
-func (mrc *mysqlRepositoryConnector) OpenGameServersRepository() (database.GameServersRepository, error) {
-	if err := mrc.open(); err != nil {
-		return nil, err
-	}
-
+func (mrc *mysqlRepositoryConnector) GetGameServersRepository() (database.GameServersRepository, error) {
 	repository := gameservers.NewGameServerRepository(mrc.db)
 	return repository, nil
 }
 
 // OpenMapStatsRepository implements database.RepositoryConnector.
-func (mrc *mysqlRepositoryConnector) OpenMapStatsRepository() (database.MapStatsRepository, error) {
-	if err := mrc.open(); err != nil {
-		return nil, err
-	}
-
+func (mrc *mysqlRepositoryConnector) GetMapStatsRepository() (database.MapStatsRepository, error) {
 	repository := mapstats.NewMapStatsRepository(mrc.db)
 	return repository, nil
 }
 
 // OpenMatchesRepository implements database.RepositoryConnector.
-func (mrc *mysqlRepositoryConnector) OpenMatchesRepository() (database.MatchesRepository, error) {
-	if err := mrc.open(); err != nil {
-		return nil, err
-	}
+func (mrc *mysqlRepositoryConnector) GetMatchesRepository() (database.MatchesRepository, error) {
 	repository := matches.NewMatchRepository(mrc.db)
 	return repository, nil
 }
 
 // OpenPlayerStatsRepository implements database.RepositoryConnector.
-func (mrc *mysqlRepositoryConnector) OpenPlayerStatsRepository() (database.PlayerStatsRepository, error) {
-	if err := mrc.open(); err != nil {
-		return nil, err
-	}
+func (mrc *mysqlRepositoryConnector) GetPlayerStatsRepository() (database.PlayerStatsRepository, error) {
 	repository := playerstats.NewPlayerStatsRepository(mrc.db)
 	return repository, nil
 }
 
 // OpenPlayersRepository implements database.RepositoryConnector.
-func (mrc *mysqlRepositoryConnector) OpenPlayersRepository() (database.PlayersRepository, error) {
-	if err := mrc.open(); err != nil {
-		return nil, err
-	}
+func (mrc *mysqlRepositoryConnector) GetPlayersRepository() (database.PlayersRepository, error) {
 	repository := players.NewPlayersRepository(mrc.db)
 	return repository, nil
 }
 
 // OpenTeamsRepository implements database.RepositoryConnector.
-func (mrc *mysqlRepositoryConnector) OpenTeamsRepository() (database.TeamsRepository, error) {
-	if err := mrc.open(); err != nil {
-		return nil, err
-	}
+func (mrc *mysqlRepositoryConnector) GetTeamsRepository() (database.TeamsRepository, error) {
 	repository := teams.NewTeamssRepository(mrc.db)
 	return repository, nil
 }
 
 // OpenUserRepository implements database.RepositoryConnector.
-func (mrc *mysqlRepositoryConnector) OpenUserRepository() (database.UsersRepositry, error) {
-	if err := mrc.open(); err != nil {
-		return nil, err
-	}
+func (mrc *mysqlRepositoryConnector) GetUserRepository() (database.UsersRepositry, error) {
 	repository := users.NewUsersRepositry(mrc.db)
 	return repository, nil
 }

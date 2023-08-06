@@ -41,33 +41,53 @@ type DBConnectorWithTx interface {
 
 // RepositoryConnector is a generic interface for opening and closing a repository connection.
 type RepositoryConnector interface {
+	// Open opens a repository connection. You must call Close after using the repository.
+	Open() error
+	// Close closes a repository connection.
 	Close() error
 
-	OpenUserRepository() (UsersRepositry, error)
-	OpenGameServersRepository() (GameServersRepository, error)
-	OpenMatchesRepository() (MatchesRepository, error)
-	OpenMapStatsRepository() (MapStatsRepository, error)
-	OpenPlayerStatsRepository() (PlayerStatsRepository, error)
-	OpenTeamsRepository() (TeamsRepository, error)
-	OpenPlayersRepository() (PlayersRepository, error)
+	// GetUserRepository returns a user repository. You must open a repository connection before calling this method.
+	GetUserRepository() (UsersRepositry, error)
+	// GetGameServersRepository returns a game server repository. You must open a repository connection before calling this method.
+	GetGameServersRepository() (GameServersRepository, error)
+	// GetMatchesRepository returns a match repository. You must open a repository connection before calling this method.
+	GetMatchesRepository() (MatchesRepository, error)
+	// GetMapStatsRepository returns a map stats repository. You must open a repository connection before calling this method.
+	GetMapStatsRepository() (MapStatsRepository, error)
+	// GetPlayerStatsRepository returns a player stats repository. You must open a repository connection before calling this method.
+	GetPlayerStatsRepository() (PlayerStatsRepository, error)
+	// GetTeamsRepository returns a team repository. You must open a repository connection before calling this method.
+	GetTeamsRepository() (TeamsRepository, error)
+	// GetPlayersRepository returns a player repository. You must open a repository connection before calling this method.
+	GetPlayersRepository() (PlayersRepository, error)
 }
 
 // RepositoryConnectorWithTx is a generic interface for opening and closing a repository connection with transaction.
-type RepositoryConnectorWithTx[R any] interface {
+type RepositoryConnectorWithTx interface {
+	// Open opens a repository connection. You must call Close after using the repository.
+	Open() error
 	// Close closes a repository connection.
 	Close() error
+
+	// GetUserRepository returns a user repository. You must open a repository connection before calling this method.
+	GetUserRepository() (UsersRepositry, error)
+	// GetGameServersRepository returns a game server repository. You must open a repository connection before calling this method.
+	GetGameServersRepository() (GameServersRepository, error)
+	// GetMatchesRepository returns a match repository. You must open a repository connection before calling this method.
+	GetMatchesRepository() (MatchesRepository, error)
+	// GetMapStatsRepository returns a map stats repository. You must open a repository connection before calling this method.
+	GetMapStatsRepository() (MapStatsRepository, error)
+	// GetPlayerStatsRepository returns a player stats repository. You must open a repository connection before calling this method.
+	GetPlayerStatsRepository() (PlayerStatsRepository, error)
+	// GetTeamsRepository returns a team repository. You must open a repository connection before calling this method.
+	GetTeamsRepository() (TeamsRepository, error)
+	// GetPlayersRepository returns a player repository. You must open a repository connection before calling this method.
+	GetPlayersRepository() (PlayersRepository, error)
+
 	// Commit commits a transaction.
 	Commit() error
 	// Rollback rollbacks a transaction.
 	Rollback() error
-
-	OpenUserRepository() (UsersRepositry, error)
-	OpenGameServersRepository() (GameServersRepository, error)
-	OpenMatchesRepository() (MatchesRepository, error)
-	OpenMapStatsRepository() (MapStatsRepository, error)
-	OpenPlayerStatsRepository() (PlayerStatsRepository, error)
-	OpenTeamsRepository() (TeamsRepository, error)
-	OpenPlayersRepository() (PlayersRepository, error)
 }
 
 // UsersRepositry is an interface for user repository.
