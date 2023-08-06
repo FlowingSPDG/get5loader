@@ -18,6 +18,11 @@ func NewMysqlConnector(dsn string) database.DBConnector {
 }
 
 func (mc *mysqlConnector) Open() error {
+	// すでに接続済みの場合は何もしない
+	if mc.db != nil {
+		return nil
+	}
+
 	db, err := sql.Open("mysql", mc.dsn)
 	if err != nil {
 		return err
@@ -37,5 +42,9 @@ func (mc *mysqlConnector) BeginTx() (*sql.Tx, error) {
 }
 
 func (mc *mysqlConnector) Close() error {
-	return mc.db.Close()
+	if err := mc.db.Close(); err != nil {
+		return err
+	}
+	mc.db = nil
+	return nil
 }
