@@ -9,12 +9,24 @@ import (
 )
 
 type DBConnector interface {
-	Connect() (*sql.DB, error)
+	Open() error
+	GetConnection() *sql.DB
+	Close() error
+}
+
+type UserRepositoryConnector interface {
+	Open() (UsersRepositry, error)
+	Close() error
 }
 
 type UsersRepositry interface {
 	CreateUser(ctx context.Context, steamID string, name string, admin bool) (*entity.User, error)
 	GetUser(ctx context.Context, id int64) (*entity.User, error)
+}
+
+type GameServersRepositoryConnector interface {
+	Open() (GameServersRepository, error)
+	Close() error
 }
 
 type GameServersRepository interface {
@@ -23,6 +35,11 @@ type GameServersRepository interface {
 	GetPublicGameServers(ctx context.Context) ([]*entity.GameServer, error)
 	GetGameServersByUser(ctx context.Context, userID int64) ([]*entity.GameServer, error)
 	DeleteGameServer(ctx context.Context, id int64) error
+}
+
+type MatchesRepositoryConnector interface {
+	Open() (MatchesRepository, error)
+	Close() error
 }
 
 type MatchesRepository interface {
@@ -38,10 +55,20 @@ type MatchesRepository interface {
 	StartMatch(ctx context.Context, matchID int64) error
 }
 
+type MapStatsRepositoryConnector interface {
+	Open() (MapStatsRepository, error)
+	Close() error
+}
+
 type MapStatsRepository interface {
 	GetMapStats(ctx context.Context, id int64) (*entity.MapStats, error)
 	GetMapStatsByMatch(ctx context.Context, matchID int64) ([]*entity.MapStats, error)
 	GetMapStatsByMatchAndMap(ctx context.Context, matchID int64, mapNumber uint32) (*entity.MapStats, error)
+}
+
+type PlayerStatsRepositoryConnector interface {
+	Open() (PlayerStatsRepository, error)
+	Close() error
 }
 
 type PlayerStatsRepository interface {
@@ -50,11 +77,21 @@ type PlayerStatsRepository interface {
 	GetPlayerStatsByMapstats(ctx context.Context, mapStatsID int64) (*entity.PlayerStats, error)
 }
 
+type TeamsRepositoryConnector interface {
+	Open() (TeamsRepository, error)
+	Close() error
+}
+
 type TeamsRepository interface {
 	AddTeam(ctx context.Context, userID int64, name string, tag string, flag string, logo string) (*entity.Team, error)
 	GetTeam(ctx context.Context, id int64) (*entity.Team, error)
 	GetTeamsByUser(ctx context.Context, userID int64) ([]*entity.Team, error)
 	GetPublicTeams(ctx context.Context) ([]*entity.Team, error)
+}
+
+type PlayersRepositoryConnector interface {
+	Open() (PlayersRepository, error)
+	Close() error
 }
 
 type PlayersRepository interface {

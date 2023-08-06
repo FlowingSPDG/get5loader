@@ -1,4 +1,4 @@
-package mysql
+package mysqlconnector
 
 import (
 	"database/sql"
@@ -8,22 +8,29 @@ import (
 	_ "github.com/go-sql-driver/mysql" // mysql driver
 )
 
-// Connectorを作成する
-
 type mysqlConnector struct {
 	dsn string
+	db  *sql.DB
 }
 
 func NewMysqlConnector(dsn string) database.DBConnector {
 	return &mysqlConnector{dsn: dsn}
 }
 
-// Connect implements database.DBConnector.
-func (mc *mysqlConnector) Connect() (*sql.DB, error) {
+func (mc *mysqlConnector) Open() error {
 	db, err := sql.Open("mysql", mc.dsn)
 	if err != nil {
-		return nil, database.NewInternalError(err)
+		return err
 	}
+	mc.db = db
 
-	return db, nil
+	return nil
+}
+
+func (mc *mysqlConnector) GetConnection() *sql.DB {
+	return mc.db
+}
+
+func (mc *mysqlConnector) Close() error {
+	return mc.db.Close()
 }

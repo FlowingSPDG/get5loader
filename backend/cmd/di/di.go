@@ -7,7 +7,7 @@ import (
 	"github.com/FlowingSPDG/get5-web-go/backend/controller/gin/api"
 	api_controller "github.com/FlowingSPDG/get5-web-go/backend/controller/gin/api"
 	"github.com/FlowingSPDG/get5-web-go/backend/gateway/database"
-	"github.com/FlowingSPDG/get5-web-go/backend/gateway/database/mysql"
+	mysqlconnector "github.com/FlowingSPDG/get5-web-go/backend/gateway/database/mysql/connector"
 	api_presenter "github.com/FlowingSPDG/get5-web-go/backend/presenter/gin/api"
 	"github.com/FlowingSPDG/get5-web-go/backend/usecase"
 )
@@ -26,12 +26,13 @@ var (
 
 func mustGetWriteConnector(cfg config.Config) database.DBConnector {
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?parseTime=true&loc=Local&charset=utf8mb4", cfg.DBWriteUser, cfg.DBWritePass, cfg.DBWriteHost, cfg.DBWritePort, cfg.DBWriteName)
-	return mysql.NewMysqlConnector(dsn)
+	return mysqlconnector.NewMysqlConnector(dsn)
 }
 
 func InitializeGetMatchController(cfg config.Config) api.GetMatchController {
 	mysqlConnector := mustGetWriteConnector(cfg)
-	uc := usecase.NewGetMatch(mysqlConnector)
+	mysqlUsersRepositoryConnector := mysqlconnector.NewMySQLMatchesRepositoryConnector(mysqlConnector)
+	uc := usecase.NewGetMatch(mysqlUsersRepositoryConnector)
 	presenter := api_presenter.NewMatchPresenter()
 	return api_controller.NewGetMatchController(uc, presenter)
 }
