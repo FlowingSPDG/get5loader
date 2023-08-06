@@ -11,6 +11,7 @@ import (
 type DBConnector interface {
 	Open() error
 	GetConnection() *sql.DB
+	BeginTx() (*sql.Tx, error)
 	Close() error
 }
 
