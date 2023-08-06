@@ -62,9 +62,10 @@ type RepositoryConnector interface {
 	GetPlayersRepository() (PlayersRepository, error)
 }
 
-// RepositoryConnectorWithTx is a generic interface for opening and closing a repository connection with transaction.
+// RepositoryConnectorWithTx is a interface for opening and closing a repository connection with transaction.
 type RepositoryConnectorWithTx interface {
 	// Open opens a repository connection. You must call Close after using the repository.
+	// Transaction is started when Open is called.
 	Open() error
 	// Close closes a repository connection.
 	Close() error

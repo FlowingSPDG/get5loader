@@ -68,7 +68,7 @@ func (mrc *mysqlRepositoryConnector) GetPlayersRepository() (database.PlayersRep
 
 // OpenTeamsRepository implements database.RepositoryConnector.
 func (mrc *mysqlRepositoryConnector) GetTeamsRepository() (database.TeamsRepository, error) {
-	repository := teams.NewTeamssRepository(mrc.db)
+	repository := teams.NewTeamsRepository(mrc.db)
 	return repository, nil
 }
 

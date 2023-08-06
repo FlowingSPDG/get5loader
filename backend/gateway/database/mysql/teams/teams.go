@@ -14,7 +14,7 @@ type teamsRepository struct {
 	queries *teams_gen.Queries
 }
 
-func NewTeamssRepository(db *sql.DB) database.TeamsRepository {
+func NewTeamsRepository(db *sql.DB) database.TeamsRepository {
 	queries := teams_gen.New(db)
 	return &teamsRepository{
 		queries: queries,
