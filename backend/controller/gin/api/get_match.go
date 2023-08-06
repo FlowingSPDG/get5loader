@@ -55,13 +55,5 @@ func (gmc *getMatchController) Handle(c *gin.Context) {
 		return
 	}
 
-	b, err := gmc.presenter.Handle(match)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": "internal error",
-		})
-		return
-	}
-
-	c.JSON(http.StatusOK, b)
+	gmc.presenter.Handle(c, match)
 }
