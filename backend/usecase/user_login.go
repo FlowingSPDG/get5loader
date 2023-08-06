@@ -7,7 +7,6 @@ import (
 	"golang.org/x/crypto/bcrypt"
 
 	"github.com/FlowingSPDG/get5-web-go/backend/gateway/database"
-	"github.com/FlowingSPDG/get5-web-go/backend/gateway/database/mysql/users"
 )
 
 type UserLogin interface {
@@ -16,28 +15,27 @@ type UserLogin interface {
 }
 
 type userLogin struct {
-	key            []byte
-	mysqlConnector database.DBConnector
+	key                 []byte
+	repositoryConnector database.RepositoryConnector
 }
 
 func NewUserLogin(
-	mysqlConnector database.DBConnector,
+	repositoryConnector database.RepositoryConnector,
 ) UserLogin {
 	return &userLogin{
-		mysqlConnector: mysqlConnector,
+		repositoryConnector: repositoryConnector,
 	}
 }
 
 // HandleLoginSteamID implements UserLoginUsecase.
 func (ul *userLogin) IssueJWTBySteamID(ctx context.Context, steamID string, password string) (string, error) {
 	// TODO: エラーハンドリング
-	db, err := ul.mysqlConnector.Connect()
-	if err != nil {
+	if err := ul.repositoryConnector.Open(); err != nil {
 		return "", err
 	}
-	defer db.Close()
+	defer ul.repositoryConnector.Close()
 
-	repository := users.NewUsersRepositry(db)
+	repository := ul.repositoryConnector.GetUserRepository()
 	user, err := repository.GetUserBySteamID(ctx, steamID)
 	if err != nil {
 		return "", err

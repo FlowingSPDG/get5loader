@@ -47,19 +47,19 @@ type RepositoryConnector interface {
 	Close() error
 
 	// GetUserRepository returns a user repository. You must open a repository connection before calling this method.
-	GetUserRepository() (UsersRepositry, error)
+	GetUserRepository() UsersRepositry
 	// GetGameServersRepository returns a game server repository. You must open a repository connection before calling this method.
-	GetGameServersRepository() (GameServersRepository, error)
+	GetGameServersRepository() GameServersRepository
 	// GetMatchesRepository returns a match repository. You must open a repository connection before calling this method.
-	GetMatchesRepository() (MatchesRepository, error)
+	GetMatchesRepository() MatchesRepository
 	// GetMapStatsRepository returns a map stats repository. You must open a repository connection before calling this method.
-	GetMapStatsRepository() (MapStatsRepository, error)
+	GetMapStatsRepository() MapStatsRepository
 	// GetPlayerStatsRepository returns a player stats repository. You must open a repository connection before calling this method.
-	GetPlayerStatsRepository() (PlayerStatsRepository, error)
+	GetPlayerStatsRepository() PlayerStatsRepository
 	// GetTeamsRepository returns a team repository. You must open a repository connection before calling this method.
-	GetTeamsRepository() (TeamsRepository, error)
+	GetTeamsRepository() TeamsRepository
 	// GetPlayersRepository returns a player repository. You must open a repository connection before calling this method.
-	GetPlayersRepository() (PlayersRepository, error)
+	GetPlayersRepository() PlayersRepository
 }
 
 // RepositoryConnectorWithTx is a interface for opening and closing a repository connection with transaction.
@@ -71,19 +71,19 @@ type RepositoryConnectorWithTx interface {
 	Close() error
 
 	// GetUserRepository returns a user repository. You must open a repository connection before calling this method.
-	GetUserRepository() (UsersRepositry, error)
+	GetUserRepository() UsersRepositry
 	// GetGameServersRepository returns a game server repository. You must open a repository connection before calling this method.
-	GetGameServersRepository() (GameServersRepository, error)
+	GetGameServersRepository() GameServersRepository
 	// GetMatchesRepository returns a match repository. You must open a repository connection before calling this method.
-	GetMatchesRepository() (MatchesRepository, error)
+	GetMatchesRepository() MatchesRepository
 	// GetMapStatsRepository returns a map stats repository. You must open a repository connection before calling this method.
-	GetMapStatsRepository() (MapStatsRepository, error)
+	GetMapStatsRepository() MapStatsRepository
 	// GetPlayerStatsRepository returns a player stats repository. You must open a repository connection before calling this method.
-	GetPlayerStatsRepository() (PlayerStatsRepository, error)
+	GetPlayerStatsRepository() PlayerStatsRepository
 	// GetTeamsRepository returns a team repository. You must open a repository connection before calling this method.
-	GetTeamsRepository() (TeamsRepository, error)
+	GetTeamsRepository() TeamsRepository
 	// GetPlayersRepository returns a player repository. You must open a repository connection before calling this method.
-	GetPlayersRepository() (PlayersRepository, error)
+	GetPlayersRepository() PlayersRepository
 
 	// Commit commits a transaction.
 	Commit() error
