@@ -58,8 +58,8 @@ down:
 	docker compose down
 generate:
 	@cd backend && \
-	go install golang.org/x/tools/cmd/stringer@v0.11.1 \
-	go install github.com/sqlc-dev/sqlc/cmd/sqlc@latest \
+	go install golang.org/x/tools/cmd/stringer@v0.11.1 && \
+	go install github.com/sqlc-dev/sqlc/cmd/sqlc@latest && \
 	go generate ./...
 # Cross compile for go
 build-all: clean build-prepare build-web

@@ -4,9 +4,9 @@ WHERE id = ? LIMIT 1;
 
 -- name: AddMatch :execresult
 INSERT INTO matches (
-  user_id, server_id, team1_id, team2_id, start_time, end_time, max_maps, title, skip_veto, api_key
+  user_id, server_id, team1_id, team2_id, start_time, end_time, max_maps, title, skip_veto, api_key, status
 ) VALUES (
-    ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
+    ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
 );
 
 -- name: GetMatchesByUser :many

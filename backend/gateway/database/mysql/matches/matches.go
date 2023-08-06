@@ -42,6 +42,7 @@ func (mr *matchRepository) AddMatch(ctx context.Context, userID int64, serverID 
 		Title:     title,
 		SkipVeto:  skipVeto,
 		ApiKey:    apiKey,
+		Status:    int32(entity.MATCH_STATUS_PENDING),
 	})
 
 	if err != nil {
