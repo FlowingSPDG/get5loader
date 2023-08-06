@@ -13,8 +13,6 @@ func NewMySQLMatchesRepositoryConnector(connector database.DBConnector) database
 	return &mysqlMatchesRepositoryConnector{connector: connector}
 }
 
-// TODO: トランザクション処理を含んだバージョンを作成する
-
 // Open implements database.RepositoryConnector.
 func (mmrc *mysqlMatchesRepositoryConnector) Open() (database.MatchesRepository, error) {
 	if err := mmrc.connector.Open(); err != nil {
