@@ -3,10 +3,10 @@ package usecase
 import (
 	"context"
 
-	"github.com/golang-jwt/jwt/v5"
 	"golang.org/x/crypto/bcrypt"
 
 	"github.com/FlowingSPDG/get5-web-go/backend/gateway/database"
+	"github.com/FlowingSPDG/get5-web-go/backend/service/jwt"
 )
 
 type UserLogin interface {
@@ -15,7 +15,7 @@ type UserLogin interface {
 }
 
 type userLogin struct {
-	key                 []byte
+	jwtService          jwt.JWTGateway
 	repositoryConnector database.RepositoryConnector
 }
 
