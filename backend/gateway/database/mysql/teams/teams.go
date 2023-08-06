@@ -14,14 +14,14 @@ type teamsRepository struct {
 	queries *teams_gen.Queries
 }
 
-func NewPlayersRepository(db *sql.DB) database.TeamsRepository {
+func NewTeamssRepository(db *sql.DB) database.TeamsRepository {
 	queries := teams_gen.New(db)
 	return &teamsRepository{
 		queries: queries,
 	}
 }
 
-func NewPlayerRepositoryWithTx(db *sql.DB, tx *sql.Tx) database.TeamsRepository {
+func NewTeamsRepositoryWithTx(db *sql.DB, tx *sql.Tx) database.TeamsRepository {
 	queries := teams_gen.New(db).WithTx(tx)
 	return &teamsRepository{
 		queries: queries,

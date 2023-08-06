@@ -31,7 +31,7 @@ func mustGetWriteConnector(cfg config.Config) database.DBConnector {
 
 func InitializeGetMatchController(cfg config.Config) api.GetMatchController {
 	mysqlConnector := mustGetWriteConnector(cfg)
-	mysqlUsersRepositoryConnector := mysqlconnector.NewMySQLMatchesRepositoryConnector(mysqlConnector)
+	mysqlUsersRepositoryConnector := mysqlconnector.NewMySQLRepositoryConnector(mysqlConnector)
 	uc := usecase.NewGetMatch(mysqlUsersRepositoryConnector)
 	presenter := api_presenter.NewMatchPresenter()
 	return api_controller.NewGetMatchController(uc, presenter)

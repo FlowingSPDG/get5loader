@@ -40,25 +40,34 @@ type DBConnectorWithTx interface {
 }
 
 // RepositoryConnector is a generic interface for opening and closing a repository connection.
-type RepositoryConnector[R any] interface {
-	// Open opens a repository connection.
-	// You must call Close after using the repository.
-	Open() (R, error)
-	// Close closes a repository connection.
+type RepositoryConnector interface {
 	Close() error
+
+	OpenUserRepository() (UsersRepositry, error)
+	OpenGameServersRepository() (GameServersRepository, error)
+	OpenMatchesRepository() (MatchesRepository, error)
+	OpenMapStatsRepository() (MapStatsRepository, error)
+	OpenPlayerStatsRepository() (PlayerStatsRepository, error)
+	OpenTeamsRepository() (TeamsRepository, error)
+	OpenPlayersRepository() (PlayersRepository, error)
 }
 
 // RepositoryConnectorWithTx is a generic interface for opening and closing a repository connection with transaction.
 type RepositoryConnectorWithTx[R any] interface {
-	// Open opens a repository connection. Transaction starts immediately after opening.
-	// You must call Close and Commit or Rollback after using the repository.
-	Open() (R, error)
 	// Close closes a repository connection.
 	Close() error
 	// Commit commits a transaction.
 	Commit() error
 	// Rollback rollbacks a transaction.
 	Rollback() error
+
+	OpenUserRepository() (UsersRepositry, error)
+	OpenGameServersRepository() (GameServersRepository, error)
+	OpenMatchesRepository() (MatchesRepository, error)
+	OpenMapStatsRepository() (MapStatsRepository, error)
+	OpenPlayerStatsRepository() (PlayerStatsRepository, error)
+	OpenTeamsRepository() (TeamsRepository, error)
+	OpenPlayersRepository() (PlayersRepository, error)
 }
 
 // UsersRepositry is an interface for user repository.

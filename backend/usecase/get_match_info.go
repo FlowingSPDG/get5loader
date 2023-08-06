@@ -12,24 +12,24 @@ type GetMatch interface {
 }
 
 type getMatch struct {
-	matchesRepositoryConnector database.RepositoryConnector[database.MatchesRepository]
+	repositoryConnector database.RepositoryConnector
 }
 
 func NewGetMatch(
-	matchesRepositoryConnector database.RepositoryConnector[database.MatchesRepository],
+	repositoryConnector database.RepositoryConnector,
 ) GetMatch {
 	return &getMatch{
-		matchesRepositoryConnector: matchesRepositoryConnector,
+		repositoryConnector: repositoryConnector,
 	}
 }
 
 // Handle implements GetMatchInfo.
 func (gm *getMatch) Handle(ctx context.Context, matchID int64) (*entity.Match, error) {
-	repository, err := gm.matchesRepositoryConnector.Open()
+	repository, err := gm.repositoryConnector.OpenMatchesRepository()
 	if err != nil {
 		return nil, err
 	}
-	defer gm.matchesRepositoryConnector.Close()
+	defer gm.repositoryConnector.Close()
 
 	match, err := repository.GetMatch(ctx, matchID)
 	if err != nil {
