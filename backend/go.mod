@@ -10,6 +10,7 @@ require (
 	github.com/golang-jwt/jwt/v5 v5.0.0
 	github.com/google/uuid v1.3.0
 	github.com/stretchr/testify v1.8.4
+	go.uber.org/mock v0.2.0
 	golang.org/x/crypto v0.12.0
 )
 
@@ -34,7 +35,6 @@ require (
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/twitchyliquid64/golang-asm v0.15.1 // indirect
 	github.com/ugorji/go/codec v1.2.11 // indirect
-	go.uber.org/mock v0.2.0 // indirect
 	golang.org/x/arch v0.3.0 // indirect
 	golang.org/x/net v0.12.0 // indirect
 	golang.org/x/sys v0.11.0 // indirect
