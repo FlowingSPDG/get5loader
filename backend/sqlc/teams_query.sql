@@ -12,7 +12,7 @@ WHERE public_team = TRUE;
 
 -- name: AddTeam :execresult
 INSERT INTO teams (
-  ?, user_id, name, flag, logo, tag, public_team
+  id, user_id, name, flag, logo, tag, public_team
 ) VALUES (
   ?, ?, ?, ?, ?, ?, ?
 );
