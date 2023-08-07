@@ -8,6 +8,7 @@ type (
 	MatchID       string
 	TeamID        string
 	MapStatsID    string
+	PlayerID      string
 	PlayerStatsID string
 	SteamID       uint64 // SteamID64. Note: SteamID3 is not supported. Note: some database drivers may not support uint64.
 )
@@ -112,7 +113,7 @@ type Team struct {
 }
 
 type Player struct {
-	ID      PlayerStatsID
+	ID      PlayerID
 	TeamID  TeamID
 	SteamID SteamID
 	Name    string

@@ -180,7 +180,7 @@ type PlayersRepository interface {
 	// AddPlayer adds a player.
 	AddPlayer(ctx context.Context, teamID entity.TeamID, steamID entity.SteamID, name string) error
 	// GetPlayer returns a player.
-	GetPlayer(ctx context.Context, id entity.PlayerStatsID) (*entity.Player, error)
+	GetPlayer(ctx context.Context, id entity.PlayerID) (*entity.Player, error)
 	// GetPlayersByTeam returns players owned by a team.
 	GetPlayersByTeam(ctx context.Context, teamID entity.TeamID) ([]*entity.Player, error)
 	// DeletePlayer deletes a player.
