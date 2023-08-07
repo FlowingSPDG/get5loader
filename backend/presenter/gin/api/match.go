@@ -21,11 +21,11 @@ func NewMatchPresenter() MatchPresenter {
 // Handle implements MatchPresenter.
 func (mp *matchPresenter) Handle(c *gin.Context, m *entity.Match) {
 	data := match{
-		ID:         string(m.ID),
-		UserID:     string(m.UserID),
-		Team1ID:    string(m.Team1ID),
-		Team2ID:    string(m.Team2ID),
-		Winner:     nil,
+		ID:         m.ID,
+		UserID:     m.UserID,
+		Team1ID:    m.Team1ID,
+		Team2ID:    m.Team2ID,
+		Winner:     m.Winner,
 		Cancelled:  m.Status == entity.MATCH_STATUS_CANCELLED,
 		StartTime:  m.StartTime,
 		EndTime:    m.EndTime,
@@ -35,14 +35,8 @@ func (mp *matchPresenter) Handle(c *gin.Context, m *entity.Match) {
 		Team1Score: int(m.Team1Score),
 		Team2Score: int(m.Team2Score),
 		Forfeit:    *m.Forfeit,
-		ServerID:   string(m.ServerID),
+		ServerID:   m.ServerID,
 		Status:     m.Status.String(),
 	}
-
-	if m.Winner != nil {
-		winner := string(*m.Winner)
-		data.Winner = &winner
-	}
-
 	c.JSON(200, data)
 }
