@@ -2,6 +2,7 @@ package usecase_test
 
 import (
 	"context"
+	"errors"
 	"testing"
 
 	"github.com/FlowingSPDG/get5-web-go/backend/entity"
@@ -33,7 +34,7 @@ func TestValidateJWT(t *testing.T) {
 			name:     "invalid token",
 			input:    "invalid",
 			expected: nil,
-			err:      nil,
+			err:      errors.New("invalid token"),
 		},
 	}
 
