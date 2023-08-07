@@ -37,7 +37,8 @@ func (jac *jwtAuthController) Handle(c *gin.Context) {
 	}
 
 	// contextにadmin,userIDを入れる
-	c.Next()
+	g5ctx.
+		c.Next()
 }
 
 func NewJWTAuthController(
