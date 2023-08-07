@@ -47,6 +47,10 @@ func (ur *userRegister) RegisterUser(ctx context.Context, steamID entity.SteamID
 
 	if _, err := repository.GetUserBySteamID(ctx, steamID); err == nil {
 		return "", errors.New("user already exists")
+	} else {
+		if database.IsInternal(err) {
+			return "", err
+		}
 	}
 
 	if err := repository.CreateUser(ctx, steamID, name, admin, string(hash)); err != nil {

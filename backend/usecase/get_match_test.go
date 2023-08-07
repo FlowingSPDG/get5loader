@@ -6,12 +6,12 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/assert"
+	"go.uber.org/mock/gomock"
 
 	"github.com/FlowingSPDG/get5-web-go/backend/entity"
 	"github.com/FlowingSPDG/get5-web-go/backend/g5ctx"
 	"github.com/FlowingSPDG/get5-web-go/backend/gateway/database"
-	"github.com/FlowingSPDG/get5-web-go/backend/gateway/database/mock/connector"
-	"github.com/FlowingSPDG/get5-web-go/backend/gateway/database/mock/matches"
+	mock_database "github.com/FlowingSPDG/get5-web-go/backend/gateway/database/mock"
 	"github.com/FlowingSPDG/get5-web-go/backend/usecase"
 )
 
@@ -52,47 +52,24 @@ func TestGetMatch(t *testing.T) {
 			err:      database.ErrNotFound,
 		},
 	}
-
-	// mock connectorの作成
-	mockConnector := connector.NewMockRepositoryConnector(
-		nil,
-		nil,
-		nil,
-		matches.NewMockMatchesRepository(
-			map[entity.MatchID]*entity.Match{
-				"1": {
-					ID:         "",
-					UserID:     "",
-					ServerID:   "",
-					Team1ID:    "",
-					Team2ID:    "",
-					Winner:     nil,
-					StartTime:  &time.Time{},
-					EndTime:    &time.Time{},
-					MaxMaps:    0,
-					Title:      "",
-					SkipVeto:   false,
-					APIKey:     "",
-					Team1Score: 0,
-					Team2Score: 0,
-					Forfeit:    new(bool),
-					Status:     0,
-				},
-			},
-			map[entity.UserID][]*entity.Match{},
-			map[entity.TeamID][]*entity.Match{},
-			map[entity.TeamID][]*entity.Match{},
-		),
-		nil,
-		nil,
-		nil,
-	)
-	uc := usecase.NewGetMatch(mockConnector)
-
 	for _, tc := range tt {
 		t.Run(tc.name, func(t *testing.T) {
 			ctx := context.Background()
 			ctx = g5ctx.SetOperation(ctx, g5ctx.OperationTypeUser)
+
+			// mock connectorの作成
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
+
+			// mockの作成
+			mockConnector := mock_database.NewMockRepositoryConnector(ctrl)
+			mockConnector.EXPECT().Open().Return(nil)
+			mockConnector.EXPECT().Close().Return(nil)
+			mockMatchesRepository := mock_database.NewMockMatchesRepository(ctrl)
+			mockMatchesRepository.EXPECT().GetMatch(ctx, tc.input).Return(tc.expected, tc.err)
+			mockConnector.EXPECT().GetMatchesRepository().Return(mockMatchesRepository)
+
+			uc := usecase.NewGetMatch(mockConnector)
 
 			actual, err := uc.Get(ctx, tc.input)
 			assert.Equal(t, tc.expected, actual)
