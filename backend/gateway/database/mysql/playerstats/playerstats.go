@@ -29,8 +29,8 @@ func NewPlayerStatsRepositoryWithTx(db *sql.DB, tx *sql.Tx) database.PlayerStats
 }
 
 // GetPlayerStatsByMapstats implements database.PlayerStatsRepository.
-func (psr *playerStatsRepository) GetPlayerStatsByMapstats(ctx context.Context, matchID int64) (*entity.PlayerStats, error) {
-	stat, err := psr.queries.GetPlayerStatsByMap(ctx, matchID)
+func (psr *playerStatsRepository) GetPlayerStatsByMapstats(ctx context.Context, mapstatsID entity.MapStatsID) (*entity.PlayerStats, error) {
+	stat, err := psr.queries.GetPlayerStatsByMap(ctx, string(mapstatsID))
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, database.NewNotFoundError(err)
@@ -39,11 +39,11 @@ func (psr *playerStatsRepository) GetPlayerStatsByMapstats(ctx context.Context, 
 	}
 
 	return &entity.PlayerStats{
-		ID:               stat.ID,
-		MatchID:          stat.MatchID,
-		MapID:            stat.MapID,
-		TeamID:           stat.TeamID,
-		SteamID:          stat.SteamID,
+		ID:               entity.PlayerStatsID(stat.ID),
+		MatchID:          entity.MatchID(stat.MatchID),
+		MapID:            entity.MapStatsID(stat.MapID),
+		TeamID:           entity.TeamID(stat.TeamID),
+		SteamID:          entity.SteamID(stat.SteamID),
 		Name:             stat.Name,
 		Kills:            stat.Kills,
 		Assists:          stat.Assists,
@@ -73,8 +73,8 @@ func (psr *playerStatsRepository) GetPlayerStatsByMapstats(ctx context.Context, 
 }
 
 // GetPlayerStatsByMatch implements database.PlayerStatsRepository.
-func (psr *playerStatsRepository) GetPlayerStatsByMatch(ctx context.Context, matchID int64) ([]*entity.PlayerStats, error) {
-	stats, err := psr.queries.GetPlayerStatsByMatch(ctx, matchID)
+func (psr *playerStatsRepository) GetPlayerStatsByMatch(ctx context.Context, matchID entity.MatchID) ([]*entity.PlayerStats, error) {
+	stats, err := psr.queries.GetPlayerStatsByMatch(ctx, string(matchID))
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, database.NewNotFoundError(err)
@@ -85,11 +85,11 @@ func (psr *playerStatsRepository) GetPlayerStatsByMatch(ctx context.Context, mat
 	playerStats := make([]*entity.PlayerStats, 0, len(stats))
 	for _, stat := range stats {
 		playerStats = append(playerStats, &entity.PlayerStats{
-			ID:               stat.ID,
-			MatchID:          stat.MatchID,
-			MapID:            stat.MapID,
-			TeamID:           stat.TeamID,
-			SteamID:          stat.SteamID,
+			ID:               entity.PlayerStatsID(stat.ID),
+			MatchID:          entity.MatchID(stat.MatchID),
+			MapID:            entity.MapStatsID(stat.MapID),
+			TeamID:           entity.TeamID(stat.TeamID),
+			SteamID:          entity.SteamID(stat.SteamID),
 			Name:             stat.Name,
 			Kills:            stat.Kills,
 			Assists:          stat.Assists,
@@ -120,8 +120,8 @@ func (psr *playerStatsRepository) GetPlayerStatsByMatch(ctx context.Context, mat
 }
 
 // GetPlayerStatsBySteamID implements database.PlayerStatsRepository.
-func (psr *playerStatsRepository) GetPlayerStatsBySteamID(ctx context.Context, steamID string) ([]*entity.PlayerStats, error) {
-	stats, err := psr.queries.GetPlayerStatsBySteamID(ctx, steamID)
+func (psr *playerStatsRepository) GetPlayerStatsBySteamID(ctx context.Context, steamID entity.SteamID) ([]*entity.PlayerStats, error) {
+	stats, err := psr.queries.GetPlayerStatsBySteamID(ctx, uint64(steamID))
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, database.NewNotFoundError(err)
@@ -132,11 +132,11 @@ func (psr *playerStatsRepository) GetPlayerStatsBySteamID(ctx context.Context, s
 	playerStats := make([]*entity.PlayerStats, 0, len(stats))
 	for _, stat := range stats {
 		playerStats = append(playerStats, &entity.PlayerStats{
-			ID:               stat.ID,
-			MatchID:          stat.MatchID,
-			MapID:            stat.MapID,
-			TeamID:           stat.TeamID,
-			SteamID:          stat.SteamID,
+			ID:               entity.PlayerStatsID(stat.ID),
+			MatchID:          entity.MatchID(stat.MatchID),
+			MapID:            entity.MapStatsID(stat.MapID),
+			TeamID:           entity.TeamID(stat.TeamID),
+			SteamID:          entity.SteamID(stat.SteamID),
 			Name:             stat.Name,
 			Kills:            stat.Kills,
 			Assists:          stat.Assists,

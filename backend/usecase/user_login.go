@@ -5,13 +5,14 @@ import (
 
 	"golang.org/x/crypto/bcrypt"
 
+	"github.com/FlowingSPDG/get5-web-go/backend/entity"
 	"github.com/FlowingSPDG/get5-web-go/backend/gateway/database"
 	"github.com/FlowingSPDG/get5-web-go/backend/service/jwt"
 )
 
 type UserLogin interface {
 	// HandleLoginSteamID returns jwt token if login is successful.
-	IssueJWTBySteamID(ctx context.Context, steamID string, password string) (jwt string, err error)
+	IssueJWTBySteamID(ctx context.Context, steamID entity.SteamID, password string) (jwt string, err error)
 }
 
 type userLogin struct {
@@ -30,7 +31,7 @@ func NewUserLogin(
 }
 
 // HandleLoginSteamID implements UserLoginUsecase.
-func (ul *userLogin) IssueJWTBySteamID(ctx context.Context, steamID string, password string) (string, error) {
+func (ul *userLogin) IssueJWTBySteamID(ctx context.Context, steamID entity.SteamID, password string) (string, error) {
 	// TODO: エラーハンドリング
 	if err := ul.repositoryConnector.Open(); err != nil {
 		return "", err
