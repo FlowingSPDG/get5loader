@@ -8,7 +8,7 @@ WHERE steam_id = ? LIMIT 1;
 
 -- name: CreateUser :execresult
 INSERT INTO users (
-  steam_id, name, admin, password_hash
+  id ,steam_id, name, admin, password_hash
 ) VALUES (
-  ?, ?, ?, ?
+  ?, ?, ?, ?, ?
 );

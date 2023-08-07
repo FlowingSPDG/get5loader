@@ -12,17 +12,18 @@ import (
 
 const addMatch = `-- name: AddMatch :execresult
 INSERT INTO matches (
-  user_id, server_id, team1_id, team2_id, start_time, end_time, max_maps, title, skip_veto, api_key, status
+  id, user_id, server_id, team1_id, team2_id, start_time, end_time, max_maps, title, skip_veto, api_key, status
 ) VALUES (
-    ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
+    ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
 )
 `
 
 type AddMatchParams struct {
-	UserID    int64
-	ServerID  int64
-	Team1ID   int64
-	Team2ID   int64
+	ID        string
+	UserID    string
+	ServerID  string
+	Team1ID   string
+	Team2ID   string
 	StartTime sql.NullTime
 	EndTime   sql.NullTime
 	MaxMaps   int32
@@ -34,6 +35,7 @@ type AddMatchParams struct {
 
 func (q *Queries) AddMatch(ctx context.Context, arg AddMatchParams) (sql.Result, error) {
 	return q.db.ExecContext(ctx, addMatch,
+		arg.ID,
 		arg.UserID,
 		arg.ServerID,
 		arg.Team1ID,
@@ -54,7 +56,7 @@ SET status = 4
 WHERE id = ?
 `
 
-func (q *Queries) CancelMatch(ctx context.Context, id int64) (sql.Result, error) {
+func (q *Queries) CancelMatch(ctx context.Context, id string) (sql.Result, error) {
 	return q.db.ExecContext(ctx, cancelMatch, id)
 }
 
@@ -63,7 +65,7 @@ SELECT id, user_id, server_id, team1_id, team2_id, winner, cancelled, start_time
 WHERE id = ? LIMIT 1
 `
 
-func (q *Queries) GetMatch(ctx context.Context, id int64) (Match, error) {
+func (q *Queries) GetMatch(ctx context.Context, id string) (Match, error) {
 	row := q.db.QueryRowContext(ctx, getMatch, id)
 	var i Match
 	err := row.Scan(
@@ -94,8 +96,8 @@ WHERE team1_id = ? OR team2_id = ?
 `
 
 type GetMatchesByTeamParams struct {
-	Team1ID int64
-	Team2ID int64
+	Team1ID string
+	Team2ID string
 }
 
 func (q *Queries) GetMatchesByTeam(ctx context.Context, arg GetMatchesByTeamParams) ([]Match, error) {
@@ -144,7 +146,7 @@ SELECT id, user_id, server_id, team1_id, team2_id, winner, cancelled, start_time
 WHERE user_id = ?
 `
 
-func (q *Queries) GetMatchesByUser(ctx context.Context, userID int64) ([]Match, error) {
+func (q *Queries) GetMatchesByUser(ctx context.Context, userID string) ([]Match, error) {
 	rows, err := q.db.QueryContext(ctx, getMatchesByUser, userID)
 	if err != nil {
 		return nil, err
@@ -190,7 +192,7 @@ SELECT id, user_id, server_id, team1_id, team2_id, winner, cancelled, start_time
 WHERE winner = ?
 `
 
-func (q *Queries) GetMatchesByWinner(ctx context.Context, winner sql.NullInt64) ([]Match, error) {
+func (q *Queries) GetMatchesByWinner(ctx context.Context, winner sql.NullString) ([]Match, error) {
 	rows, err := q.db.QueryContext(ctx, getMatchesByWinner, winner)
 	if err != nil {
 		return nil, err
@@ -239,7 +241,7 @@ WHERE id = ?
 
 type StartMatchParams struct {
 	StartTime sql.NullTime
-	ID        int64
+	ID        string
 }
 
 func (q *Queries) StartMatch(ctx context.Context, arg StartMatchParams) (sql.Result, error) {
@@ -253,12 +255,12 @@ WHERE id = ?
 `
 
 type UpdateMatchWinnerParams struct {
-	Winner     sql.NullInt64
+	Winner     sql.NullString
 	EndTime    sql.NullTime
 	Forfeit    sql.NullBool
 	Team1Score uint32
 	Team2Score uint32
-	ID         int64
+	ID         string
 }
 
 func (q *Queries) UpdateMatchWinner(ctx context.Context, arg UpdateMatchWinnerParams) (sql.Result, error) {
@@ -280,7 +282,7 @@ WHERE id = ?
 
 type UpdateTeam1ScoreParams struct {
 	Team1Score uint32
-	ID         int64
+	ID         string
 }
 
 func (q *Queries) UpdateTeam1Score(ctx context.Context, arg UpdateTeam1ScoreParams) (sql.Result, error) {
@@ -295,7 +297,7 @@ WHERE id = ?
 
 type UpdateTeam2ScoreParams struct {
 	Team2Score uint32
-	ID         int64
+	ID         string
 }
 
 func (q *Queries) UpdateTeam2Score(ctx context.Context, arg UpdateTeam2ScoreParams) (sql.Result, error) {

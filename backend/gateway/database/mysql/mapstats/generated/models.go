@@ -9,13 +9,13 @@ import (
 )
 
 type MapStat struct {
-	ID         int64
-	MatchID    int64
+	ID         string
+	MatchID    string
 	MapNumber  uint32
 	MapName    string
 	StartTime  sql.NullTime
 	EndTime    sql.NullTime
-	Winner     sql.NullInt64
+	Winner     sql.NullString
 	Team1Score uint32
 	Team2Score uint32
 	Forfeit    sql.NullBool

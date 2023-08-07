@@ -1,6 +1,6 @@
 CREATE TABLE `teams` (
-  `id` BIGINT NOT NULL PRIMARY KEY AUTO_INCREMENT,
-  `user_id` BIGINT NOT NULL,
+  `id` VARCHAR(36) NOT NULL PRIMARY KEY,
+  `user_id` VARCHAR(36) NOT NULL,
   `name` varchar(40) NOT NULL,
   `flag` varchar(4) NOT NULL,
   `logo` varchar(10) NOT NULL,

@@ -9,14 +9,19 @@ import (
 	"github.com/FlowingSPDG/get5-web-go/backend/gateway/database/mysql/playerstats"
 	"github.com/FlowingSPDG/get5-web-go/backend/gateway/database/mysql/teams"
 	"github.com/FlowingSPDG/get5-web-go/backend/gateway/database/mysql/users"
+	"github.com/FlowingSPDG/get5-web-go/backend/service/uuid"
 )
 
 type mysqlRepositoryConnectorWithTx struct {
-	connector database.DBConnectorWithTx
+	uuidGenerator uuid.UUIDGenerator
+	connector     database.DBConnectorWithTx
 }
 
-func NewMySQLRepositoryConnectorWithTx(connector database.DBConnectorWithTx) database.RepositoryConnectorWithTx {
-	return &mysqlRepositoryConnectorWithTx{connector: connector}
+func NewMySQLRepositoryConnectorWithTx(uuidGenerator uuid.UUIDGenerator, connector database.DBConnectorWithTx) database.RepositoryConnectorWithTx {
+	return &mysqlRepositoryConnectorWithTx{
+		uuidGenerator: uuidGenerator,
+		connector:     connector,
+	}
 }
 
 func (mrctx *mysqlRepositoryConnectorWithTx) Open() error {
@@ -52,47 +57,47 @@ func (mrctx *mysqlRepositoryConnectorWithTx) Rollback() error {
 func (mrctx *mysqlRepositoryConnectorWithTx) GetGameServersRepository() database.GameServersRepository {
 	conn := mrctx.connector.GetConnection()
 	tx := mrctx.connector.GetTx()
-	return gameservers.NewGameServerRepositoryWithTx(conn, tx)
+	return gameservers.NewGameServerRepositoryWithTx(mrctx.uuidGenerator, conn, tx)
 }
 
 // OpenMapStatsRepository implements database.RepositoryConnector.
 func (mrctx *mysqlRepositoryConnectorWithTx) GetMapStatsRepository() database.MapStatsRepository {
 	conn := mrctx.connector.GetConnection()
 	tx := mrctx.connector.GetTx()
-	return mapstats.NewMapStatsRepositoryWithTx(conn, tx)
+	return mapstats.NewMapStatsRepositoryWithTx(mrctx.uuidGenerator, conn, tx)
 }
 
 // OpenMatchesRepository implements database.RepositoryConnector.
 func (mrctx *mysqlRepositoryConnectorWithTx) GetMatchesRepository() database.MatchesRepository {
 	conn := mrctx.connector.GetConnection()
 	tx := mrctx.connector.GetTx()
-	return matches.NewMatchRepositoryWithTx(conn, tx)
+	return matches.NewMatchRepositoryWithTx(mrctx.uuidGenerator, conn, tx)
 }
 
 // OpenPlayerStatsRepository implements database.RepositoryConnector.
 func (mrctx *mysqlRepositoryConnectorWithTx) GetPlayerStatsRepository() database.PlayerStatsRepository {
 	conn := mrctx.connector.GetConnection()
 	tx := mrctx.connector.GetTx()
-	return playerstats.NewPlayerStatsRepositoryWithTx(conn, tx)
+	return playerstats.NewPlayerStatsRepositoryWithTx(mrctx.uuidGenerator, conn, tx)
 }
 
 // OpenPlayersRepository implements database.RepositoryConnector.
 func (mrctx *mysqlRepositoryConnectorWithTx) GetPlayersRepository() database.PlayersRepository {
 	conn := mrctx.connector.GetConnection()
 	tx := mrctx.connector.GetTx()
-	return players.NewPlayersRepositoryWithTx(conn, tx)
+	return players.NewPlayersRepositoryWithTx(mrctx.uuidGenerator, conn, tx)
 }
 
 // OpenTeamsRepository implements database.RepositoryConnector.
 func (mrctx *mysqlRepositoryConnectorWithTx) GetTeamsRepository() database.TeamsRepository {
 	conn := mrctx.connector.GetConnection()
 	tx := mrctx.connector.GetTx()
-	return teams.NewTeamsRepositoryWithTx(conn, tx)
+	return teams.NewTeamsRepositoryWithTx(mrctx.uuidGenerator, conn, tx)
 }
 
 // OpenUserRepository implements database.RepositoryConnector.
 func (mrctx *mysqlRepositoryConnectorWithTx) GetUserRepository() database.UsersRepositry {
 	conn := mrctx.connector.GetConnection()
 	tx := mrctx.connector.GetTx()
-	return users.NewUsersRepositryWithTx(conn, tx)
+	return users.NewUsersRepositryWithTx(mrctx.uuidGenerator, conn, tx)
 }

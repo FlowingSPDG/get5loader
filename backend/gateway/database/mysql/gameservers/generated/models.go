@@ -7,9 +7,9 @@ package gameservers_gen
 import ()
 
 type GameServer struct {
-	ID           int64
-	UserID       int64
-	Ip           string
+	ID           string
+	UserID       string
+	Ip           []byte
 	Port         uint32
 	RconPassword string
 	DisplayName  string

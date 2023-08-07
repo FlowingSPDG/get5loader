@@ -8,7 +8,7 @@ import (
 )
 
 type GetMatch interface {
-	Handle(ctx context.Context, matchID int64) (*entity.Match, error)
+	Handle(ctx context.Context, matchID entity.MatchID) (*entity.Match, error)
 }
 
 type getMatch struct {
@@ -24,7 +24,7 @@ func NewGetMatch(
 }
 
 // Handle implements GetMatchInfo.
-func (gm *getMatch) Handle(ctx context.Context, matchID int64) (*entity.Match, error) {
+func (gm *getMatch) Handle(ctx context.Context, matchID entity.MatchID) (*entity.Match, error) {
 	if err := gm.repositoryConnector.Open(); err != nil {
 		return nil, err
 	}

@@ -12,10 +12,12 @@ WHERE team_id = ?;
 
 -- name: AddPlayer :execresult
 INSERT INTO players (
+  id,
   team_id,
   steam_id,
   name
 ) VALUES (
+  ?,
   ?,
   ?,
   ?

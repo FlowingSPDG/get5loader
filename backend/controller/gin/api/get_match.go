@@ -2,10 +2,10 @@ package api
 
 import (
 	"net/http"
-	"strconv"
 
 	"github.com/gin-gonic/gin"
 
+	"github.com/FlowingSPDG/get5-web-go/backend/entity"
 	"github.com/FlowingSPDG/get5-web-go/backend/gateway/database"
 	"github.com/FlowingSPDG/get5-web-go/backend/presenter/gin/api"
 	"github.com/FlowingSPDG/get5-web-go/backend/usecase"
@@ -32,16 +32,9 @@ func NewGetMatchController(
 
 // Handle implements GetMatchController.
 func (gmc *getMatchController) Handle(c *gin.Context) {
-	matchidStr := c.Params.ByName("matchID")
-	matchid, err := strconv.Atoi(matchidStr)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "matchID is not int",
-		})
-		return
-	}
+	matchid := c.Params.ByName("matchID")
 
-	match, err := gmc.uc.Handle(c, int64(matchid))
+	match, err := gmc.uc.Handle(c, entity.MatchID(matchid))
 	if err != nil {
 		if database.IsNotFound(err) {
 			c.JSON(http.StatusNotFound, gin.H{

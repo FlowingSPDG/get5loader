@@ -4,6 +4,7 @@ package database
 import (
 	"context"
 	"database/sql"
+	"net"
 	"time"
 
 	"github.com/FlowingSPDG/get5-web-go/backend/entity"
@@ -94,48 +95,48 @@ type RepositoryConnectorWithTx interface {
 // UsersRepositry is an interface for user repository.
 type UsersRepositry interface {
 	// CreateUser creates a user.
-	CreateUser(ctx context.Context, steamID string, name string, admin bool, hash string) (*entity.User, error)
+	CreateUser(ctx context.Context, steamID entity.SteamID, name string, admin bool, hash string) error
 	// GetUser returns a user.
-	GetUser(ctx context.Context, id int64) (*entity.User, error)
-	GetUserBySteamID(ctx context.Context, steamID string) (*entity.User, error)
+	GetUser(ctx context.Context, id entity.UserID) (*entity.User, error)
+	GetUserBySteamID(ctx context.Context, steamID entity.SteamID) (*entity.User, error)
 }
 
 // GameServersRepository is an interface for game server repository.
 type GameServersRepository interface {
 	// AddGameServer adds a game server.
-	AddGameServer(ctx context.Context, userID int64, ip string, port uint32, rconPassword string, displayName string, isPublic bool) (*entity.GameServer, error)
+	AddGameServer(ctx context.Context, userID entity.UserID, ip net.IP, port uint32, rconPassword string, displayName string, isPublic bool) error
 	// GetGameServer returns a game server.
-	GetGameServer(ctx context.Context, id int64) (*entity.GameServer, error)
+	GetGameServer(ctx context.Context, id entity.GameServerID) (*entity.GameServer, error)
 	// GetPublicGameServers returns public game servers.
 	GetPublicGameServers(ctx context.Context) ([]*entity.GameServer, error)
 	// GetGameServersByUser returns game servers owned by a user.
-	GetGameServersByUser(ctx context.Context, userID int64) ([]*entity.GameServer, error)
+	GetGameServersByUser(ctx context.Context, userID entity.UserID) ([]*entity.GameServer, error)
 	// DeleteGameServer deletes a game server.
-	DeleteGameServer(ctx context.Context, id int64) error
+	DeleteGameServer(ctx context.Context, id entity.GameServerID) error
 }
 
 // MatchesRepository is an interface for match repository.
 type MatchesRepository interface {
 	// AddMatch adds a match.
-	AddMatch(ctx context.Context, userID int64, serverID int64, team1ID int64, team2ID int64, startTime time.Time, endTime time.Time, maxMaps int32, title string, skipVeto bool, apiKey string) (*entity.Match, error)
+	AddMatch(ctx context.Context, userID entity.UserID, serverID entity.GameServerID, team1ID entity.TeamID, team2ID entity.TeamID, startTime time.Time, endTime time.Time, maxMaps int32, title string, skipVeto bool, apiKey string) error
 	// GetMatch returns a match.
-	GetMatch(ctx context.Context, id int64) (*entity.Match, error)
+	GetMatch(ctx context.Context, id entity.MatchID) (*entity.Match, error)
 	// GetMatchesByUser returns matches owned by a user.
-	GetMatchesByUser(ctx context.Context, userID int64) ([]*entity.Match, error)
+	GetMatchesByUser(ctx context.Context, userID entity.UserID) ([]*entity.Match, error)
 	// GetMatchesByTeam returns matches owned by a team.
-	GetMatchesByTeam(ctx context.Context, teamID int64) ([]*entity.Match, error)
+	GetMatchesByTeam(ctx context.Context, teamID entity.TeamID) ([]*entity.Match, error)
 	// GetMatchesByWinner returns matches won by a team.
-	GetMatchesByWinner(ctx context.Context, teamID int64) ([]*entity.Match, error)
+	GetMatchesByWinner(ctx context.Context, teamID entity.TeamID) ([]*entity.Match, error)
 	// UpdateMatchWinner updates a match winner.
-	UpdateMatchWinner(ctx context.Context, matchID int64, winnerID int64) error
+	UpdateMatchWinner(ctx context.Context, matchID entity.MatchID, winnerID entity.TeamID) error
 	// UpdateTeam1Score updates a match team1 score.
-	UpdateTeam1Score(ctx context.Context, matchID int64, score uint32) error
+	UpdateTeam1Score(ctx context.Context, matchID entity.MatchID, score uint32) error
 	// UpdateTeam2Score updates a match team2 score.
-	UpdateTeam2Score(ctx context.Context, matchID int64, score uint32) error
+	UpdateTeam2Score(ctx context.Context, matchID entity.MatchID, score uint32) error
 	// CancelMatch cancels a match.
-	CancelMatch(ctx context.Context, matchID int64) error
+	CancelMatch(ctx context.Context, matchID entity.MatchID) error
 	// StartMatch starts a match.
-	StartMatch(ctx context.Context, matchID int64) error
+	StartMatch(ctx context.Context, matchID entity.MatchID) error
 }
 
 // MapStatsRepository is an interface for map stats repository.
@@ -143,11 +144,11 @@ type MapStatsRepository interface {
 	// TODO.
 	// AddMapStats(ctx context.Context, matchID int64, mapNumber uint32, mapName string, winnerID int64, team1Score uint32, team2Score uint32) (*entity.MapStats, error)
 	// GetMapStats returns map stats.
-	GetMapStats(ctx context.Context, id int64) (*entity.MapStats, error)
+	GetMapStats(ctx context.Context, id entity.MapStatsID) (*entity.MapStats, error)
 	// GetMapStatsByMatch returns map stats owned by a match.
-	GetMapStatsByMatch(ctx context.Context, matchID int64) ([]*entity.MapStats, error)
+	GetMapStatsByMatch(ctx context.Context, matchID entity.MatchID) ([]*entity.MapStats, error)
 	// GetMapStatsByMatchAndMap returns map stats owned by a match and map number.
-	GetMapStatsByMatchAndMap(ctx context.Context, matchID int64, mapNumber uint32) (*entity.MapStats, error)
+	GetMapStatsByMatchAndMap(ctx context.Context, matchID entity.MatchID, mapNumber uint32) (*entity.MapStats, error)
 }
 
 // PlayerStatsRepository is an interface for player stats repository.
@@ -155,21 +156,21 @@ type PlayerStatsRepository interface {
 	// TODO.
 	// AddPlayerStats(ctx context.Context, mapStatsID int64, steamID string, name string, teamID int64, kills uint32, assists uint32, deaths uint32, hs uint32, flashAssists uint32, kast float32, rating float32) (*entity.PlayerStats, error)
 	// GetPlayerStatsBySteamID returns player stats owned by a steam ID.
-	GetPlayerStatsBySteamID(ctx context.Context, steamID string) ([]*entity.PlayerStats, error)
+	GetPlayerStatsBySteamID(ctx context.Context, steamID entity.SteamID) ([]*entity.PlayerStats, error)
 	// GetPlayerStatsByMatch returns player stats owned by a match.
-	GetPlayerStatsByMatch(ctx context.Context, matchID int64) ([]*entity.PlayerStats, error)
+	GetPlayerStatsByMatch(ctx context.Context, matchID entity.MatchID) ([]*entity.PlayerStats, error)
 	// GetPlayerStatsByMapstats returns player stats owned by a map stats.
-	GetPlayerStatsByMapstats(ctx context.Context, mapStatsID int64) (*entity.PlayerStats, error)
+	GetPlayerStatsByMapstats(ctx context.Context, mapStatsID entity.MapStatsID) (*entity.PlayerStats, error)
 }
 
 // TeamsRepository is an interface for team repository.
 type TeamsRepository interface {
 	// AddTeam adds a team.
-	AddTeam(ctx context.Context, userID int64, name string, tag string, flag string, logo string) (*entity.Team, error)
+	AddTeam(ctx context.Context, userID entity.UserID, name string, tag string, flag string, logo string) error
 	// GetTeam returns a team.
-	GetTeam(ctx context.Context, id int64) (*entity.Team, error)
+	GetTeam(ctx context.Context, id entity.TeamID) (*entity.Team, error)
 	// GetTeamsByUser returns teams owned by a user.
-	GetTeamsByUser(ctx context.Context, userID int64) ([]*entity.Team, error)
+	GetTeamsByUser(ctx context.Context, userID entity.UserID) ([]*entity.Team, error)
 	// GetPublicTeams returns public teams.
 	GetPublicTeams(ctx context.Context) ([]*entity.Team, error)
 }
@@ -177,11 +178,11 @@ type TeamsRepository interface {
 // PlayersRepository is an interface for player repository.
 type PlayersRepository interface {
 	// AddPlayer adds a player.
-	AddPlayer(ctx context.Context, teamID int64, steamID string, name string) (*entity.Player, error)
+	AddPlayer(ctx context.Context, teamID entity.TeamID, steamID entity.SteamID, name string) error
 	// GetPlayer returns a player.
-	GetPlayer(ctx context.Context, id int64) (*entity.Player, error)
+	GetPlayer(ctx context.Context, id entity.PlayerID) (*entity.Player, error)
 	// GetPlayersByTeam returns players owned by a team.
-	GetPlayersByTeam(ctx context.Context, teamID int64) ([]*entity.Player, error)
+	GetPlayersByTeam(ctx context.Context, teamID entity.TeamID) ([]*entity.Player, error)
 	// DeletePlayer deletes a player.
 	// DeletePlayer(ctx context.Context, id int64) error
 }

@@ -7,11 +7,11 @@ package playerstats_gen
 import ()
 
 type PlayerStat struct {
-	ID               int64
-	MatchID          int64
-	MapID            int64
-	TeamID           int64
-	SteamID          string
+	ID               string
+	MatchID          string
+	MapID            string
+	TeamID           string
+	SteamID          uint64
 	Name             string
 	Kills            int32
 	Deaths           int32

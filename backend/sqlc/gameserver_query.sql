@@ -4,9 +4,9 @@ WHERE id = ? LIMIT 1;
 
 -- name: AddGameServer :execresult
 INSERT INTO game_servers (
-  user_id, ip, port, rcon_password, display_name, is_public
+  id, user_id, ip, port, rcon_password, display_name, is_public
 ) VALUES (
-  ?, ?, ?, ?, ?, ?
+  ?, ?, ?, ?, ?, ?, ?
 );
 
 -- name: GetGameServersByUser :many

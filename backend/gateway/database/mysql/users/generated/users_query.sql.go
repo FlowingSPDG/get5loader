@@ -12,14 +12,15 @@ import (
 
 const createUser = `-- name: CreateUser :execresult
 INSERT INTO users (
-  steam_id, name, admin, password_hash
+  id ,steam_id, name, admin, password_hash
 ) VALUES (
-  ?, ?, ?, ?
+  ?, ?, ?, ?, ?
 )
 `
 
 type CreateUserParams struct {
-	SteamID      string
+	ID           string
+	SteamID      uint64
 	Name         string
 	Admin        bool
 	PasswordHash string
@@ -27,6 +28,7 @@ type CreateUserParams struct {
 
 func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (sql.Result, error) {
 	return q.db.ExecContext(ctx, createUser,
+		arg.ID,
 		arg.SteamID,
 		arg.Name,
 		arg.Admin,
@@ -39,7 +41,7 @@ SELECT id, steam_id, name, admin, created_at, updated_at, password_hash FROM use
 WHERE id = ? LIMIT 1
 `
 
-func (q *Queries) GetUser(ctx context.Context, id int64) (User, error) {
+func (q *Queries) GetUser(ctx context.Context, id string) (User, error) {
 	row := q.db.QueryRowContext(ctx, getUser, id)
 	var i User
 	err := row.Scan(
@@ -59,7 +61,7 @@ SELECT id, steam_id, name, admin, created_at, updated_at, password_hash FROM use
 WHERE steam_id = ? LIMIT 1
 `
 
-func (q *Queries) GetUserBySteamID(ctx context.Context, steamID string) (User, error) {
+func (q *Queries) GetUserBySteamID(ctx context.Context, steamID uint64) (User, error) {
 	row := q.db.QueryRowContext(ctx, getUserBySteamID, steamID)
 	var i User
 	err := row.Scan(
