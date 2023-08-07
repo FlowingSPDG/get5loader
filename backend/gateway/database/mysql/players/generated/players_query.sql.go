@@ -12,10 +12,12 @@ import (
 
 const addPlayer = `-- name: AddPlayer :execresult
 INSERT INTO players (
+  id,
   team_id,
   steam_id,
   name
 ) VALUES (
+  ?,
   ?,
   ?,
   ?
@@ -23,13 +25,19 @@ INSERT INTO players (
 `
 
 type AddPlayerParams struct {
+	ID      string
 	TeamID  string
 	SteamID uint64
 	Name    string
 }
 
 func (q *Queries) AddPlayer(ctx context.Context, arg AddPlayerParams) (sql.Result, error) {
-	return q.db.ExecContext(ctx, addPlayer, arg.TeamID, arg.SteamID, arg.Name)
+	return q.db.ExecContext(ctx, addPlayer,
+		arg.ID,
+		arg.TeamID,
+		arg.SteamID,
+		arg.Name,
+	)
 }
 
 const getPlayer = `-- name: GetPlayer :one

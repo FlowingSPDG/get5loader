@@ -9,29 +9,34 @@ import (
 	"github.com/FlowingSPDG/get5-web-go/backend/entity"
 	"github.com/FlowingSPDG/get5-web-go/backend/gateway/database"
 	gameservers_gen "github.com/FlowingSPDG/get5-web-go/backend/gateway/database/mysql/gameservers/generated"
+	"github.com/FlowingSPDG/get5-web-go/backend/service/uuid"
 )
 
 type gameServerRepository struct {
-	queries *gameservers_gen.Queries
+	uuidGenerator uuid.UUIDGenerator
+	queries       *gameservers_gen.Queries
 }
 
-func NewGameServerRepository(db *sql.DB) database.GameServersRepository {
+func NewGameServerRepository(uuidGenerator uuid.UUIDGenerator, db *sql.DB) database.GameServersRepository {
 	queries := gameservers_gen.New(db)
 	return &gameServerRepository{
-		queries: queries,
+		uuidGenerator: uuidGenerator,
+		queries:       queries,
 	}
 }
 
-func NewGameServerRepositoryWithTx(db *sql.DB, tx *sql.Tx) database.GameServersRepository {
+func NewGameServerRepositoryWithTx(uuidGenerator uuid.UUIDGenerator, db *sql.DB, tx *sql.Tx) database.GameServersRepository {
 	queries := gameservers_gen.New(db).WithTx(tx)
 	return &gameServerRepository{
-		queries: queries,
+		uuidGenerator: uuidGenerator,
+		queries:       queries,
 	}
 }
 
 // AddGameServer implements database.GameServerRepository.
 func (gr *gameServerRepository) AddGameServer(ctx context.Context, userID entity.UserID, ip net.IP, port uint32, rconPassword string, displayName string, isPublic bool) error {
 	if _, err := gr.queries.AddGameServer(ctx, gameservers_gen.AddGameServerParams{
+		ID:           gr.uuidGenerator.Generate(),
 		UserID:       string(userID),
 		Ip:           ip,
 		Port:         port,

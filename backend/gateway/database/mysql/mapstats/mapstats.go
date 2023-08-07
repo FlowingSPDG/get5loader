@@ -8,23 +8,27 @@ import (
 	"github.com/FlowingSPDG/get5-web-go/backend/entity"
 	"github.com/FlowingSPDG/get5-web-go/backend/gateway/database"
 	mapstats_gen "github.com/FlowingSPDG/get5-web-go/backend/gateway/database/mysql/mapstats/generated"
+	"github.com/FlowingSPDG/get5-web-go/backend/service/uuid"
 )
 
 type mapStatsRepository struct {
-	queries *mapstats_gen.Queries
+	uuidGenerator uuid.UUIDGenerator
+	queries       *mapstats_gen.Queries
 }
 
-func NewMapStatsRepository(db *sql.DB) database.MapStatsRepository {
+func NewMapStatsRepository(uuidGenerator uuid.UUIDGenerator, db *sql.DB) database.MapStatsRepository {
 	queries := mapstats_gen.New(db)
 	return &mapStatsRepository{
-		queries: queries,
+		uuidGenerator: uuidGenerator,
+		queries:       queries,
 	}
 }
 
-func NewMapStatsRepositoryWithTx(db *sql.DB, tx *sql.Tx) database.MapStatsRepository {
+func NewMapStatsRepositoryWithTx(uuidGenerator uuid.UUIDGenerator, db *sql.DB, tx *sql.Tx) database.MapStatsRepository {
 	queries := mapstats_gen.New(db).WithTx(tx)
 	return &mapStatsRepository{
-		queries: queries,
+		uuidGenerator: uuidGenerator,
+		queries:       queries,
 	}
 }
 

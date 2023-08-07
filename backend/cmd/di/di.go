@@ -10,6 +10,7 @@ import (
 	mysqlconnector "github.com/FlowingSPDG/get5-web-go/backend/gateway/database/mysql/connector"
 	api_presenter "github.com/FlowingSPDG/get5-web-go/backend/presenter/gin/api"
 	"github.com/FlowingSPDG/get5-web-go/backend/service/jwt"
+	"github.com/FlowingSPDG/get5-web-go/backend/service/uuid"
 	"github.com/FlowingSPDG/get5-web-go/backend/usecase"
 )
 
@@ -33,8 +34,9 @@ func mustGetWriteConnector(cfg config.Config) database.DBConnector {
 }
 
 func InitializeGetMatchController(cfg config.Config) api.GetMatchController {
+	uuidGenerator := uuid.NewUUIDGenerator()
 	mysqlConnector := mustGetWriteConnector(cfg)
-	mysqlUsersRepositoryConnector := mysqlconnector.NewMySQLRepositoryConnector(mysqlConnector)
+	mysqlUsersRepositoryConnector := mysqlconnector.NewMySQLRepositoryConnector(uuidGenerator, mysqlConnector)
 	uc := usecase.NewGetMatch(mysqlUsersRepositoryConnector)
 	presenter := api_presenter.NewMatchPresenter()
 	return api_controller.NewGetMatchController(uc, presenter)
@@ -49,8 +51,9 @@ func InitializeGetMaplistController() api.GetMaplistController {
 }
 
 func InitializeUserLoginController(cfg config.Config) api.UserLoginController {
+	uuidGenerator := uuid.NewUUIDGenerator()
 	mysqlConnector := mustGetWriteConnector(cfg)
-	mysqlUsersRepositoryConnector := mysqlconnector.NewMySQLRepositoryConnector(mysqlConnector)
+	mysqlUsersRepositoryConnector := mysqlconnector.NewMySQLRepositoryConnector(uuidGenerator, mysqlConnector)
 	jwtService := jwt.NewJWTGateway([]byte(cfg.SecretMey))
 	uc := usecase.NewUserLogin(jwtService, mysqlUsersRepositoryConnector)
 	presenter := api_presenter.NewJWTPresenter()
@@ -58,8 +61,9 @@ func InitializeUserLoginController(cfg config.Config) api.UserLoginController {
 }
 
 func InitializeUserRegisterController(cfg config.Config) api.UserRegisterController {
+	uuidGenerator := uuid.NewUUIDGenerator()
 	mysqlConnector := mustGetWriteConnector(cfg)
-	mysqlUsersRepositoryConnector := mysqlconnector.NewMySQLRepositoryConnector(mysqlConnector)
+	mysqlUsersRepositoryConnector := mysqlconnector.NewMySQLRepositoryConnector(uuidGenerator, mysqlConnector)
 	jwtService := jwt.NewJWTGateway([]byte(cfg.SecretMey))
 	uc := usecase.NewUserRegister(jwtService, mysqlUsersRepositoryConnector)
 	presenter := api_presenter.NewJWTPresenter()

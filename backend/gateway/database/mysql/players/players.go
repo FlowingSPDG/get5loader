@@ -8,29 +8,34 @@ import (
 	"github.com/FlowingSPDG/get5-web-go/backend/entity"
 	"github.com/FlowingSPDG/get5-web-go/backend/gateway/database"
 	players_gen "github.com/FlowingSPDG/get5-web-go/backend/gateway/database/mysql/players/generated"
+	"github.com/FlowingSPDG/get5-web-go/backend/service/uuid"
 )
 
 type playersRepository struct {
-	queries *players_gen.Queries
+	uuidGenerator uuid.UUIDGenerator
+	queries       *players_gen.Queries
 }
 
-func NewPlayersRepository(db *sql.DB) database.PlayersRepository {
+func NewPlayersRepository(uuidGenerator uuid.UUIDGenerator, db *sql.DB) database.PlayersRepository {
 	queries := players_gen.New(db)
 	return &playersRepository{
-		queries: queries,
+		uuidGenerator: uuidGenerator,
+		queries:       queries,
 	}
 }
 
-func NewPlayersRepositoryWithTx(db *sql.DB, tx *sql.Tx) database.PlayersRepository {
+func NewPlayersRepositoryWithTx(uuidGenerator uuid.UUIDGenerator, db *sql.DB, tx *sql.Tx) database.PlayersRepository {
 	queries := players_gen.New(db).WithTx(tx)
 	return &playersRepository{
-		queries: queries,
+		uuidGenerator: uuidGenerator,
+		queries:       queries,
 	}
 }
 
 // AddPlayer implements database.PlayersRepository.
 func (pr *playersRepository) AddPlayer(ctx context.Context, teamID entity.TeamID, steamID entity.SteamID, name string) error {
 	if _, err := pr.queries.AddPlayer(ctx, players_gen.AddPlayerParams{
+		ID:      pr.uuidGenerator.Generate(),
 		TeamID:  string(teamID),
 		SteamID: uint64(steamID),
 		Name:    name,

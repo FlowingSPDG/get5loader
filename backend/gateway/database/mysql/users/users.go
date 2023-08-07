@@ -7,29 +7,34 @@ import (
 	"github.com/FlowingSPDG/get5-web-go/backend/entity"
 	"github.com/FlowingSPDG/get5-web-go/backend/gateway/database"
 	users_gen "github.com/FlowingSPDG/get5-web-go/backend/gateway/database/mysql/users/generated"
+	"github.com/FlowingSPDG/get5-web-go/backend/service/uuid"
 )
 
 type usersRepositry struct {
-	queries *users_gen.Queries
+	uuidGenerator uuid.UUIDGenerator
+	queries       *users_gen.Queries
 }
 
-func NewUsersRepositry(db *sql.DB) database.UsersRepositry {
+func NewUsersRepositry(uuidGenerator uuid.UUIDGenerator, db *sql.DB) database.UsersRepositry {
 	queries := users_gen.New(db)
 	return &usersRepositry{
-		queries: queries,
+		uuidGenerator: uuidGenerator,
+		queries:       queries,
 	}
 }
 
-func NewUsersRepositryWithTx(db *sql.DB, tx *sql.Tx) database.UsersRepositry {
+func NewUsersRepositryWithTx(uuidGenerator uuid.UUIDGenerator, db *sql.DB, tx *sql.Tx) database.UsersRepositry {
 	queries := users_gen.New(db).WithTx(tx)
 	return &usersRepositry{
-		queries: queries,
+		uuidGenerator: uuidGenerator,
+		queries:       queries,
 	}
 }
 
 // CreateUser implements database.UsersRepositry.
 func (ur *usersRepositry) CreateUser(ctx context.Context, steamID entity.SteamID, name string, admin bool, hash string) error {
 	if _, err := ur.queries.CreateUser(ctx, users_gen.CreateUserParams{
+		ID:           ur.uuidGenerator.Generate(),
 		SteamID:      uint64(steamID),
 		Name:         name,
 		Admin:        admin,

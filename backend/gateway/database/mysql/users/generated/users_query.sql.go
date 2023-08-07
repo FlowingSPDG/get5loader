@@ -12,13 +12,14 @@ import (
 
 const createUser = `-- name: CreateUser :execresult
 INSERT INTO users (
-  steam_id, name, admin, password_hash
+  id ,steam_id, name, admin, password_hash
 ) VALUES (
-  ?, ?, ?, ?
+  ?, ?, ?, ?, ?
 )
 `
 
 type CreateUserParams struct {
+	ID           string
 	SteamID      uint64
 	Name         string
 	Admin        bool
@@ -27,6 +28,7 @@ type CreateUserParams struct {
 
 func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (sql.Result, error) {
 	return q.db.ExecContext(ctx, createUser,
+		arg.ID,
 		arg.SteamID,
 		arg.Name,
 		arg.Admin,

@@ -9,29 +9,34 @@ import (
 	"github.com/FlowingSPDG/get5-web-go/backend/entity"
 	"github.com/FlowingSPDG/get5-web-go/backend/gateway/database"
 	matches_gen "github.com/FlowingSPDG/get5-web-go/backend/gateway/database/mysql/matches/generated"
+	"github.com/FlowingSPDG/get5-web-go/backend/service/uuid"
 )
 
 type matchRepository struct {
-	queries *matches_gen.Queries
+	uuidGenerator uuid.UUIDGenerator
+	queries       *matches_gen.Queries
 }
 
-func NewMatchRepository(db *sql.DB) database.MatchesRepository {
+func NewMatchRepository(uuidGenerator uuid.UUIDGenerator, db *sql.DB) database.MatchesRepository {
 	queries := matches_gen.New(db)
 	return &matchRepository{
-		queries: queries,
+		uuidGenerator: uuidGenerator,
+		queries:       queries,
 	}
 }
 
-func NewMatchRepositoryWithTx(db *sql.DB, tx *sql.Tx) database.MatchesRepository {
+func NewMatchRepositoryWithTx(uuidGenerator uuid.UUIDGenerator, db *sql.DB, tx *sql.Tx) database.MatchesRepository {
 	queries := matches_gen.New(db).WithTx(tx)
 	return &matchRepository{
-		queries: queries,
+		uuidGenerator: uuidGenerator,
+		queries:       queries,
 	}
 }
 
 // AddMatch implements database.MatchRepository.
 func (mr *matchRepository) AddMatch(ctx context.Context, userID entity.UserID, serverID entity.GameServerID, team1ID entity.TeamID, team2ID entity.TeamID, startTime time.Time, endTime time.Time, maxMaps int32, title string, skipVeto bool, apiKey string) error {
 	if _, err := mr.queries.AddMatch(ctx, matches_gen.AddMatchParams{
+		ID:        mr.uuidGenerator.Generate(),
 		UserID:    string(userID),
 		ServerID:  string(serverID),
 		Team1ID:   string(team1ID),

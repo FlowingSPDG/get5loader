@@ -12,13 +12,14 @@ import (
 
 const addGameServer = `-- name: AddGameServer :execresult
 INSERT INTO game_servers (
-  user_id, ip, port, rcon_password, display_name, is_public
+  id, user_id, ip, port, rcon_password, display_name, is_public
 ) VALUES (
-  ?, ?, ?, ?, ?, ?
+  ?, ?, ?, ?, ?, ?, ?
 )
 `
 
 type AddGameServerParams struct {
+	ID           string
 	UserID       string
 	Ip           []byte
 	Port         uint32
@@ -29,6 +30,7 @@ type AddGameServerParams struct {
 
 func (q *Queries) AddGameServer(ctx context.Context, arg AddGameServerParams) (sql.Result, error) {
 	return q.db.ExecContext(ctx, addGameServer,
+		arg.ID,
 		arg.UserID,
 		arg.Ip,
 		arg.Port,

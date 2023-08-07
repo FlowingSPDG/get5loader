@@ -12,13 +12,14 @@ import (
 
 const addMatch = `-- name: AddMatch :execresult
 INSERT INTO matches (
-  user_id, server_id, team1_id, team2_id, start_time, end_time, max_maps, title, skip_veto, api_key, status
+  id, user_id, server_id, team1_id, team2_id, start_time, end_time, max_maps, title, skip_veto, api_key, status
 ) VALUES (
-    ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
+    ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
 )
 `
 
 type AddMatchParams struct {
+	ID        string
 	UserID    string
 	ServerID  string
 	Team1ID   string
@@ -34,6 +35,7 @@ type AddMatchParams struct {
 
 func (q *Queries) AddMatch(ctx context.Context, arg AddMatchParams) (sql.Result, error) {
 	return q.db.ExecContext(ctx, addMatch,
+		arg.ID,
 		arg.UserID,
 		arg.ServerID,
 		arg.Team1ID,

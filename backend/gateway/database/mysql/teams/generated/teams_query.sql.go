@@ -12,13 +12,14 @@ import (
 
 const addTeam = `-- name: AddTeam :execresult
 INSERT INTO teams (
-  user_id, name, flag, logo, tag, public_team
+  id, user_id, name, flag, logo, tag, public_team
 ) VALUES (
-  ?, ?, ?, ?, ?, ?
+  ?, ?, ?, ?, ?, ?, ?
 )
 `
 
 type AddTeamParams struct {
+	ID         string
 	UserID     string
 	Name       string
 	Flag       string
@@ -29,6 +30,7 @@ type AddTeamParams struct {
 
 func (q *Queries) AddTeam(ctx context.Context, arg AddTeamParams) (sql.Result, error) {
 	return q.db.ExecContext(ctx, addTeam,
+		arg.ID,
 		arg.UserID,
 		arg.Name,
 		arg.Flag,

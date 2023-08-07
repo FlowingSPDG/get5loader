@@ -8,23 +8,27 @@ import (
 	"github.com/FlowingSPDG/get5-web-go/backend/entity"
 	"github.com/FlowingSPDG/get5-web-go/backend/gateway/database"
 	playerstats_gen "github.com/FlowingSPDG/get5-web-go/backend/gateway/database/mysql/playerstats/generated"
+	"github.com/FlowingSPDG/get5-web-go/backend/service/uuid"
 )
 
 type playerStatsRepository struct {
-	queries *playerstats_gen.Queries
+	uuidGenerator uuid.UUIDGenerator
+	queries       *playerstats_gen.Queries
 }
 
-func NewPlayerStatsRepository(db *sql.DB) database.PlayerStatsRepository {
+func NewPlayerStatsRepository(uuidGenerator uuid.UUIDGenerator, db *sql.DB) database.PlayerStatsRepository {
 	queries := playerstats_gen.New(db)
 	return &playerStatsRepository{
-		queries: queries,
+		uuidGenerator: uuidGenerator,
+		queries:       queries,
 	}
 }
 
-func NewPlayerStatsRepositoryWithTx(db *sql.DB, tx *sql.Tx) database.PlayerStatsRepository {
+func NewPlayerStatsRepositoryWithTx(uuidGenerator uuid.UUIDGenerator, db *sql.DB, tx *sql.Tx) database.PlayerStatsRepository {
 	queries := playerstats_gen.New(db).WithTx(tx)
 	return &playerStatsRepository{
-		queries: queries,
+		uuidGenerator: uuidGenerator,
+		queries:       queries,
 	}
 }
 

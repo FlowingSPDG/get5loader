@@ -8,29 +8,34 @@ import (
 	"github.com/FlowingSPDG/get5-web-go/backend/entity"
 	"github.com/FlowingSPDG/get5-web-go/backend/gateway/database"
 	teams_gen "github.com/FlowingSPDG/get5-web-go/backend/gateway/database/mysql/teams/generated"
+	"github.com/FlowingSPDG/get5-web-go/backend/service/uuid"
 )
 
 type teamsRepository struct {
-	queries *teams_gen.Queries
+	uuidGenerator uuid.UUIDGenerator
+	queries       *teams_gen.Queries
 }
 
-func NewTeamsRepository(db *sql.DB) database.TeamsRepository {
+func NewTeamsRepository(uuidGenerator uuid.UUIDGenerator, db *sql.DB) database.TeamsRepository {
 	queries := teams_gen.New(db)
 	return &teamsRepository{
-		queries: queries,
+		uuidGenerator: uuidGenerator,
+		queries:       queries,
 	}
 }
 
-func NewTeamsRepositoryWithTx(db *sql.DB, tx *sql.Tx) database.TeamsRepository {
+func NewTeamsRepositoryWithTx(uuidGenerator uuid.UUIDGenerator, db *sql.DB, tx *sql.Tx) database.TeamsRepository {
 	queries := teams_gen.New(db).WithTx(tx)
 	return &teamsRepository{
-		queries: queries,
+		uuidGenerator: uuidGenerator,
+		queries:       queries,
 	}
 }
 
 // AddTeam implements database.TeamsRepository.
 func (tr *teamsRepository) AddTeam(ctx context.Context, userID entity.UserID, name string, tag string, flag string, logo string) error {
 	if _, err := tr.queries.AddTeam(ctx, teams_gen.AddTeamParams{
+		ID:     tr.uuidGenerator.Generate(),
 		UserID: string(userID),
 		Name:   name,
 		Tag:    tag,
