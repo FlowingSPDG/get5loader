@@ -94,7 +94,7 @@ func TestGetMatch(t *testing.T) {
 			ctx := context.Background()
 			ctx = g5ctx.SetOperation(ctx, g5ctx.OperationTypeUser)
 
-			actual, err := uc.Handle(ctx, tc.input)
+			actual, err := uc.Get(ctx, tc.input)
 			assert.Equal(t, tc.expected, actual)
 			assert.Equal(t, tc.err, err)
 		})
