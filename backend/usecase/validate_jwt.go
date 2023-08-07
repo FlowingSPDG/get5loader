@@ -1,23 +1,26 @@
 package usecase
 
-import "github.com/FlowingSPDG/get5-web-go/backend/service/jwt"
+import (
+	"github.com/FlowingSPDG/get5-web-go/backend/entity"
+	"github.com/FlowingSPDG/get5-web-go/backend/service/jwt"
+)
 
 // ValidateJWT is interface for validating jwt token.
 type ValidateJWT interface {
-	Validate(token string) (isAdmin bool, err error)
+	Validate(token string) (*entity.TokenUser, error)
 }
 
 type validateJWT struct {
 	jwtService jwt.JWTService
 }
 
-func (vj *validateJWT) Validate(token string) (bool, error) {
+func (vj *validateJWT) Validate(token string) (*entity.TokenUser, error) {
 	tokenUser, err := vj.jwtService.ValidateJWT(token)
 	if err != nil {
-		return false, err
+		return nil, err
 	}
 
-	return tokenUser.Admin, nil
+	return tokenUser, nil
 }
 
 func NewValidateJWT(

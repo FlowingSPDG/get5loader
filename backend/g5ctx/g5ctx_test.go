@@ -4,30 +4,35 @@ import (
 	"context"
 	"testing"
 
+	"github.com/FlowingSPDG/get5-web-go/backend/entity"
 	"github.com/FlowingSPDG/get5-web-go/backend/g5ctx"
 	"github.com/stretchr/testify/assert"
 )
 
-func TestSetAdmin(t *testing.T) {
+func TestSetOperation(t *testing.T) {
 	tc := []struct {
-		name  string
-		set   bool
-		admin bool
+		name      string
+		set       bool
+		operation g5ctx.OperationType
+		err       error
 	}{
 		{
-			name:  "admin",
-			set:   true,
-			admin: true,
+			name:      "system",
+			set:       true,
+			operation: g5ctx.OperationTypeSystem,
+			err:       nil,
 		},
 		{
-			name:  "not admin",
-			set:   true,
-			admin: false,
+			name:      "user",
+			set:       true,
+			operation: g5ctx.OperationTypeUser,
+			err:       nil,
 		},
 		{
-			name:  "not set",
-			set:   false,
-			admin: false,
+			name:      "not set",
+			set:       false,
+			operation: g5ctx.OperationTypeUnknown,
+			err:       g5ctx.ErrContextValueNotFound,
 		},
 	}
 
@@ -35,34 +40,47 @@ func TestSetAdmin(t *testing.T) {
 		t.Run(c.name, func(t *testing.T) {
 			ctx := context.Background()
 			if c.set {
-				ctx = g5ctx.SetAdmin(ctx, c.admin)
+				ctx = g5ctx.SetOperation(ctx, c.operation)
 			}
-			isAdmin := g5ctx.GetAdmin(ctx)
-			assert.Equal(t, c.admin, isAdmin)
+			op, err := g5ctx.GetOperation(ctx)
+			assert.Equal(t, c.operation, op)
+			assert.Equal(t, c.err, err)
 		})
 	}
 }
 
-func TestSetUserID(t *testing.T) {
+func TestSetUser(t *testing.T) {
 	tc := []struct {
-		name   string
-		set    bool
-		userID int
+		name      string
+		set       bool
+		tokenUser *entity.TokenUser
+		err       error
 	}{
 		{
-			name:   "set userID 1",
-			set:    true,
-			userID: 1,
+			name: "set tokenUser 1",
+			set:  true,
+			tokenUser: &entity.TokenUser{
+				UserID:  1,
+				SteamID: "test",
+				Admin:   true,
+			},
+			err: nil,
 		},
 		{
-			name:   "set userID 2",
-			set:    true,
-			userID: 2,
+			name: "set userID 2",
+			set:  true,
+			tokenUser: &entity.TokenUser{
+				UserID:  2,
+				SteamID: "test2",
+				Admin:   false,
+			},
+			err: nil,
 		},
 		{
-			name:   "not set",
-			set:    false,
-			userID: 0,
+			name:      "not set",
+			set:       false,
+			tokenUser: nil,
+			err:       g5ctx.ErrContextValueNotFound,
 		},
 	}
 
@@ -70,10 +88,11 @@ func TestSetUserID(t *testing.T) {
 		t.Run(c.name, func(t *testing.T) {
 			ctx := context.Background()
 			if c.set {
-				ctx = g5ctx.SetUserID(ctx, c.userID)
+				ctx = g5ctx.SetUserToken(ctx, c.tokenUser)
 			}
-			userID := g5ctx.GetUserID(ctx)
-			assert.Equal(t, c.userID, userID)
+			user, err := g5ctx.GetUserToken(ctx)
+			assert.Equal(t, c.tokenUser, user)
+			assert.Equal(t, c.err, err)
 		})
 	}
 }

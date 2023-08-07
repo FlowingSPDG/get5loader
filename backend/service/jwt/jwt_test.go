@@ -12,15 +12,17 @@ func TestIssueJWT(t *testing.T) {
 	tt := []struct {
 		name     string
 		input    *entity.User
-		expected *jwt.TokenUser
+		expected *entity.TokenUser
 	}{
 		{
 			name: "success",
 			input: &entity.User{
+				ID:      1,
 				SteamID: "test",
 				Admin:   true,
 			},
-			expected: &jwt.TokenUser{
+			expected: &entity.TokenUser{
+				UserID:  1,
 				SteamID: "test",
 				Admin:   true,
 			},

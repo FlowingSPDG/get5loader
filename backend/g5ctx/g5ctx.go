@@ -1,40 +1,54 @@
 package g5ctx
 
-import "context"
+import (
+	"context"
+	"errors"
+
+	"github.com/FlowingSPDG/get5-web-go/backend/entity"
+)
+
+var (
+	ErrContextValueNotFound = errors.New("context value not found")
+)
 
 type ctxKey struct{}
 
 var (
-	// AdminKey is a key for admin.
-	AdminKey = ctxKey{}
-	// UserIDKey is a key for userID.
-	UserIDKey = ctxKey{}
+	operatorKey = ctxKey{}
+	userKey     = ctxKey{}
 )
 
-// SetAdmin sets admin to context.
-func SetAdmin(ctx context.Context, admin bool) context.Context {
-	return context.WithValue(ctx, AdminKey, admin)
+type OperationType int
+
+const (
+	OperationTypeUnknown OperationType = iota
+	OperationTypeSystem
+	OperationTypeUser
+)
+
+// SetOperation sets operator to context.
+func SetOperation(ctx context.Context, op OperationType) context.Context {
+	return context.WithValue(ctx, operatorKey, op)
 }
 
-// SetUserID sets userID to context.
-func SetUserID(ctx context.Context, userID int) context.Context {
-	return context.WithValue(ctx, UserIDKey, userID)
-}
-
-// GetAdmin gets admin from context.
-func GetAdmin(ctx context.Context) bool {
-	admin, ok := ctx.Value(AdminKey).(bool)
+// GetOperation gets operator from context.
+func GetOperation(ctx context.Context) (OperationType, error) {
+	op, ok := ctx.Value(operatorKey).(OperationType)
 	if !ok {
-		return false
+		return OperationTypeUnknown, ErrContextValueNotFound
 	}
-	return admin
+	return op, nil
 }
 
-// GetUserID gets userID from context.
-func GetUserID(ctx context.Context) int {
-	userID, ok := ctx.Value(UserIDKey).(int)
+func SetUserToken(ctx context.Context, user *entity.TokenUser) context.Context {
+	return context.WithValue(ctx, userKey, user)
+}
+
+// GetUser gets user from context.
+func GetUserToken(ctx context.Context) (*entity.TokenUser, error) {
+	user, ok := ctx.Value(userKey).(*entity.TokenUser)
 	if !ok {
-		return 0
+		return nil, ErrContextValueNotFound
 	}
-	return userID
+	return user, nil
 }

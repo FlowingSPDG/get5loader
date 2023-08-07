@@ -66,8 +66,8 @@ func InitializeUserRegisterController(cfg config.Config) api.UserRegisterControl
 	return api_controller.NewUserRegisterController(uc, presenter)
 }
 
-func InitializeJWTAuthController(cfg config.Config, adminOnly bool) api.JWTAuthController {
+func InitializeJWTAuthController(cfg config.Config) api.JWTAuthController {
 	jwtService := jwt.NewJWTGateway([]byte(cfg.SecretMey))
 	uc := usecase.NewValidateJWT(jwtService)
-	return api_controller.NewJWTAuthController(adminOnly, uc)
+	return api_controller.NewJWTAuthController(uc)
 }
