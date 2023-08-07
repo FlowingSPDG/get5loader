@@ -8,7 +8,7 @@ import (
 
 type JWTService interface {
 	IssueJWT(user *entity.User) (string, error)
-	ValidateJWT(token string) (*TokenUser, error)
+	ValidateJWT(token string) (*entity.TokenUser, error)
 }
 
 type jwtService struct {
@@ -22,7 +22,8 @@ func NewJWTGateway(key []byte) JWTService {
 }
 
 func (j *jwtService) IssueJWT(user *entity.User) (string, error) {
-	token := jwt.NewWithClaims(jwt.GetSigningMethod("HS256"), &TokenUser{
+	token := jwt.NewWithClaims(jwt.GetSigningMethod("HS256"), &entity.TokenUser{
+		UserID:  user.ID,
 		SteamID: user.SteamID,
 		Admin:   user.Admin,
 	})
@@ -35,8 +36,8 @@ func (j *jwtService) IssueJWT(user *entity.User) (string, error) {
 	return signed, nil
 }
 
-func (j *jwtService) ValidateJWT(token string) (*TokenUser, error) {
-	claims := &TokenUser{}
+func (j *jwtService) ValidateJWT(token string) (*entity.TokenUser, error) {
+	claims := &entity.TokenUser{}
 	_, err := jwt.ParseWithClaims(token, claims, func(token *jwt.Token) (any, error) {
 		return j.key, nil
 	})

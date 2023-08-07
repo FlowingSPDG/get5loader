@@ -25,6 +25,8 @@ func main() {
 	// v1.POST("/logout", db.LogoutHandler)
 	v1.GET("/version", di.InitializeGetVersionController().Handle)
 	v1.GET("/maps", di.InitializeGetMaplistController().Handle)
+	v1auth := v1.Group("/")
+	v1auth.Use(di.InitializeJWTAuthController(cfg).Handle)
 	/*
 		// session handling
 		v1.GET("/login", db.LoginHandler)
@@ -38,8 +40,8 @@ func main() {
 		v1.GET("/CheckLoggedIn", api.CheckLoggedIn)
 	*/
 
-	// Match API for front(Vue)
-	match := v1.Group("/match")
+	// Match API for front
+	match := v1auth.Group("/match")
 	match.GET("/:matchID", di.InitializeGetMatchController(cfg).Handle)
 	/*
 		match.GET("/:matchID/GetPlayerStatInfo", api.GetPlayerStatInfo)
