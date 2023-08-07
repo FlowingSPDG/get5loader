@@ -34,7 +34,7 @@ func NewGetMatchController(
 func (gmc *getMatchController) Handle(c *gin.Context) {
 	matchid := c.Params.ByName("matchID")
 
-	match, err := gmc.uc.Handle(c, entity.MatchID(matchid))
+	match, err := gmc.uc.Get(c, entity.MatchID(matchid))
 	if err != nil {
 		if database.IsNotFound(err) {
 			c.JSON(http.StatusNotFound, gin.H{

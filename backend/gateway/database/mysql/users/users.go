@@ -32,7 +32,7 @@ func NewUsersRepositryWithTx(uuidGenerator uuid.UUIDGenerator, db *sql.DB, tx *s
 }
 
 // CreateUser implements database.UsersRepositry.
-func (ur *usersRepositry) CreateUser(ctx context.Context, steamID entity.SteamID, name string, admin bool, hash string) error {
+func (ur *usersRepositry) CreateUser(ctx context.Context, steamID entity.SteamID, name string, admin bool, hash []byte) error {
 	if _, err := ur.queries.CreateUser(ctx, users_gen.CreateUserParams{
 		ID:           ur.uuidGenerator.Generate(),
 		SteamID:      uint64(steamID),

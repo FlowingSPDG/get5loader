@@ -18,7 +18,7 @@ type User struct {
 	SteamID   SteamID
 	Name      string
 	Admin     bool
-	Hash      string
+	Hash      []byte
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }

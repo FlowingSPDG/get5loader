@@ -23,7 +23,7 @@ type CreateUserParams struct {
 	SteamID      uint64
 	Name         string
 	Admin        bool
-	PasswordHash string
+	PasswordHash []byte
 }
 
 func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (sql.Result, error) {

@@ -3,6 +3,8 @@ package di
 import (
 	"fmt"
 
+	"golang.org/x/crypto/bcrypt"
+
 	config "github.com/FlowingSPDG/get5-web-go/backend/cfg"
 	"github.com/FlowingSPDG/get5-web-go/backend/controller/gin/api"
 	api_controller "github.com/FlowingSPDG/get5-web-go/backend/controller/gin/api"
@@ -10,6 +12,7 @@ import (
 	mysqlconnector "github.com/FlowingSPDG/get5-web-go/backend/gateway/database/mysql/connector"
 	api_presenter "github.com/FlowingSPDG/get5-web-go/backend/presenter/gin/api"
 	"github.com/FlowingSPDG/get5-web-go/backend/service/jwt"
+	hash "github.com/FlowingSPDG/get5-web-go/backend/service/password_hash"
 	"github.com/FlowingSPDG/get5-web-go/backend/service/uuid"
 	"github.com/FlowingSPDG/get5-web-go/backend/usecase"
 )
@@ -55,7 +58,8 @@ func InitializeUserLoginController(cfg config.Config) api.UserLoginController {
 	mysqlConnector := mustGetWriteConnector(cfg)
 	mysqlUsersRepositoryConnector := mysqlconnector.NewMySQLRepositoryConnector(uuidGenerator, mysqlConnector)
 	jwtService := jwt.NewJWTGateway([]byte(cfg.SecretMey))
-	uc := usecase.NewUserLogin(jwtService, mysqlUsersRepositoryConnector)
+	passwordHasher := hash.NewPasswordHasher(bcrypt.DefaultCost)
+	uc := usecase.NewUserLogin(jwtService, passwordHasher, mysqlUsersRepositoryConnector)
 	presenter := api_presenter.NewJWTPresenter()
 	return api_controller.NewUserLoginController(uc, presenter)
 }
@@ -65,7 +69,8 @@ func InitializeUserRegisterController(cfg config.Config) api.UserRegisterControl
 	mysqlConnector := mustGetWriteConnector(cfg)
 	mysqlUsersRepositoryConnector := mysqlconnector.NewMySQLRepositoryConnector(uuidGenerator, mysqlConnector)
 	jwtService := jwt.NewJWTGateway([]byte(cfg.SecretMey))
-	uc := usecase.NewUserRegister(jwtService, mysqlUsersRepositoryConnector)
+	passwordHasher := hash.NewPasswordHasher(bcrypt.DefaultCost)
+	uc := usecase.NewUserRegister(jwtService, passwordHasher, mysqlUsersRepositoryConnector)
 	presenter := api_presenter.NewJWTPresenter()
 	return api_controller.NewUserRegisterController(uc, presenter)
 }
