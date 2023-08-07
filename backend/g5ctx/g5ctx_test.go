@@ -60,8 +60,8 @@ func TestSetUser(t *testing.T) {
 			name: "set tokenUser 1",
 			set:  true,
 			tokenUser: &entity.TokenUser{
-				UserID:  1,
-				SteamID: "test",
+				UserID:  "1",
+				SteamID: 76561198072054549,
 				Admin:   true,
 			},
 			err: nil,
@@ -70,8 +70,8 @@ func TestSetUser(t *testing.T) {
 			name: "set userID 2",
 			set:  true,
 			tokenUser: &entity.TokenUser{
-				UserID:  2,
-				SteamID: "test2",
+				UserID:  "2",
+				SteamID: 76561198072054549,
 				Admin:   false,
 			},
 			err: nil,
