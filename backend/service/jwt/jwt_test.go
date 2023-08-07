@@ -17,13 +17,13 @@ func TestIssueJWT(t *testing.T) {
 		{
 			name: "success",
 			input: &entity.User{
-				ID:      1,
-				SteamID: "test",
+				ID:      "1",
+				SteamID: 76561198072054549,
 				Admin:   true,
 			},
 			expected: &entity.TokenUser{
-				UserID:  1,
-				SteamID: "test",
+				UserID:  "1",
+				SteamID: 76561198072054549,
 				Admin:   true,
 			},
 		},

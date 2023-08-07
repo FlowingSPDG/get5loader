@@ -19,7 +19,7 @@ INSERT INTO users (
 `
 
 type CreateUserParams struct {
-	SteamID      string
+	SteamID      uint64
 	Name         string
 	Admin        bool
 	PasswordHash string
@@ -39,7 +39,7 @@ SELECT id, steam_id, name, admin, created_at, updated_at, password_hash FROM use
 WHERE id = ? LIMIT 1
 `
 
-func (q *Queries) GetUser(ctx context.Context, id int64) (User, error) {
+func (q *Queries) GetUser(ctx context.Context, id string) (User, error) {
 	row := q.db.QueryRowContext(ctx, getUser, id)
 	var i User
 	err := row.Scan(
@@ -59,7 +59,7 @@ SELECT id, steam_id, name, admin, created_at, updated_at, password_hash FROM use
 WHERE steam_id = ? LIMIT 1
 `
 
-func (q *Queries) GetUserBySteamID(ctx context.Context, steamID string) (User, error) {
+func (q *Queries) GetUserBySteamID(ctx context.Context, steamID uint64) (User, error) {
 	row := q.db.QueryRowContext(ctx, getUserBySteamID, steamID)
 	var i User
 	err := row.Scan(

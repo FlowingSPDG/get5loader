@@ -19,8 +19,8 @@ INSERT INTO game_servers (
 `
 
 type AddGameServerParams struct {
-	UserID       int64
-	Ip           string
+	UserID       string
+	Ip           []byte
 	Port         uint32
 	RconPassword string
 	DisplayName  string
@@ -43,7 +43,7 @@ DELETE FROM game_servers
 WHERE id = ?
 `
 
-func (q *Queries) DeleteGameServer(ctx context.Context, id int64) (sql.Result, error) {
+func (q *Queries) DeleteGameServer(ctx context.Context, id string) (sql.Result, error) {
 	return q.db.ExecContext(ctx, deleteGameServer, id)
 }
 
@@ -52,7 +52,7 @@ SELECT id, user_id, ip, port, rcon_password, display_name, is_public, status FRO
 WHERE id = ? LIMIT 1
 `
 
-func (q *Queries) GetGameServers(ctx context.Context, id int64) (GameServer, error) {
+func (q *Queries) GetGameServers(ctx context.Context, id string) (GameServer, error) {
 	row := q.db.QueryRowContext(ctx, getGameServers, id)
 	var i GameServer
 	err := row.Scan(
@@ -73,7 +73,7 @@ SELECT id, user_id, ip, port, rcon_password, display_name, is_public, status FRO
 WHERE user_id = ?
 `
 
-func (q *Queries) GetGameServersByUser(ctx context.Context, userID int64) ([]GameServer, error) {
+func (q *Queries) GetGameServersByUser(ctx context.Context, userID string) ([]GameServer, error) {
 	rows, err := q.db.QueryContext(ctx, getGameServersByUser, userID)
 	if err != nil {
 		return nil, err

@@ -23,8 +23,8 @@ INSERT INTO players (
 `
 
 type AddPlayerParams struct {
-	TeamID  int64
-	SteamID string
+	TeamID  string
+	SteamID uint64
 	Name    string
 }
 
@@ -37,7 +37,7 @@ SELECT id, team_id, steam_id, name FROM players
 WHERE id = ? LIMIT 1
 `
 
-func (q *Queries) GetPlayer(ctx context.Context, id int64) (Player, error) {
+func (q *Queries) GetPlayer(ctx context.Context, id string) (Player, error) {
 	row := q.db.QueryRowContext(ctx, getPlayer, id)
 	var i Player
 	err := row.Scan(
@@ -54,7 +54,7 @@ SELECT id, team_id, steam_id, name FROM players
 WHERE steam_id = ? LIMIT 1
 `
 
-func (q *Queries) GetPlayerBySteamID(ctx context.Context, steamID string) (Player, error) {
+func (q *Queries) GetPlayerBySteamID(ctx context.Context, steamID uint64) (Player, error) {
 	row := q.db.QueryRowContext(ctx, getPlayerBySteamID, steamID)
 	var i Player
 	err := row.Scan(
@@ -71,7 +71,7 @@ SELECT id, team_id, steam_id, name FROM players
 WHERE team_id = ?
 `
 
-func (q *Queries) GetPlayersByTeam(ctx context.Context, teamID int64) ([]Player, error) {
+func (q *Queries) GetPlayersByTeam(ctx context.Context, teamID string) ([]Player, error) {
 	rows, err := q.db.QueryContext(ctx, getPlayersByTeam, teamID)
 	if err != nil {
 		return nil, err

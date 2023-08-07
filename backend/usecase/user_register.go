@@ -6,13 +6,14 @@ import (
 
 	"golang.org/x/crypto/bcrypt"
 
+	"github.com/FlowingSPDG/get5-web-go/backend/entity"
 	"github.com/FlowingSPDG/get5-web-go/backend/gateway/database"
 	"github.com/FlowingSPDG/get5-web-go/backend/service/jwt"
 )
 
 type UserRegister interface {
 	// Handle registers a user and issue jwt token.
-	RegisterUser(ctx context.Context, steamID string, name string, admin bool, password string) (jwt string, err error)
+	RegisterUser(ctx context.Context, steamID entity.SteamID, name string, admin bool, password string) (jwt string, err error)
 }
 
 type userRegister struct {
@@ -31,7 +32,7 @@ func NewUserRegister(
 }
 
 // Handle implements UserRegister.
-func (ur *userRegister) RegisterUser(ctx context.Context, steamID string, name string, admin bool, password string) (string, error) {
+func (ur *userRegister) RegisterUser(ctx context.Context, steamID entity.SteamID, name string, admin bool, password string) (string, error) {
 	if err := ur.repositoryConnector.Open(); err != nil {
 		return "", err
 	}
@@ -48,7 +49,11 @@ func (ur *userRegister) RegisterUser(ctx context.Context, steamID string, name s
 		return "", errors.New("user already exists")
 	}
 
-	user, err := repository.CreateUser(ctx, steamID, name, admin, string(hash))
+	if err := repository.CreateUser(ctx, steamID, name, admin, string(hash)); err != nil {
+		return "", err
+	}
+
+	user, err := repository.GetUserBySteamID(ctx, steamID)
 	if err != nil {
 		return "", err
 	}

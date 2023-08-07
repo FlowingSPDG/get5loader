@@ -9,8 +9,8 @@ import (
 )
 
 type Team struct {
-	ID         int64
-	UserID     int64
+	ID         string
+	UserID     string
 	Name       string
 	Flag       string
 	Logo       string

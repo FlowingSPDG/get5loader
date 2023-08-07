@@ -9,12 +9,12 @@ import (
 )
 
 type Match struct {
-	ID         int64
-	UserID     int64
-	ServerID   int64
-	Team1ID    int64
-	Team2ID    int64
-	Winner     sql.NullInt64
+	ID         string
+	UserID     string
+	ServerID   string
+	Team1ID    string
+	Team2ID    string
+	Winner     sql.NullString
 	Cancelled  bool
 	StartTime  sql.NullTime
 	EndTime    sql.NullTime

@@ -14,7 +14,7 @@ SELECT id, match_id, map_id, team_id, steam_id, name, kills, deaths, roundsplaye
 WHERE id = ? LIMIT 1
 `
 
-func (q *Queries) GetPlayerStats(ctx context.Context, id int64) (PlayerStat, error) {
+func (q *Queries) GetPlayerStats(ctx context.Context, id string) (PlayerStat, error) {
 	row := q.db.QueryRowContext(ctx, getPlayerStats, id)
 	var i PlayerStat
 	err := row.Scan(
@@ -58,7 +58,7 @@ SELECT id, match_id, map_id, team_id, steam_id, name, kills, deaths, roundsplaye
 WHERE map_id = ?
 `
 
-func (q *Queries) GetPlayerStatsByMap(ctx context.Context, mapID int64) (PlayerStat, error) {
+func (q *Queries) GetPlayerStatsByMap(ctx context.Context, mapID string) (PlayerStat, error) {
 	row := q.db.QueryRowContext(ctx, getPlayerStatsByMap, mapID)
 	var i PlayerStat
 	err := row.Scan(
@@ -102,7 +102,7 @@ SELECT id, match_id, map_id, team_id, steam_id, name, kills, deaths, roundsplaye
 WHERE match_id = ?
 `
 
-func (q *Queries) GetPlayerStatsByMatch(ctx context.Context, matchID int64) ([]PlayerStat, error) {
+func (q *Queries) GetPlayerStatsByMatch(ctx context.Context, matchID string) ([]PlayerStat, error) {
 	rows, err := q.db.QueryContext(ctx, getPlayerStatsByMatch, matchID)
 	if err != nil {
 		return nil, err
@@ -162,7 +162,7 @@ SELECT id, match_id, map_id, team_id, steam_id, name, kills, deaths, roundsplaye
 WHERE steam_id = ?
 `
 
-func (q *Queries) GetPlayerStatsBySteamID(ctx context.Context, steamID string) ([]PlayerStat, error) {
+func (q *Queries) GetPlayerStatsBySteamID(ctx context.Context, steamID uint64) ([]PlayerStat, error) {
 	rows, err := q.db.QueryContext(ctx, getPlayerStatsBySteamID, steamID)
 	if err != nil {
 		return nil, err
@@ -222,7 +222,7 @@ SELECT id, match_id, map_id, team_id, steam_id, name, kills, deaths, roundsplaye
 WHERE team_id = ?
 `
 
-func (q *Queries) GetPlayerStatsByTeam(ctx context.Context, teamID int64) ([]PlayerStat, error) {
+func (q *Queries) GetPlayerStatsByTeam(ctx context.Context, teamID string) ([]PlayerStat, error) {
 	rows, err := q.db.QueryContext(ctx, getPlayerStatsByTeam, teamID)
 	if err != nil {
 		return nil, err

@@ -19,7 +19,7 @@ INSERT INTO teams (
 `
 
 type AddTeamParams struct {
-	UserID     int64
+	UserID     string
 	Name       string
 	Flag       string
 	Logo       string
@@ -79,7 +79,7 @@ SELECT id, user_id, name, flag, logo, tag, public_team FROM teams
 WHERE id = ? LIMIT 1
 `
 
-func (q *Queries) GetTeam(ctx context.Context, id int64) (Team, error) {
+func (q *Queries) GetTeam(ctx context.Context, id string) (Team, error) {
 	row := q.db.QueryRowContext(ctx, getTeam, id)
 	var i Team
 	err := row.Scan(
@@ -99,7 +99,7 @@ SELECT id, user_id, name, flag, logo, tag, public_team FROM teams
 WHERE user_id = ?
 `
 
-func (q *Queries) GetTeamByUserID(ctx context.Context, userID int64) ([]Team, error) {
+func (q *Queries) GetTeamByUserID(ctx context.Context, userID string) ([]Team, error) {
 	rows, err := q.db.QueryContext(ctx, getTeamByUserID, userID)
 	if err != nil {
 		return nil, err

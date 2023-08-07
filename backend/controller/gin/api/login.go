@@ -5,6 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 
+	"github.com/FlowingSPDG/get5-web-go/backend/entity"
 	"github.com/FlowingSPDG/get5-web-go/backend/presenter/gin/api"
 	"github.com/FlowingSPDG/get5-web-go/backend/usecase"
 )
@@ -29,8 +30,8 @@ func NewUserLoginController(
 }
 
 type userLoginRequest struct {
-	SteamID  string `json:"steamid"`
-	Password string `json:"password"`
+	SteamID  entity.SteamID `json:"steamid"`
+	Password string         `json:"password"`
 }
 
 // Handle implements UserLoginController.

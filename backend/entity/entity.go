@@ -2,9 +2,19 @@ package entity
 
 import "time"
 
+type (
+	UserID        string
+	GameServerID  string
+	MatchID       string
+	TeamID        string
+	MapStatsID    string
+	PlayerStatsID string
+	SteamID       uint64 // SteamID64. Note: SteamID3 is not supported. Note: some database drivers may not support uint64.
+)
+
 type User struct {
-	ID        int64
-	SteamID   string
+	ID        UserID
+	SteamID   SteamID
 	Name      string
 	Admin     bool
 	Hash      string
@@ -13,8 +23,8 @@ type User struct {
 }
 
 type GameServer struct {
-	UserID       int64
-	ID           int64
+	UserID       UserID
+	ID           GameServerID
 	Ip           string
 	Port         uint32
 	RCONPassword string
@@ -24,12 +34,12 @@ type GameServer struct {
 }
 
 type Match struct {
-	ID         int64
-	UserID     int64
-	ServerID   int64
-	Team1ID    int64
-	Team2ID    int64
-	Winner     *int64
+	ID         MatchID
+	UserID     UserID
+	ServerID   GameServerID
+	Team1ID    TeamID
+	Team2ID    TeamID
+	Winner     *TeamID
 	StartTime  *time.Time
 	EndTime    *time.Time
 	MaxMaps    int32
@@ -43,23 +53,23 @@ type Match struct {
 }
 
 type MapStats struct {
-	ID         int64
-	MatchID    int64
+	ID         MapStatsID
+	MatchID    MatchID
 	MapNumber  uint32
 	MapName    string
 	StartTime  *time.Time
 	EndTime    *time.Time
-	Winner     *int64
+	Winner     *TeamID
 	Team1Score uint32
 	Team2Score uint32
 }
 
 type PlayerStats struct {
-	ID      int64
-	MatchID int64
-	MapID   int64
-	TeamID  int64
-	SteamID string
+	ID      PlayerStatsID
+	MatchID MatchID
+	MapID   MapStatsID
+	TeamID  TeamID
+	SteamID SteamID
 	Name    string
 
 	Kills   int32
@@ -92,8 +102,8 @@ type PlayerStats struct {
 }
 
 type Team struct {
-	ID         int64
-	UserID     int64
+	ID         TeamID
+	UserID     UserID
 	Name       string
 	Flag       string
 	Tag        string
@@ -102,9 +112,8 @@ type Team struct {
 }
 
 type Player struct {
-	ID      int64
-	TeamID  int64
-	SteamID string
+	ID      PlayerStatsID
+	TeamID  TeamID
+	SteamID SteamID
 	Name    string
-	TeanID  int64
 }

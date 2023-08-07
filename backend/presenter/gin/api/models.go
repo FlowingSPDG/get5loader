@@ -1,19 +1,22 @@
 package api
 
+// 受け取ったデータを特定の形式に変換して返すpresenter
+// このpackageでは極力根底型を使うようにする
+
 import (
 	"time"
 )
 
 type player struct {
-	ID      int64  `json:"id"`
-	TeamID  int64  `json:"team_id"`
-	SteamID string `json:"steam_id"`
+	ID      string `json:"id"`
+	TeamID  string `json:"team_id"`
+	SteamID uint64 `json:"steam_id"`
 	Name    string `json:"name"`
 }
 
 type team struct {
-	ID         int      `json:"id"`
-	UserID     int      `son:"user_id"`
+	ID         string   `json:"id"`
+	UserID     string   `son:"user_id"`
 	Name       string   `son:"name"`
 	Tag        string   `son:"tag"`
 	Flag       string   `son:"flag"`
@@ -23,23 +26,23 @@ type team struct {
 }
 
 type mapStats struct {
-	ID         int       `json:"id"`
-	MatchID    int       `json:"match_id"`
+	ID         string    `json:"id"`
+	MatchID    string    `json:"match_id"`
 	MapNumber  int       `json:"map_number"`
 	MapName    string    `json:"map_name"`
 	StartTime  time.Time `json:"-"`
 	EndTime    time.Time `json:"-"`
-	Winner     int       `json:"winner"`
+	Winner     string    `json:"winner"`
 	Team1Score int       `json:"team1_score"`
 	Team2Score int       `json:"team2_score"`
 }
 
 type match struct {
-	ID         int        `json:"id"`
-	UserID     int        `json:"user_id"`
-	Team1ID    int        `json:"team1"`
-	Team2ID    int        `json:"team2"`
-	Winner     int        `json:"winner"`
+	ID         string     `json:"id"`
+	UserID     string     `json:"user_id"`
+	Team1ID    string     `json:"team1"`
+	Team2ID    string     `json:"team2"`
+	Winner     *string    `json:"winner"`
 	Cancelled  bool       `json:"cancelled"`
 	StartTime  *time.Time `json:"start_time"`
 	EndTime    *time.Time `json:"end_time"`
@@ -49,9 +52,9 @@ type match struct {
 	Team1Score int        `json:"team1_score"`
 	Team2Score int        `json:"team2_score"`
 	Forfeit    bool       `json:"forfeit"`
-	ServerID   int        `json:"server_id"`
+	ServerID   string     `json:"server_id"`
 
-	MapStatsIDs []int `json:"map_stats"`
+	MapStatsIDs []string `json:"map_stats"`
 
 	Status string `json:"status"`
 }

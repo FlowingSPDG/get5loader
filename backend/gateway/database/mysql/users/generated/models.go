@@ -9,8 +9,8 @@ import (
 )
 
 type User struct {
-	ID           int64
-	SteamID      string
+	ID           string
+	SteamID      uint64
 	Name         string
 	Admin        bool
 	CreatedAt    time.Time

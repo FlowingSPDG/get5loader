@@ -7,8 +7,8 @@ package players_gen
 import ()
 
 type Player struct {
-	ID      int64
-	TeamID  int64
-	SteamID string
+	ID      string
+	TeamID  string
+	SteamID uint64
 	Name    string
 }

@@ -14,7 +14,7 @@ SELECT id, match_id, map_number, map_name, start_time, end_time, winner, team1_s
 WHERE id = ? LIMIT 1
 `
 
-func (q *Queries) GetMapStats(ctx context.Context, id int64) (MapStat, error) {
+func (q *Queries) GetMapStats(ctx context.Context, id string) (MapStat, error) {
 	row := q.db.QueryRowContext(ctx, getMapStats, id)
 	var i MapStat
 	err := row.Scan(
@@ -37,7 +37,7 @@ SELECT id, match_id, map_number, map_name, start_time, end_time, winner, team1_s
 WHERE match_id = ?
 `
 
-func (q *Queries) GetMapStatsByMatch(ctx context.Context, matchID int64) ([]MapStat, error) {
+func (q *Queries) GetMapStatsByMatch(ctx context.Context, matchID string) ([]MapStat, error) {
 	rows, err := q.db.QueryContext(ctx, getMapStatsByMatch, matchID)
 	if err != nil {
 		return nil, err
@@ -77,7 +77,7 @@ WHERE match_id = ? AND map_number = ? LIMIT 1
 `
 
 type GetMapStatsByMatchAndMapParams struct {
-	MatchID   int64
+	MatchID   string
 	MapNumber uint32
 }
 
