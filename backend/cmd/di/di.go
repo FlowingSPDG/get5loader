@@ -6,11 +6,10 @@ import (
 	"golang.org/x/crypto/bcrypt"
 
 	config "github.com/FlowingSPDG/get5-web-go/backend/cfg"
-	"github.com/FlowingSPDG/get5-web-go/backend/controller/gin/api"
-	api_controller "github.com/FlowingSPDG/get5-web-go/backend/controller/gin/api"
+	gin_controller "github.com/FlowingSPDG/get5-web-go/backend/controller/gin"
 	"github.com/FlowingSPDG/get5-web-go/backend/gateway/database"
 	mysqlconnector "github.com/FlowingSPDG/get5-web-go/backend/gateway/database/mysql/connector"
-	api_presenter "github.com/FlowingSPDG/get5-web-go/backend/presenter/gin/api"
+	gin_presenter "github.com/FlowingSPDG/get5-web-go/backend/presenter/gin"
 	"github.com/FlowingSPDG/get5-web-go/backend/service/jwt"
 	hash "github.com/FlowingSPDG/get5-web-go/backend/service/password_hash"
 	"github.com/FlowingSPDG/get5-web-go/backend/service/uuid"
@@ -36,47 +35,47 @@ func mustGetWriteConnector(cfg config.Config) database.DBConnector {
 	return mysqlconnector.NewMysqlConnector(dsn)
 }
 
-func InitializeGetMatchController(cfg config.Config) api.GetMatchController {
+func InitializeGetMatchController(cfg config.Config) gin_controller.GetMatchController {
 	uuidGenerator := uuid.NewUUIDGenerator()
 	mysqlConnector := mustGetWriteConnector(cfg)
 	mysqlUsersRepositoryConnector := mysqlconnector.NewMySQLRepositoryConnector(uuidGenerator, mysqlConnector)
 	uc := usecase.NewGetMatch(mysqlUsersRepositoryConnector)
-	presenter := api_presenter.NewMatchPresenter()
-	return api_controller.NewGetMatchController(uc, presenter)
+	presenter := gin_presenter.NewMatchPresenter()
+	return gin_controller.NewGetMatchController(uc, presenter)
 }
 
-func InitializeGetVersionController() api.GetVersionController {
-	return api_controller.NewGetVersionController()
+func InitializeGetVersionController() gin_controller.GetVersionController {
+	return gin_controller.NewGetVersionController()
 }
 
-func InitializeGetMaplistController() api.GetMaplistController {
-	return api_controller.NewGetMaplistController(mapPool, []string{})
+func InitializeGetMaplistController() gin_controller.GetMaplistController {
+	return gin_controller.NewGetMaplistController(mapPool, []string{})
 }
 
-func InitializeUserLoginController(cfg config.Config) api.UserLoginController {
+func InitializeUserLoginController(cfg config.Config) gin_controller.UserLoginController {
 	uuidGenerator := uuid.NewUUIDGenerator()
 	mysqlConnector := mustGetWriteConnector(cfg)
 	mysqlUsersRepositoryConnector := mysqlconnector.NewMySQLRepositoryConnector(uuidGenerator, mysqlConnector)
 	jwtService := jwt.NewJWTGateway([]byte(cfg.SecretMey))
 	passwordHasher := hash.NewPasswordHasher(bcrypt.DefaultCost)
 	uc := usecase.NewUserLogin(jwtService, passwordHasher, mysqlUsersRepositoryConnector)
-	presenter := api_presenter.NewJWTPresenter()
-	return api_controller.NewUserLoginController(uc, presenter)
+	presenter := gin_presenter.NewJWTPresenter()
+	return gin_controller.NewUserLoginController(uc, presenter)
 }
 
-func InitializeUserRegisterController(cfg config.Config) api.UserRegisterController {
+func InitializeUserRegisterController(cfg config.Config) gin_controller.UserRegisterController {
 	uuidGenerator := uuid.NewUUIDGenerator()
 	mysqlConnector := mustGetWriteConnector(cfg)
 	mysqlUsersRepositoryConnector := mysqlconnector.NewMySQLRepositoryConnector(uuidGenerator, mysqlConnector)
 	jwtService := jwt.NewJWTGateway([]byte(cfg.SecretMey))
 	passwordHasher := hash.NewPasswordHasher(bcrypt.DefaultCost)
 	uc := usecase.NewUserRegister(jwtService, passwordHasher, mysqlUsersRepositoryConnector)
-	presenter := api_presenter.NewJWTPresenter()
-	return api_controller.NewUserRegisterController(uc, presenter)
+	presenter := gin_presenter.NewJWTPresenter()
+	return gin_controller.NewUserRegisterController(uc, presenter)
 }
 
-func InitializeJWTAuthController(cfg config.Config) api.JWTAuthController {
+func InitializeJWTAuthController(cfg config.Config) gin_controller.JWTAuthController {
 	jwtService := jwt.NewJWTGateway([]byte(cfg.SecretMey))
 	uc := usecase.NewValidateJWT(jwtService)
-	return api_controller.NewJWTAuthController(uc)
+	return gin_controller.NewJWTAuthController(uc)
 }
