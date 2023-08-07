@@ -18,6 +18,6 @@ config.ini
 get5-web-go
 __debug_bin
 .vscode/launch.json
-build/*
+backend/build/*
 
 .DS_Store
