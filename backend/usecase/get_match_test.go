@@ -57,20 +57,22 @@ func TestGetMatch(t *testing.T) {
 			ctx := context.Background()
 			ctx = g5ctx.SetOperation(ctx, g5ctx.OperationTypeUser)
 
-			// mock connectorの作成
+			// mock controllerの作成
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			// mockの作成
+			// mock connectorの作成
 			mockConnector := mock_database.NewMockRepositoryConnector(ctrl)
 			mockConnector.EXPECT().Open().Return(nil)
 			mockConnector.EXPECT().Close().Return(nil)
+
+			// mock MatchesRepositoryの作成
 			mockMatchesRepository := mock_database.NewMockMatchesRepository(ctrl)
 			mockMatchesRepository.EXPECT().GetMatch(ctx, tc.input).Return(tc.expected, tc.err)
 			mockConnector.EXPECT().GetMatchesRepository().Return(mockMatchesRepository)
 
+			// テストの実行とassert
 			uc := usecase.NewGetMatch(mockConnector)
-
 			actual, err := uc.Get(ctx, tc.input)
 			assert.Equal(t, tc.expected, actual)
 			assert.Equal(t, tc.err, err)

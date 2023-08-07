@@ -51,22 +51,27 @@ func TestRegisterUser(t *testing.T) {
 			ctx := context.Background()
 			ctx = g5ctx.SetOperation(ctx, g5ctx.OperationTypeUser)
 
-			// mock connectorの作成
+			// mock controllerの作成
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			// mockの作成
+			// mock connectorの作成
 			mockConnector := mock_database.NewMockRepositoryConnector(ctrl)
 			mockConnector.EXPECT().Open().Return(nil)
 			mockConnector.EXPECT().Close().Return(nil)
+
+			// mock UsersRepositoryの作成
 			mockUsersRepository := mock_database.NewMockUsersRepositry(ctrl)
 			mockUsersRepository.EXPECT().GetUserBySteamID(ctx, tc.input.steamid).Return(nil, database.ErrNotFound).Times(1)
 			mockUsersRepository.EXPECT().CreateUser(ctx, tc.input.steamid, tc.input.name, tc.input.admin, gomock.Any()).Return(nil)
 			mockUsersRepository.EXPECT().GetUserBySteamID(ctx, tc.input.steamid).Return(tc.expected.user, nil).Times(1)
 			mockConnector.EXPECT().GetUserRepository().Return(mockUsersRepository)
+
+			// mock JWTServiceの作成
 			mockJwtService := mock_jwt.NewMockJWTService(ctrl)
 			mockJwtService.EXPECT().IssueJWT(tc.expected.user).Return(tc.expected.jwt, nil)
 
+			// テストの実行とassert
 			uc := usecase.NewUserRegister(mockJwtService, mockConnector)
 			jwt, err := uc.RegisterUser(ctx, tc.input.steamid, tc.input.name, tc.input.admin, tc.input.password)
 			assert.Equal(t, tc.expected.jwt, jwt)
