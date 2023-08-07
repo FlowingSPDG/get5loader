@@ -1,5 +1,5 @@
 CREATE TABLE `teams` (
-  `id` VARCHAR(36) NOT NULL PRIMARY KEY AUTO_INCREMENT,
+  `id` VARCHAR(36) NOT NULL PRIMARY KEY,
   `user_id` VARCHAR(36) NOT NULL,
   `name` varchar(40) NOT NULL,
   `flag` varchar(4) NOT NULL,

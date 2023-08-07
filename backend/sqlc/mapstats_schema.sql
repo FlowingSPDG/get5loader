@@ -1,5 +1,5 @@
 CREATE TABLE `map_stats` (
-  `id` VARCHAR(36) NOT NULL PRIMARY KEY AUTO_INCREMENT,
+  `id` VARCHAR(36) NOT NULL PRIMARY KEY,
   `match_id` VARCHAR(36) NOT NULL,
   `map_number` TINYINT UNSIGNED NOT NULL,
   `map_name` varchar(64) NOT NULL,
