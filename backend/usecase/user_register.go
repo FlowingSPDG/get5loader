@@ -4,11 +4,10 @@ import (
 	"context"
 	"errors"
 
-	"golang.org/x/crypto/bcrypt"
-
 	"github.com/FlowingSPDG/get5-web-go/backend/entity"
 	"github.com/FlowingSPDG/get5-web-go/backend/gateway/database"
 	"github.com/FlowingSPDG/get5-web-go/backend/service/jwt"
+	hash "github.com/FlowingSPDG/get5-web-go/backend/service/password_hash"
 )
 
 type UserRegister interface {
@@ -18,15 +17,18 @@ type UserRegister interface {
 
 type userRegister struct {
 	jwtService          jwt.JWTService
+	passwordHasher      hash.PasswordHasher
 	repositoryConnector database.RepositoryConnector
 }
 
 func NewUserRegister(
 	jwtService jwt.JWTService,
+	passwordHasher hash.PasswordHasher,
 	repositoryConnector database.RepositoryConnector,
 ) UserRegister {
 	return &userRegister{
 		jwtService:          jwtService,
+		passwordHasher:      passwordHasher,
 		repositoryConnector: repositoryConnector,
 	}
 }
@@ -39,12 +41,6 @@ func (ur *userRegister) RegisterUser(ctx context.Context, steamID entity.SteamID
 	defer ur.repositoryConnector.Close()
 
 	repository := ur.repositoryConnector.GetUserRepository()
-
-	hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
-	if err != nil {
-		return "", err
-	}
-
 	if _, err := repository.GetUserBySteamID(ctx, steamID); err == nil {
 		return "", errors.New("user already exists")
 	} else {
@@ -53,7 +49,12 @@ func (ur *userRegister) RegisterUser(ctx context.Context, steamID entity.SteamID
 		}
 	}
 
-	if err := repository.CreateUser(ctx, steamID, name, admin, string(hash)); err != nil {
+	hash, err := ur.passwordHasher.Hash(password)
+	if err != nil {
+		return "", err
+	}
+
+	if err := repository.CreateUser(ctx, steamID, name, admin, hash); err != nil {
 		return "", err
 	}
 

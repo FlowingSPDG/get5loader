@@ -552,7 +552,7 @@ func (m *MockUsersRepositry) EXPECT() *MockUsersRepositryMockRecorder {
 }
 
 // CreateUser mocks base method.
-func (m *MockUsersRepositry) CreateUser(ctx context.Context, steamID entity.SteamID, name string, admin bool, hash string) error {
+func (m *MockUsersRepositry) CreateUser(ctx context.Context, steamID entity.SteamID, name string, admin bool, hash []byte) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "CreateUser", ctx, steamID, name, admin, hash)
 	ret0, _ := ret[0].(error)

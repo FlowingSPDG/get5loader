@@ -95,7 +95,7 @@ type RepositoryConnectorWithTx interface {
 // UsersRepositry is an interface for user repository.
 type UsersRepositry interface {
 	// CreateUser creates a user.
-	CreateUser(ctx context.Context, steamID entity.SteamID, name string, admin bool, hash string) error
+	CreateUser(ctx context.Context, steamID entity.SteamID, name string, admin bool, hash []byte) error
 	// GetUser returns a user.
 	GetUser(ctx context.Context, id entity.UserID) (*entity.User, error)
 	GetUserBySteamID(ctx context.Context, steamID entity.SteamID) (*entity.User, error)
