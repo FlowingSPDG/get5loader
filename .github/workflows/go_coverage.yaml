@@ -1,0 +1,9 @@
+name: go-test-coverage
+
+on: [push]
+
+jobs: 
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: vladopajic/go-test-coverage@v2.7.1
