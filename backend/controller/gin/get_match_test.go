@@ -1,5 +1,7 @@
 package gin_controller_test
 
+// controllerをpresenterのテストを両方行っている
+
 import (
 	"fmt"
 	"net/http"
