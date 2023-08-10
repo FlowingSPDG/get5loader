@@ -1,9 +1,23 @@
-name: go-test-coverage
+name: Go test coverage check
+on: [push, pull_request]
 
-on: [push]
-
-jobs: 
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: vladopajic/go-test-coverage@v2.7.1
+jobs:
+    test:
+        name: Test
+        runs-on: ubuntu-latest
+        steps:
+          - uses: actions/checkout@v3
+          - uses: actions/setup-go@v3
+          
+          - name: generate test coverage
+            run: go test ./backend/... -coverprofile=./cover.out
+          
+          - name: check test coverage
+            uses: vladopajic/go-test-coverage@v2
+            with:
+              # Configure action by specifying input parameters individually (option 2)
+              profile: cover.out
+              local-prefix: github.com/org/project
+              threshold-file: 80
+              threshold-package: 80
+              threshold-total: 95
