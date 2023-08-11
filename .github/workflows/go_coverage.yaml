@@ -32,4 +32,4 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           issue-number: ${{ github.event.number }}
-          body-path: 'coverage.txt'
+          body-path: 'backend/coverage.txt'
