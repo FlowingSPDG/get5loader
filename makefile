@@ -43,3 +43,14 @@ build-prepare: clean generate
 	-@$(RM) ./$(DIST_DIR)/*/static
 build-front: deps-web
 	@cd ./front && yarn build
+coverage:
+	cd backend && \
+	go test -v -count=1 -covermode=count -coverprofile=coverage.out ./... | tee test_output.txt && \
+	go tool cover -func=coverage.out | awk '/total:/ {print "| **" $$1 "** | **" $$3 "** |"}' | tee coverage.txt && \
+	cat test_output.txt | grep 'ok.*coverage' | awk '{sub("github.com/FlowingSPDG/get5-web-go/", "", $$2); print "| " $$2 " | " $$5 " |"}' | tee -a coverage.txt && \
+	echo "## Test Coverage Report" > coverage_with_header.txt && \
+	echo "| Package           | Coverage |" >> coverage_with_header.txt && \
+	echo "|-------------------|----------|" >> coverage_with_header.txt && \
+	cat coverage.txt >> coverage_with_header.txt && \
+	mv coverage_with_header.txt coverage.txt && \
+	cat coverage.txt
