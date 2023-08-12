@@ -4,7 +4,7 @@ go 1.20
 
 require (
 	github.com/99designs/gqlgen v0.17.36
-	github.com/FlowingSPDG/Got5 v0.0.0-20230812205746-f630638666d3
+	github.com/FlowingSPDG/Got5 v0.0.0-20230812211625-979f385a7b08
 	github.com/FlowingSPDG/go-steam v0.0.0-20200304111708-e30ea2f91a83
 	github.com/caarlos0/env/v9 v9.0.0
 	github.com/gin-gonic/gin v1.9.1
