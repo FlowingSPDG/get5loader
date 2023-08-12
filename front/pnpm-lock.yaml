@@ -23,12 +23,18 @@ dependencies:
   '@heroicons/react':
     specifier: ^2.0.18
     version: 2.0.18(react@18.2.0)
+  '@mui/icons-material':
+    specifier: ^5.14.3
+    version: 5.14.3(@mui/material@5.14.4)(@types/react@18.2.20)(react@18.2.0)
   '@mui/material':
     specifier: ^5.14.4
     version: 5.14.4(@emotion/react@11.11.1)(@emotion/styled@11.11.0)(@types/react@18.2.20)(react-dom@18.2.0)(react@18.2.0)
   '@types/react-dom':
     specifier: 18.2.7
     version: 18.2.7
+  Groups:
+    specifier: link:@mui/icons-material/Groups
+    version: link:@mui/icons-material/Groups
   autoprefixer:
     specifier: 10.4.14
     version: 10.4.14(postcss@8.4.27)
@@ -1671,6 +1677,23 @@ packages:
 
   /@mui/core-downloads-tracker@5.14.4:
     resolution: {integrity: sha512-pW2XghSi3hpYKX57Wu0SCWMTSpzvXZmmucj3TcOJWaCiFt4xr05w2gcwBZi36dAp9uvd9//9N51qbblmnD+GPg==}
+    dev: false
+
+  /@mui/icons-material@5.14.3(@mui/material@5.14.4)(@types/react@18.2.20)(react@18.2.0):
+    resolution: {integrity: sha512-XkxWPhageu1OPUm2LWjo5XqeQ0t2xfGe8EiLkRW9oz2LHMMZmijvCxulhgquUVTF1DnoSh+3KoDLSsoAFtVNVw==}
+    engines: {node: '>=12.0.0'}
+    peerDependencies:
+      '@mui/material': ^5.0.0
+      '@types/react': ^17.0.0 || ^18.0.0
+      react: ^17.0.0 || ^18.0.0
+    peerDependenciesMeta:
+      '@types/react':
+        optional: true
+    dependencies:
+      '@babel/runtime': 7.22.10
+      '@mui/material': 5.14.4(@emotion/react@11.11.1)(@emotion/styled@11.11.0)(@types/react@18.2.20)(react-dom@18.2.0)(react@18.2.0)
+      '@types/react': 18.2.20
+      react: 18.2.0
     dev: false
 
   /@mui/material@5.14.4(@emotion/react@11.11.1)(@emotion/styled@11.11.0)(@types/react@18.2.20)(react-dom@18.2.0)(react@18.2.0):
