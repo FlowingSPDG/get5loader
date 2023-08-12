@@ -12,8 +12,11 @@
   "dependencies": {
     "@apollo/client": "^3.8.1",
     "@apollo/react-hooks": "^4.0.0",
+    "@emotion/react": "^11.11.1",
+    "@emotion/styled": "^11.11.0",
     "@graphql-typed-document-node/core": "^3.2.0",
     "@heroicons/react": "^2.0.18",
+    "@mui/material": "^5.14.4",
     "@types/react-dom": "18.2.7",
     "autoprefixer": "10.4.14",
     "cross-fetch": "^4.0.0",
