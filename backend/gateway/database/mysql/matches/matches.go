@@ -6,10 +6,10 @@ import (
 	"errors"
 	"time"
 
-	"github.com/FlowingSPDG/get5-web-go/backend/entity"
-	"github.com/FlowingSPDG/get5-web-go/backend/gateway/database"
-	matches_gen "github.com/FlowingSPDG/get5-web-go/backend/gateway/database/mysql/matches/generated"
-	"github.com/FlowingSPDG/get5-web-go/backend/service/uuid"
+	"github.com/FlowingSPDG/get5loader/backend/entity"
+	"github.com/FlowingSPDG/get5loader/backend/gateway/database"
+	matches_gen "github.com/FlowingSPDG/get5loader/backend/gateway/database/mysql/matches/generated"
+	"github.com/FlowingSPDG/get5loader/backend/service/uuid"
 )
 
 type matchRepository struct {

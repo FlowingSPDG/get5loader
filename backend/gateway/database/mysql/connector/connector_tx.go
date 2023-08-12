@@ -3,7 +3,7 @@ package mysqlconnector
 import (
 	"database/sql"
 
-	"github.com/FlowingSPDG/get5-web-go/backend/gateway/database"
+	"github.com/FlowingSPDG/get5loader/backend/gateway/database"
 )
 
 type mysqlConnectorWithTx struct {

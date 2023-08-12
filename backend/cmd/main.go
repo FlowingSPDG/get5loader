@@ -5,9 +5,9 @@ import (
 	"log"
 
 	route "github.com/FlowingSPDG/Got5/route/gin"
-	config "github.com/FlowingSPDG/get5-web-go/backend/cfg"
-	"github.com/FlowingSPDG/get5-web-go/backend/cmd/di"
-	"github.com/FlowingSPDG/get5-web-go/backend/controller/got5"
+	config "github.com/FlowingSPDG/get5loader/backend/cfg"
+	"github.com/FlowingSPDG/get5loader/backend/cmd/di"
+	"github.com/FlowingSPDG/get5loader/backend/controller/got5"
 	"github.com/gin-gonic/gin"
 )
 

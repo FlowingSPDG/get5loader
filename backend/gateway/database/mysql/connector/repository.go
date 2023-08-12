@@ -1,15 +1,15 @@
 package mysqlconnector
 
 import (
-	"github.com/FlowingSPDG/get5-web-go/backend/gateway/database"
-	"github.com/FlowingSPDG/get5-web-go/backend/gateway/database/mysql/gameservers"
-	"github.com/FlowingSPDG/get5-web-go/backend/gateway/database/mysql/mapstats"
-	"github.com/FlowingSPDG/get5-web-go/backend/gateway/database/mysql/matches"
-	"github.com/FlowingSPDG/get5-web-go/backend/gateway/database/mysql/players"
-	"github.com/FlowingSPDG/get5-web-go/backend/gateway/database/mysql/playerstats"
-	"github.com/FlowingSPDG/get5-web-go/backend/gateway/database/mysql/teams"
-	"github.com/FlowingSPDG/get5-web-go/backend/gateway/database/mysql/users"
-	"github.com/FlowingSPDG/get5-web-go/backend/service/uuid"
+	"github.com/FlowingSPDG/get5loader/backend/gateway/database"
+	"github.com/FlowingSPDG/get5loader/backend/gateway/database/mysql/gameservers"
+	"github.com/FlowingSPDG/get5loader/backend/gateway/database/mysql/mapstats"
+	"github.com/FlowingSPDG/get5loader/backend/gateway/database/mysql/matches"
+	"github.com/FlowingSPDG/get5loader/backend/gateway/database/mysql/players"
+	"github.com/FlowingSPDG/get5loader/backend/gateway/database/mysql/playerstats"
+	"github.com/FlowingSPDG/get5loader/backend/gateway/database/mysql/teams"
+	"github.com/FlowingSPDG/get5loader/backend/gateway/database/mysql/users"
+	"github.com/FlowingSPDG/get5loader/backend/service/uuid"
 )
 
 type mysqlRepositoryConnector struct {

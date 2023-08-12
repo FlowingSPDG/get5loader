@@ -3,8 +3,8 @@ package usecase
 import (
 	"context"
 
-	"github.com/FlowingSPDG/get5-web-go/backend/entity"
-	"github.com/FlowingSPDG/get5-web-go/backend/gateway/database"
+	"github.com/FlowingSPDG/get5loader/backend/entity"
+	"github.com/FlowingSPDG/get5loader/backend/gateway/database"
 )
 
 type GetMatch interface {

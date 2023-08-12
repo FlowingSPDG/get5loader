@@ -5,10 +5,10 @@ import (
 	"database/sql"
 	"errors"
 
-	"github.com/FlowingSPDG/get5-web-go/backend/entity"
-	"github.com/FlowingSPDG/get5-web-go/backend/gateway/database"
-	playerstats_gen "github.com/FlowingSPDG/get5-web-go/backend/gateway/database/mysql/playerstats/generated"
-	"github.com/FlowingSPDG/get5-web-go/backend/service/uuid"
+	"github.com/FlowingSPDG/get5loader/backend/entity"
+	"github.com/FlowingSPDG/get5loader/backend/gateway/database"
+	playerstats_gen "github.com/FlowingSPDG/get5loader/backend/gateway/database/mysql/playerstats/generated"
+	"github.com/FlowingSPDG/get5loader/backend/service/uuid"
 )
 
 type playerStatsRepository struct {

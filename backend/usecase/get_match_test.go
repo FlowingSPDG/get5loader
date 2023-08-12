@@ -8,11 +8,11 @@ import (
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/mock/gomock"
 
-	"github.com/FlowingSPDG/get5-web-go/backend/entity"
-	"github.com/FlowingSPDG/get5-web-go/backend/g5ctx"
-	"github.com/FlowingSPDG/get5-web-go/backend/gateway/database"
-	mock_database "github.com/FlowingSPDG/get5-web-go/backend/gateway/database/mock"
-	"github.com/FlowingSPDG/get5-web-go/backend/usecase"
+	"github.com/FlowingSPDG/get5loader/backend/entity"
+	"github.com/FlowingSPDG/get5loader/backend/g5ctx"
+	"github.com/FlowingSPDG/get5loader/backend/gateway/database"
+	mock_database "github.com/FlowingSPDG/get5loader/backend/gateway/database/mock"
+	"github.com/FlowingSPDG/get5loader/backend/usecase"
 )
 
 func TestGetMatch(t *testing.T) {

@@ -5,10 +5,10 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"github.com/FlowingSPDG/get5-web-go/backend/entity"
-	"github.com/FlowingSPDG/get5-web-go/backend/gateway/database"
-	gin_presenter "github.com/FlowingSPDG/get5-web-go/backend/presenter/gin"
-	"github.com/FlowingSPDG/get5-web-go/backend/usecase"
+	"github.com/FlowingSPDG/get5loader/backend/entity"
+	"github.com/FlowingSPDG/get5loader/backend/gateway/database"
+	gin_presenter "github.com/FlowingSPDG/get5loader/backend/presenter/gin"
+	"github.com/FlowingSPDG/get5loader/backend/usecase"
 )
 
 type GetMatchController interface {

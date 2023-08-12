@@ -5,10 +5,10 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/FlowingSPDG/get5-web-go/backend/entity"
-	"github.com/FlowingSPDG/get5-web-go/backend/g5ctx"
-	mock_jwt "github.com/FlowingSPDG/get5-web-go/backend/service/jwt/mock"
-	"github.com/FlowingSPDG/get5-web-go/backend/usecase"
+	"github.com/FlowingSPDG/get5loader/backend/entity"
+	"github.com/FlowingSPDG/get5loader/backend/g5ctx"
+	mock_jwt "github.com/FlowingSPDG/get5loader/backend/service/jwt/mock"
+	"github.com/FlowingSPDG/get5loader/backend/usecase"
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/mock/gomock"
 )

@@ -4,7 +4,7 @@ profile: backend/cover.out
 
 # (optional) 
 # When specified reported file paths will not contain local prefix in the output
-local-prefix: "github.com/FlowingSPDG/get5-web-go"
+local-prefix: "github.com/FlowingSPDG/get5loader"
 
 # Holds coverage thresholds percentages, values should be in range [0-100]
 threshold:

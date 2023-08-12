@@ -3,7 +3,7 @@ package gin_presenter
 import (
 	"github.com/gin-gonic/gin"
 
-	"github.com/FlowingSPDG/get5-web-go/backend/entity"
+	"github.com/FlowingSPDG/get5loader/backend/entity"
 )
 
 // 受け取ったentityを特定の形式に変換して返す
