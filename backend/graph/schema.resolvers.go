@@ -10,6 +10,7 @@ import (
 	"github.com/FlowingSPDG/get5loader/backend/entity"
 	"github.com/FlowingSPDG/get5loader/backend/g5ctx"
 	"github.com/FlowingSPDG/get5loader/backend/graph/model"
+	"github.com/FlowingSPDG/get5loader/backend/usecase"
 )
 
 // RegisterTeam is the resolver for the registerTeam field.
@@ -18,7 +19,23 @@ func (r *mutationResolver) RegisterTeam(ctx context.Context, input model.NewTeam
 	if err != nil {
 		return nil, err
 	}
-	team, err := r.TeamUsecase.RegisterTeam(ctx, token.UserID, input.Name, input.Flag, input.Tag, input.Logo, input.Public)
+	inputPlayers := make([]usecase.InputPlayers, 0, len(input.Players))
+	for _, player := range input.Players {
+		inputPlayers = append(inputPlayers, usecase.InputPlayers{
+			SteamID: entity.SteamID(player.SteamID),
+			Name:    player.Name,
+		})
+	}
+
+	team, err := r.TeamUsecase.RegisterTeam(ctx, usecase.RegisterTeamInput{
+		UserID:     token.UserID,
+		Name:       input.Name,
+		Flag:       input.Flag,
+		Tag:        input.Tag,
+		Logo:       input.Logo,
+		PublicTeam: input.Public,
+		Players:    inputPlayers,
+	})
 	if err != nil {
 		return nil, err
 	}

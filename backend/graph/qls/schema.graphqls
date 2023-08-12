@@ -1,9 +1,10 @@
 scalar DateTime
+scalar SteamID
 
 # User Operations
 type User {
 	id: ID!
-	steamId: String!
+	steamId: SteamID!
 	name: String!
 	admin: Boolean!
 	gameservers: [GameServer!]!
@@ -12,14 +13,14 @@ type User {
 }
 
 input NewUser {
-	steamId: String!
+	steamId: SteamID!
 	name: String!
 	password: String!
 	admin: Boolean!
 }
 
 input UserLoginSteamID {
-	steamId: String!
+	steamId: SteamID!
 	password: String!
 }
 
@@ -57,18 +58,18 @@ input NewTeam {
 type Player {
     id: ID!
     teamId: ID!
-    steamId: String!
+    steamId: SteamID!
     name: String!
 }
 
 input NewPlayer {
-    steamId: String!
+    steamId: SteamID!
     name: String!
     teamid: ID!
 }
 
 input NewPlayerForTeam {
-    steamId: String!
+    steamId: SteamID!
     name: String!
 }
 
@@ -164,7 +165,7 @@ type PlayerStats {
     id: ID!
     matchId: ID!
     mapstatsId: ID!
-    steamId: String!
+    steamId: SteamID!
     name: String!
 
     kills: Int!
