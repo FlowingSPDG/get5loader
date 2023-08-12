@@ -44,7 +44,20 @@ func (gs *gameServer) GetPublicServers(ctx context.Context) ([]*entity.GameServe
 		return nil, err
 	}
 
-	return gameServers, nil
+	ret := make([]*entity.GameServer, 0, len(gameServers))
+	for _, gameServer := range gameServers {
+		ret = append(ret, &entity.GameServer{
+			ID:           entity.GameServerID(gameServer.ID),
+			UserID:       entity.UserID(gameServer.UserID),
+			Ip:           gameServer.Ip,
+			Port:         gameServer.Port,
+			RCONPassword: gameServer.RCONPassword,
+			DisplayName:  gameServer.DisplayName,
+			IsPublic:     gameServer.IsPublic,
+		})
+	}
+
+	return ret, nil
 }
 
 // AddGameServer implements GameServer.
@@ -68,7 +81,15 @@ func (gs *gameServer) AddGameServer(ctx context.Context, userID entity.UserID, i
 		return nil, err
 	}
 
-	return gameServer, nil
+	return &entity.GameServer{
+		ID:           entity.GameServerID(gameServer.ID),
+		UserID:       entity.UserID(gameServer.UserID),
+		Ip:           gameServer.Ip,
+		Port:         gameServer.Port,
+		RCONPassword: gameServer.RCONPassword,
+		DisplayName:  gameServer.DisplayName,
+		IsPublic:     gameServer.IsPublic,
+	}, nil
 }
 
 // DeleteGameServer implements GameServer.

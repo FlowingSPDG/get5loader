@@ -63,7 +63,7 @@ func (gr *gameServerRepository) DeleteGameServer(ctx context.Context, id entity.
 }
 
 // GetGameServer implements database.GameServerRepository.
-func (gr *gameServerRepository) GetGameServer(ctx context.Context, id entity.GameServerID) (*entity.GameServer, error) {
+func (gr *gameServerRepository) GetGameServer(ctx context.Context, id entity.GameServerID) (*database.GameServer, error) {
 	gameserver, err := gr.queries.GetGameServers(ctx, string(id))
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
@@ -72,7 +72,7 @@ func (gr *gameServerRepository) GetGameServer(ctx context.Context, id entity.Gam
 		return nil, database.NewInternalError(err)
 	}
 
-	return &entity.GameServer{
+	return &database.GameServer{
 		ID:           entity.GameServerID(gameserver.ID),
 		UserID:       entity.UserID(gameserver.UserID),
 		Ip:           net.ParseIP(string(gameserver.Ip)).To4().String(),
@@ -84,7 +84,7 @@ func (gr *gameServerRepository) GetGameServer(ctx context.Context, id entity.Gam
 }
 
 // GetGameServersByUser implements database.GameServerRepository.
-func (gr *gameServerRepository) GetGameServersByUser(ctx context.Context, userID entity.UserID) ([]*entity.GameServer, error) {
+func (gr *gameServerRepository) GetGameServersByUser(ctx context.Context, userID entity.UserID) ([]*database.GameServer, error) {
 	gameservers, err := gr.queries.GetGameServersByUser(ctx, string(userID))
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
@@ -93,9 +93,9 @@ func (gr *gameServerRepository) GetGameServersByUser(ctx context.Context, userID
 		return nil, database.NewInternalError(err)
 	}
 
-	ret := make([]*entity.GameServer, 0, len(gameservers))
+	ret := make([]*database.GameServer, 0, len(gameservers))
 	for _, gameserver := range gameservers {
-		ret = append(ret, &entity.GameServer{
+		ret = append(ret, &database.GameServer{
 			ID:           entity.GameServerID(gameserver.ID),
 			UserID:       entity.UserID(gameserver.UserID),
 			Ip:           net.ParseIP(string(gameserver.Ip)).To4().String(),
@@ -110,15 +110,15 @@ func (gr *gameServerRepository) GetGameServersByUser(ctx context.Context, userID
 }
 
 // GetPublicGameServers implements database.GameServerRepository.
-func (gr *gameServerRepository) GetPublicGameServers(ctx context.Context) ([]*entity.GameServer, error) {
+func (gr *gameServerRepository) GetPublicGameServers(ctx context.Context) ([]*database.GameServer, error) {
 	gameservers, err := gr.queries.GetPublicGameServers(ctx)
 	if err != nil {
 		return nil, database.NewInternalError(err)
 	}
 
-	ret := make([]*entity.GameServer, 0, len(gameservers))
+	ret := make([]*database.GameServer, 0, len(gameservers))
 	for _, gameserver := range gameservers {
-		ret = append(ret, &entity.GameServer{
+		ret = append(ret, &database.GameServer{
 			ID:           entity.GameServerID(gameserver.ID),
 			UserID:       entity.UserID(gameserver.UserID),
 			Ip:           net.ParseIP(string(gameserver.Ip)).To4().String(),

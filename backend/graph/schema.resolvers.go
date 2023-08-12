@@ -7,6 +7,7 @@ package graph
 import (
 	"context"
 	"fmt"
+	"strconv"
 
 	"github.com/FlowingSPDG/get5loader/backend/entity"
 	"github.com/FlowingSPDG/get5loader/backend/g5ctx"
@@ -100,7 +101,123 @@ func (r *queryResolver) GetTeamsByUser(ctx context.Context) ([]*model.Team, erro
 
 // GetMatch is the resolver for the getMatch field.
 func (r *queryResolver) GetMatch(ctx context.Context, id string) (*model.Match, error) {
-	panic(fmt.Errorf("not implemented: GetMatch - getMatch"))
+	match, err := r.MatchUsecase.GetMatch(ctx, entity.MatchID(id))
+	if err != nil {
+		return nil, err
+	}
+
+	team1players := make([]*model.Player, 0, len(match.Team1.Players))
+	for _, player := range match.Team1.Players {
+		team1players = append(team1players, &model.Player{
+			ID:      string(player.ID),
+			TeamID:  string(player.TeamID),
+			SteamID: strconv.Itoa(int(player.SteamID)),
+			Name:    player.Name,
+		})
+	}
+
+	team2players := make([]*model.Player, 0, len(match.Team2.Players))
+	for _, player := range match.Team2.Players {
+		team2players = append(team2players, &model.Player{
+			ID:      string(player.ID),
+			TeamID:  string(player.TeamID),
+			SteamID: strconv.Itoa(int(player.SteamID)),
+			Name:    player.Name,
+		})
+	}
+
+	mapstats := make([]*model.MapStats, 0, len(match.Mapstats))
+	for _, mapstat := range match.Mapstats {
+		playerStats := make([]*model.PlayerStats, 0, len(mapstat.PlayerStats))
+		for _, playerStat := range mapstat.PlayerStats {
+			playerStats = append(playerStats, &model.PlayerStats{
+				ID:               string(playerStat.ID),
+				MatchID:          string(playerStat.MatchID),
+				MapstatsID:       string(playerStat.MapID),
+				SteamID:          strconv.Itoa(int(playerStat.SteamID)),
+				Name:             playerStat.Name,
+				Kills:            int(playerStat.Kills),
+				Assists:          int(playerStat.Assists),
+				Deaths:           int(playerStat.Deaths),
+				RoundsPlayed:     int(playerStat.RoundsPlayed),
+				FlashBangAssists: int(playerStat.FlashbangAssists),
+				Suicides:         int(playerStat.Suicides),
+				HeadshotKills:    int(playerStat.HeadShotKills),
+				Damage:           int(playerStat.Damage),
+				BombPlants:       int(playerStat.BombPlants),
+				BombDefuses:      int(playerStat.BombDefuses),
+				V1:               int(playerStat.V1),
+				V2:               int(playerStat.V2),
+				V3:               int(playerStat.V3),
+				V4:               int(playerStat.V4),
+				V5:               int(playerStat.V5),
+				K1:               int(playerStat.K1),
+				K2:               int(playerStat.K2),
+				K3:               int(playerStat.K3),
+				K4:               int(playerStat.K4),
+				K5:               int(playerStat.K5),
+				FirstDeathT:      int(playerStat.FirstDeathT),
+				FirstDeathCt:     int(playerStat.FirstDeathCT),
+				FirstKillT:       int(playerStat.FirstKillT),
+				FirstKillCt:      int(playerStat.FirstKillCT),
+			})
+		}
+
+		mapstats = append(mapstats, &model.MapStats{
+			ID:          string(mapstat.ID),
+			MatchID:     string(mapstat.MatchID),
+			MapNumber:   int(mapstat.MapNumber),
+			MapName:     mapstat.MapName,
+			StartedAt:   mapstat.StartTime,
+			EndedAt:     mapstat.EndTime,
+			Winner:      (*string)(mapstat.Winner),
+			Team1score:  int(mapstat.Team1Score),
+			Team2score:  int(mapstat.Team2Score),
+			Playerstats: playerStats,
+		})
+	}
+
+	return &model.Match{
+		ID:     string(match.ID),
+		UserID: string(match.UserID),
+		Server: &model.GameServer{
+			ID:     string(match.GameServer.ID),
+			IP:     match.GameServer.Ip,
+			Port:   int(match.GameServer.Port),
+			Name:   match.GameServer.DisplayName,
+			Public: match.GameServer.IsPublic,
+		},
+		Team1: &model.Team{
+			ID:      string(match.Team1.ID),
+			UserID:  string(match.Team1.UserID),
+			Name:    match.Team1.Name,
+			Flag:    match.Team1.Flag,
+			Tag:     match.Team1.Tag,
+			Logo:    match.Team1.Logo,
+			Public:  match.Team1.Public,
+			Players: team1players,
+		},
+		Team2: &model.Team{
+			ID:      string(match.Team2.ID),
+			UserID:  string(match.Team2.UserID),
+			Name:    match.Team2.Name,
+			Flag:    match.Team2.Flag,
+			Tag:     match.Team2.Tag,
+			Logo:    match.Team2.Logo,
+			Public:  match.Team2.Public,
+			Players: team2players,
+		},
+		Winner:     (*string)(match.Winner),
+		StartedAt:  match.StartTime,
+		EndedAt:    match.EndTime,
+		MaxMaps:    int(match.MaxMaps),
+		Title:      match.Title,
+		SkipVeto:   match.SkipVeto,
+		Team1Score: int(match.Team1Score),
+		Team2Score: int(match.Team2Score),
+		Forfeit:    match.Forfeit,
+		MapStats:   mapstats,
+	}, nil
 }
 
 // GetServer is the resolver for the getServer field.

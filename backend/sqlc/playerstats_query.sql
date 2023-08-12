@@ -6,7 +6,7 @@ WHERE id = ? LIMIT 1;
 SELECT * FROM player_stats
 WHERE match_id = ?;
 
--- name: GetPlayerStatsByMap :one
+-- name: GetPlayerStatsByMap :many
 SELECT * FROM player_stats
 WHERE map_id = ?;
 

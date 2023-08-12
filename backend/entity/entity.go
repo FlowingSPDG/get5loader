@@ -37,9 +37,9 @@ type GameServer struct {
 type Match struct {
 	ID         MatchID
 	UserID     UserID
-	ServerID   GameServerID
-	Team1ID    TeamID
-	Team2ID    TeamID
+	GameServer GameServer
+	Team1      Team
+	Team2      Team
 	Winner     *TeamID
 	StartTime  *time.Time
 	EndTime    *time.Time
@@ -51,18 +51,20 @@ type Match struct {
 	Team2Score uint32
 	Forfeit    *bool
 	Status     MATCH_STATUS
+	Mapstats   []*MapStats
 }
 
 type MapStats struct {
-	ID         MapStatsID
-	MatchID    MatchID
-	MapNumber  uint32
-	MapName    string
-	StartTime  *time.Time
-	EndTime    *time.Time
-	Winner     *TeamID
-	Team1Score uint32
-	Team2Score uint32
+	ID          MapStatsID
+	MatchID     MatchID
+	MapNumber   uint32
+	MapName     string
+	StartTime   *time.Time
+	EndTime     *time.Time
+	Winner      *TeamID
+	Team1Score  uint32
+	Team2Score  uint32
+	PlayerStats []*PlayerStats
 }
 
 type PlayerStats struct {
@@ -103,13 +105,14 @@ type PlayerStats struct {
 }
 
 type Team struct {
-	ID     TeamID
-	UserID UserID
-	Name   string
-	Flag   string
-	Tag    string
-	Logo   string
-	Public bool
+	ID      TeamID
+	UserID  UserID
+	Name    string
+	Flag    string
+	Tag     string
+	Logo    string
+	Public  bool
+	Players []*Player
 }
 
 type Player struct {

@@ -33,7 +33,7 @@ type LoginToken {
 # Team
 type Team {
     id: ID!
-    user: User!
+    userId: ID!
     name: String!
     flag: String!
     tag: String!
@@ -53,8 +53,8 @@ input NewTeam {
 
 # Player
 type Player {
-    teamid: ID!
     id: ID!
+    teamId: ID!
     steamId: String!
     name: String!
 }
@@ -87,7 +87,6 @@ input NewGameServer {
   public: Boolean!
 }
 
-# ⭐️  type Query: データフェッチ系のエンドポイント定義
 type Query {
     # User op
     getUser(id: ID!): User!
@@ -121,7 +120,7 @@ type Match {
 	server: GameServer!
 	team1: Team!
 	team2: Team!
-	winner: Team
+	winner: ID
 	startedAt: DateTime
 	endedAt: DateTime
 	maxMaps: Int!
@@ -141,7 +140,7 @@ type MapStats {
     mapName: String!
     startedAt: DateTime
     endedAt: DateTime
-    winner: Team
+    winner: ID
     team1score: Int!
     team2score: Int!
     playerstats: [PlayerStats!]!

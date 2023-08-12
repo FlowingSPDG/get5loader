@@ -40,7 +40,16 @@ func (t *team) RegisterTeam(ctx context.Context, userID entity.UserID, name stri
 		return nil, err
 	}
 
-	return team, nil
+	return &entity.Team{
+		ID:      entity.TeamID(team.ID),
+		UserID:  entity.UserID(team.UserID),
+		Name:    team.Name,
+		Flag:    team.Flag,
+		Tag:     team.Tag,
+		Logo:    team.Logo,
+		Public:  team.Public,
+		Players: []*entity.Player{},
+	}, nil
 }
 
 // GetTeam implements Team.
@@ -50,13 +59,39 @@ func (t *team) GetTeam(ctx context.Context, id entity.TeamID) (*entity.Team, err
 	}
 	defer t.repositoryConnector.Close()
 
-	repository := t.repositoryConnector.GetTeamsRepository()
+	teamsRepository := t.repositoryConnector.GetTeamsRepository()
+	playersRepository := t.repositoryConnector.GetPlayersRepository()
 
-	team, err := repository.GetTeam(ctx, id)
+	team, err := teamsRepository.GetTeam(ctx, id)
 	if err != nil {
 		return nil, err
 	}
-	return team, nil
+
+	players, err := playersRepository.GetPlayersByTeam(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+
+	teamPlayers := make([]*entity.Player, 0, len(players))
+	for _, player := range players {
+		teamPlayers = append(teamPlayers, &entity.Player{
+			ID:      entity.PlayerID(player.ID),
+			TeamID:  entity.TeamID(player.TeamID),
+			SteamID: entity.SteamID(player.SteamID),
+			Name:    player.Name,
+		})
+	}
+
+	return &entity.Team{
+		ID:      entity.TeamID(team.ID),
+		UserID:  entity.UserID(team.UserID),
+		Name:    team.Name,
+		Flag:    team.Flag,
+		Tag:     team.Tag,
+		Logo:    team.Logo,
+		Public:  team.Public,
+		Players: teamPlayers,
+	}, nil
 }
 
 // GetTeamsByUser implements Team.
@@ -66,11 +101,41 @@ func (t *team) GetTeamsByUser(ctx context.Context, userID entity.UserID) ([]*ent
 	}
 	defer t.repositoryConnector.Close()
 
-	repository := t.repositoryConnector.GetTeamsRepository()
+	teamRepository := t.repositoryConnector.GetTeamsRepository()
+	playersRepository := t.repositoryConnector.GetPlayersRepository()
 
-	teams, err := repository.GetTeamsByUser(ctx, userID)
+	teams, err := teamRepository.GetTeamsByUser(ctx, userID)
 	if err != nil {
 		return nil, err
 	}
-	return teams, nil
+
+	ret := make([]*entity.Team, 0, len(teams))
+	for _, team := range teams {
+		players, err := playersRepository.GetPlayersByTeam(ctx, team.ID)
+		if err != nil {
+			return nil, err
+		}
+
+		teamPlayers := make([]*entity.Player, 0, len(players))
+		for _, player := range players {
+			teamPlayers = append(teamPlayers, &entity.Player{
+				ID:      entity.PlayerID(player.ID),
+				TeamID:  entity.TeamID(player.TeamID),
+				SteamID: entity.SteamID(player.SteamID),
+				Name:    player.Name,
+			})
+		}
+
+		ret = append(ret, &entity.Team{
+			ID:      entity.TeamID(team.ID),
+			UserID:  entity.UserID(team.UserID),
+			Name:    team.Name,
+			Flag:    team.Flag,
+			Tag:     team.Tag,
+			Logo:    team.Logo,
+			Public:  team.Public,
+			Players: teamPlayers,
+		})
+	}
+	return ret, nil
 }

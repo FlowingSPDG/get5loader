@@ -49,7 +49,7 @@ func (ur *usersRepositry) CreateUser(ctx context.Context, steamID entity.SteamID
 }
 
 // GetUser implements database.UsersRepositry.
-func (ur *usersRepositry) GetUser(ctx context.Context, id entity.UserID) (*entity.User, error) {
+func (ur *usersRepositry) GetUser(ctx context.Context, id entity.UserID) (*database.User, error) {
 	user, err := ur.queries.GetUser(ctx, string(id))
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
@@ -57,7 +57,7 @@ func (ur *usersRepositry) GetUser(ctx context.Context, id entity.UserID) (*entit
 		}
 		return nil, database.NewInternalError(err)
 	}
-	return &entity.User{
+	return &database.User{
 		ID:        entity.UserID(user.ID),
 		SteamID:   entity.SteamID(user.SteamID),
 		Name:      user.Name,
@@ -69,7 +69,7 @@ func (ur *usersRepositry) GetUser(ctx context.Context, id entity.UserID) (*entit
 }
 
 // GetUserBySteamID implements database.UsersRepositry.
-func (ur *usersRepositry) GetUserBySteamID(ctx context.Context, steamID entity.SteamID) (*entity.User, error) {
+func (ur *usersRepositry) GetUserBySteamID(ctx context.Context, steamID entity.SteamID) (*database.User, error) {
 	user, err := ur.queries.GetUserBySteamID(ctx, uint64(steamID))
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
@@ -77,7 +77,7 @@ func (ur *usersRepositry) GetUserBySteamID(ctx context.Context, steamID entity.S
 		}
 		return nil, database.NewInternalError(err)
 	}
-	return &entity.User{
+	return &database.User{
 		ID:        entity.UserID(user.ID),
 		SteamID:   entity.SteamID(user.SteamID),
 		Name:      user.Name,

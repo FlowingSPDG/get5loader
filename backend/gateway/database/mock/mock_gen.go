@@ -566,10 +566,10 @@ func (mr *MockUsersRepositryMockRecorder) CreateUser(ctx, steamID, name, admin, 
 }
 
 // GetUser mocks base method.
-func (m *MockUsersRepositry) GetUser(ctx context.Context, id entity.UserID) (*entity.User, error) {
+func (m *MockUsersRepositry) GetUser(ctx context.Context, id entity.UserID) (*database.User, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetUser", ctx, id)
-	ret0, _ := ret[0].(*entity.User)
+	ret0, _ := ret[0].(*database.User)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -581,10 +581,10 @@ func (mr *MockUsersRepositryMockRecorder) GetUser(ctx, id interface{}) *gomock.C
 }
 
 // GetUserBySteamID mocks base method.
-func (m *MockUsersRepositry) GetUserBySteamID(ctx context.Context, steamID entity.SteamID) (*entity.User, error) {
+func (m *MockUsersRepositry) GetUserBySteamID(ctx context.Context, steamID entity.SteamID) (*database.User, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetUserBySteamID", ctx, steamID)
-	ret0, _ := ret[0].(*entity.User)
+	ret0, _ := ret[0].(*database.User)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -648,10 +648,10 @@ func (mr *MockGameServersRepositoryMockRecorder) DeleteGameServer(ctx, id interf
 }
 
 // GetGameServer mocks base method.
-func (m *MockGameServersRepository) GetGameServer(ctx context.Context, id entity.GameServerID) (*entity.GameServer, error) {
+func (m *MockGameServersRepository) GetGameServer(ctx context.Context, id entity.GameServerID) (*database.GameServer, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetGameServer", ctx, id)
-	ret0, _ := ret[0].(*entity.GameServer)
+	ret0, _ := ret[0].(*database.GameServer)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -663,10 +663,10 @@ func (mr *MockGameServersRepositoryMockRecorder) GetGameServer(ctx, id interface
 }
 
 // GetGameServersByUser mocks base method.
-func (m *MockGameServersRepository) GetGameServersByUser(ctx context.Context, userID entity.UserID) ([]*entity.GameServer, error) {
+func (m *MockGameServersRepository) GetGameServersByUser(ctx context.Context, userID entity.UserID) ([]*database.GameServer, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetGameServersByUser", ctx, userID)
-	ret0, _ := ret[0].([]*entity.GameServer)
+	ret0, _ := ret[0].([]*database.GameServer)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -678,10 +678,10 @@ func (mr *MockGameServersRepositoryMockRecorder) GetGameServersByUser(ctx, userI
 }
 
 // GetPublicGameServers mocks base method.
-func (m *MockGameServersRepository) GetPublicGameServers(ctx context.Context) ([]*entity.GameServer, error) {
+func (m *MockGameServersRepository) GetPublicGameServers(ctx context.Context) ([]*database.GameServer, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetPublicGameServers", ctx)
-	ret0, _ := ret[0].([]*entity.GameServer)
+	ret0, _ := ret[0].([]*database.GameServer)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -745,10 +745,10 @@ func (mr *MockMatchesRepositoryMockRecorder) CancelMatch(ctx, matchID interface{
 }
 
 // GetMatch mocks base method.
-func (m *MockMatchesRepository) GetMatch(ctx context.Context, id entity.MatchID) (*entity.Match, error) {
+func (m *MockMatchesRepository) GetMatch(ctx context.Context, id entity.MatchID) (*database.Match, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetMatch", ctx, id)
-	ret0, _ := ret[0].(*entity.Match)
+	ret0, _ := ret[0].(*database.Match)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -760,10 +760,10 @@ func (mr *MockMatchesRepositoryMockRecorder) GetMatch(ctx, id interface{}) *gomo
 }
 
 // GetMatchesByTeam mocks base method.
-func (m *MockMatchesRepository) GetMatchesByTeam(ctx context.Context, teamID entity.TeamID) ([]*entity.Match, error) {
+func (m *MockMatchesRepository) GetMatchesByTeam(ctx context.Context, teamID entity.TeamID) ([]*database.Match, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetMatchesByTeam", ctx, teamID)
-	ret0, _ := ret[0].([]*entity.Match)
+	ret0, _ := ret[0].([]*database.Match)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -775,10 +775,10 @@ func (mr *MockMatchesRepositoryMockRecorder) GetMatchesByTeam(ctx, teamID interf
 }
 
 // GetMatchesByUser mocks base method.
-func (m *MockMatchesRepository) GetMatchesByUser(ctx context.Context, userID entity.UserID) ([]*entity.Match, error) {
+func (m *MockMatchesRepository) GetMatchesByUser(ctx context.Context, userID entity.UserID) ([]*database.Match, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetMatchesByUser", ctx, userID)
-	ret0, _ := ret[0].([]*entity.Match)
+	ret0, _ := ret[0].([]*database.Match)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -790,10 +790,10 @@ func (mr *MockMatchesRepositoryMockRecorder) GetMatchesByUser(ctx, userID interf
 }
 
 // GetMatchesByWinner mocks base method.
-func (m *MockMatchesRepository) GetMatchesByWinner(ctx context.Context, teamID entity.TeamID) ([]*entity.Match, error) {
+func (m *MockMatchesRepository) GetMatchesByWinner(ctx context.Context, teamID entity.TeamID) ([]*database.Match, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetMatchesByWinner", ctx, teamID)
-	ret0, _ := ret[0].([]*entity.Match)
+	ret0, _ := ret[0].([]*database.Match)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -884,10 +884,10 @@ func (m *MockMapStatsRepository) EXPECT() *MockMapStatsRepositoryMockRecorder {
 }
 
 // GetMapStats mocks base method.
-func (m *MockMapStatsRepository) GetMapStats(ctx context.Context, id entity.MapStatsID) (*entity.MapStats, error) {
+func (m *MockMapStatsRepository) GetMapStats(ctx context.Context, id entity.MapStatsID) (*database.MapStats, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetMapStats", ctx, id)
-	ret0, _ := ret[0].(*entity.MapStats)
+	ret0, _ := ret[0].(*database.MapStats)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -899,10 +899,10 @@ func (mr *MockMapStatsRepositoryMockRecorder) GetMapStats(ctx, id interface{}) *
 }
 
 // GetMapStatsByMatch mocks base method.
-func (m *MockMapStatsRepository) GetMapStatsByMatch(ctx context.Context, matchID entity.MatchID) ([]*entity.MapStats, error) {
+func (m *MockMapStatsRepository) GetMapStatsByMatch(ctx context.Context, matchID entity.MatchID) ([]*database.MapStats, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetMapStatsByMatch", ctx, matchID)
-	ret0, _ := ret[0].([]*entity.MapStats)
+	ret0, _ := ret[0].([]*database.MapStats)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -914,10 +914,10 @@ func (mr *MockMapStatsRepositoryMockRecorder) GetMapStatsByMatch(ctx, matchID in
 }
 
 // GetMapStatsByMatchAndMap mocks base method.
-func (m *MockMapStatsRepository) GetMapStatsByMatchAndMap(ctx context.Context, matchID entity.MatchID, mapNumber uint32) (*entity.MapStats, error) {
+func (m *MockMapStatsRepository) GetMapStatsByMatchAndMap(ctx context.Context, matchID entity.MatchID, mapNumber uint32) (*database.MapStats, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetMapStatsByMatchAndMap", ctx, matchID, mapNumber)
-	ret0, _ := ret[0].(*entity.MapStats)
+	ret0, _ := ret[0].(*database.MapStats)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -952,10 +952,10 @@ func (m *MockPlayerStatsRepository) EXPECT() *MockPlayerStatsRepositoryMockRecor
 }
 
 // GetPlayerStatsByMapstats mocks base method.
-func (m *MockPlayerStatsRepository) GetPlayerStatsByMapstats(ctx context.Context, mapStatsID entity.MapStatsID) (*entity.PlayerStats, error) {
+func (m *MockPlayerStatsRepository) GetPlayerStatsByMapstats(ctx context.Context, mapStatsID entity.MapStatsID) ([]*database.PlayerStats, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetPlayerStatsByMapstats", ctx, mapStatsID)
-	ret0, _ := ret[0].(*entity.PlayerStats)
+	ret0, _ := ret[0].([]*database.PlayerStats)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -967,10 +967,10 @@ func (mr *MockPlayerStatsRepositoryMockRecorder) GetPlayerStatsByMapstats(ctx, m
 }
 
 // GetPlayerStatsByMatch mocks base method.
-func (m *MockPlayerStatsRepository) GetPlayerStatsByMatch(ctx context.Context, matchID entity.MatchID) ([]*entity.PlayerStats, error) {
+func (m *MockPlayerStatsRepository) GetPlayerStatsByMatch(ctx context.Context, matchID entity.MatchID) ([]*database.PlayerStats, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetPlayerStatsByMatch", ctx, matchID)
-	ret0, _ := ret[0].([]*entity.PlayerStats)
+	ret0, _ := ret[0].([]*database.PlayerStats)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -982,10 +982,10 @@ func (mr *MockPlayerStatsRepositoryMockRecorder) GetPlayerStatsByMatch(ctx, matc
 }
 
 // GetPlayerStatsBySteamID mocks base method.
-func (m *MockPlayerStatsRepository) GetPlayerStatsBySteamID(ctx context.Context, steamID entity.SteamID) ([]*entity.PlayerStats, error) {
+func (m *MockPlayerStatsRepository) GetPlayerStatsBySteamID(ctx context.Context, steamID entity.SteamID) ([]*database.PlayerStats, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetPlayerStatsBySteamID", ctx, steamID)
-	ret0, _ := ret[0].([]*entity.PlayerStats)
+	ret0, _ := ret[0].([]*database.PlayerStats)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -1020,25 +1020,25 @@ func (m *MockTeamsRepository) EXPECT() *MockTeamsRepositoryMockRecorder {
 }
 
 // AddTeam mocks base method.
-func (m *MockTeamsRepository) AddTeam(ctx context.Context, userID entity.UserID, name, tag, flag, logo string) (entity.TeamID, error) {
+func (m *MockTeamsRepository) AddTeam(ctx context.Context, userID entity.UserID, name, tag, flag, logo string, public bool) (entity.TeamID, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "AddTeam", ctx, userID, name, tag, flag, logo)
+	ret := m.ctrl.Call(m, "AddTeam", ctx, userID, name, tag, flag, logo, public)
 	ret0, _ := ret[0].(entity.TeamID)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // AddTeam indicates an expected call of AddTeam.
-func (mr *MockTeamsRepositoryMockRecorder) AddTeam(ctx, userID, name, tag, flag, logo interface{}) *gomock.Call {
+func (mr *MockTeamsRepositoryMockRecorder) AddTeam(ctx, userID, name, tag, flag, logo, public interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AddTeam", reflect.TypeOf((*MockTeamsRepository)(nil).AddTeam), ctx, userID, name, tag, flag, logo)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AddTeam", reflect.TypeOf((*MockTeamsRepository)(nil).AddTeam), ctx, userID, name, tag, flag, logo, public)
 }
 
 // GetPublicTeams mocks base method.
-func (m *MockTeamsRepository) GetPublicTeams(ctx context.Context) ([]*entity.Team, error) {
+func (m *MockTeamsRepository) GetPublicTeams(ctx context.Context) ([]*database.Team, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetPublicTeams", ctx)
-	ret0, _ := ret[0].([]*entity.Team)
+	ret0, _ := ret[0].([]*database.Team)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -1050,10 +1050,10 @@ func (mr *MockTeamsRepositoryMockRecorder) GetPublicTeams(ctx interface{}) *gomo
 }
 
 // GetTeam mocks base method.
-func (m *MockTeamsRepository) GetTeam(ctx context.Context, id entity.TeamID) (*entity.Team, error) {
+func (m *MockTeamsRepository) GetTeam(ctx context.Context, id entity.TeamID) (*database.Team, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetTeam", ctx, id)
-	ret0, _ := ret[0].(*entity.Team)
+	ret0, _ := ret[0].(*database.Team)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -1065,10 +1065,10 @@ func (mr *MockTeamsRepositoryMockRecorder) GetTeam(ctx, id interface{}) *gomock.
 }
 
 // GetTeamsByUser mocks base method.
-func (m *MockTeamsRepository) GetTeamsByUser(ctx context.Context, userID entity.UserID) ([]*entity.Team, error) {
+func (m *MockTeamsRepository) GetTeamsByUser(ctx context.Context, userID entity.UserID) ([]*database.Team, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetTeamsByUser", ctx, userID)
-	ret0, _ := ret[0].([]*entity.Team)
+	ret0, _ := ret[0].([]*database.Team)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -1118,10 +1118,10 @@ func (mr *MockPlayersRepositoryMockRecorder) AddPlayer(ctx, teamID, steamID, nam
 }
 
 // GetPlayer mocks base method.
-func (m *MockPlayersRepository) GetPlayer(ctx context.Context, id entity.PlayerID) (*entity.Player, error) {
+func (m *MockPlayersRepository) GetPlayer(ctx context.Context, id entity.PlayerID) (*database.Player, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetPlayer", ctx, id)
-	ret0, _ := ret[0].(*entity.Player)
+	ret0, _ := ret[0].(*database.Player)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -1133,10 +1133,10 @@ func (mr *MockPlayersRepositoryMockRecorder) GetPlayer(ctx, id interface{}) *gom
 }
 
 // GetPlayersByTeam mocks base method.
-func (m *MockPlayersRepository) GetPlayersByTeam(ctx context.Context, teamID entity.TeamID) ([]*entity.Player, error) {
+func (m *MockPlayersRepository) GetPlayersByTeam(ctx context.Context, teamID entity.TeamID) ([]*database.Player, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetPlayersByTeam", ctx, teamID)
-	ret0, _ := ret[0].([]*entity.Player)
+	ret0, _ := ret[0].([]*database.Player)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }

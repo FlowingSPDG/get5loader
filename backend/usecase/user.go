@@ -64,7 +64,15 @@ func (u *user) Register(ctx context.Context, steamID entity.SteamID, name string
 		return "", err
 	}
 
-	signed, err := u.jwtService.IssueJWT(user)
+	signed, err := u.jwtService.IssueJWT(&entity.User{
+		ID:        user.ID,
+		SteamID:   user.SteamID,
+		Name:      user.Name,
+		Admin:     user.Admin,
+		Hash:      user.Hash,
+		CreatedAt: user.CreatedAt,
+		UpdatedAt: user.UpdatedAt,
+	})
 	if err != nil {
 		return "", err
 	}
@@ -90,7 +98,15 @@ func (u *user) IssueJWT(ctx context.Context, userID entity.UserID, password stri
 		return "", err
 	}
 
-	signed, err := u.jwtService.IssueJWT(user)
+	signed, err := u.jwtService.IssueJWT(&entity.User{
+		ID:        user.ID,
+		SteamID:   user.SteamID,
+		Name:      user.Name,
+		Admin:     user.Admin,
+		Hash:      user.Hash,
+		CreatedAt: user.CreatedAt,
+		UpdatedAt: user.UpdatedAt,
+	})
 	if err != nil {
 		return "", err
 	}
@@ -116,7 +132,15 @@ func (u *user) IssueJWTBySteamID(ctx context.Context, steamID entity.SteamID, pa
 		return "", err
 	}
 
-	signed, err := u.jwtService.IssueJWT(user)
+	signed, err := u.jwtService.IssueJWT(&entity.User{
+		ID:        user.ID,
+		SteamID:   user.SteamID,
+		Name:      user.Name,
+		Admin:     user.Admin,
+		Hash:      user.Hash,
+		CreatedAt: user.CreatedAt,
+		UpdatedAt: user.UpdatedAt,
+	})
 	if err != nil {
 		return "", err
 	}
