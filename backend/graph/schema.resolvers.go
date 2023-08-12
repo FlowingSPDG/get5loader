@@ -6,76 +6,35 @@ package graph
 
 import (
 	"context"
-	"fmt"
-	"strconv"
 
 	"github.com/FlowingSPDG/get5loader/backend/entity"
+	"github.com/FlowingSPDG/get5loader/backend/g5ctx"
 	"github.com/FlowingSPDG/get5loader/backend/graph/model"
 )
 
-// AddUser is the resolver for the addUser field.
-func (r *mutationResolver) AddUser(ctx context.Context, input model.NewUser) (*model.LoginToken, error) {
-	steamid, err := strconv.ParseUint(input.SteamID, 10, 64)
+// RegisterTeam is the resolver for the registerTeam field.
+func (r *mutationResolver) RegisterTeam(ctx context.Context, input model.NewTeam) (string, error) {
+	token, err := g5ctx.GetUserToken(ctx)
 	if err != nil {
-		return nil, err
+		return "", err
 	}
-	jwt, err := r.UserUsecase.Register(ctx, entity.SteamID(steamid), input.Name, input.Admin, input.Password)
+	teamID, err := r.TeamUsecase.RegisterTeam(ctx, token.UserID, input.Name, input.Flag, input.Tag, input.Logo, input.Public)
 	if err != nil {
-		return nil, err
+		return "", err
 	}
-	return &model.LoginToken{Token: jwt}, nil
-}
-
-// LoginSteamID is the resolver for the loginSteamID field.
-func (r *mutationResolver) LoginSteamID(ctx context.Context, input model.UserLoginSteamID) (*model.LoginToken, error) {
-	steamid, err := strconv.ParseUint(input.SteamID, 10, 64)
-	if err != nil {
-		return nil, err
-	}
-	jwt, err := r.UserUsecase.IssueJWTBySteamID(ctx, entity.SteamID(steamid), input.Password)
-	if err != nil {
-		return nil, err
-	}
-
-	return &model.LoginToken{Token: jwt}, nil
-}
-
-// LoginID is the resolver for the loginID field.
-func (r *mutationResolver) LoginID(ctx context.Context, input model.UserLoginID) (*model.LoginToken, error) {
-	jwt, err := r.UserUsecase.IssueJWT(ctx, entity.UserID(input.ID), input.Password)
-	if err != nil {
-		return nil, err
-	}
-
-	return &model.LoginToken{Token: jwt}, nil
+	return string(teamID), nil
 }
 
 // AddServer is the resolver for the addServer field.
-func (r *mutationResolver) AddServer(ctx context.Context, input model.NewGameServer) (*model.GameServer, error) {
+func (r *mutationResolver) AddServer(ctx context.Context, input model.NewGameServer) (string, error) {
 	gs, err := r.GameServerUsecase.AddGameServer(ctx, entity.UserID(input.UserID), input.IP, uint32(input.Port), input.RconPassword, input.Name, input.Public)
 	if err != nil {
-		return nil, err
+		return "", err
 	}
-	return &model.GameServer{
-		ID:     string(gs.ID),
-		IP:     gs.Ip,
-		Port:   int(gs.Port),
-		Name:   gs.DisplayName,
-		Public: gs.IsPublic,
-	}, nil
+	return string(gs.ID), nil
 }
 
 // Mutation returns MutationResolver implementation.
 func (r *Resolver) Mutation() MutationResolver { return &mutationResolver{r} }
 
 type mutationResolver struct{ *Resolver }
-
-// !!! WARNING !!!
-// The code below was going to be deleted when updating resolvers. It has been copied here so you have
-// one last chance to move it out of harms way if you want. There are two reasons this happens:
-//   - When renaming or deleting a resolver the old code will be put in here. You can safely delete
-//     it when you're done.
-//   - You have helper methods in this file. Move them out to keep these resolver files clean.
-func (r *mutationResolver) RemoveServer(ctx context.Context, id string) (*bool, error) {
-	panic(fmt.Errorf("not implemented: RemoveServer - removeServer"))
-}

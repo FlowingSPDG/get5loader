@@ -42,12 +42,32 @@ type Team {
     players: [Player!]!
 }
 
+input NewTeam {
+    name: String!
+    flag: String!
+    tag: String!
+    logo: String!
+    public: Boolean!
+    players: [NewPlayerForTeam!]!
+}
+
 # Player
 type Player {
+    teamid: ID!
     id: ID!
     steamId: String!
     name: String!
-    team: Team!
+}
+
+input NewPlayer {
+    steamId: String!
+    name: String!
+    teamid: ID!
+}
+
+input NewPlayerForTeam {
+    steamId: String!
+    name: String!
 }
 
 # GameServer operations
@@ -71,11 +91,12 @@ input NewGameServer {
 
 type Mutation {
   # Team op
+  registerTeam(input: NewTeam!): ID!
 
   # Match op
 
   # gameserver op
-  addServer(input: NewGameServer!): GameServer!
+  addServer(input: NewGameServer!): ID!
 }
 
 # Match

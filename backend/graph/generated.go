@@ -90,16 +90,14 @@ type ComplexityRoot struct {
 
 	Mutation struct {
 		AddServer    func(childComplexity int, input model.NewGameServer) int
-		AddUser      func(childComplexity int, input model.NewUser) int
-		LoginID      func(childComplexity int, input model.UserLoginID) int
-		LoginSteamID func(childComplexity int, input model.UserLoginSteamID) int
+		RegisterTeam func(childComplexity int, input model.NewTeam) int
 	}
 
 	Player struct {
 		ID      func(childComplexity int) int
 		Name    func(childComplexity int) int
 		SteamID func(childComplexity int) int
-		Team    func(childComplexity int) int
+		Teamid  func(childComplexity int) int
 	}
 
 	PlayerStats struct {
@@ -158,10 +156,8 @@ type ComplexityRoot struct {
 }
 
 type MutationResolver interface {
-	AddUser(ctx context.Context, input model.NewUser) (*model.LoginToken, error)
-	LoginSteamID(ctx context.Context, input model.UserLoginSteamID) (*model.LoginToken, error)
-	LoginID(ctx context.Context, input model.UserLoginID) (*model.LoginToken, error)
-	AddServer(ctx context.Context, input model.NewGameServer) (*model.GameServer, error)
+	RegisterTeam(ctx context.Context, input model.NewTeam) (string, error)
+	AddServer(ctx context.Context, input model.NewGameServer) (string, error)
 }
 
 type executableSchema struct {
@@ -408,41 +404,17 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.AddServer(childComplexity, args["input"].(model.NewGameServer)), true
 
-	case "Mutation.addUser":
-		if e.complexity.Mutation.AddUser == nil {
+	case "Mutation.registerTeam":
+		if e.complexity.Mutation.RegisterTeam == nil {
 			break
 		}
 
-		args, err := ec.field_Mutation_addUser_args(context.TODO(), rawArgs)
+		args, err := ec.field_Mutation_registerTeam_args(context.TODO(), rawArgs)
 		if err != nil {
 			return 0, false
 		}
 
-		return e.complexity.Mutation.AddUser(childComplexity, args["input"].(model.NewUser)), true
-
-	case "Mutation.loginID":
-		if e.complexity.Mutation.LoginID == nil {
-			break
-		}
-
-		args, err := ec.field_Mutation_loginID_args(context.TODO(), rawArgs)
-		if err != nil {
-			return 0, false
-		}
-
-		return e.complexity.Mutation.LoginID(childComplexity, args["input"].(model.UserLoginID)), true
-
-	case "Mutation.loginSteamID":
-		if e.complexity.Mutation.LoginSteamID == nil {
-			break
-		}
-
-		args, err := ec.field_Mutation_loginSteamID_args(context.TODO(), rawArgs)
-		if err != nil {
-			return 0, false
-		}
-
-		return e.complexity.Mutation.LoginSteamID(childComplexity, args["input"].(model.UserLoginSteamID)), true
+		return e.complexity.Mutation.RegisterTeam(childComplexity, args["input"].(model.NewTeam)), true
 
 	case "Player.id":
 		if e.complexity.Player.ID == nil {
@@ -465,12 +437,12 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Player.SteamID(childComplexity), true
 
-	case "Player.team":
-		if e.complexity.Player.Team == nil {
+	case "Player.teamid":
+		if e.complexity.Player.Teamid == nil {
 			break
 		}
 
-		return e.complexity.Player.Team(childComplexity), true
+		return e.complexity.Player.Teamid(childComplexity), true
 
 	case "PlayerStats.assists":
 		if e.complexity.PlayerStats.Assists == nil {
@@ -775,6 +747,9 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 	ec := executionContext{rc, e, 0, 0, make(chan graphql.DeferredResult)}
 	inputUnmarshalMap := graphql.BuildUnmarshalerMap(
 		ec.unmarshalInputNewGameServer,
+		ec.unmarshalInputNewPlayer,
+		ec.unmarshalInputNewPlayerForTeam,
+		ec.unmarshalInputNewTeam,
 		ec.unmarshalInputNewUser,
 		ec.unmarshalInputUserLoginID,
 		ec.unmarshalInputUserLoginSteamID,
@@ -909,43 +884,13 @@ func (ec *executionContext) field_Mutation_addServer_args(ctx context.Context, r
 	return args, nil
 }
 
-func (ec *executionContext) field_Mutation_addUser_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Mutation_registerTeam_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 model.NewUser
+	var arg0 model.NewTeam
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNNewUser2githubᚗcomᚋFlowingSPDGᚋget5loaderᚋbackendᚋgraphᚋmodelᚐNewUser(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["input"] = arg0
-	return args, nil
-}
-
-func (ec *executionContext) field_Mutation_loginID_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
-	var err error
-	args := map[string]interface{}{}
-	var arg0 model.UserLoginID
-	if tmp, ok := rawArgs["input"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNUserLoginID2githubᚗcomᚋFlowingSPDGᚋget5loaderᚋbackendᚋgraphᚋmodelᚐUserLoginID(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["input"] = arg0
-	return args, nil
-}
-
-func (ec *executionContext) field_Mutation_loginSteamID_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
-	var err error
-	args := map[string]interface{}{}
-	var arg0 model.UserLoginSteamID
-	if tmp, ok := rawArgs["input"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNUserLoginSteamID2githubᚗcomᚋFlowingSPDGᚋget5loaderᚋbackendᚋgraphᚋmodelᚐUserLoginSteamID(ctx, tmp)
+		arg0, err = ec.unmarshalNNewTeam2githubᚗcomᚋFlowingSPDGᚋget5loaderᚋbackendᚋgraphᚋmodelᚐNewTeam(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -2516,8 +2461,8 @@ func (ec *executionContext) fieldContext_Match_mapStats(ctx context.Context, fie
 	return fc, nil
 }
 
-func (ec *executionContext) _Mutation_addUser(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Mutation_addUser(ctx, field)
+func (ec *executionContext) _Mutation_registerTeam(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_registerTeam(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -2530,7 +2475,7 @@ func (ec *executionContext) _Mutation_addUser(ctx context.Context, field graphql
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().AddUser(rctx, fc.Args["input"].(model.NewUser))
+		return ec.resolvers.Mutation().RegisterTeam(rctx, fc.Args["input"].(model.NewTeam))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -2542,23 +2487,19 @@ func (ec *executionContext) _Mutation_addUser(ctx context.Context, field graphql
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*model.LoginToken)
+	res := resTmp.(string)
 	fc.Result = res
-	return ec.marshalNLoginToken2ᚖgithubᚗcomᚋFlowingSPDGᚋget5loaderᚋbackendᚋgraphᚋmodelᚐLoginToken(ctx, field.Selections, res)
+	return ec.marshalNID2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Mutation_addUser(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Mutation_registerTeam(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Mutation",
 		Field:      field,
 		IsMethod:   true,
 		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			switch field.Name {
-			case "token":
-				return ec.fieldContext_LoginToken_token(ctx, field)
-			}
-			return nil, fmt.Errorf("no field named %q was found under type LoginToken", field.Name)
+			return nil, errors.New("field of type ID does not have child fields")
 		},
 	}
 	defer func() {
@@ -2568,125 +2509,7 @@ func (ec *executionContext) fieldContext_Mutation_addUser(ctx context.Context, f
 		}
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
-	if fc.Args, err = ec.field_Mutation_addUser_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
-		ec.Error(ctx, err)
-		return fc, err
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _Mutation_loginSteamID(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Mutation_loginSteamID(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().LoginSteamID(rctx, fc.Args["input"].(model.UserLoginSteamID))
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(*model.LoginToken)
-	fc.Result = res
-	return ec.marshalNLoginToken2ᚖgithubᚗcomᚋFlowingSPDGᚋget5loaderᚋbackendᚋgraphᚋmodelᚐLoginToken(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_Mutation_loginSteamID(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "Mutation",
-		Field:      field,
-		IsMethod:   true,
-		IsResolver: true,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			switch field.Name {
-			case "token":
-				return ec.fieldContext_LoginToken_token(ctx, field)
-			}
-			return nil, fmt.Errorf("no field named %q was found under type LoginToken", field.Name)
-		},
-	}
-	defer func() {
-		if r := recover(); r != nil {
-			err = ec.Recover(ctx, r)
-			ec.Error(ctx, err)
-		}
-	}()
-	ctx = graphql.WithFieldContext(ctx, fc)
-	if fc.Args, err = ec.field_Mutation_loginSteamID_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
-		ec.Error(ctx, err)
-		return fc, err
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _Mutation_loginID(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Mutation_loginID(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().LoginID(rctx, fc.Args["input"].(model.UserLoginID))
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(*model.LoginToken)
-	fc.Result = res
-	return ec.marshalNLoginToken2ᚖgithubᚗcomᚋFlowingSPDGᚋget5loaderᚋbackendᚋgraphᚋmodelᚐLoginToken(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_Mutation_loginID(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "Mutation",
-		Field:      field,
-		IsMethod:   true,
-		IsResolver: true,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			switch field.Name {
-			case "token":
-				return ec.fieldContext_LoginToken_token(ctx, field)
-			}
-			return nil, fmt.Errorf("no field named %q was found under type LoginToken", field.Name)
-		},
-	}
-	defer func() {
-		if r := recover(); r != nil {
-			err = ec.Recover(ctx, r)
-			ec.Error(ctx, err)
-		}
-	}()
-	ctx = graphql.WithFieldContext(ctx, fc)
-	if fc.Args, err = ec.field_Mutation_loginID_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+	if fc.Args, err = ec.field_Mutation_registerTeam_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return fc, err
 	}
@@ -2719,9 +2542,9 @@ func (ec *executionContext) _Mutation_addServer(ctx context.Context, field graph
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*model.GameServer)
+	res := resTmp.(string)
 	fc.Result = res
-	return ec.marshalNGameServer2ᚖgithubᚗcomᚋFlowingSPDGᚋget5loaderᚋbackendᚋgraphᚋmodelᚐGameServer(ctx, field.Selections, res)
+	return ec.marshalNID2string(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Mutation_addServer(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -2731,19 +2554,7 @@ func (ec *executionContext) fieldContext_Mutation_addServer(ctx context.Context,
 		IsMethod:   true,
 		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			switch field.Name {
-			case "id":
-				return ec.fieldContext_GameServer_id(ctx, field)
-			case "Ip":
-				return ec.fieldContext_GameServer_Ip(ctx, field)
-			case "port":
-				return ec.fieldContext_GameServer_port(ctx, field)
-			case "name":
-				return ec.fieldContext_GameServer_name(ctx, field)
-			case "public":
-				return ec.fieldContext_GameServer_public(ctx, field)
-			}
-			return nil, fmt.Errorf("no field named %q was found under type GameServer", field.Name)
+			return nil, errors.New("field of type ID does not have child fields")
 		},
 	}
 	defer func() {
@@ -2756,6 +2567,50 @@ func (ec *executionContext) fieldContext_Mutation_addServer(ctx context.Context,
 	if fc.Args, err = ec.field_Mutation_addServer_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Player_teamid(ctx context.Context, field graphql.CollectedField, obj *model.Player) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Player_teamid(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Teamid, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNID2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Player_teamid(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Player",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type ID does not have child fields")
+		},
 	}
 	return fc, nil
 }
@@ -2887,68 +2742,6 @@ func (ec *executionContext) fieldContext_Player_name(ctx context.Context, field 
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return nil, errors.New("field of type String does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _Player_team(ctx context.Context, field graphql.CollectedField, obj *model.Player) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Player_team(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Team, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(*model.Team)
-	fc.Result = res
-	return ec.marshalNTeam2ᚖgithubᚗcomᚋFlowingSPDGᚋget5loaderᚋbackendᚋgraphᚋmodelᚐTeam(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_Player_team(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "Player",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			switch field.Name {
-			case "id":
-				return ec.fieldContext_Team_id(ctx, field)
-			case "user":
-				return ec.fieldContext_Team_user(ctx, field)
-			case "name":
-				return ec.fieldContext_Team_name(ctx, field)
-			case "flag":
-				return ec.fieldContext_Team_flag(ctx, field)
-			case "tag":
-				return ec.fieldContext_Team_tag(ctx, field)
-			case "logo":
-				return ec.fieldContext_Team_logo(ctx, field)
-			case "public":
-				return ec.fieldContext_Team_public(ctx, field)
-			case "players":
-				return ec.fieldContext_Team_players(ctx, field)
-			}
-			return nil, fmt.Errorf("no field named %q was found under type Team", field.Name)
 		},
 	}
 	return fc, nil
@@ -4718,14 +4511,14 @@ func (ec *executionContext) fieldContext_Team_players(ctx context.Context, field
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
+			case "teamid":
+				return ec.fieldContext_Player_teamid(ctx, field)
 			case "id":
 				return ec.fieldContext_Player_id(ctx, field)
 			case "steamId":
 				return ec.fieldContext_Player_steamId(ctx, field)
 			case "name":
 				return ec.fieldContext_Player_name(ctx, field)
-			case "team":
-				return ec.fieldContext_Player_team(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Player", field.Name)
 		},
@@ -6812,6 +6605,165 @@ func (ec *executionContext) unmarshalInputNewGameServer(ctx context.Context, obj
 	return it, nil
 }
 
+func (ec *executionContext) unmarshalInputNewPlayer(ctx context.Context, obj interface{}) (model.NewPlayer, error) {
+	var it model.NewPlayer
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"steamId", "name", "teamid"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "steamId":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("steamId"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SteamID = data
+		case "name":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Name = data
+		case "teamid":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("teamid"))
+			data, err := ec.unmarshalNID2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Teamid = data
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputNewPlayerForTeam(ctx context.Context, obj interface{}) (model.NewPlayerForTeam, error) {
+	var it model.NewPlayerForTeam
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"steamId", "name"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "steamId":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("steamId"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SteamID = data
+		case "name":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Name = data
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputNewTeam(ctx context.Context, obj interface{}) (model.NewTeam, error) {
+	var it model.NewTeam
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"name", "flag", "tag", "logo", "public", "players"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "name":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Name = data
+		case "flag":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("flag"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Flag = data
+		case "tag":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("tag"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Tag = data
+		case "logo":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("logo"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Logo = data
+		case "public":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("public"))
+			data, err := ec.unmarshalNBoolean2bool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Public = data
+		case "players":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("players"))
+			data, err := ec.unmarshalNNewPlayerForTeam2ᚕᚖgithubᚗcomᚋFlowingSPDGᚋget5loaderᚋbackendᚋgraphᚋmodelᚐNewPlayerForTeamᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Players = data
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputNewUser(ctx context.Context, obj interface{}) (model.NewUser, error) {
 	var it model.NewUser
 	asMap := map[string]interface{}{}
@@ -7241,23 +7193,9 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Mutation")
-		case "addUser":
+		case "registerTeam":
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
-				return ec._Mutation_addUser(ctx, field)
-			})
-			if out.Values[i] == graphql.Null {
-				out.Invalids++
-			}
-		case "loginSteamID":
-			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
-				return ec._Mutation_loginSteamID(ctx, field)
-			})
-			if out.Values[i] == graphql.Null {
-				out.Invalids++
-			}
-		case "loginID":
-			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
-				return ec._Mutation_loginID(ctx, field)
+				return ec._Mutation_registerTeam(ctx, field)
 			})
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
@@ -7303,6 +7241,11 @@ func (ec *executionContext) _Player(ctx context.Context, sel ast.SelectionSet, o
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Player")
+		case "teamid":
+			out.Values[i] = ec._Player_teamid(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
 		case "id":
 			out.Values[i] = ec._Player_id(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
@@ -7315,11 +7258,6 @@ func (ec *executionContext) _Player(ctx context.Context, sel ast.SelectionSet, o
 			}
 		case "name":
 			out.Values[i] = ec._Player_name(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				out.Invalids++
-			}
-		case "team":
-			out.Values[i] = ec._Player_team(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
@@ -8049,10 +7987,6 @@ func (ec *executionContext) marshalNBoolean2bool(ctx context.Context, sel ast.Se
 	return res
 }
 
-func (ec *executionContext) marshalNGameServer2githubᚗcomᚋFlowingSPDGᚋget5loaderᚋbackendᚋgraphᚋmodelᚐGameServer(ctx context.Context, sel ast.SelectionSet, v model.GameServer) graphql.Marshaler {
-	return ec._GameServer(ctx, sel, &v)
-}
-
 func (ec *executionContext) marshalNGameServer2ᚕᚖgithubᚗcomᚋFlowingSPDGᚋget5loaderᚋbackendᚋgraphᚋmodelᚐGameServerᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.GameServer) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
@@ -8137,20 +8071,6 @@ func (ec *executionContext) marshalNInt2int(ctx context.Context, sel ast.Selecti
 	return res
 }
 
-func (ec *executionContext) marshalNLoginToken2githubᚗcomᚋFlowingSPDGᚋget5loaderᚋbackendᚋgraphᚋmodelᚐLoginToken(ctx context.Context, sel ast.SelectionSet, v model.LoginToken) graphql.Marshaler {
-	return ec._LoginToken(ctx, sel, &v)
-}
-
-func (ec *executionContext) marshalNLoginToken2ᚖgithubᚗcomᚋFlowingSPDGᚋget5loaderᚋbackendᚋgraphᚋmodelᚐLoginToken(ctx context.Context, sel ast.SelectionSet, v *model.LoginToken) graphql.Marshaler {
-	if v == nil {
-		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
-		}
-		return graphql.Null
-	}
-	return ec._LoginToken(ctx, sel, v)
-}
-
 func (ec *executionContext) marshalNMapStats2ᚕᚖgithubᚗcomᚋFlowingSPDGᚋget5loaderᚋbackendᚋgraphᚋmodelᚐMapStatsᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.MapStats) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
@@ -8210,8 +8130,30 @@ func (ec *executionContext) unmarshalNNewGameServer2githubᚗcomᚋFlowingSPDG�
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) unmarshalNNewUser2githubᚗcomᚋFlowingSPDGᚋget5loaderᚋbackendᚋgraphᚋmodelᚐNewUser(ctx context.Context, v interface{}) (model.NewUser, error) {
-	res, err := ec.unmarshalInputNewUser(ctx, v)
+func (ec *executionContext) unmarshalNNewPlayerForTeam2ᚕᚖgithubᚗcomᚋFlowingSPDGᚋget5loaderᚋbackendᚋgraphᚋmodelᚐNewPlayerForTeamᚄ(ctx context.Context, v interface{}) ([]*model.NewPlayerForTeam, error) {
+	var vSlice []interface{}
+	if v != nil {
+		vSlice = graphql.CoerceList(v)
+	}
+	var err error
+	res := make([]*model.NewPlayerForTeam, len(vSlice))
+	for i := range vSlice {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
+		res[i], err = ec.unmarshalNNewPlayerForTeam2ᚖgithubᚗcomᚋFlowingSPDGᚋget5loaderᚋbackendᚋgraphᚋmodelᚐNewPlayerForTeam(ctx, vSlice[i])
+		if err != nil {
+			return nil, err
+		}
+	}
+	return res, nil
+}
+
+func (ec *executionContext) unmarshalNNewPlayerForTeam2ᚖgithubᚗcomᚋFlowingSPDGᚋget5loaderᚋbackendᚋgraphᚋmodelᚐNewPlayerForTeam(ctx context.Context, v interface{}) (*model.NewPlayerForTeam, error) {
+	res, err := ec.unmarshalInputNewPlayerForTeam(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalNNewTeam2githubᚗcomᚋFlowingSPDGᚋget5loaderᚋbackendᚋgraphᚋmodelᚐNewTeam(ctx context.Context, v interface{}) (model.NewTeam, error) {
+	res, err := ec.unmarshalInputNewTeam(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
@@ -8356,16 +8298,6 @@ func (ec *executionContext) marshalNUser2ᚖgithubᚗcomᚋFlowingSPDGᚋget5loa
 		return graphql.Null
 	}
 	return ec._User(ctx, sel, v)
-}
-
-func (ec *executionContext) unmarshalNUserLoginID2githubᚗcomᚋFlowingSPDGᚋget5loaderᚋbackendᚋgraphᚋmodelᚐUserLoginID(ctx context.Context, v interface{}) (model.UserLoginID, error) {
-	res, err := ec.unmarshalInputUserLoginID(ctx, v)
-	return res, graphql.ErrorOnPath(ctx, err)
-}
-
-func (ec *executionContext) unmarshalNUserLoginSteamID2githubᚗcomᚋFlowingSPDGᚋget5loaderᚋbackendᚋgraphᚋmodelᚐUserLoginSteamID(ctx context.Context, v interface{}) (model.UserLoginSteamID, error) {
-	res, err := ec.unmarshalInputUserLoginSteamID(ctx, v)
-	return res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) marshalN__Directive2githubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐDirective(ctx context.Context, sel ast.SelectionSet, v introspection.Directive) graphql.Marshaler {

@@ -165,7 +165,7 @@ type PlayerStatsRepository interface {
 // TeamsRepository is an interface for team repository.
 type TeamsRepository interface {
 	// AddTeam adds a team.
-	AddTeam(ctx context.Context, userID entity.UserID, name string, tag string, flag string, logo string) (entity.TeamID, error)
+	AddTeam(ctx context.Context, userID entity.UserID, name string, tag string, flag string, logo string, public bool) (entity.TeamID, error)
 	// GetTeam returns a team.
 	GetTeam(ctx context.Context, id entity.TeamID) (*entity.Team, error)
 	// GetTeamsByUser returns teams owned by a user.

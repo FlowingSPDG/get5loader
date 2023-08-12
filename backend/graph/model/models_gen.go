@@ -58,6 +58,26 @@ type NewGameServer struct {
 	Public       bool   `json:"public"`
 }
 
+type NewPlayer struct {
+	SteamID string `json:"steamId"`
+	Name    string `json:"name"`
+	Teamid  string `json:"teamid"`
+}
+
+type NewPlayerForTeam struct {
+	SteamID string `json:"steamId"`
+	Name    string `json:"name"`
+}
+
+type NewTeam struct {
+	Name    string              `json:"name"`
+	Flag    string              `json:"flag"`
+	Tag     string              `json:"tag"`
+	Logo    string              `json:"logo"`
+	Public  bool                `json:"public"`
+	Players []*NewPlayerForTeam `json:"players"`
+}
+
 type NewUser struct {
 	SteamID  string `json:"steamId"`
 	Name     string `json:"name"`
@@ -66,10 +86,10 @@ type NewUser struct {
 }
 
 type Player struct {
+	Teamid  string `json:"teamid"`
 	ID      string `json:"id"`
 	SteamID string `json:"steamId"`
 	Name    string `json:"name"`
-	Team    *Team  `json:"team"`
 }
 
 type PlayerStats struct {
