@@ -6,11 +6,13 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "codegen": "graphql-codegen --config codegen.ts"
   },
   "dependencies": {
     "@apollo/client": "^3.8.1",
     "@apollo/react-hooks": "^4.0.0",
+    "@graphql-typed-document-node/core": "^3.2.0",
     "@heroicons/react": "^2.0.18",
     "@types/react-dom": "18.2.7",
     "autoprefixer": "10.4.14",
@@ -25,8 +27,13 @@
     "tailwindcss": "3.3.3"
   },
   "devDependencies": {
+    "@graphql-codegen/cli": "5.0.0",
+    "@graphql-codegen/client-preset": "4.1.0",
+    "@graphql-codegen/typescript": "^4.0.1",
+    "@graphql-codegen/typescript-react-query": "^4.1.0",
     "@types/node": "20.4.10",
     "@types/react": "18.2.20",
+    "ts-node": "^10.9.1",
     "typescript": "5.1.6"
   }
 }
