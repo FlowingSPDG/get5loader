@@ -49,6 +49,8 @@ func (gs *gameServer) GetPublicServers(ctx context.Context) ([]*entity.GameServe
 
 // AddGameServer implements GameServer.
 func (gs *gameServer) AddGameServer(ctx context.Context, userID entity.UserID, ip string, port uint32, rconPassword string, name string, isPublic bool) (*entity.GameServer, error) {
+	// TODO: Query SRCDS
+	// TODO: Check RCON Password
 	if err := gs.repositoryConnector.Open(); err != nil {
 		return nil, err
 	}
