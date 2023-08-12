@@ -7,7 +7,7 @@ import (
 	"net"
 	"time"
 
-	"github.com/FlowingSPDG/get5-web-go/backend/entity"
+	"github.com/FlowingSPDG/get5loader/backend/entity"
 )
 
 // DBConnector is a database connection initiator.

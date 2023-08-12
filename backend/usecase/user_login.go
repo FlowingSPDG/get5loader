@@ -3,10 +3,10 @@ package usecase
 import (
 	"context"
 
-	"github.com/FlowingSPDG/get5-web-go/backend/entity"
-	"github.com/FlowingSPDG/get5-web-go/backend/gateway/database"
-	"github.com/FlowingSPDG/get5-web-go/backend/service/jwt"
-	hash "github.com/FlowingSPDG/get5-web-go/backend/service/password_hash"
+	"github.com/FlowingSPDG/get5loader/backend/entity"
+	"github.com/FlowingSPDG/get5loader/backend/gateway/database"
+	"github.com/FlowingSPDG/get5loader/backend/service/jwt"
+	hash "github.com/FlowingSPDG/get5loader/backend/service/password_hash"
 )
 
 type UserLogin interface {

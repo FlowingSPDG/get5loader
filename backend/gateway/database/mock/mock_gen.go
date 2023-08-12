@@ -11,8 +11,8 @@ import (
 	reflect "reflect"
 	time "time"
 
-	entity "github.com/FlowingSPDG/get5-web-go/backend/entity"
-	database "github.com/FlowingSPDG/get5-web-go/backend/gateway/database"
+	entity "github.com/FlowingSPDG/get5loader/backend/entity"
+	database "github.com/FlowingSPDG/get5loader/backend/gateway/database"
 	gomock "go.uber.org/mock/gomock"
 )
 

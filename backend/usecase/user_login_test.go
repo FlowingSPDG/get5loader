@@ -4,11 +4,11 @@ import (
 	"context"
 	"testing"
 
-	"github.com/FlowingSPDG/get5-web-go/backend/entity"
-	mock_database "github.com/FlowingSPDG/get5-web-go/backend/gateway/database/mock"
-	mock_jwt "github.com/FlowingSPDG/get5-web-go/backend/service/jwt/mock"
-	mock_hash "github.com/FlowingSPDG/get5-web-go/backend/service/password_hash/mock"
-	"github.com/FlowingSPDG/get5-web-go/backend/usecase"
+	"github.com/FlowingSPDG/get5loader/backend/entity"
+	mock_database "github.com/FlowingSPDG/get5loader/backend/gateway/database/mock"
+	mock_jwt "github.com/FlowingSPDG/get5loader/backend/service/jwt/mock"
+	mock_hash "github.com/FlowingSPDG/get5loader/backend/service/password_hash/mock"
+	"github.com/FlowingSPDG/get5loader/backend/usecase"
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/mock/gomock"
 )

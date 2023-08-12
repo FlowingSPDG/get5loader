@@ -5,7 +5,7 @@ package gin_presenter
 import (
 	"time"
 
-	"github.com/FlowingSPDG/get5-web-go/backend/entity"
+	"github.com/FlowingSPDG/get5loader/backend/entity"
 )
 
 type player struct {

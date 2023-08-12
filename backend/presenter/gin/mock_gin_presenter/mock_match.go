@@ -7,7 +7,7 @@ package mock_gin_presenter
 import (
 	reflect "reflect"
 
-	entity "github.com/FlowingSPDG/get5-web-go/backend/entity"
+	entity "github.com/FlowingSPDG/get5loader/backend/entity"
 	gin "github.com/gin-gonic/gin"
 	gomock "go.uber.org/mock/gomock"
 )

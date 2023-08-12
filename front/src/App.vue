@@ -49,7 +49,7 @@
         <div>
             Powered by <a href="http://steampowered.com">Steam</a> -
             <router-link id="metrics" to="/metrics" >Stats</router-link>
-            <div v-if="version">- Version <a href="https://github.com/FlowingSPDG/get5-web-go">{{ version }}</a></div>
+            <div v-if="version">- Version <a href="https://github.com/FlowingSPDG/get5loader">{{ version }}</a></div>
         </div>
     </div>
 </div>

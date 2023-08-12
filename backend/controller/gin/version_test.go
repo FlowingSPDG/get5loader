@@ -10,7 +10,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/mock/gomock"
 
-	gin_controller "github.com/FlowingSPDG/get5-web-go/backend/controller/gin"
+	gin_controller "github.com/FlowingSPDG/get5loader/backend/controller/gin"
 )
 
 func TestGetVersion(t *testing.T) {

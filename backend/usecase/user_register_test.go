@@ -7,13 +7,13 @@ import (
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/mock/gomock"
 
-	"github.com/FlowingSPDG/get5-web-go/backend/entity"
-	"github.com/FlowingSPDG/get5-web-go/backend/g5ctx"
-	"github.com/FlowingSPDG/get5-web-go/backend/gateway/database"
-	mock_database "github.com/FlowingSPDG/get5-web-go/backend/gateway/database/mock"
-	mock_jwt "github.com/FlowingSPDG/get5-web-go/backend/service/jwt/mock"
-	mock_hash "github.com/FlowingSPDG/get5-web-go/backend/service/password_hash/mock"
-	"github.com/FlowingSPDG/get5-web-go/backend/usecase"
+	"github.com/FlowingSPDG/get5loader/backend/entity"
+	"github.com/FlowingSPDG/get5loader/backend/g5ctx"
+	"github.com/FlowingSPDG/get5loader/backend/gateway/database"
+	mock_database "github.com/FlowingSPDG/get5loader/backend/gateway/database/mock"
+	mock_jwt "github.com/FlowingSPDG/get5loader/backend/service/jwt/mock"
+	mock_hash "github.com/FlowingSPDG/get5loader/backend/service/password_hash/mock"
+	"github.com/FlowingSPDG/get5loader/backend/usecase"
 )
 
 func TestRegisterUser(t *testing.T) {

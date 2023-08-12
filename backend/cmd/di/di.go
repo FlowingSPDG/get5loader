@@ -5,15 +5,15 @@ import (
 
 	"golang.org/x/crypto/bcrypt"
 
-	config "github.com/FlowingSPDG/get5-web-go/backend/cfg"
-	gin_controller "github.com/FlowingSPDG/get5-web-go/backend/controller/gin"
-	"github.com/FlowingSPDG/get5-web-go/backend/gateway/database"
-	mysqlconnector "github.com/FlowingSPDG/get5-web-go/backend/gateway/database/mysql/connector"
-	gin_presenter "github.com/FlowingSPDG/get5-web-go/backend/presenter/gin"
-	"github.com/FlowingSPDG/get5-web-go/backend/service/jwt"
-	hash "github.com/FlowingSPDG/get5-web-go/backend/service/password_hash"
-	"github.com/FlowingSPDG/get5-web-go/backend/service/uuid"
-	"github.com/FlowingSPDG/get5-web-go/backend/usecase"
+	config "github.com/FlowingSPDG/get5loader/backend/cfg"
+	gin_controller "github.com/FlowingSPDG/get5loader/backend/controller/gin"
+	"github.com/FlowingSPDG/get5loader/backend/gateway/database"
+	mysqlconnector "github.com/FlowingSPDG/get5loader/backend/gateway/database/mysql/connector"
+	gin_presenter "github.com/FlowingSPDG/get5loader/backend/presenter/gin"
+	"github.com/FlowingSPDG/get5loader/backend/service/jwt"
+	hash "github.com/FlowingSPDG/get5loader/backend/service/password_hash"
+	"github.com/FlowingSPDG/get5loader/backend/service/uuid"
+	"github.com/FlowingSPDG/get5loader/backend/usecase"
 )
 
 // TODO: wire

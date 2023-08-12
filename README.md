@@ -1,7 +1,7 @@
-[![Go Build](https://github.com/FlowingSPDG/get5-web-go/actions/workflows/go_build.yaml/badge.svg)](https://github.com/FlowingSPDG/get5-web-go/actions/workflows/go_build.yaml)
-[![Go Test](https://github.com/FlowingSPDG/get5-web-go/actions/workflows/go_test.yaml/badge.svg)](https://github.com/FlowingSPDG/get5-web-go/actions/workflows/go_test.yaml)
-[![Downloads](https://img.shields.io/github/downloads/flowingspdg/get5-web-go/total?style=flat-square)](https://github.com/FlowingSPDG/get5-web-go/releases)
-[![LICENSE](https://img.shields.io/github/license/flowingspdg/get5-web-go?style=flat-square)](https://github.com/FlowingSPDG/get5-web-go/blob/master/LICENSE)
+[![Go Build](https://github.com/FlowingSPDG/get5loader/actions/workflows/go_build.yaml/badge.svg)](https://github.com/FlowingSPDG/get5loader/actions/workflows/go_build.yaml)
+[![Go Test](https://github.com/FlowingSPDG/get5loader/actions/workflows/go_test.yaml/badge.svg)](https://github.com/FlowingSPDG/get5loader/actions/workflows/go_test.yaml)
+[![Downloads](https://img.shields.io/github/downloads/flowingspdg/get5-web-go/total?style=flat-square)](https://github.com/FlowingSPDG/get5loader/releases)
+[![LICENSE](https://img.shields.io/github/license/flowingspdg/get5-web-go?style=flat-square)](https://github.com/FlowingSPDG/get5loader/blob/master/LICENSE)
 
 GET5-WEB GO
 ===========================
@@ -50,15 +50,15 @@ API Server will send rcon command to load match config( ``get5_loadmatch_url <we
 - Steam WebAPI Token for handling Steam-Login. ([here](https://steamcommunity.com/dev/apikey))
 
 ## Setup(Developers)
-- ``git clone https://github.com/FlowingSPDG/get5-web-go.git $GOPATH/src/github.com/FlowingSPDG/get5-web-go`` (you can fork your own)  
-- ``cd $GOPATH/src/github.com/FlowingSPDG/get5-web-go && make deps``
+- ``git clone https://github.com/FlowingSPDG/get5loader.git $GOPATH/src/github.com/FlowingSPDG/get5loader`` (you can fork your own)  
+- ``cd $GOPATH/src/github.com/FlowingSPDG/get5loader && make deps``
 - You're good to Go! edit each `.go` files to fix/add something nice!
 - You can test your server by ``go run ./main.go``,and build them by ``make``.You may get binary files in ``./build``.
 - To test Vue rendering,``cd ./web/ && yarn run serve`` and open http://localhost:8081/# by your browser.  
 
 
 ## Build
-- ``cd $GOPATH/src/github.com/FlowingSPDG/get5-web-go && make``
+- ``cd $GOPATH/src/github.com/FlowingSPDG/get5loader && make``
 - You'll get compiled files in ``build`` directly.  
 You can use following scripts as your needs :
 - ``make build-all`` (or simply, ``make``) Builds Vue and binaries for all supported platforms
@@ -72,7 +72,7 @@ You can use following scripts as your needs :
 
 
 ## Release
-I'm [releasing](https://github.com/FlowingSPDG/get5-web-go/releases) compiled-files for people who feel lazy to build for each major update.
+I'm [releasing](https://github.com/FlowingSPDG/get5loader/releases) compiled-files for people who feel lazy to build for each major update.
 
 ## Deploy and Launch
 - Setup environment variables
@@ -80,4 +80,4 @@ I'm [releasing](https://github.com/FlowingSPDG/get5-web-go/releases) compiled-fi
 - Now it's up!
 
 ## License
-・[MIT](https://github.com/FlowingSPDG/get5-web-go/blob/master/LICENSE)
+・[MIT](https://github.com/FlowingSPDG/get5loader/blob/master/LICENSE)

@@ -4,8 +4,8 @@ import (
 	"context"
 	"testing"
 
-	"github.com/FlowingSPDG/get5-web-go/backend/entity"
-	"github.com/FlowingSPDG/get5-web-go/backend/g5ctx"
+	"github.com/FlowingSPDG/get5loader/backend/entity"
+	"github.com/FlowingSPDG/get5loader/backend/g5ctx"
 	"github.com/stretchr/testify/assert"
 )
 

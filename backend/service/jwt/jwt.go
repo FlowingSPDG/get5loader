@@ -3,7 +3,7 @@ package jwt
 import (
 	"github.com/golang-jwt/jwt/v5"
 
-	"github.com/FlowingSPDG/get5-web-go/backend/entity"
+	"github.com/FlowingSPDG/get5loader/backend/entity"
 )
 
 type JWTService interface {

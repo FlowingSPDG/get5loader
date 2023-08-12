@@ -6,10 +6,10 @@ import (
 	"errors"
 	"net"
 
-	"github.com/FlowingSPDG/get5-web-go/backend/entity"
-	"github.com/FlowingSPDG/get5-web-go/backend/gateway/database"
-	gameservers_gen "github.com/FlowingSPDG/get5-web-go/backend/gateway/database/mysql/gameservers/generated"
-	"github.com/FlowingSPDG/get5-web-go/backend/service/uuid"
+	"github.com/FlowingSPDG/get5loader/backend/entity"
+	"github.com/FlowingSPDG/get5loader/backend/gateway/database"
+	gameservers_gen "github.com/FlowingSPDG/get5loader/backend/gateway/database/mysql/gameservers/generated"
+	"github.com/FlowingSPDG/get5loader/backend/service/uuid"
 )
 
 type gameServerRepository struct {

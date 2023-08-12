@@ -4,10 +4,10 @@ import (
 	"context"
 	"database/sql"
 
-	"github.com/FlowingSPDG/get5-web-go/backend/entity"
-	"github.com/FlowingSPDG/get5-web-go/backend/gateway/database"
-	users_gen "github.com/FlowingSPDG/get5-web-go/backend/gateway/database/mysql/users/generated"
-	"github.com/FlowingSPDG/get5-web-go/backend/service/uuid"
+	"github.com/FlowingSPDG/get5loader/backend/entity"
+	"github.com/FlowingSPDG/get5loader/backend/gateway/database"
+	users_gen "github.com/FlowingSPDG/get5loader/backend/gateway/database/mysql/users/generated"
+	"github.com/FlowingSPDG/get5loader/backend/service/uuid"
 )
 
 type usersRepositry struct {
