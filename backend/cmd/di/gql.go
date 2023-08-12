@@ -6,6 +6,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 
 	config "github.com/FlowingSPDG/get5loader/backend/cfg"
+	"github.com/FlowingSPDG/get5loader/backend/g5ctx"
 	mysqlconnector "github.com/FlowingSPDG/get5loader/backend/gateway/database/mysql/connector"
 	"github.com/FlowingSPDG/get5loader/backend/graph"
 	"github.com/FlowingSPDG/get5loader/backend/service/jwt"
@@ -31,6 +32,7 @@ func InitializeGraphQLHandler(cfg config.Config) gin.HandlerFunc {
 	}}))
 
 	return func(c *gin.Context) {
+		g5ctx.SetOperationGinContext(c, g5ctx.OperationTypeUser)
 		h.ServeHTTP(c.Writer, c.Request)
 	}
 }
