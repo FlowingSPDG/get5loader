@@ -1,4 +1,6 @@
-FROM golang:1.20
+FROM golang:1.21
 WORKDIR /go/src
 
-CMD ["go", "run", "cmd/main.go"]
+RUN go install github.com/cosmtrek/air@v1.44.0
+
+CMD ["air", "-c", ".air.toml"]
