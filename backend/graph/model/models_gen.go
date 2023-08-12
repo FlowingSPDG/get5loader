@@ -32,7 +32,7 @@ type MapStats struct {
 }
 
 type Match struct {
-	ID         string      `json:"ID"`
+	ID         string      `json:"id"`
 	UserID     string      `json:"userId"`
 	Team1      *Team       `json:"team1"`
 	Team2      *Team       `json:"team2"`
@@ -56,14 +56,23 @@ type NewGameServer struct {
 	Public       bool   `json:"public"`
 }
 
+type NewMatch struct {
+	Team1    string `json:"team1"`
+	Team2    string `json:"team2"`
+	ServerID string `json:"serverID"`
+	MaxMaps  int    `json:"maxMaps"`
+	Title    string `json:"title"`
+	SkipVeto bool   `json:"skipVeto"`
+}
+
 type NewPlayer struct {
-	SteamID string `json:"steamId"`
+	SteamID uint64 `json:"steamId"`
 	Name    string `json:"name"`
 	Teamid  string `json:"teamid"`
 }
 
 type NewPlayerForTeam struct {
-	SteamID string `json:"steamId"`
+	SteamID uint64 `json:"steamId"`
 	Name    string `json:"name"`
 }
 
@@ -77,7 +86,7 @@ type NewTeam struct {
 }
 
 type NewUser struct {
-	SteamID  string `json:"steamId"`
+	SteamID  uint64 `json:"steamId"`
 	Name     string `json:"name"`
 	Password string `json:"password"`
 	Admin    bool   `json:"admin"`
@@ -86,7 +95,7 @@ type NewUser struct {
 type Player struct {
 	ID      string `json:"id"`
 	TeamID  string `json:"teamId"`
-	SteamID string `json:"steamId"`
+	SteamID uint64 `json:"steamId"`
 	Name    string `json:"name"`
 }
 
@@ -94,7 +103,7 @@ type PlayerStats struct {
 	ID               string `json:"id"`
 	MatchID          string `json:"matchId"`
 	MapstatsID       string `json:"mapstatsId"`
-	SteamID          string `json:"steamId"`
+	SteamID          uint64 `json:"steamId"`
 	Name             string `json:"name"`
 	Kills            int    `json:"kills"`
 	Assists          int    `json:"assists"`
@@ -135,7 +144,7 @@ type Team struct {
 
 type User struct {
 	ID          string        `json:"id"`
-	SteamID     string        `json:"steamId"`
+	SteamID     uint64        `json:"steamId"`
 	Name        string        `json:"name"`
 	Admin       bool          `json:"admin"`
 	Gameservers []*GameServer `json:"gameservers"`
@@ -149,6 +158,6 @@ type UserLoginID struct {
 }
 
 type UserLoginSteamID struct {
-	SteamID  string `json:"steamId"`
+	SteamID  uint64 `json:"steamId"`
 	Password string `json:"password"`
 }

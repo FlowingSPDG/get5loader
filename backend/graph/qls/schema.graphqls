@@ -1,9 +1,10 @@
 scalar DateTime
+scalar SteamID
 
 # User Operations
 type User {
 	id: ID!
-	steamId: String!
+	steamId: SteamID!
 	name: String!
 	admin: Boolean!
 	gameservers: [GameServer!]!
@@ -12,14 +13,14 @@ type User {
 }
 
 input NewUser {
-	steamId: String!
+	steamId: SteamID!
 	name: String!
 	password: String!
 	admin: Boolean!
 }
 
 input UserLoginSteamID {
-	steamId: String!
+	steamId: SteamID!
 	password: String!
 }
 
@@ -57,18 +58,18 @@ input NewTeam {
 type Player {
     id: ID!
     teamId: ID!
-    steamId: String!
+    steamId: SteamID!
     name: String!
 }
 
 input NewPlayer {
-    steamId: String!
+    steamId: SteamID!
     name: String!
     teamid: ID!
 }
 
 input NewPlayerForTeam {
-    steamId: String!
+    steamId: SteamID!
     name: String!
 }
 
@@ -100,6 +101,8 @@ type Query {
     
     # Match op
     getMatch(id: ID!): Match!
+    getMatchesByUser(id: ID!): [Match!]!
+    getMatchesByMe: [Match!]!
     
     # gameserver op
     getServer(id: ID!): GameServer!
@@ -111,6 +114,7 @@ type Mutation {
   registerTeam(input: NewTeam!): Team!
 
   # Match op
+  createMatch(input: NewMatch!): Match!
 
   # gameserver op
   addServer(input: NewGameServer!): GameServer!
@@ -118,7 +122,7 @@ type Mutation {
 
 # Match
 type Match {
-	ID: ID!
+	id: ID!
 	userId: ID!
 	team1: Team!
 	team2: Team!
@@ -132,6 +136,15 @@ type Match {
 	team2Score: Int!
 	forfeit: Boolean
 	mapStats: [MapStats!]!
+}
+
+input NewMatch {
+    team1: ID!
+    team2: ID!
+    serverID: ID!
+    maxMaps: Int!
+    title: String!
+    skipVeto: Boolean!
 }
 
 # MapStats
@@ -152,7 +165,7 @@ type PlayerStats {
     id: ID!
     matchId: ID!
     mapstatsId: ID!
-    steamId: String!
+    steamId: SteamID!
     name: String!
 
     kills: Int!

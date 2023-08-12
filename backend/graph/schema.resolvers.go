@@ -10,6 +10,7 @@ import (
 	"github.com/FlowingSPDG/get5loader/backend/entity"
 	"github.com/FlowingSPDG/get5loader/backend/g5ctx"
 	"github.com/FlowingSPDG/get5loader/backend/graph/model"
+	"github.com/FlowingSPDG/get5loader/backend/usecase"
 )
 
 // RegisterTeam is the resolver for the registerTeam field.
@@ -18,11 +19,40 @@ func (r *mutationResolver) RegisterTeam(ctx context.Context, input model.NewTeam
 	if err != nil {
 		return nil, err
 	}
-	team, err := r.TeamUsecase.RegisterTeam(ctx, token.UserID, input.Name, input.Flag, input.Tag, input.Logo, input.Public)
+	inputPlayers := make([]usecase.InputPlayers, 0, len(input.Players))
+	for _, player := range input.Players {
+		inputPlayers = append(inputPlayers, usecase.InputPlayers{
+			SteamID: entity.SteamID(player.SteamID),
+			Name:    player.Name,
+		})
+	}
+
+	team, err := r.TeamUsecase.RegisterTeam(ctx, usecase.RegisterTeamInput{
+		UserID:     token.UserID,
+		Name:       input.Name,
+		Flag:       input.Flag,
+		Tag:        input.Tag,
+		Logo:       input.Logo,
+		PublicTeam: input.Public,
+		Players:    inputPlayers,
+	})
 	if err != nil {
 		return nil, err
 	}
 	return convertTeam(team), nil
+}
+
+// CreateMatch is the resolver for the createMatch field.
+func (r *mutationResolver) CreateMatch(ctx context.Context, input model.NewMatch) (*model.Match, error) {
+	token, err := g5ctx.GetUserToken(ctx)
+	if err != nil {
+		return nil, err
+	}
+	match, err := r.MatchUsecase.CreateMatch(ctx, token.UserID, entity.GameServerID(input.ServerID), entity.TeamID(input.Team1), entity.TeamID(input.Team2), input.MaxMaps, input.Title)
+	if err != nil {
+		return nil, err
+	}
+	return convertMatch(match), nil
 }
 
 // AddServer is the resolver for the addServer field.
@@ -91,6 +121,31 @@ func (r *queryResolver) GetMatch(ctx context.Context, id string) (*model.Match, 
 	}
 
 	return convertMatch(match), nil
+}
+
+// GetMatchesByUser is the resolver for the getMatchesByUser field.
+func (r *queryResolver) GetMatchesByUser(ctx context.Context, id string) ([]*model.Match, error) {
+	matches, err := r.MatchUsecase.GetMatchesByUser(ctx, entity.UserID(id))
+	if err != nil {
+		return nil, err
+	}
+
+	return convertMatches(matches), nil
+}
+
+// GetMatchesByMe is the resolver for the getMatchesByMe field.
+func (r *queryResolver) GetMatchesByMe(ctx context.Context) ([]*model.Match, error) {
+	token, err := g5ctx.GetUserToken(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	matches, err := r.MatchUsecase.GetMatchesByUser(ctx, token.UserID)
+	if err != nil {
+		return nil, err
+	}
+
+	return convertMatches(matches), nil
 }
 
 // GetServer is the resolver for the getServer field.

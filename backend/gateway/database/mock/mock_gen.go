@@ -8,7 +8,6 @@ import (
 	context "context"
 	sql "database/sql"
 	reflect "reflect"
-	time "time"
 
 	entity "github.com/FlowingSPDG/get5loader/backend/entity"
 	database "github.com/FlowingSPDG/get5loader/backend/gateway/database"
@@ -716,18 +715,18 @@ func (m *MockMatchesRepository) EXPECT() *MockMatchesRepositoryMockRecorder {
 }
 
 // AddMatch mocks base method.
-func (m *MockMatchesRepository) AddMatch(ctx context.Context, userID entity.UserID, serverID entity.GameServerID, team1ID, team2ID entity.TeamID, startTime, endTime time.Time, maxMaps int32, title string, skipVeto bool, apiKey string) (entity.MatchID, error) {
+func (m *MockMatchesRepository) AddMatch(ctx context.Context, userID entity.UserID, serverID entity.GameServerID, team1ID, team2ID entity.TeamID, maxMaps int32, title string, skipVeto bool, apiKey string) (entity.MatchID, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "AddMatch", ctx, userID, serverID, team1ID, team2ID, startTime, endTime, maxMaps, title, skipVeto, apiKey)
+	ret := m.ctrl.Call(m, "AddMatch", ctx, userID, serverID, team1ID, team2ID, maxMaps, title, skipVeto, apiKey)
 	ret0, _ := ret[0].(entity.MatchID)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // AddMatch indicates an expected call of AddMatch.
-func (mr *MockMatchesRepositoryMockRecorder) AddMatch(ctx, userID, serverID, team1ID, team2ID, startTime, endTime, maxMaps, title, skipVeto, apiKey interface{}) *gomock.Call {
+func (mr *MockMatchesRepositoryMockRecorder) AddMatch(ctx, userID, serverID, team1ID, team2ID, maxMaps, title, skipVeto, apiKey interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AddMatch", reflect.TypeOf((*MockMatchesRepository)(nil).AddMatch), ctx, userID, serverID, team1ID, team2ID, startTime, endTime, maxMaps, title, skipVeto, apiKey)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AddMatch", reflect.TypeOf((*MockMatchesRepository)(nil).AddMatch), ctx, userID, serverID, team1ID, team2ID, maxMaps, title, skipVeto, apiKey)
 }
 
 // CancelMatch mocks base method.

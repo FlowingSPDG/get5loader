@@ -7,8 +7,23 @@ import (
 	"github.com/FlowingSPDG/get5loader/backend/gateway/database"
 )
 
+type InputPlayers struct {
+	SteamID entity.SteamID
+	Name    string
+}
+
+type RegisterTeamInput struct {
+	UserID     entity.UserID
+	Name       string
+	Flag       string
+	Tag        string
+	Logo       string
+	PublicTeam bool
+	Players    []InputPlayers
+}
+
 type Team interface {
-	RegisterTeam(ctx context.Context, userID entity.UserID, name string, flag string, tag string, logo string, publicTeam bool) (*entity.Team, error)
+	RegisterTeam(ctx context.Context, input RegisterTeamInput) (*entity.Team, error)
 	GetTeam(ctx context.Context, id entity.TeamID) (*entity.Team, error)
 	GetTeamsByUser(ctx context.Context, userID entity.UserID) ([]*entity.Team, error)
 }
@@ -23,33 +38,34 @@ func NewTeam(repositoryConnector database.RepositoryConnector) Team {
 	}
 }
 
-func (t *team) RegisterTeam(ctx context.Context, userID entity.UserID, name string, flag string, tag string, logo string, publicTeam bool) (*entity.Team, error) {
+func (t *team) RegisterTeam(ctx context.Context, input RegisterTeamInput) (*entity.Team, error) {
 	if err := t.repositoryConnector.Open(); err != nil {
 		return nil, err
 	}
 	defer t.repositoryConnector.Close()
 
-	repository := t.repositoryConnector.GetTeamsRepository()
+	teamRepository := t.repositoryConnector.GetTeamsRepository()
+	playerRepository := t.repositoryConnector.GetPlayersRepository()
 
-	teamID, err := repository.AddTeam(ctx, userID, name, tag, flag, logo, publicTeam)
+	teamID, err := teamRepository.AddTeam(ctx, input.UserID, input.Name, input.Tag, input.Flag, input.Logo, input.PublicTeam)
 	if err != nil {
 		return nil, err
 	}
-	team, err := repository.GetTeam(ctx, teamID)
+	// TODO: Batch addする
+	for _, player := range input.Players {
+		playerRepository.AddPlayer(ctx, teamID, player.SteamID, player.Name)
+	}
+
+	team, err := teamRepository.GetTeam(ctx, teamID)
 	if err != nil {
 		return nil, err
 	}
 
-	return &entity.Team{
-		ID:      entity.TeamID(team.ID),
-		UserID:  entity.UserID(team.UserID),
-		Name:    team.Name,
-		Flag:    team.Flag,
-		Tag:     team.Tag,
-		Logo:    team.Logo,
-		Public:  team.Public,
-		Players: []*entity.Player{},
-	}, nil
+	players, err := playerRepository.GetPlayersByTeam(ctx, teamID)
+	if err != nil {
+		return nil, err
+	}
+	return convertTeam(team, players), nil
 }
 
 // GetTeam implements Team.
@@ -72,26 +88,7 @@ func (t *team) GetTeam(ctx context.Context, id entity.TeamID) (*entity.Team, err
 		return nil, err
 	}
 
-	teamPlayers := make([]*entity.Player, 0, len(players))
-	for _, player := range players {
-		teamPlayers = append(teamPlayers, &entity.Player{
-			ID:      entity.PlayerID(player.ID),
-			TeamID:  entity.TeamID(player.TeamID),
-			SteamID: entity.SteamID(player.SteamID),
-			Name:    player.Name,
-		})
-	}
-
-	return &entity.Team{
-		ID:      entity.TeamID(team.ID),
-		UserID:  entity.UserID(team.UserID),
-		Name:    team.Name,
-		Flag:    team.Flag,
-		Tag:     team.Tag,
-		Logo:    team.Logo,
-		Public:  team.Public,
-		Players: teamPlayers,
-	}, nil
+	return convertTeam(team, players), nil
 }
 
 // GetTeamsByUser implements Team.
@@ -116,26 +113,7 @@ func (t *team) GetTeamsByUser(ctx context.Context, userID entity.UserID) ([]*ent
 			return nil, err
 		}
 
-		teamPlayers := make([]*entity.Player, 0, len(players))
-		for _, player := range players {
-			teamPlayers = append(teamPlayers, &entity.Player{
-				ID:      entity.PlayerID(player.ID),
-				TeamID:  entity.TeamID(player.TeamID),
-				SteamID: entity.SteamID(player.SteamID),
-				Name:    player.Name,
-			})
-		}
-
-		ret = append(ret, &entity.Team{
-			ID:      entity.TeamID(team.ID),
-			UserID:  entity.UserID(team.UserID),
-			Name:    team.Name,
-			Flag:    team.Flag,
-			Tag:     team.Tag,
-			Logo:    team.Logo,
-			Public:  team.Public,
-			Players: teamPlayers,
-		})
+		ret = append(ret, convertTeam(team, players))
 	}
 	return ret, nil
 }

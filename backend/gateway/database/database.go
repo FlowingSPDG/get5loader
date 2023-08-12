@@ -4,7 +4,6 @@ package database
 import (
 	"context"
 	"database/sql"
-	"time"
 
 	"github.com/FlowingSPDG/get5loader/backend/entity"
 )
@@ -117,7 +116,7 @@ type GameServersRepository interface {
 // MatchesRepository is an interface for match repository.
 type MatchesRepository interface {
 	// AddMatch adds a match.
-	AddMatch(ctx context.Context, userID entity.UserID, serverID entity.GameServerID, team1ID entity.TeamID, team2ID entity.TeamID, startTime time.Time, endTime time.Time, maxMaps int32, title string, skipVeto bool, apiKey string) (entity.MatchID, error)
+	AddMatch(ctx context.Context, userID entity.UserID, serverID entity.GameServerID, team1ID entity.TeamID, team2ID entity.TeamID, maxMaps int32, title string, skipVeto bool, apiKey string) (entity.MatchID, error)
 	// GetMatch returns a match.
 	GetMatch(ctx context.Context, id entity.MatchID) (*Match, error)
 	// GetMatchesByUser returns matches owned by a user.

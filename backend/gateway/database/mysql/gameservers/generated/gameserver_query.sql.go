@@ -110,7 +110,6 @@ func (q *Queries) GetGameServersByUser(ctx context.Context, userID string) ([]Ga
 const getPublicGameServers = `-- name: GetPublicGameServers :many
 SELECT id, user_id, ip, port, rcon_password, display_name, is_public, status FROM game_servers
 WHERE is_public = TRUE
-AND status = 1
 `
 
 func (q *Queries) GetPublicGameServers(ctx context.Context) ([]GameServer, error) {

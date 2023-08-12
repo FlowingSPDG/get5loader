@@ -58,6 +58,26 @@ services:
     networks:
       - backend_network
 
+  srcds:
+    profiles:
+      - test_srcds
+    container_name: srcds
+    build:
+      context: ./docker/srcds
+      dockerfile: Dockerfile
+    tty: true
+    stdin_open: true
+    platform: linux/x86_64
+    ports:
+      - 27015:27015
+      - 27015:27015/udp
+    volumes:
+      - type: bind
+        source: ./docker/srcds
+        target: /home/steam
+    networks:
+      - backend_network
+
 volumes:
   mysql_test_volume:
     name: mysql_test_volume

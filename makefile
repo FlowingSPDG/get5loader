@@ -24,8 +24,12 @@ deps-web:
 	@cd ./front && yarn
 up:
 	docker compose up -d --build
+up-srcds:
+	docker compose --profile test_srcds up -d --build 
 down:
 	docker compose down
+down-srcds:
+	docker compose --profile test_srcds down
 generate:
 	@cd ./backend && \
 	$(GOINSTALL) golang.org/x/tools/cmd/stringer@v0.11.1 && \

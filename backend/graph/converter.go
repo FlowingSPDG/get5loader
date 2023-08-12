@@ -1,8 +1,6 @@
 package graph
 
 import (
-	"strconv"
-
 	"github.com/FlowingSPDG/get5loader/backend/entity"
 	"github.com/FlowingSPDG/get5loader/backend/graph/model"
 )
@@ -53,7 +51,7 @@ func convertPlayer(player *entity.Player) *model.Player {
 	return &model.Player{
 		ID:      string(player.ID),
 		TeamID:  string(player.TeamID),
-		SteamID: strconv.Itoa(int(player.SteamID)),
+		SteamID: uint64(player.SteamID),
 		Name:    player.Name,
 	}
 }
@@ -123,7 +121,7 @@ func convertPlayerstat(playerstat *entity.PlayerStat) *model.PlayerStats {
 		ID:               string(playerstat.ID),
 		MatchID:          string(playerstat.MatchID),
 		MapstatsID:       string(playerstat.MapID),
-		SteamID:          strconv.Itoa(int(playerstat.SteamID)),
+		SteamID:          uint64(playerstat.SteamID),
 		Name:             playerstat.Name,
 		Kills:            int(playerstat.Kills),
 		Assists:          int(playerstat.Assists),
@@ -163,7 +161,7 @@ func convertPlayerstats(playerstats []*entity.PlayerStat) []*model.PlayerStats {
 func convertUser(user *entity.User) *model.User {
 	return &model.User{
 		ID:          string(user.ID),
-		SteamID:     strconv.Itoa(int(user.SteamID)),
+		SteamID:     uint64(user.SteamID),
 		Name:        user.Name,
 		Admin:       false,
 		Gameservers: convertGameServers(user.Servers),
