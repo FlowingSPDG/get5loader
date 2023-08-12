@@ -1,4 +1,4 @@
-package api
+package gin_presenter
 
 import (
 	"github.com/gin-gonic/gin"

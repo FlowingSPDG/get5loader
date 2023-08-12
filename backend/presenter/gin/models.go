@@ -1,4 +1,4 @@
-package api
+package gin_presenter
 
 // 受け取ったデータを特定の形式に変換して返すpresenter
 

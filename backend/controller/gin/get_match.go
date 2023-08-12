@@ -1,4 +1,4 @@
-package api
+package gin_controller
 
 import (
 	"net/http"
@@ -7,7 +7,7 @@ import (
 
 	"github.com/FlowingSPDG/get5-web-go/backend/entity"
 	"github.com/FlowingSPDG/get5-web-go/backend/gateway/database"
-	"github.com/FlowingSPDG/get5-web-go/backend/presenter/gin/api"
+	gin_presenter "github.com/FlowingSPDG/get5-web-go/backend/presenter/gin"
 	"github.com/FlowingSPDG/get5-web-go/backend/usecase"
 )
 
@@ -17,12 +17,12 @@ type GetMatchController interface {
 
 type getMatchController struct {
 	uc        usecase.GetMatch
-	presenter api.MatchPresenter
+	presenter gin_presenter.MatchPresenter
 }
 
 func NewGetMatchController(
 	uc usecase.GetMatch,
-	presenter api.MatchPresenter,
+	presenter gin_presenter.MatchPresenter,
 ) GetMatchController {
 	return &getMatchController{
 		uc:        uc,
@@ -34,7 +34,7 @@ func NewGetMatchController(
 func (gmc *getMatchController) Handle(c *gin.Context) {
 	matchid := c.Params.ByName("matchID")
 
-	match, err := gmc.uc.Handle(c, entity.MatchID(matchid))
+	match, err := gmc.uc.Get(c, entity.MatchID(matchid))
 	if err != nil {
 		if database.IsNotFound(err) {
 			c.JSON(http.StatusNotFound, gin.H{

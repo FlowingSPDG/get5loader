@@ -15,5 +15,5 @@ type User struct {
 	Admin        bool
 	CreatedAt    time.Time
 	UpdatedAt    time.Time
-	PasswordHash string
+	PasswordHash []byte
 }

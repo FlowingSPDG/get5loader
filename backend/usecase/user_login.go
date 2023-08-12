@@ -3,11 +3,10 @@ package usecase
 import (
 	"context"
 
-	"golang.org/x/crypto/bcrypt"
-
 	"github.com/FlowingSPDG/get5-web-go/backend/entity"
 	"github.com/FlowingSPDG/get5-web-go/backend/gateway/database"
 	"github.com/FlowingSPDG/get5-web-go/backend/service/jwt"
+	hash "github.com/FlowingSPDG/get5-web-go/backend/service/password_hash"
 )
 
 type UserLogin interface {
@@ -17,15 +16,18 @@ type UserLogin interface {
 
 type userLogin struct {
 	jwtService          jwt.JWTService
+	passwordHasher      hash.PasswordHasher
 	repositoryConnector database.RepositoryConnector
 }
 
 func NewUserLogin(
 	jwtService jwt.JWTService,
+	passwordHasher hash.PasswordHasher,
 	repositoryConnector database.RepositoryConnector,
 ) UserLogin {
 	return &userLogin{
 		jwtService:          jwtService,
+		passwordHasher:      passwordHasher,
 		repositoryConnector: repositoryConnector,
 	}
 }
@@ -44,7 +46,7 @@ func (ul *userLogin) IssueJWTBySteamID(ctx context.Context, steamID entity.Steam
 		return "", err
 	}
 
-	if err := bcrypt.CompareHashAndPassword([]byte(user.Hash), []byte(password)); err != nil {
+	if err := ul.passwordHasher.Compare(user.Hash, password); err != nil {
 		return "", err
 	}
 
