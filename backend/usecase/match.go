@@ -8,6 +8,7 @@ import (
 )
 
 type Match interface {
+	CreateMatch(ctx context.Context, userID entity.UserID, serverID entity.GameServerID, team1ID entity.TeamID, team2ID entity.TeamID, maxMaps int, title string) (*entity.Match, error)
 	GetMatch(ctx context.Context, matchID entity.MatchID) (*entity.Match, error)
 }
 
@@ -73,4 +74,48 @@ func (gm *match) GetMatch(ctx context.Context, matchID entity.MatchID) (*entity.
 	}
 
 	return convertMatch(match, team1, team2, team1players, team2players, matchMapStats), nil
+}
+
+// CreateMatch implements Match.
+func (gm *match) CreateMatch(ctx context.Context, userID entity.UserID, serverID entity.GameServerID, team1ID entity.TeamID, team2ID entity.TeamID, maxMaps int, title string) (*entity.Match, error) {
+	// TODO: teamが存在しない場合のエラーハンドリング
+	if err := gm.repositoryConnector.Open(); err != nil {
+		return nil, err
+	}
+	defer gm.repositoryConnector.Close()
+
+	matchRepository := gm.repositoryConnector.GetMatchesRepository()
+	teamRepository := gm.repositoryConnector.GetTeamsRepository()
+	playerRepository := gm.repositoryConnector.GetPlayersRepository()
+
+	mID, err := matchRepository.AddMatch(ctx, userID, serverID, team1ID, team2ID, int32(maxMaps), title, false, "")
+	if err != nil {
+		return nil, err
+	}
+
+	m, err := matchRepository.GetMatch(ctx, mID)
+	if err != nil {
+		return nil, err
+	}
+
+	team1, err := teamRepository.GetTeam(ctx, team1ID)
+	if err != nil {
+		return nil, err
+	}
+	team1players, err := playerRepository.GetPlayersByTeam(ctx, team1.ID)
+	if err != nil {
+		return nil, err
+	}
+	team2, err := teamRepository.GetTeam(ctx, team2ID)
+	if err != nil {
+		return nil, err
+	}
+	team2players, err := playerRepository.GetPlayersByTeam(ctx, team2.ID)
+	if err != nil {
+		return nil, err
+	}
+
+	match := convertMatch(m, team1, team2, team1players, team2players, nil)
+
+	return match, nil
 }
