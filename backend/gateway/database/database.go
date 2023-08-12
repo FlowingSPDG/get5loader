@@ -52,10 +52,10 @@ type RepositoryConnector interface {
 	GetGameServersRepository() GameServersRepository
 	// GetMatchesRepository returns a match repository. You must open a repository connection before calling this method.
 	GetMatchesRepository() MatchesRepository
-	// GetMapStatsRepository returns a map stats repository. You must open a repository connection before calling this method.
-	GetMapStatsRepository() MapStatsRepository
-	// GetPlayerStatsRepository returns a player stats repository. You must open a repository connection before calling this method.
-	GetPlayerStatsRepository() PlayerStatsRepository
+	// GetMapStatRepository returns a map stats repository. You must open a repository connection before calling this method.
+	GetMapStatRepository() MapStatRepository
+	// GetPlayerStatRepository returns a player stats repository. You must open a repository connection before calling this method.
+	GetPlayerStatRepository() PlayerStatRepository
 	// GetTeamsRepository returns a team repository. You must open a repository connection before calling this method.
 	GetTeamsRepository() TeamsRepository
 	// GetPlayersRepository returns a player repository. You must open a repository connection before calling this method.
@@ -76,10 +76,10 @@ type RepositoryConnectorWithTx interface {
 	GetGameServersRepository() GameServersRepository
 	// GetMatchesRepository returns a match repository. You must open a repository connection before calling this method.
 	GetMatchesRepository() MatchesRepository
-	// GetMapStatsRepository returns a map stats repository. You must open a repository connection before calling this method.
-	GetMapStatsRepository() MapStatsRepository
-	// GetPlayerStatsRepository returns a player stats repository. You must open a repository connection before calling this method.
-	GetPlayerStatsRepository() PlayerStatsRepository
+	// GetMapStatRepository returns a map stats repository. You must open a repository connection before calling this method.
+	GetMapStatRepository() MapStatRepository
+	// GetPlayerStatRepository returns a player stats repository. You must open a repository connection before calling this method.
+	GetPlayerStatRepository() PlayerStatRepository
 	// GetTeamsRepository returns a team repository. You must open a repository connection before calling this method.
 	GetTeamsRepository() TeamsRepository
 	// GetPlayersRepository returns a player repository. You must open a repository connection before calling this method.
@@ -138,28 +138,28 @@ type MatchesRepository interface {
 	StartMatch(ctx context.Context, matchID entity.MatchID) error
 }
 
-// MapStatsRepository is an interface for map stats repository.
-type MapStatsRepository interface {
+// MapStatRepository is an interface for map stats repository.
+type MapStatRepository interface {
 	// TODO.
 	// AddMapStats(ctx context.Context, matchID int64, mapNumber uint32, mapName string, winnerID int64, team1Score uint32, team2Score uint32) (*entity.MapStats, error)
 	// GetMapStats returns map stats.
-	GetMapStats(ctx context.Context, id entity.MapStatsID) (*MapStats, error)
+	GetMapStats(ctx context.Context, id entity.MapStatsID) (*MapStat, error)
 	// GetMapStatsByMatch returns map stats owned by a match.
-	GetMapStatsByMatch(ctx context.Context, matchID entity.MatchID) ([]*MapStats, error)
+	GetMapStatsByMatch(ctx context.Context, matchID entity.MatchID) ([]*MapStat, error)
 	// GetMapStatsByMatchAndMap returns map stats owned by a match and map number.
-	GetMapStatsByMatchAndMap(ctx context.Context, matchID entity.MatchID, mapNumber uint32) (*MapStats, error)
+	GetMapStatsByMatchAndMap(ctx context.Context, matchID entity.MatchID, mapNumber uint32) (*MapStat, error)
 }
 
-// PlayerStatsRepository is an interface for player stats repository.
-type PlayerStatsRepository interface {
+// PlayerStatRepository is an interface for player stats repository.
+type PlayerStatRepository interface {
 	// TODO.
 	// AddPlayerStats(ctx context.Context, mapStatsID int64, steamID string, name string, teamID int64, kills uint32, assists uint32, deaths uint32, hs uint32, flashAssists uint32, kast float32, rating float32) (*entity.PlayerStats, error)
 	// GetPlayerStatsBySteamID returns player stats owned by a steam ID.
-	GetPlayerStatsBySteamID(ctx context.Context, steamID entity.SteamID) ([]*PlayerStats, error)
+	GetPlayerStatsBySteamID(ctx context.Context, steamID entity.SteamID) ([]*PlayerStat, error)
 	// GetPlayerStatsByMatch returns player stats owned by a match.
-	GetPlayerStatsByMatch(ctx context.Context, matchID entity.MatchID) ([]*PlayerStats, error)
+	GetPlayerStatsByMatch(ctx context.Context, matchID entity.MatchID) ([]*PlayerStat, error)
 	// GetPlayerStatsByMapstats returns player stats owned by a map stats.
-	GetPlayerStatsByMapstats(ctx context.Context, mapStatsID entity.MapStatsID) ([]*PlayerStats, error)
+	GetPlayerStatsByMapstats(ctx context.Context, mapStatsID entity.MapStatsID) ([]*PlayerStat, error)
 }
 
 // TeamsRepository is an interface for team repository.

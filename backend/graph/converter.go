@@ -95,7 +95,7 @@ func convertMatches(matches []*entity.Match) []*model.Match {
 	return ret
 }
 
-func convertMapstat(mapstat *entity.MapStats) *model.MapStats {
+func convertMapstat(mapstat *entity.MapStat) *model.MapStats {
 	return &model.MapStats{
 		ID:          string(mapstat.ID),
 		MatchID:     string(mapstat.MatchID),
@@ -110,7 +110,7 @@ func convertMapstat(mapstat *entity.MapStats) *model.MapStats {
 	}
 }
 
-func convertMapStats(mapstats []*entity.MapStats) []*model.MapStats {
+func convertMapStats(mapstats []*entity.MapStat) []*model.MapStats {
 	ret := make([]*model.MapStats, 0, len(mapstats))
 	for _, mapstat := range mapstats {
 		ret = append(ret, convertMapstat(mapstat))
@@ -118,7 +118,7 @@ func convertMapStats(mapstats []*entity.MapStats) []*model.MapStats {
 	return ret
 }
 
-func convertPlayerstat(playerstat *entity.PlayerStats) *model.PlayerStats {
+func convertPlayerstat(playerstat *entity.PlayerStat) *model.PlayerStats {
 	return &model.PlayerStats{
 		ID:               string(playerstat.ID),
 		MatchID:          string(playerstat.MatchID),
@@ -152,7 +152,7 @@ func convertPlayerstat(playerstat *entity.PlayerStats) *model.PlayerStats {
 	}
 }
 
-func convertPlayerstats(playerstats []*entity.PlayerStats) []*model.PlayerStats {
+func convertPlayerstats(playerstats []*entity.PlayerStat) []*model.PlayerStats {
 	ret := make([]*model.PlayerStats, 0, len(playerstats))
 	for _, playerstat := range playerstats {
 		ret = append(ret, convertPlayerstat(playerstat))

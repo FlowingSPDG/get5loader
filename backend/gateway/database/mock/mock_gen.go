@@ -252,18 +252,18 @@ func (mr *MockRepositoryConnectorMockRecorder) GetGameServersRepository() *gomoc
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetGameServersRepository", reflect.TypeOf((*MockRepositoryConnector)(nil).GetGameServersRepository))
 }
 
-// GetMapStatsRepository mocks base method.
-func (m *MockRepositoryConnector) GetMapStatsRepository() database.MapStatsRepository {
+// GetMapStatRepository mocks base method.
+func (m *MockRepositoryConnector) GetMapStatRepository() database.MapStatRepository {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetMapStatsRepository")
-	ret0, _ := ret[0].(database.MapStatsRepository)
+	ret := m.ctrl.Call(m, "GetMapStatRepository")
+	ret0, _ := ret[0].(database.MapStatRepository)
 	return ret0
 }
 
-// GetMapStatsRepository indicates an expected call of GetMapStatsRepository.
-func (mr *MockRepositoryConnectorMockRecorder) GetMapStatsRepository() *gomock.Call {
+// GetMapStatRepository indicates an expected call of GetMapStatRepository.
+func (mr *MockRepositoryConnectorMockRecorder) GetMapStatRepository() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetMapStatsRepository", reflect.TypeOf((*MockRepositoryConnector)(nil).GetMapStatsRepository))
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetMapStatRepository", reflect.TypeOf((*MockRepositoryConnector)(nil).GetMapStatRepository))
 }
 
 // GetMatchesRepository mocks base method.
@@ -280,18 +280,18 @@ func (mr *MockRepositoryConnectorMockRecorder) GetMatchesRepository() *gomock.Ca
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetMatchesRepository", reflect.TypeOf((*MockRepositoryConnector)(nil).GetMatchesRepository))
 }
 
-// GetPlayerStatsRepository mocks base method.
-func (m *MockRepositoryConnector) GetPlayerStatsRepository() database.PlayerStatsRepository {
+// GetPlayerStatRepository mocks base method.
+func (m *MockRepositoryConnector) GetPlayerStatRepository() database.PlayerStatRepository {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetPlayerStatsRepository")
-	ret0, _ := ret[0].(database.PlayerStatsRepository)
+	ret := m.ctrl.Call(m, "GetPlayerStatRepository")
+	ret0, _ := ret[0].(database.PlayerStatRepository)
 	return ret0
 }
 
-// GetPlayerStatsRepository indicates an expected call of GetPlayerStatsRepository.
-func (mr *MockRepositoryConnectorMockRecorder) GetPlayerStatsRepository() *gomock.Call {
+// GetPlayerStatRepository indicates an expected call of GetPlayerStatRepository.
+func (mr *MockRepositoryConnectorMockRecorder) GetPlayerStatRepository() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetPlayerStatsRepository", reflect.TypeOf((*MockRepositoryConnector)(nil).GetPlayerStatsRepository))
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetPlayerStatRepository", reflect.TypeOf((*MockRepositoryConnector)(nil).GetPlayerStatRepository))
 }
 
 // GetPlayersRepository mocks base method.
@@ -415,18 +415,18 @@ func (mr *MockRepositoryConnectorWithTxMockRecorder) GetGameServersRepository() 
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetGameServersRepository", reflect.TypeOf((*MockRepositoryConnectorWithTx)(nil).GetGameServersRepository))
 }
 
-// GetMapStatsRepository mocks base method.
-func (m *MockRepositoryConnectorWithTx) GetMapStatsRepository() database.MapStatsRepository {
+// GetMapStatRepository mocks base method.
+func (m *MockRepositoryConnectorWithTx) GetMapStatRepository() database.MapStatRepository {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetMapStatsRepository")
-	ret0, _ := ret[0].(database.MapStatsRepository)
+	ret := m.ctrl.Call(m, "GetMapStatRepository")
+	ret0, _ := ret[0].(database.MapStatRepository)
 	return ret0
 }
 
-// GetMapStatsRepository indicates an expected call of GetMapStatsRepository.
-func (mr *MockRepositoryConnectorWithTxMockRecorder) GetMapStatsRepository() *gomock.Call {
+// GetMapStatRepository indicates an expected call of GetMapStatRepository.
+func (mr *MockRepositoryConnectorWithTxMockRecorder) GetMapStatRepository() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetMapStatsRepository", reflect.TypeOf((*MockRepositoryConnectorWithTx)(nil).GetMapStatsRepository))
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetMapStatRepository", reflect.TypeOf((*MockRepositoryConnectorWithTx)(nil).GetMapStatRepository))
 }
 
 // GetMatchesRepository mocks base method.
@@ -443,18 +443,18 @@ func (mr *MockRepositoryConnectorWithTxMockRecorder) GetMatchesRepository() *gom
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetMatchesRepository", reflect.TypeOf((*MockRepositoryConnectorWithTx)(nil).GetMatchesRepository))
 }
 
-// GetPlayerStatsRepository mocks base method.
-func (m *MockRepositoryConnectorWithTx) GetPlayerStatsRepository() database.PlayerStatsRepository {
+// GetPlayerStatRepository mocks base method.
+func (m *MockRepositoryConnectorWithTx) GetPlayerStatRepository() database.PlayerStatRepository {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetPlayerStatsRepository")
-	ret0, _ := ret[0].(database.PlayerStatsRepository)
+	ret := m.ctrl.Call(m, "GetPlayerStatRepository")
+	ret0, _ := ret[0].(database.PlayerStatRepository)
 	return ret0
 }
 
-// GetPlayerStatsRepository indicates an expected call of GetPlayerStatsRepository.
-func (mr *MockRepositoryConnectorWithTxMockRecorder) GetPlayerStatsRepository() *gomock.Call {
+// GetPlayerStatRepository indicates an expected call of GetPlayerStatRepository.
+func (mr *MockRepositoryConnectorWithTxMockRecorder) GetPlayerStatRepository() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetPlayerStatsRepository", reflect.TypeOf((*MockRepositoryConnectorWithTx)(nil).GetPlayerStatsRepository))
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetPlayerStatRepository", reflect.TypeOf((*MockRepositoryConnectorWithTx)(nil).GetPlayerStatRepository))
 }
 
 // GetPlayersRepository mocks base method.
@@ -860,140 +860,140 @@ func (mr *MockMatchesRepositoryMockRecorder) UpdateTeam2Score(ctx, matchID, scor
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateTeam2Score", reflect.TypeOf((*MockMatchesRepository)(nil).UpdateTeam2Score), ctx, matchID, score)
 }
 
-// MockMapStatsRepository is a mock of MapStatsRepository interface.
-type MockMapStatsRepository struct {
+// MockMapStatRepository is a mock of MapStatRepository interface.
+type MockMapStatRepository struct {
 	ctrl     *gomock.Controller
-	recorder *MockMapStatsRepositoryMockRecorder
+	recorder *MockMapStatRepositoryMockRecorder
 }
 
-// MockMapStatsRepositoryMockRecorder is the mock recorder for MockMapStatsRepository.
-type MockMapStatsRepositoryMockRecorder struct {
-	mock *MockMapStatsRepository
+// MockMapStatRepositoryMockRecorder is the mock recorder for MockMapStatRepository.
+type MockMapStatRepositoryMockRecorder struct {
+	mock *MockMapStatRepository
 }
 
-// NewMockMapStatsRepository creates a new mock instance.
-func NewMockMapStatsRepository(ctrl *gomock.Controller) *MockMapStatsRepository {
-	mock := &MockMapStatsRepository{ctrl: ctrl}
-	mock.recorder = &MockMapStatsRepositoryMockRecorder{mock}
+// NewMockMapStatRepository creates a new mock instance.
+func NewMockMapStatRepository(ctrl *gomock.Controller) *MockMapStatRepository {
+	mock := &MockMapStatRepository{ctrl: ctrl}
+	mock.recorder = &MockMapStatRepositoryMockRecorder{mock}
 	return mock
 }
 
 // EXPECT returns an object that allows the caller to indicate expected use.
-func (m *MockMapStatsRepository) EXPECT() *MockMapStatsRepositoryMockRecorder {
+func (m *MockMapStatRepository) EXPECT() *MockMapStatRepositoryMockRecorder {
 	return m.recorder
 }
 
 // GetMapStats mocks base method.
-func (m *MockMapStatsRepository) GetMapStats(ctx context.Context, id entity.MapStatsID) (*database.MapStats, error) {
+func (m *MockMapStatRepository) GetMapStats(ctx context.Context, id entity.MapStatsID) (*database.MapStat, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetMapStats", ctx, id)
-	ret0, _ := ret[0].(*database.MapStats)
+	ret0, _ := ret[0].(*database.MapStat)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // GetMapStats indicates an expected call of GetMapStats.
-func (mr *MockMapStatsRepositoryMockRecorder) GetMapStats(ctx, id interface{}) *gomock.Call {
+func (mr *MockMapStatRepositoryMockRecorder) GetMapStats(ctx, id interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetMapStats", reflect.TypeOf((*MockMapStatsRepository)(nil).GetMapStats), ctx, id)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetMapStats", reflect.TypeOf((*MockMapStatRepository)(nil).GetMapStats), ctx, id)
 }
 
 // GetMapStatsByMatch mocks base method.
-func (m *MockMapStatsRepository) GetMapStatsByMatch(ctx context.Context, matchID entity.MatchID) ([]*database.MapStats, error) {
+func (m *MockMapStatRepository) GetMapStatsByMatch(ctx context.Context, matchID entity.MatchID) ([]*database.MapStat, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetMapStatsByMatch", ctx, matchID)
-	ret0, _ := ret[0].([]*database.MapStats)
+	ret0, _ := ret[0].([]*database.MapStat)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // GetMapStatsByMatch indicates an expected call of GetMapStatsByMatch.
-func (mr *MockMapStatsRepositoryMockRecorder) GetMapStatsByMatch(ctx, matchID interface{}) *gomock.Call {
+func (mr *MockMapStatRepositoryMockRecorder) GetMapStatsByMatch(ctx, matchID interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetMapStatsByMatch", reflect.TypeOf((*MockMapStatsRepository)(nil).GetMapStatsByMatch), ctx, matchID)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetMapStatsByMatch", reflect.TypeOf((*MockMapStatRepository)(nil).GetMapStatsByMatch), ctx, matchID)
 }
 
 // GetMapStatsByMatchAndMap mocks base method.
-func (m *MockMapStatsRepository) GetMapStatsByMatchAndMap(ctx context.Context, matchID entity.MatchID, mapNumber uint32) (*database.MapStats, error) {
+func (m *MockMapStatRepository) GetMapStatsByMatchAndMap(ctx context.Context, matchID entity.MatchID, mapNumber uint32) (*database.MapStat, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetMapStatsByMatchAndMap", ctx, matchID, mapNumber)
-	ret0, _ := ret[0].(*database.MapStats)
+	ret0, _ := ret[0].(*database.MapStat)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // GetMapStatsByMatchAndMap indicates an expected call of GetMapStatsByMatchAndMap.
-func (mr *MockMapStatsRepositoryMockRecorder) GetMapStatsByMatchAndMap(ctx, matchID, mapNumber interface{}) *gomock.Call {
+func (mr *MockMapStatRepositoryMockRecorder) GetMapStatsByMatchAndMap(ctx, matchID, mapNumber interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetMapStatsByMatchAndMap", reflect.TypeOf((*MockMapStatsRepository)(nil).GetMapStatsByMatchAndMap), ctx, matchID, mapNumber)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetMapStatsByMatchAndMap", reflect.TypeOf((*MockMapStatRepository)(nil).GetMapStatsByMatchAndMap), ctx, matchID, mapNumber)
 }
 
-// MockPlayerStatsRepository is a mock of PlayerStatsRepository interface.
-type MockPlayerStatsRepository struct {
+// MockPlayerStatRepository is a mock of PlayerStatRepository interface.
+type MockPlayerStatRepository struct {
 	ctrl     *gomock.Controller
-	recorder *MockPlayerStatsRepositoryMockRecorder
+	recorder *MockPlayerStatRepositoryMockRecorder
 }
 
-// MockPlayerStatsRepositoryMockRecorder is the mock recorder for MockPlayerStatsRepository.
-type MockPlayerStatsRepositoryMockRecorder struct {
-	mock *MockPlayerStatsRepository
+// MockPlayerStatRepositoryMockRecorder is the mock recorder for MockPlayerStatRepository.
+type MockPlayerStatRepositoryMockRecorder struct {
+	mock *MockPlayerStatRepository
 }
 
-// NewMockPlayerStatsRepository creates a new mock instance.
-func NewMockPlayerStatsRepository(ctrl *gomock.Controller) *MockPlayerStatsRepository {
-	mock := &MockPlayerStatsRepository{ctrl: ctrl}
-	mock.recorder = &MockPlayerStatsRepositoryMockRecorder{mock}
+// NewMockPlayerStatRepository creates a new mock instance.
+func NewMockPlayerStatRepository(ctrl *gomock.Controller) *MockPlayerStatRepository {
+	mock := &MockPlayerStatRepository{ctrl: ctrl}
+	mock.recorder = &MockPlayerStatRepositoryMockRecorder{mock}
 	return mock
 }
 
 // EXPECT returns an object that allows the caller to indicate expected use.
-func (m *MockPlayerStatsRepository) EXPECT() *MockPlayerStatsRepositoryMockRecorder {
+func (m *MockPlayerStatRepository) EXPECT() *MockPlayerStatRepositoryMockRecorder {
 	return m.recorder
 }
 
 // GetPlayerStatsByMapstats mocks base method.
-func (m *MockPlayerStatsRepository) GetPlayerStatsByMapstats(ctx context.Context, mapStatsID entity.MapStatsID) ([]*database.PlayerStats, error) {
+func (m *MockPlayerStatRepository) GetPlayerStatsByMapstats(ctx context.Context, mapStatsID entity.MapStatsID) ([]*database.PlayerStat, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetPlayerStatsByMapstats", ctx, mapStatsID)
-	ret0, _ := ret[0].([]*database.PlayerStats)
+	ret0, _ := ret[0].([]*database.PlayerStat)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // GetPlayerStatsByMapstats indicates an expected call of GetPlayerStatsByMapstats.
-func (mr *MockPlayerStatsRepositoryMockRecorder) GetPlayerStatsByMapstats(ctx, mapStatsID interface{}) *gomock.Call {
+func (mr *MockPlayerStatRepositoryMockRecorder) GetPlayerStatsByMapstats(ctx, mapStatsID interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetPlayerStatsByMapstats", reflect.TypeOf((*MockPlayerStatsRepository)(nil).GetPlayerStatsByMapstats), ctx, mapStatsID)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetPlayerStatsByMapstats", reflect.TypeOf((*MockPlayerStatRepository)(nil).GetPlayerStatsByMapstats), ctx, mapStatsID)
 }
 
 // GetPlayerStatsByMatch mocks base method.
-func (m *MockPlayerStatsRepository) GetPlayerStatsByMatch(ctx context.Context, matchID entity.MatchID) ([]*database.PlayerStats, error) {
+func (m *MockPlayerStatRepository) GetPlayerStatsByMatch(ctx context.Context, matchID entity.MatchID) ([]*database.PlayerStat, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetPlayerStatsByMatch", ctx, matchID)
-	ret0, _ := ret[0].([]*database.PlayerStats)
+	ret0, _ := ret[0].([]*database.PlayerStat)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // GetPlayerStatsByMatch indicates an expected call of GetPlayerStatsByMatch.
-func (mr *MockPlayerStatsRepositoryMockRecorder) GetPlayerStatsByMatch(ctx, matchID interface{}) *gomock.Call {
+func (mr *MockPlayerStatRepositoryMockRecorder) GetPlayerStatsByMatch(ctx, matchID interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetPlayerStatsByMatch", reflect.TypeOf((*MockPlayerStatsRepository)(nil).GetPlayerStatsByMatch), ctx, matchID)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetPlayerStatsByMatch", reflect.TypeOf((*MockPlayerStatRepository)(nil).GetPlayerStatsByMatch), ctx, matchID)
 }
 
 // GetPlayerStatsBySteamID mocks base method.
-func (m *MockPlayerStatsRepository) GetPlayerStatsBySteamID(ctx context.Context, steamID entity.SteamID) ([]*database.PlayerStats, error) {
+func (m *MockPlayerStatRepository) GetPlayerStatsBySteamID(ctx context.Context, steamID entity.SteamID) ([]*database.PlayerStat, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetPlayerStatsBySteamID", ctx, steamID)
-	ret0, _ := ret[0].([]*database.PlayerStats)
+	ret0, _ := ret[0].([]*database.PlayerStat)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // GetPlayerStatsBySteamID indicates an expected call of GetPlayerStatsBySteamID.
-func (mr *MockPlayerStatsRepositoryMockRecorder) GetPlayerStatsBySteamID(ctx, steamID interface{}) *gomock.Call {
+func (mr *MockPlayerStatRepositoryMockRecorder) GetPlayerStatsBySteamID(ctx, steamID interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetPlayerStatsBySteamID", reflect.TypeOf((*MockPlayerStatsRepository)(nil).GetPlayerStatsBySteamID), ctx, steamID)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetPlayerStatsBySteamID", reflect.TypeOf((*MockPlayerStatRepository)(nil).GetPlayerStatsBySteamID), ctx, steamID)
 }
 
 // MockTeamsRepository is a mock of TeamsRepository interface.

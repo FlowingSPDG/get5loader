@@ -42,10 +42,10 @@ func (mrc *mysqlRepositoryConnector) GetGameServersRepository() database.GameSer
 	return gameservers.NewGameServerRepository(mrc.uuidGenerator, conn)
 }
 
-// OpenMapStatsRepository implements database.RepositoryConnector.
-func (mrc *mysqlRepositoryConnector) GetMapStatsRepository() database.MapStatsRepository {
+// OpenMapStatRepository implements database.RepositoryConnector.
+func (mrc *mysqlRepositoryConnector) GetMapStatRepository() database.MapStatRepository {
 	conn := mrc.connector.GetConnection()
-	return mapstats.NewMapStatsRepository(mrc.uuidGenerator, conn)
+	return mapstats.NewMapStatRepository(mrc.uuidGenerator, conn)
 }
 
 // OpenMatchesRepository implements database.RepositoryConnector.
@@ -54,10 +54,10 @@ func (mrc *mysqlRepositoryConnector) GetMatchesRepository() database.MatchesRepo
 	return matches.NewMatchRepository(mrc.uuidGenerator, conn)
 }
 
-// OpenPlayerStatsRepository implements database.RepositoryConnector.
-func (mrc *mysqlRepositoryConnector) GetPlayerStatsRepository() database.PlayerStatsRepository {
+// OpenPlayerStatRepository implements database.RepositoryConnector.
+func (mrc *mysqlRepositoryConnector) GetPlayerStatRepository() database.PlayerStatRepository {
 	conn := mrc.connector.GetConnection()
-	return playerstats.NewPlayerStatsRepository(mrc.uuidGenerator, conn)
+	return playerstats.NewPlayerStatRepository(mrc.uuidGenerator, conn)
 }
 
 // OpenPlayersRepository implements database.RepositoryConnector.

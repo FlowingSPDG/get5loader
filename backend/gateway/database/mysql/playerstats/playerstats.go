@@ -11,29 +11,29 @@ import (
 	"github.com/FlowingSPDG/get5loader/backend/service/uuid"
 )
 
-type playerStatsRepository struct {
+type PlayerStatRepository struct {
 	uuidGenerator uuid.UUIDGenerator
 	queries       *playerstats_gen.Queries
 }
 
-func NewPlayerStatsRepository(uuidGenerator uuid.UUIDGenerator, db *sql.DB) database.PlayerStatsRepository {
+func NewPlayerStatRepository(uuidGenerator uuid.UUIDGenerator, db *sql.DB) database.PlayerStatRepository {
 	queries := playerstats_gen.New(db)
-	return &playerStatsRepository{
+	return &PlayerStatRepository{
 		uuidGenerator: uuidGenerator,
 		queries:       queries,
 	}
 }
 
-func NewPlayerStatsRepositoryWithTx(uuidGenerator uuid.UUIDGenerator, db *sql.DB, tx *sql.Tx) database.PlayerStatsRepository {
+func NewPlayerStatRepositoryWithTx(uuidGenerator uuid.UUIDGenerator, db *sql.DB, tx *sql.Tx) database.PlayerStatRepository {
 	queries := playerstats_gen.New(db).WithTx(tx)
-	return &playerStatsRepository{
+	return &PlayerStatRepository{
 		uuidGenerator: uuidGenerator,
 		queries:       queries,
 	}
 }
 
-// GetPlayerStatsByMapstats implements database.PlayerStatsRepository.
-func (psr *playerStatsRepository) GetPlayerStatsByMapstats(ctx context.Context, mapstatsID entity.MapStatsID) ([]*database.PlayerStats, error) {
+// GetPlayerStatsByMapstats implements database.PlayerStatRepository.
+func (psr *PlayerStatRepository) GetPlayerStatsByMapstats(ctx context.Context, mapstatsID entity.MapStatsID) ([]*database.PlayerStat, error) {
 	stats, err := psr.queries.GetPlayerStatsByMap(ctx, string(mapstatsID))
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
@@ -42,9 +42,9 @@ func (psr *playerStatsRepository) GetPlayerStatsByMapstats(ctx context.Context, 
 		return nil, database.NewInternalError(err)
 	}
 
-	ret := make([]*database.PlayerStats, 0, len(stats))
+	ret := make([]*database.PlayerStat, 0, len(stats))
 	for _, stat := range stats {
-		ret = append(ret, &database.PlayerStats{
+		ret = append(ret, &database.PlayerStat{
 			ID:               entity.PlayerStatsID(stat.ID),
 			MatchID:          entity.MatchID(stat.MatchID),
 			MapID:            entity.MapStatsID(stat.MapID),
@@ -81,8 +81,8 @@ func (psr *playerStatsRepository) GetPlayerStatsByMapstats(ctx context.Context, 
 
 }
 
-// GetPlayerStatsByMatch implements database.PlayerStatsRepository.
-func (psr *playerStatsRepository) GetPlayerStatsByMatch(ctx context.Context, matchID entity.MatchID) ([]*database.PlayerStats, error) {
+// GetPlayerStatsByMatch implements database.PlayerStatRepository.
+func (psr *PlayerStatRepository) GetPlayerStatsByMatch(ctx context.Context, matchID entity.MatchID) ([]*database.PlayerStat, error) {
 	stats, err := psr.queries.GetPlayerStatsByMatch(ctx, string(matchID))
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
@@ -91,9 +91,9 @@ func (psr *playerStatsRepository) GetPlayerStatsByMatch(ctx context.Context, mat
 		return nil, database.NewInternalError(err)
 	}
 
-	playerStats := make([]*database.PlayerStats, 0, len(stats))
+	playerStats := make([]*database.PlayerStat, 0, len(stats))
 	for _, stat := range stats {
-		playerStats = append(playerStats, &database.PlayerStats{
+		playerStats = append(playerStats, &database.PlayerStat{
 			ID:               entity.PlayerStatsID(stat.ID),
 			MatchID:          entity.MatchID(stat.MatchID),
 			MapID:            entity.MapStatsID(stat.MapID),
@@ -128,8 +128,8 @@ func (psr *playerStatsRepository) GetPlayerStatsByMatch(ctx context.Context, mat
 	return playerStats, nil
 }
 
-// GetPlayerStatsBySteamID implements database.PlayerStatsRepository.
-func (psr *playerStatsRepository) GetPlayerStatsBySteamID(ctx context.Context, steamID entity.SteamID) ([]*database.PlayerStats, error) {
+// GetPlayerStatsBySteamID implements database.PlayerStatRepository.
+func (psr *PlayerStatRepository) GetPlayerStatsBySteamID(ctx context.Context, steamID entity.SteamID) ([]*database.PlayerStat, error) {
 	stats, err := psr.queries.GetPlayerStatsBySteamID(ctx, uint64(steamID))
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
@@ -138,9 +138,9 @@ func (psr *playerStatsRepository) GetPlayerStatsBySteamID(ctx context.Context, s
 		return nil, database.NewInternalError(err)
 	}
 
-	playerStats := make([]*database.PlayerStats, 0, len(stats))
+	playerStats := make([]*database.PlayerStat, 0, len(stats))
 	for _, stat := range stats {
-		playerStats = append(playerStats, &database.PlayerStats{
+		playerStats = append(playerStats, &database.PlayerStat{
 			ID:               entity.PlayerStatsID(stat.ID),
 			MatchID:          entity.MatchID(stat.MatchID),
 			MapID:            entity.MapStatsID(stat.MapID),

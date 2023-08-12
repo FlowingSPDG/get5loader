@@ -54,10 +54,10 @@ type Match struct {
 	Team2Score uint32
 	Forfeit    *bool
 	Status     MATCH_STATUS
-	Mapstats   []*MapStats
+	Mapstats   []*MapStat
 }
 
-type MapStats struct {
+type MapStat struct {
 	ID          MapStatsID
 	MatchID     MatchID
 	MapNumber   uint32
@@ -67,10 +67,10 @@ type MapStats struct {
 	Winner      *TeamID
 	Team1Score  uint32
 	Team2Score  uint32
-	PlayerStats []*PlayerStats
+	PlayerStats []*PlayerStat
 }
 
-type PlayerStats struct {
+type PlayerStat struct {
 	ID      PlayerStatsID
 	MatchID MatchID
 	MapID   MapStatsID

@@ -46,7 +46,7 @@ type Match struct {
 	Status     entity.MATCH_STATUS
 }
 
-type MapStats struct {
+type MapStat struct {
 	ID         entity.MapStatsID
 	MatchID    entity.MatchID
 	MapNumber  uint32
@@ -58,7 +58,7 @@ type MapStats struct {
 	Team2Score uint32
 }
 
-type PlayerStats struct {
+type PlayerStat struct {
 	ID      entity.PlayerStatsID
 	MatchID entity.MatchID
 	MapID   entity.MapStatsID
