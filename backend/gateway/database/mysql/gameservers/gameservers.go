@@ -34,9 +34,10 @@ func NewGameServerRepositoryWithTx(uuidGenerator uuid.UUIDGenerator, db *sql.DB,
 }
 
 // AddGameServer implements database.GameServerRepository.
-func (gr *gameServerRepository) AddGameServer(ctx context.Context, userID entity.UserID, ip net.IP, port uint32, rconPassword string, displayName string, isPublic bool) error {
+func (gr *gameServerRepository) AddGameServer(ctx context.Context, userID entity.UserID, ip net.IP, port uint32, rconPassword string, displayName string, isPublic bool) (entity.GameServerID, error) {
+	id := gr.uuidGenerator.Generate()
 	if _, err := gr.queries.AddGameServer(ctx, gameservers_gen.AddGameServerParams{
-		ID:           gr.uuidGenerator.Generate(),
+		ID:           id,
 		UserID:       string(userID),
 		Ip:           ip,
 		Port:         port,
@@ -44,10 +45,10 @@ func (gr *gameServerRepository) AddGameServer(ctx context.Context, userID entity
 		DisplayName:  displayName,
 		IsPublic:     isPublic,
 	}); err != nil {
-		return database.NewInternalError(err)
+		return "", database.NewInternalError(err)
 	}
 
-	return nil
+	return entity.GameServerID(id), nil
 }
 
 // DeleteGameServer implements database.GameServerRepository.

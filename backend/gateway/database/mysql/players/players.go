@@ -33,17 +33,18 @@ func NewPlayersRepositoryWithTx(uuidGenerator uuid.UUIDGenerator, db *sql.DB, tx
 }
 
 // AddPlayer implements database.PlayersRepository.
-func (pr *playersRepository) AddPlayer(ctx context.Context, teamID entity.TeamID, steamID entity.SteamID, name string) error {
+func (pr *playersRepository) AddPlayer(ctx context.Context, teamID entity.TeamID, steamID entity.SteamID, name string) (entity.PlayerID, error) {
+	id := pr.uuidGenerator.Generate()
 	if _, err := pr.queries.AddPlayer(ctx, players_gen.AddPlayerParams{
-		ID:      pr.uuidGenerator.Generate(),
+		ID:      id,
 		TeamID:  string(teamID),
 		SteamID: uint64(steamID),
 		Name:    name,
 	}); err != nil {
-		return database.NewInternalError(err)
+		return "", database.NewInternalError(err)
 	}
 
-	return nil
+	return entity.PlayerID(id), nil
 }
 
 // GetPlayer implements database.PlayersRepository.

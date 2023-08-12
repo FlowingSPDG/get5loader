@@ -33,19 +33,20 @@ func NewTeamsRepositoryWithTx(uuidGenerator uuid.UUIDGenerator, db *sql.DB, tx *
 }
 
 // AddTeam implements database.TeamsRepository.
-func (tr *teamsRepository) AddTeam(ctx context.Context, userID entity.UserID, name string, tag string, flag string, logo string) error {
+func (tr *teamsRepository) AddTeam(ctx context.Context, userID entity.UserID, name string, tag string, flag string, logo string) (entity.TeamID, error) {
+	id := tr.uuidGenerator.Generate()
 	if _, err := tr.queries.AddTeam(ctx, teams_gen.AddTeamParams{
-		ID:     tr.uuidGenerator.Generate(),
+		ID:     id,
 		UserID: string(userID),
 		Name:   name,
 		Tag:    tag,
 		Flag:   flag,
 		Logo:   logo,
 	}); err != nil {
-		return database.NewInternalError(err)
+		return "", database.NewInternalError(err)
 	}
 
-	return nil
+	return entity.TeamID(id), nil
 }
 
 // GetPublicTeams implements database.TeamsRepository.

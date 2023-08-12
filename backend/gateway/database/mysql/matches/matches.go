@@ -34,9 +34,10 @@ func NewMatchRepositoryWithTx(uuidGenerator uuid.UUIDGenerator, db *sql.DB, tx *
 }
 
 // AddMatch implements database.MatchRepository.
-func (mr *matchRepository) AddMatch(ctx context.Context, userID entity.UserID, serverID entity.GameServerID, team1ID entity.TeamID, team2ID entity.TeamID, startTime time.Time, endTime time.Time, maxMaps int32, title string, skipVeto bool, apiKey string) error {
+func (mr *matchRepository) AddMatch(ctx context.Context, userID entity.UserID, serverID entity.GameServerID, team1ID entity.TeamID, team2ID entity.TeamID, startTime time.Time, endTime time.Time, maxMaps int32, title string, skipVeto bool, apiKey string) (entity.MatchID, error) {
+	id := mr.uuidGenerator.Generate()
 	if _, err := mr.queries.AddMatch(ctx, matches_gen.AddMatchParams{
-		ID:        mr.uuidGenerator.Generate(),
+		ID:        id,
 		UserID:    string(userID),
 		ServerID:  string(serverID),
 		Team1ID:   string(team1ID),
@@ -49,10 +50,10 @@ func (mr *matchRepository) AddMatch(ctx context.Context, userID entity.UserID, s
 		ApiKey:    apiKey,
 		Status:    int32(entity.MATCH_STATUS_PENDING),
 	}); err != nil {
-		return database.NewInternalError(err)
+		return "", database.NewInternalError(err)
 	}
 
-	return nil
+	return entity.MatchID(id), nil
 }
 
 // GetMatch implements database.MatchRepository.

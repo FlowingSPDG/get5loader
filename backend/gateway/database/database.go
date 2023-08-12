@@ -95,7 +95,7 @@ type RepositoryConnectorWithTx interface {
 // UsersRepositry is an interface for user repository.
 type UsersRepositry interface {
 	// CreateUser creates a user.
-	CreateUser(ctx context.Context, steamID entity.SteamID, name string, admin bool, hash []byte) error
+	CreateUser(ctx context.Context, steamID entity.SteamID, name string, admin bool, hash []byte) (entity.UserID, error)
 	// GetUser returns a user.
 	GetUser(ctx context.Context, id entity.UserID) (*entity.User, error)
 	GetUserBySteamID(ctx context.Context, steamID entity.SteamID) (*entity.User, error)
@@ -104,7 +104,7 @@ type UsersRepositry interface {
 // GameServersRepository is an interface for game server repository.
 type GameServersRepository interface {
 	// AddGameServer adds a game server.
-	AddGameServer(ctx context.Context, userID entity.UserID, ip net.IP, port uint32, rconPassword string, displayName string, isPublic bool) error
+	AddGameServer(ctx context.Context, userID entity.UserID, ip net.IP, port uint32, rconPassword string, displayName string, isPublic bool) (entity.GameServerID, error)
 	// GetGameServer returns a game server.
 	GetGameServer(ctx context.Context, id entity.GameServerID) (*entity.GameServer, error)
 	// GetPublicGameServers returns public game servers.
@@ -118,7 +118,7 @@ type GameServersRepository interface {
 // MatchesRepository is an interface for match repository.
 type MatchesRepository interface {
 	// AddMatch adds a match.
-	AddMatch(ctx context.Context, userID entity.UserID, serverID entity.GameServerID, team1ID entity.TeamID, team2ID entity.TeamID, startTime time.Time, endTime time.Time, maxMaps int32, title string, skipVeto bool, apiKey string) error
+	AddMatch(ctx context.Context, userID entity.UserID, serverID entity.GameServerID, team1ID entity.TeamID, team2ID entity.TeamID, startTime time.Time, endTime time.Time, maxMaps int32, title string, skipVeto bool, apiKey string) (entity.MatchID, error)
 	// GetMatch returns a match.
 	GetMatch(ctx context.Context, id entity.MatchID) (*entity.Match, error)
 	// GetMatchesByUser returns matches owned by a user.
@@ -166,7 +166,7 @@ type PlayerStatsRepository interface {
 // TeamsRepository is an interface for team repository.
 type TeamsRepository interface {
 	// AddTeam adds a team.
-	AddTeam(ctx context.Context, userID entity.UserID, name string, tag string, flag string, logo string) error
+	AddTeam(ctx context.Context, userID entity.UserID, name string, tag string, flag string, logo string) (entity.TeamID, error)
 	// GetTeam returns a team.
 	GetTeam(ctx context.Context, id entity.TeamID) (*entity.Team, error)
 	// GetTeamsByUser returns teams owned by a user.
@@ -178,7 +178,7 @@ type TeamsRepository interface {
 // PlayersRepository is an interface for player repository.
 type PlayersRepository interface {
 	// AddPlayer adds a player.
-	AddPlayer(ctx context.Context, teamID entity.TeamID, steamID entity.SteamID, name string) error
+	AddPlayer(ctx context.Context, teamID entity.TeamID, steamID entity.SteamID, name string) (entity.PlayerID, error)
 	// GetPlayer returns a player.
 	GetPlayer(ctx context.Context, id entity.PlayerID) (*entity.Player, error)
 	// GetPlayersByTeam returns players owned by a team.

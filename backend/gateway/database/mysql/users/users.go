@@ -32,18 +32,19 @@ func NewUsersRepositryWithTx(uuidGenerator uuid.UUIDGenerator, db *sql.DB, tx *s
 }
 
 // CreateUser implements database.UsersRepositry.
-func (ur *usersRepositry) CreateUser(ctx context.Context, steamID entity.SteamID, name string, admin bool, hash []byte) error {
+func (ur *usersRepositry) CreateUser(ctx context.Context, steamID entity.SteamID, name string, admin bool, hash []byte) (entity.UserID, error) {
+	id := ur.uuidGenerator.Generate()
 	if _, err := ur.queries.CreateUser(ctx, users_gen.CreateUserParams{
-		ID:           ur.uuidGenerator.Generate(),
+		ID:           id,
 		SteamID:      uint64(steamID),
 		Name:         name,
 		Admin:        admin,
 		PasswordHash: hash,
 	}); err != nil {
-		return database.NewInternalError(err)
+		return "", database.NewInternalError(err)
 	}
 
-	return nil
+	return entity.UserID(id), nil
 }
 
 // GetUser implements database.UsersRepositry.

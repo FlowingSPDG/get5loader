@@ -1,0 +1,31 @@
+# GraphQL schema
+
+type User {
+  id: ID!
+  steamId: String!
+  name: String!
+  admin: Boolean!
+  gameservers: [GameServer!]!
+}
+
+type GameServer {
+  id: ID!
+  Ip: String!
+  port: Int!
+  name: String!
+  public: Boolean!
+}
+
+input NewGameServer {
+  userID: ID!
+  Ip: String!
+  port: Int!
+  name: String!
+  RconPassword: String!
+  public: Boolean!
+}
+
+
+type Mutation {
+  addServer(input: NewGameServer!): GameServer!
+}
