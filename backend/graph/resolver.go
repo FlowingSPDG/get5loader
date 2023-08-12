@@ -8,4 +8,6 @@ import "github.com/FlowingSPDG/get5loader/backend/usecase"
 
 type Resolver struct {
 	GameServerUsecase usecase.GameServer
+	UserUsecase       usecase.User
+	MatchUsecase      usecase.Match
 }

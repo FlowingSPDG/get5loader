@@ -17,7 +17,9 @@ func main() {
 	cfg := config.GetConfig()
 
 	v1 := r.Group("/api/v1")
-	v1.POST("/query", di.InitializeGraphQLHandler(cfg))
+	v1auth := v1.Group("/")
+	v1auth.Use(di.InitializeJWTAuthController(cfg).Handle)
+	v1auth.POST("/query", di.InitializeGraphQLHandler(cfg))
 
 	g5 := v1.Group("/get5_event")
 	evh := got5.NewGot5EventController()
