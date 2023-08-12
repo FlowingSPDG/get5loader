@@ -87,6 +87,22 @@ input NewGameServer {
   public: Boolean!
 }
 
+# ⭐️  type Query: データフェッチ系のエンドポイント定義
+type Query {
+    # User op
+    getUser(id: ID!): User!
+    
+    # Team op
+    getTeam(id: ID!): Team!
+    getTeamsByUser: [Team!]!
+    
+    # Match op
+    getMatch(id: ID!): Match!
+    
+    # gameserver op
+    getServer(id: ID!): GameServer!
+    getPublicServers: [GameServer!]!
+}
 
 type Mutation {
   # Team op

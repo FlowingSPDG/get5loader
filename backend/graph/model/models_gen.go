@@ -50,7 +50,6 @@ type Match struct {
 }
 
 type NewGameServer struct {
-	UserID       string `json:"userID"`
 	IP           string `json:"Ip"`
 	Port         int    `json:"port"`
 	Name         string `json:"name"`

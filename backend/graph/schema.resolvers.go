@@ -6,7 +6,9 @@ package graph
 
 import (
 	"context"
+	"fmt"
 
+	"github.com/FlowingSPDG/get5loader/backend/entity"
 	"github.com/FlowingSPDG/get5loader/backend/g5ctx"
 	"github.com/FlowingSPDG/get5loader/backend/graph/model"
 )
@@ -50,7 +52,72 @@ func (r *mutationResolver) AddServer(ctx context.Context, input model.NewGameSer
 	}, nil
 }
 
+// GetUser is the resolver for the getUser field.
+func (r *queryResolver) GetUser(ctx context.Context, id string) (*model.User, error) {
+	panic(fmt.Errorf("not implemented: GetUser - getUser"))
+}
+
+// GetTeam is the resolver for the getTeam field.
+func (r *queryResolver) GetTeam(ctx context.Context, id string) (*model.Team, error) {
+	team, err := r.TeamUsecase.GetTeam(ctx, entity.TeamID(id))
+	if err != nil {
+		return nil, err
+	}
+	return &model.Team{
+		ID:     string(team.ID),
+		Name:   team.Name,
+		Tag:    team.Tag,
+		Flag:   team.Flag,
+		Logo:   team.Logo,
+		Public: team.Public,
+	}, nil
+}
+
+// GetTeamsByUser is the resolver for the getTeamsByUser field.
+func (r *queryResolver) GetTeamsByUser(ctx context.Context) ([]*model.Team, error) {
+	token, err := g5ctx.GetUserToken(ctx)
+	if err != nil {
+		return nil, err
+	}
+	teams, err := r.TeamUsecase.GetTeamsByUser(ctx, token.UserID)
+	if err != nil {
+		return nil, err
+	}
+
+	ret := make([]*model.Team, 0, len(teams))
+	for _, team := range teams {
+		ret = append(ret, &model.Team{
+			ID:     string(team.ID),
+			Name:   team.Name,
+			Tag:    team.Tag,
+			Flag:   team.Flag,
+			Logo:   team.Logo,
+			Public: team.Public,
+		})
+	}
+	return ret, nil
+}
+
+// GetMatch is the resolver for the getMatch field.
+func (r *queryResolver) GetMatch(ctx context.Context, id string) (*model.Match, error) {
+	panic(fmt.Errorf("not implemented: GetMatch - getMatch"))
+}
+
+// GetServer is the resolver for the getServer field.
+func (r *queryResolver) GetServer(ctx context.Context, id string) (*model.GameServer, error) {
+	panic(fmt.Errorf("not implemented: GetServer - getServer"))
+}
+
+// GetPublicServers is the resolver for the getPublicServers field.
+func (r *queryResolver) GetPublicServers(ctx context.Context) ([]*model.GameServer, error) {
+	panic(fmt.Errorf("not implemented: GetPublicServers - getPublicServers"))
+}
+
 // Mutation returns MutationResolver implementation.
 func (r *Resolver) Mutation() MutationResolver { return &mutationResolver{r} }
 
+// Query returns QueryResolver implementation.
+func (r *Resolver) Query() QueryResolver { return &queryResolver{r} }
+
 type mutationResolver struct{ *Resolver }
+type queryResolver struct{ *Resolver }
