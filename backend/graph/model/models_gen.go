@@ -32,7 +32,7 @@ type MapStats struct {
 }
 
 type Match struct {
-	ID         string      `json:"ID"`
+	ID         string      `json:"id"`
 	UserID     string      `json:"userId"`
 	Team1      *Team       `json:"team1"`
 	Team2      *Team       `json:"team2"`

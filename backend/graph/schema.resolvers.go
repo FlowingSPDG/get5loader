@@ -106,6 +106,31 @@ func (r *queryResolver) GetMatch(ctx context.Context, id string) (*model.Match, 
 	return convertMatch(match), nil
 }
 
+// GetMatchesByUser is the resolver for the getMatchesByUser field.
+func (r *queryResolver) GetMatchesByUser(ctx context.Context, id string) ([]*model.Match, error) {
+	matches, err := r.MatchUsecase.GetMatchesByUser(ctx, entity.UserID(id))
+	if err != nil {
+		return nil, err
+	}
+
+	return convertMatches(matches), nil
+}
+
+// GetMatchesByMe is the resolver for the getMatchesByMe field.
+func (r *queryResolver) GetMatchesByMe(ctx context.Context) ([]*model.Match, error) {
+	token, err := g5ctx.GetUserToken(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	matches, err := r.MatchUsecase.GetMatchesByUser(ctx, token.UserID)
+	if err != nil {
+		return nil, err
+	}
+
+	return convertMatches(matches), nil
+}
+
 // GetServer is the resolver for the getServer field.
 func (r *queryResolver) GetServer(ctx context.Context, id string) (*model.GameServer, error) {
 	gs, err := r.GameServerUsecase.GetGameServer(ctx, entity.GameServerID(id))

@@ -35,6 +35,21 @@ func (m *MockMatch) EXPECT() *MockMatchMockRecorder {
 	return m.recorder
 }
 
+// CreateMatch mocks base method.
+func (m *MockMatch) CreateMatch(ctx context.Context, userID entity.UserID, serverID entity.GameServerID, team1ID, team2ID entity.TeamID, maxMaps int, title string) (*entity.Match, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CreateMatch", ctx, userID, serverID, team1ID, team2ID, maxMaps, title)
+	ret0, _ := ret[0].(*entity.Match)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// CreateMatch indicates an expected call of CreateMatch.
+func (mr *MockMatchMockRecorder) CreateMatch(ctx, userID, serverID, team1ID, team2ID, maxMaps, title interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateMatch", reflect.TypeOf((*MockMatch)(nil).CreateMatch), ctx, userID, serverID, team1ID, team2ID, maxMaps, title)
+}
+
 // GetMatch mocks base method.
 func (m *MockMatch) GetMatch(ctx context.Context, matchID entity.MatchID) (*entity.Match, error) {
 	m.ctrl.T.Helper()

@@ -100,6 +100,8 @@ type Query {
     
     # Match op
     getMatch(id: ID!): Match!
+    getMatchesByUser(id: ID!): [Match!]!
+    getMatchesByMe: [Match!]!
     
     # gameserver op
     getServer(id: ID!): GameServer!
@@ -119,7 +121,7 @@ type Mutation {
 
 # Match
 type Match {
-	ID: ID!
+	id: ID!
 	userId: ID!
 	team1: Team!
 	team2: Team!
