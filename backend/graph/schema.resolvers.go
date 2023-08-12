@@ -25,6 +25,19 @@ func (r *mutationResolver) RegisterTeam(ctx context.Context, input model.NewTeam
 	return convertTeam(team), nil
 }
 
+// CreateMatch is the resolver for the createMatch field.
+func (r *mutationResolver) CreateMatch(ctx context.Context, input model.NewMatch) (*model.Match, error) {
+	token, err := g5ctx.GetUserToken(ctx)
+	if err != nil {
+		return nil, err
+	}
+	match, err := r.MatchUsecase.CreateMatch(ctx, token.UserID, entity.GameServerID(input.ServerID), entity.TeamID(input.Team1), entity.TeamID(input.Team2), input.MaxMaps, input.Title)
+	if err != nil {
+		return nil, err
+	}
+	return convertMatch(match), nil
+}
+
 // AddServer is the resolver for the addServer field.
 func (r *mutationResolver) AddServer(ctx context.Context, input model.NewGameServer) (*model.GameServer, error) {
 	token, err := g5ctx.GetUserToken(ctx)

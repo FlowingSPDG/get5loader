@@ -111,6 +111,7 @@ type Mutation {
   registerTeam(input: NewTeam!): Team!
 
   # Match op
+  createMatch(input: NewMatch!): Match!
 
   # gameserver op
   addServer(input: NewGameServer!): GameServer!
@@ -132,6 +133,15 @@ type Match {
 	team2Score: Int!
 	forfeit: Boolean
 	mapStats: [MapStats!]!
+}
+
+input NewMatch {
+    team1: ID!
+    team2: ID!
+    serverID: ID!
+    maxMaps: Int!
+    title: String!
+    skipVeto: Boolean!
 }
 
 # MapStats

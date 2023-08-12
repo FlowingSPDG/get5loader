@@ -1,7 +1,5 @@
 github.com/99designs/gqlgen v0.17.36 h1:u/o/rv2SZ9s5280dyUOOrkpIIkr/7kITMXYD3rkJ9go=
 github.com/99designs/gqlgen v0.17.36/go.mod h1:6RdyY8puhCoWAQVr2qzF2OMVfudQzc8ACxzpzluoQm4=
-github.com/FlowingSPDG/Got5 v0.0.0-20230804162215-be9dcc00f8cc h1:17qQ5CP6MuPV1Ph48OFgTTq6LNNMAYYhrluBsOraXAI=
-github.com/FlowingSPDG/Got5 v0.0.0-20230804162215-be9dcc00f8cc/go.mod h1:GkWSjnJpY62vUUsJPVJXxxa+YDjCR1XfE2FErLaS5aI=
 github.com/FlowingSPDG/Got5 v0.0.0-20230812005653-63978277bb86 h1:OuiajrB7YO3W4fxIIkyK1LKEMnuySvvLjHBCnqWYYAo=
 github.com/FlowingSPDG/Got5 v0.0.0-20230812005653-63978277bb86/go.mod h1:7USdCFD/lkTjOqbncjQaBzklCAaM8RauYmL4lfctxXQ=
 github.com/FlowingSPDG/go-steam v0.0.0-20200304111708-e30ea2f91a83 h1:g3VY8PBeP2ntkCAIs0eTPH9X1q+ZrFcTWmvtioURpcw=
@@ -48,8 +46,8 @@ github.com/gofiber/fiber/v2 v2.39.0 h1:uhWpYQ6EHN8J7FOPYbI2hrdBD/KNZBC5CjbuOd4QU
 github.com/golang-jwt/jwt/v5 v5.0.0 h1:1n1XNM9hk7O9mnQoNBGolZvzebBQ7p93ULHRc28XJUE=
 github.com/golang-jwt/jwt/v5 v5.0.0/go.mod h1:pqrtFR0X4osieyHYxtmOUWsAWrfe1Q5UVIyoH402zdk=
 github.com/golang/protobuf v1.5.0/go.mod h1:FsONVRAS9T7sI+LIUmWTfcYkHO4aIWwzhcaSAoJOfIk=
+github.com/google/go-cmp v0.5.5 h1:Khx7svrCpmxxtHBq5j2mp/xVjsi8hQMfNLvJFAlrGgU=
 github.com/google/go-cmp v0.5.5/go.mod h1:v8dTdLbMG2kIc/vJvl+f65V22dbkXbowE6jgT/gNBxE=
-github.com/google/go-cmp v0.5.9 h1:O2Tfq5qg4qc4AmwVlvv0oLiVAGB7enBSJ2x2DqQFi38=
 github.com/google/gofuzz v1.0.0/go.mod h1:dBl0BpW6vV/+mYPU4Po3pmUjxk6FQPldtuIdl/M65Eg=
 github.com/google/uuid v1.3.0 h1:t6JiXgmwXMjEs8VusXIJk2BXHsn+wx8BZdTaoZ5fu7I=
 github.com/google/uuid v1.3.0/go.mod h1:TIyPZe4MgqvfeYDBFedMoGGpEw/LqOeaOT+nhxU+yHo=

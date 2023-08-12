@@ -56,6 +56,15 @@ type NewGameServer struct {
 	Public       bool   `json:"public"`
 }
 
+type NewMatch struct {
+	Team1    string `json:"team1"`
+	Team2    string `json:"team2"`
+	ServerID string `json:"serverID"`
+	MaxMaps  int    `json:"maxMaps"`
+	Title    string `json:"title"`
+	SkipVeto bool   `json:"skipVeto"`
+}
+
 type NewPlayer struct {
 	SteamID string `json:"steamId"`
 	Name    string `json:"name"`

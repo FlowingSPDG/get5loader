@@ -90,6 +90,7 @@ type ComplexityRoot struct {
 
 	Mutation struct {
 		AddServer    func(childComplexity int, input model.NewGameServer) int
+		CreateMatch  func(childComplexity int, input model.NewMatch) int
 		RegisterTeam func(childComplexity int, input model.NewTeam) int
 	}
 
@@ -166,6 +167,7 @@ type ComplexityRoot struct {
 
 type MutationResolver interface {
 	RegisterTeam(ctx context.Context, input model.NewTeam) (*model.Team, error)
+	CreateMatch(ctx context.Context, input model.NewMatch) (*model.Match, error)
 	AddServer(ctx context.Context, input model.NewGameServer) (*model.GameServer, error)
 }
 type QueryResolver interface {
@@ -414,6 +416,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.AddServer(childComplexity, args["input"].(model.NewGameServer)), true
+
+	case "Mutation.createMatch":
+		if e.complexity.Mutation.CreateMatch == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_createMatch_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.CreateMatch(childComplexity, args["input"].(model.NewMatch)), true
 
 	case "Mutation.registerTeam":
 		if e.complexity.Mutation.RegisterTeam == nil {
@@ -841,6 +855,7 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 	ec := executionContext{rc, e, 0, 0, make(chan graphql.DeferredResult)}
 	inputUnmarshalMap := graphql.BuildUnmarshalerMap(
 		ec.unmarshalInputNewGameServer,
+		ec.unmarshalInputNewMatch,
 		ec.unmarshalInputNewPlayer,
 		ec.unmarshalInputNewPlayerForTeam,
 		ec.unmarshalInputNewTeam,
@@ -970,6 +985,21 @@ func (ec *executionContext) field_Mutation_addServer_args(ctx context.Context, r
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
 		arg0, err = ec.unmarshalNNewGameServer2githubᚗcomᚋFlowingSPDGᚋget5loaderᚋbackendᚋgraphᚋmodelᚐNewGameServer(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_createMatch_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 model.NewMatch
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNNewMatch2githubᚗcomᚋFlowingSPDGᚋget5loaderᚋbackendᚋgraphᚋmodelᚐNewMatch(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -2593,6 +2623,91 @@ func (ec *executionContext) fieldContext_Mutation_registerTeam(ctx context.Conte
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Mutation_registerTeam_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_createMatch(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_createMatch(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().CreateMatch(rctx, fc.Args["input"].(model.NewMatch))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.Match)
+	fc.Result = res
+	return ec.marshalNMatch2ᚖgithubᚗcomᚋFlowingSPDGᚋget5loaderᚋbackendᚋgraphᚋmodelᚐMatch(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_createMatch(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "ID":
+				return ec.fieldContext_Match_ID(ctx, field)
+			case "userId":
+				return ec.fieldContext_Match_userId(ctx, field)
+			case "team1":
+				return ec.fieldContext_Match_team1(ctx, field)
+			case "team2":
+				return ec.fieldContext_Match_team2(ctx, field)
+			case "winner":
+				return ec.fieldContext_Match_winner(ctx, field)
+			case "startedAt":
+				return ec.fieldContext_Match_startedAt(ctx, field)
+			case "endedAt":
+				return ec.fieldContext_Match_endedAt(ctx, field)
+			case "maxMaps":
+				return ec.fieldContext_Match_maxMaps(ctx, field)
+			case "title":
+				return ec.fieldContext_Match_title(ctx, field)
+			case "skipVeto":
+				return ec.fieldContext_Match_skipVeto(ctx, field)
+			case "team1Score":
+				return ec.fieldContext_Match_team1Score(ctx, field)
+			case "team2Score":
+				return ec.fieldContext_Match_team2Score(ctx, field)
+			case "forfeit":
+				return ec.fieldContext_Match_forfeit(ctx, field)
+			case "mapStats":
+				return ec.fieldContext_Match_mapStats(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Match", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_createMatch_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return fc, err
 	}
@@ -7289,6 +7404,80 @@ func (ec *executionContext) unmarshalInputNewGameServer(ctx context.Context, obj
 	return it, nil
 }
 
+func (ec *executionContext) unmarshalInputNewMatch(ctx context.Context, obj interface{}) (model.NewMatch, error) {
+	var it model.NewMatch
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"team1", "team2", "serverID", "maxMaps", "title", "skipVeto"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "team1":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("team1"))
+			data, err := ec.unmarshalNID2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Team1 = data
+		case "team2":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("team2"))
+			data, err := ec.unmarshalNID2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Team2 = data
+		case "serverID":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("serverID"))
+			data, err := ec.unmarshalNID2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.ServerID = data
+		case "maxMaps":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("maxMaps"))
+			data, err := ec.unmarshalNInt2int(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.MaxMaps = data
+		case "title":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("title"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Title = data
+		case "skipVeto":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("skipVeto"))
+			data, err := ec.unmarshalNBoolean2bool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SkipVeto = data
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputNewPlayer(ctx context.Context, obj interface{}) (model.NewPlayer, error) {
 	var it model.NewPlayer
 	asMap := map[string]interface{}{}
@@ -7878,6 +8067,13 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 		case "registerTeam":
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._Mutation_registerTeam(ctx, field)
+			})
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "createMatch":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_createMatch(ctx, field)
 			})
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
@@ -9035,6 +9231,11 @@ func (ec *executionContext) marshalNMatch2ᚖgithubᚗcomᚋFlowingSPDGᚋget5lo
 
 func (ec *executionContext) unmarshalNNewGameServer2githubᚗcomᚋFlowingSPDGᚋget5loaderᚋbackendᚋgraphᚋmodelᚐNewGameServer(ctx context.Context, v interface{}) (model.NewGameServer, error) {
 	res, err := ec.unmarshalInputNewGameServer(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalNNewMatch2githubᚗcomᚋFlowingSPDGᚋget5loaderᚋbackendᚋgraphᚋmodelᚐNewMatch(ctx context.Context, v interface{}) (model.NewMatch, error) {
+	res, err := ec.unmarshalInputNewMatch(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
