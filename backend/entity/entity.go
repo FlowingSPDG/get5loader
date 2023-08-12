@@ -10,7 +10,7 @@ type (
 	MapStatsID    string
 	PlayerID      string
 	PlayerStatsID string
-	SteamID       uint64 // SteamID64. Note: SteamID3 is not supported. Note: some database drivers may not support uint64.
+	SteamID       uint64 // SteamID64. Note: some database drivers may not support uint64.
 )
 
 type User struct {

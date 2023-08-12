@@ -7,7 +7,6 @@ package mock_database
 import (
 	context "context"
 	sql "database/sql"
-	net "net"
 	reflect "reflect"
 	time "time"
 
@@ -620,7 +619,7 @@ func (m *MockGameServersRepository) EXPECT() *MockGameServersRepositoryMockRecor
 }
 
 // AddGameServer mocks base method.
-func (m *MockGameServersRepository) AddGameServer(ctx context.Context, userID entity.UserID, ip net.IP, port uint32, rconPassword, displayName string, isPublic bool) (entity.GameServerID, error) {
+func (m *MockGameServersRepository) AddGameServer(ctx context.Context, userID entity.UserID, ip string, port uint32, rconPassword, displayName string, isPublic bool) (entity.GameServerID, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "AddGameServer", ctx, userID, ip, port, rconPassword, displayName, isPublic)
 	ret0, _ := ret[0].(entity.GameServerID)

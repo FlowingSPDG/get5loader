@@ -3,6 +3,7 @@ package usecase
 import (
 	"context"
 	"errors"
+	"log"
 
 	"github.com/FlowingSPDG/get5loader/backend/entity"
 	"github.com/FlowingSPDG/get5loader/backend/gateway/database"
@@ -37,20 +38,23 @@ func (u *user) Register(ctx context.Context, steamID entity.SteamID, name string
 	}
 	defer u.repositoryConnector.Close()
 
+	log.Println("registering user")
+
 	repository := u.repositoryConnector.GetUserRepository()
-	if _, err := repository.GetUserBySteamID(ctx, steamID); err == nil {
+	_, err := repository.GetUserBySteamID(ctx, steamID)
+	if err == nil {
 		return "", errors.New("user already exists")
-	} else {
-		if database.IsInternal(err) {
-			return "", err
-		}
+	} else if !database.IsNotFound(err) {
+		return "", err
 	}
 
+	log.Println("generating hash")
 	hash, err := u.passwordHasher.Hash(password)
 	if err != nil {
 		return "", err
 	}
 
+	log.Println("creating hash")
 	if _, err := repository.CreateUser(ctx, steamID, name, admin, hash); err != nil {
 		return "", err
 	}

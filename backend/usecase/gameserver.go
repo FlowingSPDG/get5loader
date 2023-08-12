@@ -2,7 +2,6 @@ package usecase
 
 import (
 	"context"
-	"net"
 
 	"github.com/FlowingSPDG/get5loader/backend/entity"
 	"github.com/FlowingSPDG/get5loader/backend/gateway/database"
@@ -57,8 +56,7 @@ func (gs *gameServer) AddGameServer(ctx context.Context, userID entity.UserID, i
 
 	repository := gs.repositoryConnector.GetGameServersRepository()
 
-	ipAddr := net.ParseIP(ip)
-	gameServerID, err := repository.AddGameServer(ctx, userID, ipAddr, port, rconPassword, name, isPublic)
+	gameServerID, err := repository.AddGameServer(ctx, userID, ip, port, rconPassword, name, isPublic)
 	if err != nil {
 		return nil, err
 	}

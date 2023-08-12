@@ -25,7 +25,7 @@ type Config struct {
 	DBReadName string `env:"DB_READ_NAME"`
 
 	// UserMaxResources UserMaxResources
-	SecretMey string `env:"SECRET_KEY,unset,required"`
+	SecretKey string `env:"SECRET_KEY,unset,required"`
 }
 
 /*

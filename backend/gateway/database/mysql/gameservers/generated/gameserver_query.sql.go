@@ -21,7 +21,7 @@ INSERT INTO game_servers (
 type AddGameServerParams struct {
 	ID           string
 	UserID       string
-	Ip           []byte
+	Ip           string
 	Port         uint32
 	RconPassword string
 	DisplayName  string

@@ -2,12 +2,51 @@
 
 package model
 
+import (
+	"time"
+)
+
 type GameServer struct {
 	ID     string `json:"id"`
 	IP     string `json:"Ip"`
 	Port   int    `json:"port"`
 	Name   string `json:"name"`
 	Public bool   `json:"public"`
+}
+
+type LoginToken struct {
+	Token string `json:"token"`
+}
+
+type MapStats struct {
+	ID          string         `json:"id"`
+	MatchID     string         `json:"matchId"`
+	MapNumber   int            `json:"mapNumber"`
+	MapName     string         `json:"mapName"`
+	StartedAt   *time.Time     `json:"startedAt,omitempty"`
+	EndedAt     *time.Time     `json:"endedAt,omitempty"`
+	Winner      *Team          `json:"winner,omitempty"`
+	Team1score  int            `json:"team1score"`
+	Team2score  int            `json:"team2score"`
+	Playerstats []*PlayerStats `json:"playerstats"`
+}
+
+type Match struct {
+	ID         string      `json:"ID"`
+	UserID     string      `json:"userId"`
+	Server     *GameServer `json:"server"`
+	Team1      *Team       `json:"team1"`
+	Team2      *Team       `json:"team2"`
+	Winner     *Team       `json:"winner,omitempty"`
+	StartedAt  *time.Time  `json:"startedAt,omitempty"`
+	EndedAt    *time.Time  `json:"endedAt,omitempty"`
+	MaxMaps    int         `json:"maxMaps"`
+	Title      string      `json:"title"`
+	SkipVeto   bool        `json:"skipVeto"`
+	Team1Score int         `json:"team1Score"`
+	Team2Score int         `json:"team2Score"`
+	Forfeit    *bool       `json:"forfeit,omitempty"`
+	MapStats   []*MapStats `json:"mapStats"`
 }
 
 type NewGameServer struct {
@@ -19,10 +58,77 @@ type NewGameServer struct {
 	Public       bool   `json:"public"`
 }
 
+type NewUser struct {
+	SteamID  string `json:"steamId"`
+	Name     string `json:"name"`
+	Password string `json:"password"`
+	Admin    bool   `json:"admin"`
+}
+
+type Player struct {
+	ID      string `json:"id"`
+	SteamID string `json:"steamId"`
+	Name    string `json:"name"`
+	Team    *Team  `json:"team"`
+}
+
+type PlayerStats struct {
+	ID               string `json:"id"`
+	MatchID          string `json:"matchId"`
+	MapstatsID       string `json:"mapstatsId"`
+	SteamID          string `json:"steamId"`
+	Name             string `json:"name"`
+	Kills            int    `json:"kills"`
+	Assists          int    `json:"assists"`
+	Deaths           int    `json:"deaths"`
+	RoundsPlayed     int    `json:"roundsPlayed"`
+	FlashBangAssists int    `json:"flashBangAssists"`
+	Suicides         int    `json:"suicides"`
+	HeadshotKills    int    `json:"headshotKills"`
+	Damage           int    `json:"damage"`
+	BombPlants       int    `json:"bombPlants"`
+	BombDefuses      int    `json:"bombDefuses"`
+	V1               int    `json:"v1"`
+	V2               int    `json:"v2"`
+	V3               int    `json:"v3"`
+	V4               int    `json:"v4"`
+	V5               int    `json:"v5"`
+	K1               int    `json:"k1"`
+	K2               int    `json:"k2"`
+	K3               int    `json:"k3"`
+	K4               int    `json:"k4"`
+	K5               int    `json:"k5"`
+	FirstDeathT      int    `json:"firstDeathT"`
+	FirstDeathCt     int    `json:"firstDeathCT"`
+	FirstKillT       int    `json:"firstKillT"`
+	FirstKillCt      int    `json:"firstKillCT"`
+}
+
+type Team struct {
+	ID      string    `json:"id"`
+	User    *User     `json:"user"`
+	Name    string    `json:"name"`
+	Flag    string    `json:"flag"`
+	Tag     string    `json:"tag"`
+	Logo    string    `json:"logo"`
+	Public  bool      `json:"public"`
+	Players []*Player `json:"players"`
+}
+
 type User struct {
 	ID          string        `json:"id"`
 	SteamID     string        `json:"steamId"`
 	Name        string        `json:"name"`
 	Admin       bool          `json:"admin"`
 	Gameservers []*GameServer `json:"gameservers"`
+}
+
+type UserLoginID struct {
+	ID       string `json:"ID"`
+	Password string `json:"password"`
+}
+
+type UserLoginSteamID struct {
+	SteamID  string `json:"steamId"`
+	Password string `json:"password"`
 }

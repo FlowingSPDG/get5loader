@@ -17,6 +17,9 @@ func main() {
 	cfg := config.GetConfig()
 
 	v1 := r.Group("/api/v1")
+	v1.POST("/login", di.InitializeUserLoginController(cfg).Handle)
+	v1.POST("/register", di.InitializeUserRegisterController(cfg).Handle)
+
 	v1auth := v1.Group("/")
 	v1auth.Use(di.InitializeJWTAuthController(cfg).Handle)
 	v1auth.POST("/query", di.InitializeGraphQLHandler(cfg))

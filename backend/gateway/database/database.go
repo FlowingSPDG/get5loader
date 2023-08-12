@@ -4,7 +4,6 @@ package database
 import (
 	"context"
 	"database/sql"
-	"net"
 	"time"
 
 	"github.com/FlowingSPDG/get5loader/backend/entity"
@@ -104,7 +103,7 @@ type UsersRepositry interface {
 // GameServersRepository is an interface for game server repository.
 type GameServersRepository interface {
 	// AddGameServer adds a game server.
-	AddGameServer(ctx context.Context, userID entity.UserID, ip net.IP, port uint32, rconPassword string, displayName string, isPublic bool) (entity.GameServerID, error)
+	AddGameServer(ctx context.Context, userID entity.UserID, ip string, port uint32, rconPassword string, displayName string, isPublic bool) (entity.GameServerID, error)
 	// GetGameServer returns a game server.
 	GetGameServer(ctx context.Context, id entity.GameServerID) (*entity.GameServer, error)
 	// GetPublicGameServers returns public game servers.

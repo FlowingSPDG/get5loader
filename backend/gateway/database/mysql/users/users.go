@@ -3,6 +3,7 @@ package users
 import (
 	"context"
 	"database/sql"
+	"errors"
 
 	"github.com/FlowingSPDG/get5loader/backend/entity"
 	"github.com/FlowingSPDG/get5loader/backend/gateway/database"
@@ -51,6 +52,9 @@ func (ur *usersRepositry) CreateUser(ctx context.Context, steamID entity.SteamID
 func (ur *usersRepositry) GetUser(ctx context.Context, id entity.UserID) (*entity.User, error) {
 	user, err := ur.queries.GetUser(ctx, string(id))
 	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, database.NewNotFoundError(err)
+		}
 		return nil, database.NewInternalError(err)
 	}
 	return &entity.User{
@@ -68,6 +72,9 @@ func (ur *usersRepositry) GetUser(ctx context.Context, id entity.UserID) (*entit
 func (ur *usersRepositry) GetUserBySteamID(ctx context.Context, steamID entity.SteamID) (*entity.User, error) {
 	user, err := ur.queries.GetUserBySteamID(ctx, uint64(steamID))
 	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, database.NewNotFoundError(err)
+		}
 		return nil, database.NewInternalError(err)
 	}
 	return &entity.User{

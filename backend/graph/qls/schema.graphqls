@@ -1,0 +1,149 @@
+scalar DateTime
+
+# User Operations
+type User {
+	id: ID!
+	steamId: String!
+	name: String!
+	admin: Boolean!
+	gameservers: [GameServer!]!
+}
+
+input NewUser {
+	steamId: String!
+	name: String!
+	password: String!
+	admin: Boolean!
+}
+
+input UserLoginSteamID {
+	steamId: String!
+	password: String!
+}
+
+input UserLoginID {
+	ID: ID!
+	password: String!
+}
+
+type LoginToken {
+	token: String!
+}
+
+# Team
+type Team {
+    id: ID!
+    user: User!
+    name: String!
+    flag: String!
+    tag: String!
+    logo: String!
+    public: Boolean!
+    players: [Player!]!
+}
+
+# Player
+type Player {
+    id: ID!
+    steamId: String!
+    name: String!
+    team: Team!
+}
+
+# GameServer operations
+type GameServer {
+  id: ID!
+  Ip: String!
+  port: Int!
+  name: String!
+  public: Boolean!
+}
+
+input NewGameServer {
+  userID: ID!
+  Ip: String!
+  port: Int!
+  name: String!
+  RconPassword: String!
+  public: Boolean!
+}
+
+
+type Mutation {
+  # Team op
+
+  # Match op
+
+  # gameserver op
+  addServer(input: NewGameServer!): GameServer!
+}
+
+# Match
+type Match {
+	ID: ID!
+	userId: ID!
+	server: GameServer!
+	team1: Team!
+	team2: Team!
+	winner: Team
+	startedAt: DateTime
+	endedAt: DateTime
+	maxMaps: Int!
+	title: String!
+	skipVeto: Boolean!
+	team1Score: Int!
+	team2Score: Int!
+	forfeit: Boolean
+	mapStats: [MapStats!]!
+}
+
+# MapStats
+type MapStats {
+    id: ID!
+    matchId: ID!
+    mapNumber: Int!
+    mapName: String!
+    startedAt: DateTime
+    endedAt: DateTime
+    winner: Team
+    team1score: Int!
+    team2score: Int!
+    playerstats: [PlayerStats!]!
+}
+# PlayerStats
+type PlayerStats {
+    id: ID!
+    matchId: ID!
+    mapstatsId: ID!
+    steamId: String!
+    name: String!
+
+    kills: Int!
+    assists: Int!
+    deaths: Int!
+
+    roundsPlayed: Int!
+    flashBangAssists: Int!
+    suicides: Int!
+    headshotKills: Int!
+    damage: Int!
+    bombPlants: Int!
+    bombDefuses: Int!
+
+    v1: Int!
+    v2: Int!
+    v3: Int!
+    v4: Int!
+    v5: Int!
+
+    k1: Int!
+    k2: Int!
+    k3: Int!
+    k4: Int!
+    k5: Int!
+
+    firstDeathT: Int!
+    firstDeathCT: Int!
+    firstKillT: Int!
+    firstKillCT: Int!
+}

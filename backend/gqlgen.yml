@@ -1,6 +1,6 @@
 # Where are all the schema files located? globs are supported eg  src/**/*.graphqls
 schema:
-  - graph/*.graphqls
+  - graph/qls/schema.graphqls
 
 # Where should the generated server code go?
 exec:
@@ -85,3 +85,7 @@ models:
       - github.com/99designs/gqlgen/graphql.Int
       - github.com/99designs/gqlgen/graphql.Int64
       - github.com/99designs/gqlgen/graphql.Int32
+
+  DateTime:
+    model:
+      - github.com/99designs/gqlgen/graphql.Time
