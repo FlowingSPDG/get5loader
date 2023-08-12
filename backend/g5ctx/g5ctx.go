@@ -5,7 +5,6 @@ import (
 	"errors"
 
 	"github.com/FlowingSPDG/get5loader/backend/entity"
-	"github.com/gin-gonic/gin"
 )
 
 var (
@@ -27,10 +26,6 @@ const (
 	OperationTypeUser
 )
 
-func SetOperationGinContext(c *gin.Context, op OperationType) {
-	c.Set(operatorKey, op)
-}
-
 // SetOperation sets operator to context.
 func SetOperation(ctx context.Context, op OperationType) context.Context {
 	return context.WithValue(ctx, operatorKey, op)
@@ -43,10 +38,6 @@ func GetOperation(ctx context.Context) (OperationType, error) {
 		return OperationTypeUnknown, ErrContextValueNotFound
 	}
 	return op, nil
-}
-
-func SetUserTokenGinContext(c *gin.Context, user *entity.TokenUser) {
-	c.Set(userKey, user)
 }
 
 func SetUserToken(ctx context.Context, user *entity.TokenUser) context.Context {
