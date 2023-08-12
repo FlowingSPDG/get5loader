@@ -80,7 +80,7 @@ func TestRegisterUser(t *testing.T) {
 			// mock UsersRepositoryの作成
 			mockUsersRepository := mock_database.NewMockUsersRepositry(ctrl)
 			mockUsersRepository.EXPECT().GetUserBySteamID(gomock.Any(), tc.input.steamid).Return(nil, database.ErrNotFound).Times(1)
-			mockUsersRepository.EXPECT().CreateUser(gomock.Any(), tc.input.steamid, tc.input.name, tc.input.admin, gomock.Any()).Return(nil)
+			mockUsersRepository.EXPECT().CreateUser(gomock.Any(), tc.input.steamid, tc.input.name, tc.input.admin, gomock.Any()).Return(entity.UserID(""), nil)
 			mockUsersRepository.EXPECT().GetUserBySteamID(gomock.Any(), tc.input.steamid).Return(tc.expected.user, nil).Times(1)
 			mockConnector.EXPECT().GetUserRepository().Return(mockUsersRepository)
 

@@ -72,8 +72,8 @@ func TestGetMatch(t *testing.T) {
 			mockConnector.EXPECT().GetMatchesRepository().Return(mockMatchesRepository)
 
 			// テストの実行とassert
-			uc := usecase.NewGetMatch(mockConnector)
-			actual, err := uc.Get(ctx, tc.input)
+			uc := usecase.NewMatch(mockConnector)
+			actual, err := uc.GetMatch(ctx, tc.input)
 			assert.Equal(t, tc.expected, actual)
 			assert.Equal(t, tc.err, err)
 		})

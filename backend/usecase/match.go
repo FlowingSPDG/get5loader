@@ -7,24 +7,23 @@ import (
 	"github.com/FlowingSPDG/get5loader/backend/gateway/database"
 )
 
-type GetMatch interface {
-	Get(ctx context.Context, matchID entity.MatchID) (*entity.Match, error)
+type Match interface {
+	GetMatch(ctx context.Context, matchID entity.MatchID) (*entity.Match, error)
 }
 
-type getMatch struct {
+type match struct {
 	repositoryConnector database.RepositoryConnector
 }
 
-func NewGetMatch(
+func NewMatch(
 	repositoryConnector database.RepositoryConnector,
-) GetMatch {
-	return &getMatch{
+) Match {
+	return &match{
 		repositoryConnector: repositoryConnector,
 	}
 }
 
-// Handle implements GetMatchInfo.
-func (gm *getMatch) Get(ctx context.Context, matchID entity.MatchID) (*entity.Match, error) {
+func (gm *match) GetMatch(ctx context.Context, matchID entity.MatchID) (*entity.Match, error) {
 	if err := gm.repositoryConnector.Open(); err != nil {
 		return nil, err
 	}
