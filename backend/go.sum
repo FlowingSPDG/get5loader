@@ -2,6 +2,8 @@ github.com/99designs/gqlgen v0.17.36 h1:u/o/rv2SZ9s5280dyUOOrkpIIkr/7kITMXYD3rkJ
 github.com/99designs/gqlgen v0.17.36/go.mod h1:6RdyY8puhCoWAQVr2qzF2OMVfudQzc8ACxzpzluoQm4=
 github.com/FlowingSPDG/Got5 v0.0.0-20230812005653-63978277bb86 h1:OuiajrB7YO3W4fxIIkyK1LKEMnuySvvLjHBCnqWYYAo=
 github.com/FlowingSPDG/Got5 v0.0.0-20230812005653-63978277bb86/go.mod h1:7USdCFD/lkTjOqbncjQaBzklCAaM8RauYmL4lfctxXQ=
+github.com/FlowingSPDG/Got5 v0.0.0-20230812205746-f630638666d3 h1:vpX4PkKVNSiPHL/FjG7bST8lKQ/cezTZfXxv1EcR830=
+github.com/FlowingSPDG/Got5 v0.0.0-20230812205746-f630638666d3/go.mod h1:TImC9mU+T3VFBJxekYd7KdGLNXiI/6lmfyaqk1E+LBA=
 github.com/FlowingSPDG/go-steam v0.0.0-20200304111708-e30ea2f91a83 h1:g3VY8PBeP2ntkCAIs0eTPH9X1q+ZrFcTWmvtioURpcw=
 github.com/FlowingSPDG/go-steam v0.0.0-20200304111708-e30ea2f91a83/go.mod h1:cBPvfv15MeOWzZuFugEXy7Nw/JTk/D8ZalNSg9FmKH8=
 github.com/agnivade/levenshtein v1.1.1 h1:QY8M92nrzkmr798gCo3kmMyqXFzdQVpxLlGPRBij0P8=
