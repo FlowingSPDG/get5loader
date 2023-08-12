@@ -111,7 +111,7 @@ func TestIssueJWTBySteamID(t *testing.T) {
 		expected struct {
 			jwt   string
 			err   error
-			user  *entity.User
+			user  *database.User
 			token *entity.TokenUser
 		}
 	}{
@@ -127,12 +127,12 @@ func TestIssueJWTBySteamID(t *testing.T) {
 			expected: struct {
 				jwt   string
 				err   error
-				user  *entity.User
+				user  *database.User
 				token *entity.TokenUser
 			}{
 				jwt: "test",
 				err: nil,
-				user: &entity.User{
+				user: &database.User{
 					ID:      "test",
 					Name:    "test",
 					SteamID: 76561198072054549,
