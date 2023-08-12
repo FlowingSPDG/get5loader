@@ -33,21 +33,22 @@ func NewPlayersRepositoryWithTx(uuidGenerator uuid.UUIDGenerator, db *sql.DB, tx
 }
 
 // AddPlayer implements database.PlayersRepository.
-func (pr *playersRepository) AddPlayer(ctx context.Context, teamID entity.TeamID, steamID entity.SteamID, name string) error {
+func (pr *playersRepository) AddPlayer(ctx context.Context, teamID entity.TeamID, steamID entity.SteamID, name string) (entity.PlayerID, error) {
+	id := pr.uuidGenerator.Generate()
 	if _, err := pr.queries.AddPlayer(ctx, players_gen.AddPlayerParams{
-		ID:      pr.uuidGenerator.Generate(),
+		ID:      id,
 		TeamID:  string(teamID),
 		SteamID: uint64(steamID),
 		Name:    name,
 	}); err != nil {
-		return database.NewInternalError(err)
+		return "", database.NewInternalError(err)
 	}
 
-	return nil
+	return entity.PlayerID(id), nil
 }
 
 // GetPlayer implements database.PlayersRepository.
-func (pr *playersRepository) GetPlayer(ctx context.Context, id entity.PlayerID) (*entity.Player, error) {
+func (pr *playersRepository) GetPlayer(ctx context.Context, id entity.PlayerID) (*database.Player, error) {
 	res, err := pr.queries.GetPlayer(ctx, string(id))
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
@@ -56,7 +57,7 @@ func (pr *playersRepository) GetPlayer(ctx context.Context, id entity.PlayerID) 
 		return nil, database.NewInternalError(err)
 	}
 
-	return &entity.Player{
+	return &database.Player{
 		ID:      entity.PlayerID(res.ID),
 		TeamID:  entity.TeamID(res.TeamID),
 		SteamID: entity.SteamID(res.SteamID),
@@ -65,7 +66,7 @@ func (pr *playersRepository) GetPlayer(ctx context.Context, id entity.PlayerID) 
 }
 
 // GetPlayersByTeam implements database.PlayersRepository.
-func (pr *playersRepository) GetPlayersByTeam(ctx context.Context, teamID entity.TeamID) ([]*entity.Player, error) {
+func (pr *playersRepository) GetPlayersByTeam(ctx context.Context, teamID entity.TeamID) ([]*database.Player, error) {
 	res, err := pr.queries.GetPlayersByTeam(ctx, string(teamID))
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
@@ -74,9 +75,9 @@ func (pr *playersRepository) GetPlayersByTeam(ctx context.Context, teamID entity
 		return nil, database.NewInternalError(err)
 	}
 
-	players := make([]*entity.Player, 0, len(res))
+	players := make([]*database.Player, 0, len(res))
 	for _, p := range res {
-		players = append(players, &entity.Player{
+		players = append(players, &database.Player{
 			ID:      entity.PlayerID(p.ID),
 			TeamID:  entity.TeamID(p.TeamID),
 			SteamID: entity.SteamID(p.SteamID),

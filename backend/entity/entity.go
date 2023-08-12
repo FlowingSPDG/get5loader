@@ -10,7 +10,7 @@ type (
 	MapStatsID    string
 	PlayerID      string
 	PlayerStatsID string
-	SteamID       uint64 // SteamID64. Note: SteamID3 is not supported. Note: some database drivers may not support uint64.
+	SteamID       uint64 // SteamID64. Note: some database drivers may not support uint64.
 )
 
 type User struct {
@@ -21,6 +21,10 @@ type User struct {
 	Hash      []byte
 	CreatedAt time.Time
 	UpdatedAt time.Time
+
+	Teams   []*Team
+	Servers []*GameServer
+	Matches []*Match
 }
 
 type GameServer struct {
@@ -37,10 +41,9 @@ type GameServer struct {
 type Match struct {
 	ID         MatchID
 	UserID     UserID
-	ServerID   GameServerID
-	Team1ID    TeamID
-	Team2ID    TeamID
-	Winner     *TeamID
+	Team1      Team
+	Team2      Team
+	Winner     TeamID // 0 for not decided yet
 	StartTime  *time.Time
 	EndTime    *time.Time
 	MaxMaps    int32
@@ -51,21 +54,23 @@ type Match struct {
 	Team2Score uint32
 	Forfeit    *bool
 	Status     MATCH_STATUS
+	Mapstats   []*MapStat
 }
 
-type MapStats struct {
-	ID         MapStatsID
-	MatchID    MatchID
-	MapNumber  uint32
-	MapName    string
-	StartTime  *time.Time
-	EndTime    *time.Time
-	Winner     *TeamID
-	Team1Score uint32
-	Team2Score uint32
+type MapStat struct {
+	ID          MapStatsID
+	MatchID     MatchID
+	MapNumber   uint32
+	MapName     string
+	StartTime   *time.Time
+	EndTime     *time.Time
+	Winner      *TeamID
+	Team1Score  uint32
+	Team2Score  uint32
+	PlayerStats []*PlayerStat
 }
 
-type PlayerStats struct {
+type PlayerStat struct {
 	ID      PlayerStatsID
 	MatchID MatchID
 	MapID   MapStatsID
@@ -103,13 +108,14 @@ type PlayerStats struct {
 }
 
 type Team struct {
-	ID         TeamID
-	UserID     UserID
-	Name       string
-	Flag       string
-	Tag        string
-	Logo       string
-	PublicTeam bool
+	ID      TeamID
+	UserID  UserID
+	Name    string
+	Flag    string
+	Tag     string
+	Logo    string
+	Public  bool
+	Players []*Player
 }
 
 type Player struct {

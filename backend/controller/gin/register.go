@@ -15,12 +15,12 @@ type UserRegisterController interface {
 }
 
 type userRegisterController struct {
-	uc        usecase.UserRegister
+	uc        usecase.User
 	presenter gin_presenter.JWTPresenter
 }
 
 func NewUserRegisterController(
-	uc usecase.UserRegister,
+	uc usecase.User,
 	presenter gin_presenter.JWTPresenter,
 ) UserRegisterController {
 	return &userRegisterController{
@@ -45,10 +45,10 @@ func (urc *userRegisterController) Handle(c *gin.Context) {
 		return
 	}
 
-	jwt, err := urc.uc.RegisterUser(c, req.SteamID, req.Name, false, req.Password)
+	jwt, err := urc.uc.Register(c, req.SteamID, req.Name, false, req.Password)
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
-			"error": "unauthorized",
+			"error": "unauthorized" + err.Error(),
 		})
 		return
 	}

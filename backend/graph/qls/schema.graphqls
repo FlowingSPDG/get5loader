@@ -1,0 +1,186 @@
+scalar DateTime
+
+# User Operations
+type User {
+	id: ID!
+	steamId: String!
+	name: String!
+	admin: Boolean!
+	gameservers: [GameServer!]!
+    teams: [Team!]!
+    matches: [Match!]!
+}
+
+input NewUser {
+	steamId: String!
+	name: String!
+	password: String!
+	admin: Boolean!
+}
+
+input UserLoginSteamID {
+	steamId: String!
+	password: String!
+}
+
+input UserLoginID {
+	ID: ID!
+	password: String!
+}
+
+type LoginToken {
+	token: String!
+}
+
+# Team
+type Team {
+    id: ID!
+    userId: ID!
+    name: String!
+    flag: String!
+    tag: String!
+    logo: String!
+    public: Boolean!
+    players: [Player!]!
+}
+
+input NewTeam {
+    name: String!
+    flag: String!
+    tag: String!
+    logo: String!
+    public: Boolean!
+    players: [NewPlayerForTeam!]
+}
+
+# Player
+type Player {
+    id: ID!
+    teamId: ID!
+    steamId: String!
+    name: String!
+}
+
+input NewPlayer {
+    steamId: String!
+    name: String!
+    teamid: ID!
+}
+
+input NewPlayerForTeam {
+    steamId: String!
+    name: String!
+}
+
+# GameServer operations
+type GameServer {
+  id: ID!
+  Ip: String!
+  port: Int!
+  name: String!
+  public: Boolean!
+}
+
+input NewGameServer {
+  Ip: String!
+  port: Int!
+  name: String!
+  RconPassword: String!
+  public: Boolean!
+}
+
+type Query {
+    # User op
+    getUser(id: ID!): User!
+    getMe: User!
+    
+    # Team op
+    getTeam(id: ID!): Team!
+    getTeamsByUser: [Team!]!
+    
+    # Match op
+    getMatch(id: ID!): Match!
+    
+    # gameserver op
+    getServer(id: ID!): GameServer!
+    getPublicServers: [GameServer!]!
+}
+
+type Mutation {
+  # Team op
+  registerTeam(input: NewTeam!): Team!
+
+  # Match op
+
+  # gameserver op
+  addServer(input: NewGameServer!): GameServer!
+}
+
+# Match
+type Match {
+	ID: ID!
+	userId: ID!
+	team1: Team!
+	team2: Team!
+	winner: ID!
+	startedAt: DateTime
+	endedAt: DateTime
+	maxMaps: Int!
+	title: String!
+	skipVeto: Boolean!
+	team1Score: Int!
+	team2Score: Int!
+	forfeit: Boolean
+	mapStats: [MapStats!]!
+}
+
+# MapStats
+type MapStats {
+    id: ID!
+    matchId: ID!
+    mapNumber: Int!
+    mapName: String!
+    startedAt: DateTime
+    endedAt: DateTime
+    winner: ID
+    team1score: Int!
+    team2score: Int!
+    playerstats: [PlayerStats!]!
+}
+# PlayerStats
+type PlayerStats {
+    id: ID!
+    matchId: ID!
+    mapstatsId: ID!
+    steamId: String!
+    name: String!
+
+    kills: Int!
+    assists: Int!
+    deaths: Int!
+
+    roundsPlayed: Int!
+    flashBangAssists: Int!
+    suicides: Int!
+    headshotKills: Int!
+    damage: Int!
+    bombPlants: Int!
+    bombDefuses: Int!
+
+    v1: Int!
+    v2: Int!
+    v3: Int!
+    v4: Int!
+    v5: Int!
+
+    k1: Int!
+    k2: Int!
+    k3: Int!
+    k4: Int!
+    k5: Int!
+
+    firstDeathT: Int!
+    firstDeathCT: Int!
+    firstKillT: Int!
+    firstKillCT: Int!
+}

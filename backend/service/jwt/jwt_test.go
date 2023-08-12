@@ -32,7 +32,7 @@ func TestIssueJWT(t *testing.T) {
 	for _, tc := range tt {
 		t.Run(tc.name, func(t *testing.T) {
 			j := jwt.NewJWTGateway([]byte("test"))
-			actual, err := j.IssueJWT(tc.input)
+			actual, err := j.IssueJWT(tc.input.ID, tc.input.SteamID, tc.input.Admin)
 			assert.NoError(t, err)
 
 			token, err := j.ValidateJWT(actual)

@@ -31,6 +31,10 @@ generate:
 	$(GOINSTALL) golang.org/x/tools/cmd/stringer@v0.11.1 && \
 	$(GOINSTALL) github.com/sqlc-dev/sqlc/cmd/sqlc@latest && \
 	go generate ./...
+gql-generate:
+	@cd backend && \
+	$(GOINSTALL) github.com/99designs/gqlgen@latest && \
+	gqlgen generate
 # compile for go
 build-backend: build-prepare
 	cd ./backend/cmd && \

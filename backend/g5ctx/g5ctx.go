@@ -5,17 +5,18 @@ import (
 	"errors"
 
 	"github.com/FlowingSPDG/get5loader/backend/entity"
+	"github.com/gin-gonic/gin"
 )
 
 var (
 	ErrContextValueNotFound = errors.New("context value not found")
 )
 
-type ctxKey struct{}
+type ctxKey string
 
 var (
-	operatorKey = ctxKey{}
-	userKey     = ctxKey{}
+	operatorKey = "operation"
+	userKey     = "user"
 )
 
 type OperationType int
@@ -31,6 +32,10 @@ func SetOperation(ctx context.Context, op OperationType) context.Context {
 	return context.WithValue(ctx, operatorKey, op)
 }
 
+func SetOperationGinContext(ctx *gin.Context, op OperationType) {
+	ctx.Set(operatorKey, op)
+}
+
 // GetOperation gets operator from context.
 func GetOperation(ctx context.Context) (OperationType, error) {
 	op, ok := ctx.Value(operatorKey).(OperationType)
@@ -42,6 +47,10 @@ func GetOperation(ctx context.Context) (OperationType, error) {
 
 func SetUserToken(ctx context.Context, user *entity.TokenUser) context.Context {
 	return context.WithValue(ctx, userKey, user)
+}
+
+func SetUserTokenGinContext(ctx *gin.Context, user *entity.TokenUser) {
+	ctx.Set(userKey, user)
 }
 
 // GetUser gets user from context.

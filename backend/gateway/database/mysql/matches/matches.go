@@ -34,9 +34,10 @@ func NewMatchRepositoryWithTx(uuidGenerator uuid.UUIDGenerator, db *sql.DB, tx *
 }
 
 // AddMatch implements database.MatchRepository.
-func (mr *matchRepository) AddMatch(ctx context.Context, userID entity.UserID, serverID entity.GameServerID, team1ID entity.TeamID, team2ID entity.TeamID, startTime time.Time, endTime time.Time, maxMaps int32, title string, skipVeto bool, apiKey string) error {
+func (mr *matchRepository) AddMatch(ctx context.Context, userID entity.UserID, serverID entity.GameServerID, team1ID entity.TeamID, team2ID entity.TeamID, startTime time.Time, endTime time.Time, maxMaps int32, title string, skipVeto bool, apiKey string) (entity.MatchID, error) {
+	id := mr.uuidGenerator.Generate()
 	if _, err := mr.queries.AddMatch(ctx, matches_gen.AddMatchParams{
-		ID:        mr.uuidGenerator.Generate(),
+		ID:        id,
 		UserID:    string(userID),
 		ServerID:  string(serverID),
 		Team1ID:   string(team1ID),
@@ -49,14 +50,14 @@ func (mr *matchRepository) AddMatch(ctx context.Context, userID entity.UserID, s
 		ApiKey:    apiKey,
 		Status:    int32(entity.MATCH_STATUS_PENDING),
 	}); err != nil {
-		return database.NewInternalError(err)
+		return "", database.NewInternalError(err)
 	}
 
-	return nil
+	return entity.MatchID(id), nil
 }
 
 // GetMatch implements database.MatchRepository.
-func (mr *matchRepository) GetMatch(ctx context.Context, id entity.MatchID) (*entity.Match, error) {
+func (mr *matchRepository) GetMatch(ctx context.Context, id entity.MatchID) (*database.Match, error) {
 	match, err := mr.queries.GetMatch(ctx, string(id))
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
@@ -68,13 +69,13 @@ func (mr *matchRepository) GetMatch(ctx context.Context, id entity.MatchID) (*en
 	winner := entity.TeamID(match.Winner.String)
 	forfeit := match.Forfeit.Bool
 
-	return &entity.Match{
+	return &database.Match{
 		ID:         entity.MatchID(match.ID),
 		UserID:     entity.UserID(match.UserID),
 		ServerID:   entity.GameServerID(match.ServerID),
 		Team1ID:    entity.TeamID(match.Team1ID),
 		Team2ID:    entity.TeamID(match.Team2ID),
-		Winner:     &winner,
+		Winner:     winner,
 		StartTime:  &match.StartTime.Time,
 		EndTime:    &match.EndTime.Time,
 		MaxMaps:    match.MaxMaps,
@@ -89,7 +90,7 @@ func (mr *matchRepository) GetMatch(ctx context.Context, id entity.MatchID) (*en
 }
 
 // GetMatchesByUser implements database.MatchRepository.
-func (mr *matchRepository) GetMatchesByUser(ctx context.Context, userID entity.UserID) ([]*entity.Match, error) {
+func (mr *matchRepository) GetMatchesByUser(ctx context.Context, userID entity.UserID) ([]*database.Match, error) {
 	matches, err := mr.queries.GetMatchesByUser(ctx, string(userID))
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
@@ -98,16 +99,16 @@ func (mr *matchRepository) GetMatchesByUser(ctx context.Context, userID entity.U
 		return nil, database.NewInternalError(err)
 	}
 
-	ret := make([]*entity.Match, 0, len(matches))
+	ret := make([]*database.Match, 0, len(matches))
 	for _, match := range matches {
 		winner := entity.TeamID(match.Winner.String)
-		ret = append(ret, &entity.Match{
+		ret = append(ret, &database.Match{
 			ID:         entity.MatchID(match.ID),
 			UserID:     entity.UserID(match.UserID),
 			ServerID:   entity.GameServerID(match.ServerID),
 			Team1ID:    entity.TeamID(match.Team1ID),
 			Team2ID:    entity.TeamID(match.Team2ID),
-			Winner:     &winner,
+			Winner:     winner,
 			StartTime:  &match.StartTime.Time,
 			EndTime:    &match.EndTime.Time,
 			MaxMaps:    match.MaxMaps,
@@ -134,7 +135,7 @@ func (mr *matchRepository) CancelMatch(ctx context.Context, matchID entity.Match
 }
 
 // GetMatchesByTeam implements database.MatchRepository.
-func (mr *matchRepository) GetMatchesByTeam(ctx context.Context, teamID entity.TeamID) ([]*entity.Match, error) {
+func (mr *matchRepository) GetMatchesByTeam(ctx context.Context, teamID entity.TeamID) ([]*database.Match, error) {
 	matches, err := mr.queries.GetMatchesByTeam(ctx, matches_gen.GetMatchesByTeamParams{
 		Team1ID: string(teamID),
 		Team2ID: string(teamID),
@@ -146,16 +147,16 @@ func (mr *matchRepository) GetMatchesByTeam(ctx context.Context, teamID entity.T
 		return nil, database.NewInternalError(err)
 	}
 
-	ret := make([]*entity.Match, 0, len(matches))
+	ret := make([]*database.Match, 0, len(matches))
 	for _, match := range matches {
 		winner := entity.TeamID(match.Winner.String)
-		ret = append(ret, &entity.Match{
+		ret = append(ret, &database.Match{
 			ID:         entity.MatchID(match.ID),
 			UserID:     entity.UserID(match.UserID),
 			ServerID:   entity.GameServerID(match.ServerID),
 			Team1ID:    entity.TeamID(match.Team1ID),
 			Team2ID:    entity.TeamID(match.Team2ID),
-			Winner:     &winner,
+			Winner:     winner,
 			StartTime:  &match.StartTime.Time,
 			EndTime:    &match.EndTime.Time,
 			MaxMaps:    match.MaxMaps,
@@ -173,7 +174,7 @@ func (mr *matchRepository) GetMatchesByTeam(ctx context.Context, teamID entity.T
 }
 
 // GetMatchesByWinner implements database.MatchRepository.
-func (mr *matchRepository) GetMatchesByWinner(ctx context.Context, teamID entity.TeamID) ([]*entity.Match, error) {
+func (mr *matchRepository) GetMatchesByWinner(ctx context.Context, teamID entity.TeamID) ([]*database.Match, error) {
 	matches, err := mr.queries.GetMatchesByWinner(ctx, sql.NullString{String: string(teamID), Valid: true})
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
@@ -182,16 +183,16 @@ func (mr *matchRepository) GetMatchesByWinner(ctx context.Context, teamID entity
 		return nil, database.NewInternalError(err)
 	}
 
-	ret := make([]*entity.Match, 0, len(matches))
+	ret := make([]*database.Match, 0, len(matches))
 	for _, match := range matches {
 		winner := entity.TeamID(match.Winner.String)
-		ret = append(ret, &entity.Match{
+		ret = append(ret, &database.Match{
 			ID:         entity.MatchID(match.ID),
 			UserID:     entity.UserID(match.UserID),
 			ServerID:   entity.GameServerID(match.ServerID),
 			Team1ID:    entity.TeamID(match.Team1ID),
 			Team2ID:    entity.TeamID(match.Team2ID),
-			Winner:     &winner,
+			Winner:     winner,
 			StartTime:  &match.StartTime.Time,
 			EndTime:    &match.EndTime.Time,
 			MaxMaps:    match.MaxMaps,

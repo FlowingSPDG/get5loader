@@ -7,7 +7,7 @@ import (
 )
 
 type JWTService interface {
-	IssueJWT(user *entity.User) (string, error)
+	IssueJWT(userID entity.UserID, steamID entity.SteamID, admin bool) (string, error)
 	ValidateJWT(token string) (*entity.TokenUser, error)
 }
 
@@ -21,11 +21,11 @@ func NewJWTGateway(key []byte) JWTService {
 	}
 }
 
-func (j *jwtService) IssueJWT(user *entity.User) (string, error) {
+func (j *jwtService) IssueJWT(userID entity.UserID, steamID entity.SteamID, admin bool) (string, error) {
 	token := jwt.NewWithClaims(jwt.GetSigningMethod("HS256"), &entity.TokenUser{
-		UserID:  user.ID,
-		SteamID: user.SteamID,
-		Admin:   user.Admin,
+		UserID:  userID,
+		SteamID: steamID,
+		Admin:   admin,
 	})
 
 	signed, err := token.SignedString(j.key)

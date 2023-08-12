@@ -33,23 +33,28 @@ func NewTeamsRepositoryWithTx(uuidGenerator uuid.UUIDGenerator, db *sql.DB, tx *
 }
 
 // AddTeam implements database.TeamsRepository.
-func (tr *teamsRepository) AddTeam(ctx context.Context, userID entity.UserID, name string, tag string, flag string, logo string) error {
+func (tr *teamsRepository) AddTeam(ctx context.Context, userID entity.UserID, name string, tag string, flag string, logo string, public bool) (entity.TeamID, error) {
+	id := tr.uuidGenerator.Generate()
 	if _, err := tr.queries.AddTeam(ctx, teams_gen.AddTeamParams{
-		ID:     tr.uuidGenerator.Generate(),
+		ID:     id,
 		UserID: string(userID),
 		Name:   name,
 		Tag:    tag,
 		Flag:   flag,
 		Logo:   logo,
+		PublicTeam: sql.NullBool{
+			Bool:  public,
+			Valid: true,
+		},
 	}); err != nil {
-		return database.NewInternalError(err)
+		return "", database.NewInternalError(err)
 	}
 
-	return nil
+	return entity.TeamID(id), nil
 }
 
 // GetPublicTeams implements database.TeamsRepository.
-func (tr *teamsRepository) GetPublicTeams(ctx context.Context) ([]*entity.Team, error) {
+func (tr *teamsRepository) GetPublicTeams(ctx context.Context) ([]*database.Team, error) {
 	teams, err := tr.queries.GetPublicTeams(ctx)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
@@ -58,14 +63,15 @@ func (tr *teamsRepository) GetPublicTeams(ctx context.Context) ([]*entity.Team, 
 		return nil, database.NewInternalError(err)
 	}
 
-	ret := make([]*entity.Team, 0, len(teams))
+	ret := make([]*database.Team, 0, len(teams))
 	for _, team := range teams {
-		ret = append(ret, &entity.Team{
-			ID:   entity.TeamID(team.ID),
-			Name: team.Name,
-			Tag:  team.Tag,
-			Flag: team.Flag,
-			Logo: team.Logo,
+		ret = append(ret, &database.Team{
+			ID:     entity.TeamID(team.ID),
+			Name:   team.Name,
+			Tag:    team.Tag,
+			Flag:   team.Flag,
+			Logo:   team.Logo,
+			Public: team.PublicTeam.Valid && team.PublicTeam.Bool,
 		})
 	}
 
@@ -73,7 +79,7 @@ func (tr *teamsRepository) GetPublicTeams(ctx context.Context) ([]*entity.Team, 
 }
 
 // GetTeam implements database.TeamsRepository.
-func (tr *teamsRepository) GetTeam(ctx context.Context, id entity.TeamID) (*entity.Team, error) {
+func (tr *teamsRepository) GetTeam(ctx context.Context, id entity.TeamID) (*database.Team, error) {
 	team, err := tr.queries.GetTeam(ctx, string(id))
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
@@ -82,18 +88,19 @@ func (tr *teamsRepository) GetTeam(ctx context.Context, id entity.TeamID) (*enti
 		return nil, database.NewInternalError(err)
 	}
 
-	return &entity.Team{
+	return &database.Team{
 		ID:     entity.TeamID(team.ID),
 		UserID: entity.UserID(team.UserID),
 		Name:   team.Name,
 		Tag:    team.Tag,
 		Flag:   team.Flag,
 		Logo:   team.Logo,
+		Public: team.PublicTeam.Valid && team.PublicTeam.Bool,
 	}, nil
 }
 
 // GetTeamsByUser implements database.TeamsRepository.
-func (tr *teamsRepository) GetTeamsByUser(ctx context.Context, userID entity.UserID) ([]*entity.Team, error) {
+func (tr *teamsRepository) GetTeamsByUser(ctx context.Context, userID entity.UserID) ([]*database.Team, error) {
 	teams, err := tr.queries.GetTeamByUserID(ctx, string(userID))
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
@@ -102,15 +109,16 @@ func (tr *teamsRepository) GetTeamsByUser(ctx context.Context, userID entity.Use
 		return nil, database.NewInternalError(err)
 	}
 
-	ret := make([]*entity.Team, 0, len(teams))
+	ret := make([]*database.Team, 0, len(teams))
 	for _, team := range teams {
-		ret = append(ret, &entity.Team{
+		ret = append(ret, &database.Team{
 			ID:     entity.TeamID(team.ID),
 			UserID: entity.UserID(team.UserID),
 			Name:   team.Name,
 			Tag:    team.Tag,
 			Flag:   team.Flag,
 			Logo:   team.Logo,
+			Public: team.PublicTeam.Valid && team.PublicTeam.Bool,
 		})
 	}
 

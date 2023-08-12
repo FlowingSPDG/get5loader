@@ -11,29 +11,29 @@ import (
 	"github.com/FlowingSPDG/get5loader/backend/service/uuid"
 )
 
-type mapStatsRepository struct {
+type MapStatRepository struct {
 	uuidGenerator uuid.UUIDGenerator
 	queries       *mapstats_gen.Queries
 }
 
-func NewMapStatsRepository(uuidGenerator uuid.UUIDGenerator, db *sql.DB) database.MapStatsRepository {
+func NewMapStatRepository(uuidGenerator uuid.UUIDGenerator, db *sql.DB) database.MapStatRepository {
 	queries := mapstats_gen.New(db)
-	return &mapStatsRepository{
+	return &MapStatRepository{
 		uuidGenerator: uuidGenerator,
 		queries:       queries,
 	}
 }
 
-func NewMapStatsRepositoryWithTx(uuidGenerator uuid.UUIDGenerator, db *sql.DB, tx *sql.Tx) database.MapStatsRepository {
+func NewMapStatRepositoryWithTx(uuidGenerator uuid.UUIDGenerator, db *sql.DB, tx *sql.Tx) database.MapStatRepository {
 	queries := mapstats_gen.New(db).WithTx(tx)
-	return &mapStatsRepository{
+	return &MapStatRepository{
 		uuidGenerator: uuidGenerator,
 		queries:       queries,
 	}
 }
 
-// GetMapStats implements database.MapStatsRepository.
-func (msr *mapStatsRepository) GetMapStats(ctx context.Context, id entity.MapStatsID) (*entity.MapStats, error) {
+// GetMapStats implements database.MapStatRepository.
+func (msr *MapStatRepository) GetMapStats(ctx context.Context, id entity.MapStatsID) (*database.MapStat, error) {
 	res, err := msr.queries.GetMapStats(ctx, string(id))
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
@@ -44,7 +44,7 @@ func (msr *mapStatsRepository) GetMapStats(ctx context.Context, id entity.MapSta
 
 	winner := entity.TeamID(res.Winner.String)
 
-	return &entity.MapStats{
+	return &database.MapStat{
 		ID:         entity.MapStatsID(res.ID),
 		MatchID:    entity.MatchID(res.MatchID),
 		MapNumber:  res.MapNumber,
@@ -57,8 +57,8 @@ func (msr *mapStatsRepository) GetMapStats(ctx context.Context, id entity.MapSta
 	}, nil
 }
 
-// GetMapStatsByMatch implements database.MapStatsRepository.
-func (msr *mapStatsRepository) GetMapStatsByMatch(ctx context.Context, matchID entity.MatchID) ([]*entity.MapStats, error) {
+// GetMapStatsByMatch implements database.MapStatRepository.
+func (msr *MapStatRepository) GetMapStatsByMatch(ctx context.Context, matchID entity.MatchID) ([]*database.MapStat, error) {
 	res, err := msr.queries.GetMapStatsByMatch(ctx, string(matchID))
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
@@ -67,10 +67,10 @@ func (msr *mapStatsRepository) GetMapStatsByMatch(ctx context.Context, matchID e
 		return nil, database.NewInternalError(err)
 	}
 
-	mapStats := make([]*entity.MapStats, 0, len(res))
+	mapStats := make([]*database.MapStat, 0, len(res))
 	for _, m := range res {
 		winner := entity.TeamID(m.Winner.String)
-		mapStats = append(mapStats, &entity.MapStats{
+		mapStats = append(mapStats, &database.MapStat{
 			ID:         entity.MapStatsID(m.ID),
 			MatchID:    entity.MatchID(m.MatchID),
 			MapNumber:  m.MapNumber,
@@ -86,8 +86,8 @@ func (msr *mapStatsRepository) GetMapStatsByMatch(ctx context.Context, matchID e
 	return mapStats, nil
 }
 
-// GetMapStatsByMatchAndMap implements database.MapStatsRepository.
-func (msr *mapStatsRepository) GetMapStatsByMatchAndMap(ctx context.Context, matchID entity.MatchID, mapNumber uint32) (*entity.MapStats, error) {
+// GetMapStatsByMatchAndMap implements database.MapStatRepository.
+func (msr *MapStatRepository) GetMapStatsByMatchAndMap(ctx context.Context, matchID entity.MatchID, mapNumber uint32) (*database.MapStat, error) {
 	res, err := msr.queries.GetMapStatsByMatchAndMap(ctx, mapstats_gen.GetMapStatsByMatchAndMapParams{
 		MatchID:   string(matchID),
 		MapNumber: mapNumber,
@@ -101,7 +101,7 @@ func (msr *mapStatsRepository) GetMapStatsByMatchAndMap(ctx context.Context, mat
 
 	winner := entity.TeamID(res.Winner.String)
 
-	return &entity.MapStats{
+	return &database.MapStat{
 		ID:         entity.MapStatsID(res.ID),
 		MatchID:    entity.MatchID(res.MatchID),
 		MapNumber:  res.MapNumber,

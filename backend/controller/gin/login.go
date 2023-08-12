@@ -15,12 +15,12 @@ type UserLoginController interface {
 }
 
 type userLoginController struct {
-	uc        usecase.UserLogin
+	uc        usecase.User
 	presenter gin_presenter.JWTPresenter
 }
 
 func NewUserLoginController(
-	uc usecase.UserLogin,
+	uc usecase.User,
 	presenter gin_presenter.JWTPresenter,
 ) UserLoginController {
 	return &userLoginController{

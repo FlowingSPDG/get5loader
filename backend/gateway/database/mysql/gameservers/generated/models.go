@@ -9,7 +9,7 @@ import ()
 type GameServer struct {
 	ID           string
 	UserID       string
-	Ip           []byte
+	Ip           string
 	Port         uint32
 	RconPassword string
 	DisplayName  string
