@@ -75,7 +75,7 @@ type NewTeam struct {
 	Tag     string              `json:"tag"`
 	Logo    string              `json:"logo"`
 	Public  bool                `json:"public"`
-	Players []*NewPlayerForTeam `json:"players"`
+	Players []*NewPlayerForTeam `json:"players,omitempty"`
 }
 
 type NewUser struct {

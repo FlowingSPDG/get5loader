@@ -66,11 +66,12 @@ func (tr *teamsRepository) GetPublicTeams(ctx context.Context) ([]*entity.Team, 
 	ret := make([]*entity.Team, 0, len(teams))
 	for _, team := range teams {
 		ret = append(ret, &entity.Team{
-			ID:   entity.TeamID(team.ID),
-			Name: team.Name,
-			Tag:  team.Tag,
-			Flag: team.Flag,
-			Logo: team.Logo,
+			ID:     entity.TeamID(team.ID),
+			Name:   team.Name,
+			Tag:    team.Tag,
+			Flag:   team.Flag,
+			Logo:   team.Logo,
+			Public: team.PublicTeam.Valid && team.PublicTeam.Bool,
 		})
 	}
 
@@ -94,6 +95,7 @@ func (tr *teamsRepository) GetTeam(ctx context.Context, id entity.TeamID) (*enti
 		Tag:    team.Tag,
 		Flag:   team.Flag,
 		Logo:   team.Logo,
+		Public: team.PublicTeam.Valid && team.PublicTeam.Bool,
 	}, nil
 }
 
@@ -116,6 +118,7 @@ func (tr *teamsRepository) GetTeamsByUser(ctx context.Context, userID entity.Use
 			Tag:    team.Tag,
 			Flag:   team.Flag,
 			Logo:   team.Logo,
+			Public: team.PublicTeam.Valid && team.PublicTeam.Bool,
 		})
 	}
 

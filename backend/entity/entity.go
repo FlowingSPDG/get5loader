@@ -103,13 +103,13 @@ type PlayerStats struct {
 }
 
 type Team struct {
-	ID         TeamID
-	UserID     UserID
-	Name       string
-	Flag       string
-	Tag        string
-	Logo       string
-	PublicTeam bool
+	ID     TeamID
+	UserID UserID
+	Name   string
+	Flag   string
+	Tag    string
+	Logo   string
+	Public bool
 }
 
 type Player struct {

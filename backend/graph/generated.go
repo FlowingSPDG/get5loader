@@ -156,8 +156,8 @@ type ComplexityRoot struct {
 }
 
 type MutationResolver interface {
-	RegisterTeam(ctx context.Context, input model.NewTeam) (string, error)
-	AddServer(ctx context.Context, input model.NewGameServer) (string, error)
+	RegisterTeam(ctx context.Context, input model.NewTeam) (*model.Team, error)
+	AddServer(ctx context.Context, input model.NewGameServer) (*model.GameServer, error)
 }
 
 type executableSchema struct {
@@ -2487,9 +2487,9 @@ func (ec *executionContext) _Mutation_registerTeam(ctx context.Context, field gr
 		}
 		return graphql.Null
 	}
-	res := resTmp.(string)
+	res := resTmp.(*model.Team)
 	fc.Result = res
-	return ec.marshalNID2string(ctx, field.Selections, res)
+	return ec.marshalNTeam2ᚖgithubᚗcomᚋFlowingSPDGᚋget5loaderᚋbackendᚋgraphᚋmodelᚐTeam(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Mutation_registerTeam(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -2499,7 +2499,25 @@ func (ec *executionContext) fieldContext_Mutation_registerTeam(ctx context.Conte
 		IsMethod:   true,
 		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type ID does not have child fields")
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Team_id(ctx, field)
+			case "user":
+				return ec.fieldContext_Team_user(ctx, field)
+			case "name":
+				return ec.fieldContext_Team_name(ctx, field)
+			case "flag":
+				return ec.fieldContext_Team_flag(ctx, field)
+			case "tag":
+				return ec.fieldContext_Team_tag(ctx, field)
+			case "logo":
+				return ec.fieldContext_Team_logo(ctx, field)
+			case "public":
+				return ec.fieldContext_Team_public(ctx, field)
+			case "players":
+				return ec.fieldContext_Team_players(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Team", field.Name)
 		},
 	}
 	defer func() {
@@ -2542,9 +2560,9 @@ func (ec *executionContext) _Mutation_addServer(ctx context.Context, field graph
 		}
 		return graphql.Null
 	}
-	res := resTmp.(string)
+	res := resTmp.(*model.GameServer)
 	fc.Result = res
-	return ec.marshalNID2string(ctx, field.Selections, res)
+	return ec.marshalNGameServer2ᚖgithubᚗcomᚋFlowingSPDGᚋget5loaderᚋbackendᚋgraphᚋmodelᚐGameServer(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Mutation_addServer(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -2554,7 +2572,19 @@ func (ec *executionContext) fieldContext_Mutation_addServer(ctx context.Context,
 		IsMethod:   true,
 		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type ID does not have child fields")
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_GameServer_id(ctx, field)
+			case "Ip":
+				return ec.fieldContext_GameServer_Ip(ctx, field)
+			case "port":
+				return ec.fieldContext_GameServer_port(ctx, field)
+			case "name":
+				return ec.fieldContext_GameServer_name(ctx, field)
+			case "public":
+				return ec.fieldContext_GameServer_public(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type GameServer", field.Name)
 		},
 	}
 	defer func() {
@@ -6753,7 +6783,7 @@ func (ec *executionContext) unmarshalInputNewTeam(ctx context.Context, obj inter
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("players"))
-			data, err := ec.unmarshalNNewPlayerForTeam2ᚕᚖgithubᚗcomᚋFlowingSPDGᚋget5loaderᚋbackendᚋgraphᚋmodelᚐNewPlayerForTeamᚄ(ctx, v)
+			data, err := ec.unmarshalONewPlayerForTeam2ᚕᚖgithubᚗcomᚋFlowingSPDGᚋget5loaderᚋbackendᚋgraphᚋmodelᚐNewPlayerForTeamᚄ(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -7987,6 +8017,10 @@ func (ec *executionContext) marshalNBoolean2bool(ctx context.Context, sel ast.Se
 	return res
 }
 
+func (ec *executionContext) marshalNGameServer2githubᚗcomᚋFlowingSPDGᚋget5loaderᚋbackendᚋgraphᚋmodelᚐGameServer(ctx context.Context, sel ast.SelectionSet, v model.GameServer) graphql.Marshaler {
+	return ec._GameServer(ctx, sel, &v)
+}
+
 func (ec *executionContext) marshalNGameServer2ᚕᚖgithubᚗcomᚋFlowingSPDGᚋget5loaderᚋbackendᚋgraphᚋmodelᚐGameServerᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.GameServer) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
@@ -8130,23 +8164,6 @@ func (ec *executionContext) unmarshalNNewGameServer2githubᚗcomᚋFlowingSPDG�
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) unmarshalNNewPlayerForTeam2ᚕᚖgithubᚗcomᚋFlowingSPDGᚋget5loaderᚋbackendᚋgraphᚋmodelᚐNewPlayerForTeamᚄ(ctx context.Context, v interface{}) ([]*model.NewPlayerForTeam, error) {
-	var vSlice []interface{}
-	if v != nil {
-		vSlice = graphql.CoerceList(v)
-	}
-	var err error
-	res := make([]*model.NewPlayerForTeam, len(vSlice))
-	for i := range vSlice {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
-		res[i], err = ec.unmarshalNNewPlayerForTeam2ᚖgithubᚗcomᚋFlowingSPDGᚋget5loaderᚋbackendᚋgraphᚋmodelᚐNewPlayerForTeam(ctx, vSlice[i])
-		if err != nil {
-			return nil, err
-		}
-	}
-	return res, nil
-}
-
 func (ec *executionContext) unmarshalNNewPlayerForTeam2ᚖgithubᚗcomᚋFlowingSPDGᚋget5loaderᚋbackendᚋgraphᚋmodelᚐNewPlayerForTeam(ctx context.Context, v interface{}) (*model.NewPlayerForTeam, error) {
 	res, err := ec.unmarshalInputNewPlayerForTeam(ctx, v)
 	return &res, graphql.ErrorOnPath(ctx, err)
@@ -8278,6 +8295,10 @@ func (ec *executionContext) marshalNString2string(ctx context.Context, sel ast.S
 		}
 	}
 	return res
+}
+
+func (ec *executionContext) marshalNTeam2githubᚗcomᚋFlowingSPDGᚋget5loaderᚋbackendᚋgraphᚋmodelᚐTeam(ctx context.Context, sel ast.SelectionSet, v model.Team) graphql.Marshaler {
+	return ec._Team(ctx, sel, &v)
 }
 
 func (ec *executionContext) marshalNTeam2ᚖgithubᚗcomᚋFlowingSPDGᚋget5loaderᚋbackendᚋgraphᚋmodelᚐTeam(ctx context.Context, sel ast.SelectionSet, v *model.Team) graphql.Marshaler {
@@ -8593,6 +8614,26 @@ func (ec *executionContext) marshalODateTime2ᚖtimeᚐTime(ctx context.Context,
 	}
 	res := graphql.MarshalTime(*v)
 	return res
+}
+
+func (ec *executionContext) unmarshalONewPlayerForTeam2ᚕᚖgithubᚗcomᚋFlowingSPDGᚋget5loaderᚋbackendᚋgraphᚋmodelᚐNewPlayerForTeamᚄ(ctx context.Context, v interface{}) ([]*model.NewPlayerForTeam, error) {
+	if v == nil {
+		return nil, nil
+	}
+	var vSlice []interface{}
+	if v != nil {
+		vSlice = graphql.CoerceList(v)
+	}
+	var err error
+	res := make([]*model.NewPlayerForTeam, len(vSlice))
+	for i := range vSlice {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
+		res[i], err = ec.unmarshalNNewPlayerForTeam2ᚖgithubᚗcomᚋFlowingSPDGᚋget5loaderᚋbackendᚋgraphᚋmodelᚐNewPlayerForTeam(ctx, vSlice[i])
+		if err != nil {
+			return nil, err
+		}
+	}
+	return res, nil
 }
 
 func (ec *executionContext) unmarshalOString2ᚖstring(ctx context.Context, v interface{}) (*string, error) {

@@ -20,9 +20,8 @@ func main() {
 	v1.POST("/login", di.InitializeUserLoginController(cfg).Handle)
 	v1.POST("/register", di.InitializeUserRegisterController(cfg).Handle)
 
-	v1auth := v1.Group("/")
-	v1auth.Use(di.InitializeJWTAuthController(cfg).Handle)
-	v1auth.POST("/query", di.InitializeGraphQLHandler(cfg))
+	v1.POST("/query", di.InitializeGraphQLHandler(cfg))
+	v1.GET("/playground", di.InitializePlaygroundHandler())
 
 	g5 := v1.Group("/get5_event")
 	evh := got5.NewGot5EventController()

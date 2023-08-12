@@ -48,7 +48,7 @@ input NewTeam {
     tag: String!
     logo: String!
     public: Boolean!
-    players: [NewPlayerForTeam!]!
+    players: [NewPlayerForTeam!]
 }
 
 # Player
@@ -80,7 +80,6 @@ type GameServer {
 }
 
 input NewGameServer {
-  userID: ID!
   Ip: String!
   port: Int!
   name: String!
@@ -91,12 +90,12 @@ input NewGameServer {
 
 type Mutation {
   # Team op
-  registerTeam(input: NewTeam!): ID!
+  registerTeam(input: NewTeam!): Team!
 
   # Match op
 
   # gameserver op
-  addServer(input: NewGameServer!): ID!
+  addServer(input: NewGameServer!): GameServer!
 }
 
 # Match

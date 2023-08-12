@@ -7,31 +7,47 @@ package graph
 import (
 	"context"
 
-	"github.com/FlowingSPDG/get5loader/backend/entity"
 	"github.com/FlowingSPDG/get5loader/backend/g5ctx"
 	"github.com/FlowingSPDG/get5loader/backend/graph/model"
 )
 
 // RegisterTeam is the resolver for the registerTeam field.
-func (r *mutationResolver) RegisterTeam(ctx context.Context, input model.NewTeam) (string, error) {
+func (r *mutationResolver) RegisterTeam(ctx context.Context, input model.NewTeam) (*model.Team, error) {
 	token, err := g5ctx.GetUserToken(ctx)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
-	teamID, err := r.TeamUsecase.RegisterTeam(ctx, token.UserID, input.Name, input.Flag, input.Tag, input.Logo, input.Public)
+	team, err := r.TeamUsecase.RegisterTeam(ctx, token.UserID, input.Name, input.Flag, input.Tag, input.Logo, input.Public)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
-	return string(teamID), nil
+	return &model.Team{
+		ID:     string(team.ID),
+		Name:   team.Name,
+		Tag:    team.Tag,
+		Flag:   team.Flag,
+		Logo:   team.Logo,
+		Public: team.Public,
+	}, nil
 }
 
 // AddServer is the resolver for the addServer field.
-func (r *mutationResolver) AddServer(ctx context.Context, input model.NewGameServer) (string, error) {
-	gs, err := r.GameServerUsecase.AddGameServer(ctx, entity.UserID(input.UserID), input.IP, uint32(input.Port), input.RconPassword, input.Name, input.Public)
+func (r *mutationResolver) AddServer(ctx context.Context, input model.NewGameServer) (*model.GameServer, error) {
+	token, err := g5ctx.GetUserToken(ctx)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
-	return string(gs.ID), nil
+	gs, err := r.GameServerUsecase.AddGameServer(ctx, token.UserID, input.IP, uint32(input.Port), input.RconPassword, input.Name, input.Public)
+	if err != nil {
+		return nil, err
+	}
+	return &model.GameServer{
+		ID:     string(gs.ID),
+		IP:     gs.Ip,
+		Port:   int(gs.Port),
+		Name:   gs.DisplayName,
+		Public: gs.IsPublic,
+	}, nil
 }
 
 // Mutation returns MutationResolver implementation.

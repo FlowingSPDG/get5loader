@@ -8,7 +8,7 @@ import (
 )
 
 type Team interface {
-	RegisterTeam(ctx context.Context, userID entity.UserID, name string, flag string, tag string, logo string, publicTeam bool) (entity.TeamID, error)
+	RegisterTeam(ctx context.Context, userID entity.UserID, name string, flag string, tag string, logo string, publicTeam bool) (*entity.Team, error)
 }
 
 type team struct {
@@ -21,9 +21,9 @@ func NewTeam(repositoryConnector database.RepositoryConnector) Team {
 	}
 }
 
-func (t *team) RegisterTeam(ctx context.Context, userID entity.UserID, name string, flag string, tag string, logo string, publicTeam bool) (entity.TeamID, error) {
+func (t *team) RegisterTeam(ctx context.Context, userID entity.UserID, name string, flag string, tag string, logo string, publicTeam bool) (*entity.Team, error) {
 	if err := t.repositoryConnector.Open(); err != nil {
-		return "", err
+		return nil, err
 	}
 	defer t.repositoryConnector.Close()
 
@@ -31,8 +31,12 @@ func (t *team) RegisterTeam(ctx context.Context, userID entity.UserID, name stri
 
 	teamID, err := repository.AddTeam(ctx, userID, name, tag, flag, logo, publicTeam)
 	if err != nil {
-		return "", err
+		return nil, err
+	}
+	team, err := repository.GetTeam(ctx, teamID)
+	if err != nil {
+		return nil, err
 	}
 
-	return teamID, nil
+	return team, nil
 }
