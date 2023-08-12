@@ -28,7 +28,7 @@ func TestRegisterUser(t *testing.T) {
 		expected struct {
 			jwt  string
 			hash []byte
-			user *entity.User
+			user *database.User
 		}
 		err error
 	}{
@@ -48,11 +48,11 @@ func TestRegisterUser(t *testing.T) {
 			expected: struct {
 				jwt  string
 				hash []byte
-				user *entity.User
+				user *database.User
 			}{
 				jwt:  "test",
 				hash: []byte{},
-				user: &entity.User{
+				user: &database.User{
 					ID:      "test",
 					Name:    "test",
 					SteamID: 76561198072054549,
