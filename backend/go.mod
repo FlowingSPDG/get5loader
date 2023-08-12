@@ -4,11 +4,13 @@ go 1.20
 
 require (
 	github.com/FlowingSPDG/Got5 v0.0.0-20230804162215-be9dcc00f8cc
+	github.com/FlowingSPDG/go-steam v0.0.0-20200304111708-e30ea2f91a83
 	github.com/caarlos0/env/v9 v9.0.0
 	github.com/gin-gonic/gin v1.9.1
 	github.com/go-sql-driver/mysql v1.7.1
 	github.com/golang-jwt/jwt/v5 v5.0.0
 	github.com/google/uuid v1.3.0
+	github.com/rumblefrog/go-a2s v1.0.2
 	github.com/stretchr/testify v1.8.4
 	go.uber.org/mock v0.2.0
 	golang.org/x/crypto v0.12.0
@@ -33,6 +35,7 @@ require (
 	github.com/modern-go/reflect2 v1.0.2 // indirect
 	github.com/pelletier/go-toml/v2 v2.0.8 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
+	github.com/sirupsen/logrus v1.9.0 // indirect
 	github.com/twitchyliquid64/golang-asm v0.15.1 // indirect
 	github.com/ugorji/go/codec v1.2.11 // indirect
 	golang.org/x/arch v0.3.0 // indirect
