@@ -21,6 +21,10 @@ type User struct {
 	Hash      []byte
 	CreatedAt time.Time
 	UpdatedAt time.Time
+
+	Teams   []*Team
+	Servers []*GameServer
+	Matches []*Match
 }
 
 type GameServer struct {
@@ -37,10 +41,9 @@ type GameServer struct {
 type Match struct {
 	ID         MatchID
 	UserID     UserID
-	GameServer GameServer
 	Team1      Team
 	Team2      Team
-	Winner     *TeamID
+	Winner     TeamID // 0 for not decided yet
 	StartTime  *time.Time
 	EndTime    *time.Time
 	MaxMaps    int32

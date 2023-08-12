@@ -7,6 +7,8 @@ type User {
 	name: String!
 	admin: Boolean!
 	gameservers: [GameServer!]!
+    teams: [Team!]!
+    matches: [Match!]!
 }
 
 input NewUser {
@@ -90,6 +92,7 @@ input NewGameServer {
 type Query {
     # User op
     getUser(id: ID!): User!
+    getMe: User!
     
     # Team op
     getTeam(id: ID!): Team!
@@ -117,10 +120,9 @@ type Mutation {
 type Match {
 	ID: ID!
 	userId: ID!
-	server: GameServer!
 	team1: Team!
 	team2: Team!
-	winner: ID
+	winner: ID!
 	startedAt: DateTime
 	endedAt: DateTime
 	maxMaps: Int!

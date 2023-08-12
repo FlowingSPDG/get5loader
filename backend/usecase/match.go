@@ -33,7 +33,6 @@ func (gm *match) GetMatch(ctx context.Context, matchID entity.MatchID) (*entity.
 	matchRepository := gm.repositoryConnector.GetMatchesRepository()
 	mapStatsRepository := gm.repositoryConnector.GetMapStatsRepository()
 	playerStatsRepository := gm.repositoryConnector.GetPlayerStatsRepository()
-	gameServerRepository := gm.repositoryConnector.GetGameServersRepository()
 	teamRepository := gm.repositoryConnector.GetTeamsRepository()
 	playerRepository := gm.repositoryConnector.GetPlayersRepository()
 
@@ -101,11 +100,6 @@ func (gm *match) GetMatch(ctx context.Context, matchID entity.MatchID) (*entity.
 		}
 	}
 
-	gameServer, err := gameServerRepository.GetGameServer(ctx, match.ServerID)
-	if err != nil {
-		return nil, err
-	}
-
 	team1, err := teamRepository.GetTeam(ctx, match.Team1ID)
 	if err != nil {
 		return nil, err
@@ -142,13 +136,6 @@ func (gm *match) GetMatch(ctx context.Context, matchID entity.MatchID) (*entity.
 	return &entity.Match{
 		ID:     entity.MatchID(match.ID),
 		UserID: entity.UserID(match.UserID),
-		GameServer: entity.GameServer{
-			ID:          entity.GameServerID(gameServer.ID),
-			Ip:          gameServer.Ip,
-			Port:        gameServer.Port,
-			DisplayName: gameServer.DisplayName,
-			IsPublic:    gameServer.IsPublic,
-		},
 		Team1: entity.Team{
 			ID:      entity.TeamID(team1.ID),
 			UserID:  entity.UserID(team1.UserID),

@@ -35,6 +35,21 @@ func (m *MockUser) EXPECT() *MockUserMockRecorder {
 	return m.recorder
 }
 
+// GetUser mocks base method.
+func (m *MockUser) GetUser(ctx context.Context, id entity.UserID) (*entity.User, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetUser", ctx, id)
+	ret0, _ := ret[0].(*entity.User)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetUser indicates an expected call of GetUser.
+func (mr *MockUserMockRecorder) GetUser(ctx, id interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUser", reflect.TypeOf((*MockUser)(nil).GetUser), ctx, id)
+}
+
 // IssueJWT mocks base method.
 func (m *MockUser) IssueJWT(ctx context.Context, userID entity.UserID, password string) (string, error) {
 	m.ctrl.T.Helper()

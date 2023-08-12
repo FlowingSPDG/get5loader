@@ -34,10 +34,9 @@ type MapStats struct {
 type Match struct {
 	ID         string      `json:"ID"`
 	UserID     string      `json:"userId"`
-	Server     *GameServer `json:"server"`
 	Team1      *Team       `json:"team1"`
 	Team2      *Team       `json:"team2"`
-	Winner     *string     `json:"winner,omitempty"`
+	Winner     string      `json:"winner"`
 	StartedAt  *time.Time  `json:"startedAt,omitempty"`
 	EndedAt    *time.Time  `json:"endedAt,omitempty"`
 	MaxMaps    int         `json:"maxMaps"`
@@ -140,6 +139,8 @@ type User struct {
 	Name        string        `json:"name"`
 	Admin       bool          `json:"admin"`
 	Gameservers []*GameServer `json:"gameservers"`
+	Teams       []*Team       `json:"teams"`
+	Matches     []*Match      `json:"matches"`
 }
 
 type UserLoginID struct {

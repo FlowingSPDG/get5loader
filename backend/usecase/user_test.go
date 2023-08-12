@@ -86,7 +86,7 @@ func TestRegisterUser(t *testing.T) {
 
 			// mock JWTServiceの作成
 			mockJwtService := mock_jwt.NewMockJWTService(ctrl)
-			mockJwtService.EXPECT().IssueJWT(tc.expected.user).Return(tc.expected.jwt, nil)
+			mockJwtService.EXPECT().IssueJWT(tc.expected.user.ID, tc.expected.user.SteamID, tc.expected.user.Admin).Return(tc.expected.jwt, nil)
 
 			// mock PasswordHasherの作成
 			mockPasswordHasher := mock_hash.NewMockPasswordHasher(ctrl)
@@ -168,7 +168,7 @@ func TestIssueJWTBySteamID(t *testing.T) {
 
 			// mock JWTServiceの作成
 			mockJwtService := mock_jwt.NewMockJWTService(ctrl)
-			mockJwtService.EXPECT().IssueJWT(tc.expected.user).Return(tc.expected.jwt, nil)
+			mockJwtService.EXPECT().IssueJWT(tc.expected.user.ID, tc.expected.token.SteamID, tc.expected.user.Admin).Return(tc.expected.jwt, nil)
 
 			// mock PasswordHasherの作成
 			mockPasswordHasher := mock_hash.NewMockPasswordHasher(ctrl)

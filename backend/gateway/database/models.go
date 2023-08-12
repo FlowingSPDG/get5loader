@@ -33,7 +33,7 @@ type Match struct {
 	ServerID   entity.GameServerID
 	Team1ID    entity.TeamID
 	Team2ID    entity.TeamID
-	Winner     *entity.TeamID
+	Winner     entity.TeamID
 	StartTime  *time.Time
 	EndTime    *time.Time
 	MaxMaps    int32

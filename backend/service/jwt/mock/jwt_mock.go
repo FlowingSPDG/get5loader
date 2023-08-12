@@ -35,18 +35,18 @@ func (m *MockJWTService) EXPECT() *MockJWTServiceMockRecorder {
 }
 
 // IssueJWT mocks base method.
-func (m *MockJWTService) IssueJWT(user *entity.User) (string, error) {
+func (m *MockJWTService) IssueJWT(userID entity.UserID, steamID entity.SteamID, admin bool) (string, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "IssueJWT", user)
+	ret := m.ctrl.Call(m, "IssueJWT", userID, steamID, admin)
 	ret0, _ := ret[0].(string)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // IssueJWT indicates an expected call of IssueJWT.
-func (mr *MockJWTServiceMockRecorder) IssueJWT(user interface{}) *gomock.Call {
+func (mr *MockJWTServiceMockRecorder) IssueJWT(userID, steamID, admin interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "IssueJWT", reflect.TypeOf((*MockJWTService)(nil).IssueJWT), user)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "IssueJWT", reflect.TypeOf((*MockJWTService)(nil).IssueJWT), userID, steamID, admin)
 }
 
 // ValidateJWT mocks base method.
