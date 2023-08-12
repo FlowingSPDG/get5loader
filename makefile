@@ -28,7 +28,7 @@ down:
 	docker compose down
 run-srcds:
 # connect your WSL2 ip (`ip a`)
-	cd docker/srcds && docker build . -t srcds && docker run -d --name=srcds -it -p 27015-27020:27015-27020/udp srcds 
+	cd docker/srcds && docker build . -t srcds && docker run --name=srcds -it -p 27015-27020:27015-27020/udp srcds 
 generate:
 	@cd ./backend && \
 	$(GOINSTALL) golang.org/x/tools/cmd/stringer@v0.11.1 && \

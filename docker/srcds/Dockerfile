@@ -9,3 +9,5 @@ ENV RCON_PASSWORD localpassword
 ENV GOTV_PASSWORD gotvpass
 
 EXPOSE 27015-27020/udp
+
+CMD ["bash", "server-launch.sh"]
