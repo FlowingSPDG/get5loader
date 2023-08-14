@@ -159,13 +159,14 @@ func TestIssueJWTBySteamID(t *testing.T) {
 
 			// mock connectorの作成
 			mockConnector := mock_database.NewMockRepositoryConnector(ctrl)
-			mockConnector.EXPECT().Open().Return(nil)
-			mockConnector.EXPECT().Close().Return(nil)
 
 			// mock UsersRepositoryの作成
 			mockUsersRepository := mock_database.NewMockUsersRepositry(ctrl)
 			mockUsersRepository.EXPECT().GetUserBySteamID(gomock.Any(), tc.input.steamid).Return(tc.expected.user, nil)
 			mockConnector.EXPECT().GetUserRepository().Return(mockUsersRepository)
+
+			// contextにconnectorを埋め込む
+			ctx = database.SetConnection(ctx, mockConnector)
 
 			// mock JWTServiceの作成
 			mockJwtService := mock_jwt.NewMockJWTService(ctrl)
