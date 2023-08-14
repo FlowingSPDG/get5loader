@@ -176,22 +176,41 @@ func (r *queryResolver) GetPublicServers(ctx context.Context) ([]*model.GameServ
 
 // Players is the resolver for the players field.
 func (r *teamResolver) Players(ctx context.Context, obj *model.Team) ([]*model.Player, error) {
-	panic(fmt.Errorf("not implemented: Players - players"))
+	p, err := r.PlayerUsecase.GetPlayersByTeam(ctx, entity.TeamID(obj.ID))
+	if err != nil {
+		return nil, err
+	}
+	return convertPlayers(p), nil
 }
 
 // Gameservers is the resolver for the gameservers field.
 func (r *userResolver) Gameservers(ctx context.Context, obj *model.User) ([]*model.GameServer, error) {
-	panic(fmt.Errorf("not implemented: Gameservers - gameservers"))
+	gss, err := r.GameServerUsecase.GetGameServersByUser(ctx, entity.UserID(obj.ID))
+	if err != nil {
+		return nil, err
+	}
+
+	return convertGameServers(gss), nil
 }
 
 // Teams is the resolver for the teams field.
 func (r *userResolver) Teams(ctx context.Context, obj *model.User) ([]*model.Team, error) {
-	panic(fmt.Errorf("not implemented: Teams - teams"))
+	teams, err := r.TeamUsecase.GetTeamsByUser(ctx, entity.UserID(obj.ID))
+	if err != nil {
+		return nil, err
+	}
+
+	return convertTeams(teams), nil
 }
 
 // Matches is the resolver for the matches field.
 func (r *userResolver) Matches(ctx context.Context, obj *model.User) ([]*model.Match, error) {
-	panic(fmt.Errorf("not implemented: Matches - matches"))
+	matches, err := r.MatchUsecase.GetMatchesByUser(ctx, entity.UserID(obj.ID))
+	if err != nil {
+		return nil, err
+	}
+
+	return convertMatches(matches), nil
 }
 
 // Match returns MatchResolver implementation.

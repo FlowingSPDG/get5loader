@@ -11,4 +11,5 @@ type Resolver struct {
 	UserUsecase       usecase.User
 	MatchUsecase      usecase.Match
 	TeamUsecase       usecase.Team
+	PlayerUsecase     usecase.Player
 }

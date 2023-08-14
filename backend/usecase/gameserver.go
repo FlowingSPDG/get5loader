@@ -12,6 +12,8 @@ type GameServer interface {
 	GetPublicServers(ctx context.Context) ([]*entity.GameServer, error)
 	// GetGameServer returns a game server.
 	GetGameServer(ctx context.Context, id entity.GameServerID) (*entity.GameServer, error)
+	// GetGameServersByUser returns game servers owned by a user.
+	GetGameServersByUser(ctx context.Context, userID entity.UserID) ([]*entity.GameServer, error)
 	// AddGameServer adds a game server.
 	AddGameServer(ctx context.Context, userID entity.UserID, ip string, port uint32, rconPassword string, name string, isPublic bool) (*entity.GameServer, error)
 	// DeleteGameServer deletes a game server.
@@ -79,4 +81,21 @@ func (gs *gameServer) DeleteGameServer(ctx context.Context, id entity.GameServer
 // GetGameServer implements GameServer.
 func (gs *gameServer) GetGameServer(ctx context.Context, id entity.GameServerID) (*entity.GameServer, error) {
 	panic("unimplemented")
+}
+
+// GetGameServersByUser implements GameServer.
+func (gs *gameServer) GetGameServersByUser(ctx context.Context, userID entity.UserID) ([]*entity.GameServer, error) {
+	if err := gs.repositoryConnector.Open(); err != nil {
+		return nil, err
+	}
+	defer gs.repositoryConnector.Close()
+
+	repository := gs.repositoryConnector.GetGameServersRepository()
+
+	gss, err := repository.GetGameServersByUser(ctx, userID)
+	if err != nil {
+		return nil, err
+	}
+
+	return convertGameServers(gss), nil
 }
