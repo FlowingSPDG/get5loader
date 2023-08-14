@@ -22,24 +22,24 @@ func NewGot5MatchLoader(repositoryConnector database.RepositoryConnector) got5.M
 }
 
 type match struct {
-	m *entity.Match
+	match *entity.Get5Match
 }
 
-func (match *match) ToG5Format() got5.Match {
+func (m *match) ToG5Format() got5.Match {
 	team1Players := map[string]string{}
-	for _, player := range match.m.Team1.Players {
+	for _, player := range m.match.Team1.Players {
 		team1Players[strconv.Itoa(int(player.SteamID))] = player.Name
 	}
 	team2Players := map[string]string{}
-	for _, player := range match.m.Team2.Players {
+	for _, player := range m.match.Team2.Players {
 		team2Players[strconv.Itoa(int(player.SteamID))] = player.Name
 	}
 
 	return got5.Match{
-		MatchTitle:           match.m.Title,
-		MatchID:              string(match.m.ID),
+		MatchTitle:           m.match.Title,
+		MatchID:              string(m.match.ID),
 		ClinchSeries:         false,
-		NumMaps:              int(match.m.MaxMaps),
+		NumMaps:              int(m.match.MaxMaps),
 		Scrim:                false,
 		Wingman:              false,
 		PlayersPerTeam:       5,
@@ -47,7 +47,7 @@ func (match *match) ToG5Format() got5.Match {
 		CoachesMustReady:     false,
 		MinPlayersToReady:    5,
 		MinSpectatorsToReady: 0,
-		SkipVeto:             match.m.SkipVeto,
+		SkipVeto:             m.match.SkipVeto,
 		VetoFirst:            "random",
 		VetoMode:             "",
 		SideType:             "standard",
@@ -65,25 +65,25 @@ func (match *match) ToG5Format() got5.Match {
 		FavoredPercentageTeam1: 0,
 		FavoredPercentageText:  "",
 		Team1: got5.Team{
-			ID:          string(match.m.Team1.ID),
+			ID:          string(m.match.Team1.ID),
 			Players:     team1Players,
 			Coaches:     map[string]string{},
-			Name:        match.m.Team1.Name,
-			Tag:         match.m.Team1.Tag,
-			Flag:        match.m.Team1.Flag,
-			Logo:        match.m.Team1.Logo,
+			Name:        m.match.Team1.Name,
+			Tag:         m.match.Team1.Tag,
+			Flag:        m.match.Team1.Flag,
+			Logo:        m.match.Team1.Logo,
 			SeriesScore: 0,
 			MatchText:   "",
 			FromFile:    "",
 		},
 		Team2: got5.Team{
-			ID:          string(match.m.Team2.ID),
+			ID:          string(m.match.Team2.ID),
 			Players:     team2Players,
 			Coaches:     map[string]string{},
-			Name:        match.m.Team2.Name,
-			Tag:         match.m.Team2.Tag,
-			Flag:        match.m.Team2.Flag,
-			Logo:        match.m.Team2.Logo,
+			Name:        m.match.Team2.Name,
+			Tag:         m.match.Team2.Tag,
+			Flag:        m.match.Team2.Flag,
+			Logo:        m.match.Team2.Logo,
 			SeriesScore: 0,
 			MatchText:   "",
 			FromFile:    "",
@@ -94,13 +94,13 @@ func (match *match) ToG5Format() got5.Match {
 
 // Load implements got5.MatchLoader.
 func (ml *matchLoader) Load(ctx context.Context, mid string) (got5.G5Match, error) {
-	uc := usecase.NewMatch(ml.repositoryConnector)
+	uc := usecase.NewGet5()
 	m, err := uc.GetMatch(ctx, entity.MatchID(mid))
 	if err != nil {
 		return nil, err
 	}
 	return &match{
-		m: m,
+		match: m,
 	}, nil
 
 }

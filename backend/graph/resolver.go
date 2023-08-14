@@ -1,6 +1,9 @@
 package graph
 
-import "github.com/FlowingSPDG/get5loader/backend/usecase"
+import (
+	"github.com/FlowingSPDG/get5loader/backend/graph/dataloaders"
+	"github.com/FlowingSPDG/get5loader/backend/usecase"
+)
 
 // This file will not be regenerated automatically.
 //
@@ -10,5 +13,8 @@ type Resolver struct {
 	GameServerUsecase usecase.GameServer
 	UserUsecase       usecase.User
 	MatchUsecase      usecase.Match
+	MapstatUsecase    usecase.Mapstat
 	TeamUsecase       usecase.Team
+	PlayerUsecase     usecase.Player
+	DataLoader        *dataloaders.Loaders
 }

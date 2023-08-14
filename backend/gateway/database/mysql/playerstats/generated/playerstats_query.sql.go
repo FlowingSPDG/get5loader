@@ -7,6 +7,7 @@ package playerstats_gen
 
 import (
 	"context"
+	"strings"
 )
 
 const getPlayerStats = `-- name: GetPlayerStats :one
@@ -53,13 +54,83 @@ func (q *Queries) GetPlayerStats(ctx context.Context, id string) (PlayerStat, er
 	return i, err
 }
 
-const getPlayerStatsByMap = `-- name: GetPlayerStatsByMap :many
+const getPlayerStatsByMapStat = `-- name: GetPlayerStatsByMapStat :many
 SELECT id, match_id, map_id, team_id, steam_id, name, kills, deaths, roundsplayed, assists, flashbang_assists, teamkills, suicides, headshot_kills, damage, bomb_plants, bomb_defuses, v1, v2, v3, v4, v5, k1, k2, k3, k4, k5, firstdeath_ct, firstdeath_t, firstkill_ct, firstkill_t FROM player_stats
 WHERE map_id = ?
 `
 
-func (q *Queries) GetPlayerStatsByMap(ctx context.Context, mapID string) ([]PlayerStat, error) {
-	rows, err := q.db.QueryContext(ctx, getPlayerStatsByMap, mapID)
+func (q *Queries) GetPlayerStatsByMapStat(ctx context.Context, mapID string) ([]PlayerStat, error) {
+	rows, err := q.db.QueryContext(ctx, getPlayerStatsByMapStat, mapID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []PlayerStat
+	for rows.Next() {
+		var i PlayerStat
+		if err := rows.Scan(
+			&i.ID,
+			&i.MatchID,
+			&i.MapID,
+			&i.TeamID,
+			&i.SteamID,
+			&i.Name,
+			&i.Kills,
+			&i.Deaths,
+			&i.Roundsplayed,
+			&i.Assists,
+			&i.FlashbangAssists,
+			&i.Teamkills,
+			&i.Suicides,
+			&i.HeadshotKills,
+			&i.Damage,
+			&i.BombPlants,
+			&i.BombDefuses,
+			&i.V1,
+			&i.V2,
+			&i.V3,
+			&i.V4,
+			&i.V5,
+			&i.K1,
+			&i.K2,
+			&i.K3,
+			&i.K4,
+			&i.K5,
+			&i.FirstdeathCt,
+			&i.FirstdeathT,
+			&i.FirstkillCt,
+			&i.FirstkillT,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getPlayerStatsByMapStats = `-- name: GetPlayerStatsByMapStats :many
+SELECT id, match_id, map_id, team_id, steam_id, name, kills, deaths, roundsplayed, assists, flashbang_assists, teamkills, suicides, headshot_kills, damage, bomb_plants, bomb_defuses, v1, v2, v3, v4, v5, k1, k2, k3, k4, k5, firstdeath_ct, firstdeath_t, firstkill_ct, firstkill_t FROM player_stats
+WHERE map_id IN (/*SLICE:map_ids*/?)
+`
+
+func (q *Queries) GetPlayerStatsByMapStats(ctx context.Context, mapIds []string) ([]PlayerStat, error) {
+	query := getPlayerStatsByMapStats
+	var queryParams []interface{}
+	if len(mapIds) > 0 {
+		for _, v := range mapIds {
+			queryParams = append(queryParams, v)
+		}
+		query = strings.Replace(query, "/*SLICE:map_ids*/?", strings.Repeat(",?", len(mapIds))[1:], 1)
+	} else {
+		query = strings.Replace(query, "/*SLICE:map_ids*/?", "NULL", 1)
+	}
+	rows, err := q.db.QueryContext(ctx, query, queryParams...)
 	if err != nil {
 		return nil, err
 	}

@@ -74,8 +74,6 @@ func TestRegisterUser(t *testing.T) {
 
 			// mock connectorの作成
 			mockConnector := mock_database.NewMockRepositoryConnector(ctrl)
-			mockConnector.EXPECT().Open().Return(nil)
-			mockConnector.EXPECT().Close().Return(nil)
 
 			// mock UsersRepositoryの作成
 			mockUsersRepository := mock_database.NewMockUsersRepositry(ctrl)
@@ -83,6 +81,9 @@ func TestRegisterUser(t *testing.T) {
 			mockUsersRepository.EXPECT().CreateUser(gomock.Any(), tc.input.steamid, tc.input.name, tc.input.admin, gomock.Any()).Return(entity.UserID(""), nil)
 			mockUsersRepository.EXPECT().GetUserBySteamID(gomock.Any(), tc.input.steamid).Return(tc.expected.user, nil).Times(1)
 			mockConnector.EXPECT().GetUserRepository().Return(mockUsersRepository)
+
+			// mock connectorの埋め込み
+			ctx = database.SetConnection(ctx, mockConnector)
 
 			// mock JWTServiceの作成
 			mockJwtService := mock_jwt.NewMockJWTService(ctrl)
@@ -93,7 +94,7 @@ func TestRegisterUser(t *testing.T) {
 			mockPasswordHasher.EXPECT().Hash(tc.input.password).Return(tc.expected.hash, nil)
 
 			// テストの実行とassert
-			uc := usecase.NewUser(mockJwtService, mockPasswordHasher, mockConnector)
+			uc := usecase.NewUser(mockJwtService, mockPasswordHasher)
 			jwt, err := uc.Register(ctx, tc.input.steamid, tc.input.name, tc.input.admin, tc.input.password)
 			assert.Equal(t, tc.expected.jwt, jwt)
 			assert.Equal(t, tc.err, err)
@@ -158,13 +159,14 @@ func TestIssueJWTBySteamID(t *testing.T) {
 
 			// mock connectorの作成
 			mockConnector := mock_database.NewMockRepositoryConnector(ctrl)
-			mockConnector.EXPECT().Open().Return(nil)
-			mockConnector.EXPECT().Close().Return(nil)
 
 			// mock UsersRepositoryの作成
 			mockUsersRepository := mock_database.NewMockUsersRepositry(ctrl)
 			mockUsersRepository.EXPECT().GetUserBySteamID(gomock.Any(), tc.input.steamid).Return(tc.expected.user, nil)
 			mockConnector.EXPECT().GetUserRepository().Return(mockUsersRepository)
+
+			// contextにconnectorを埋め込む
+			ctx = database.SetConnection(ctx, mockConnector)
 
 			// mock JWTServiceの作成
 			mockJwtService := mock_jwt.NewMockJWTService(ctrl)
@@ -174,7 +176,7 @@ func TestIssueJWTBySteamID(t *testing.T) {
 			mockPasswordHasher := mock_hash.NewMockPasswordHasher(ctrl)
 			mockPasswordHasher.EXPECT().Compare(tc.expected.user.Hash, tc.input.password).Return(nil)
 
-			uc := usecase.NewUser(mockJwtService, mockPasswordHasher, mockConnector)
+			uc := usecase.NewUser(mockJwtService, mockPasswordHasher)
 			actual, err := uc.IssueJWTBySteamID(ctx, tc.input.steamid, tc.input.password)
 			assert.Equal(t, tc.expected.jwt, actual)
 			assert.Equal(t, tc.expected.err, err)

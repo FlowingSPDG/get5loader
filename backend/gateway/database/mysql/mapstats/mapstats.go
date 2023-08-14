@@ -33,8 +33,8 @@ func NewMapStatRepositoryWithTx(uuidGenerator uuid.UUIDGenerator, db *sql.DB, tx
 }
 
 // GetMapStats implements database.MapStatRepository.
-func (msr *MapStatRepository) GetMapStats(ctx context.Context, id entity.MapStatsID) (*database.MapStat, error) {
-	res, err := msr.queries.GetMapStats(ctx, string(id))
+func (msr *MapStatRepository) GetMapStat(ctx context.Context, id entity.MapStatsID) (*database.MapStat, error) {
+	res, err := msr.queries.GetMapStat(ctx, string(id))
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, database.NewNotFoundError(err)
@@ -62,7 +62,7 @@ func (msr *MapStatRepository) GetMapStatsByMatch(ctx context.Context, matchID en
 	res, err := msr.queries.GetMapStatsByMatch(ctx, string(matchID))
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return nil, database.NewNotFoundError(err)
+			return []*database.MapStat{}, nil
 		}
 		return nil, database.NewInternalError(err)
 	}
@@ -84,6 +84,37 @@ func (msr *MapStatRepository) GetMapStatsByMatch(ctx context.Context, matchID en
 	}
 
 	return mapStats, nil
+}
+
+// GetMapStatsByMatches implements database.MapStatRepository.
+func (msr *MapStatRepository) GetMapStatsByMatches(ctx context.Context, matchIDs []entity.MatchID) (map[entity.MatchID][]*database.MapStat, error) {
+	ids := database.IDsToString(matchIDs)
+	mapstats, err := msr.queries.GetMapStatsByMatches(ctx, ids)
+	if err != nil {
+		return nil, database.NewInternalError(err)
+	}
+
+	ret := make(map[entity.MatchID][]*database.MapStat, len(matchIDs))
+	// nilが渡されるのを防ぐため、空のスライスを生成する
+	for _, matchID := range matchIDs {
+		ret[matchID] = make([]*database.MapStat, 0)
+	}
+
+	for _, m := range mapstats {
+		winner := entity.TeamID(m.Winner.String)
+		ret[entity.MatchID(m.MatchID)] = append(ret[entity.MatchID(m.MatchID)], &database.MapStat{
+			ID:         entity.MapStatsID(m.ID),
+			MatchID:    entity.MatchID(m.MatchID),
+			MapNumber:  m.MapNumber,
+			MapName:    m.MapName,
+			StartTime:  &m.StartTime.Time,
+			EndTime:    &m.EndTime.Time,
+			Winner:     &winner,
+			Team1Score: m.Team1Score,
+			Team2Score: m.Team2Score,
+		})
+	}
+	return ret, nil
 }
 
 // GetMapStatsByMatchAndMap implements database.MapStatRepository.

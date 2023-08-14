@@ -13,6 +13,10 @@ INSERT INTO matches (
 SELECT * FROM matches
 WHERE user_id = ?;
 
+-- name: GetMatchesByUsers :many
+SELECT * FROM matches
+WHERE user_id IN (sqlc.slice('user_ids'));
+
 -- name: GetMatchesByTeam :many
 SELECT * FROM matches
 WHERE team1_id = ? OR team2_id = ?;

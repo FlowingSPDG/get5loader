@@ -64,7 +64,7 @@ func (gr *gameServerRepository) DeleteGameServer(ctx context.Context, id entity.
 
 // GetGameServer implements database.GameServerRepository.
 func (gr *gameServerRepository) GetGameServer(ctx context.Context, id entity.GameServerID) (*database.GameServer, error) {
-	gameserver, err := gr.queries.GetGameServers(ctx, string(id))
+	gameserver, err := gr.queries.GetGameServer(ctx, string(id))
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, database.NewNotFoundError(err)
@@ -96,6 +96,35 @@ func (gr *gameServerRepository) GetGameServersByUser(ctx context.Context, userID
 	ret := make([]*database.GameServer, 0, len(gameservers))
 	for _, gameserver := range gameservers {
 		ret = append(ret, &database.GameServer{
+			ID:           entity.GameServerID(gameserver.ID),
+			UserID:       entity.UserID(gameserver.UserID),
+			Ip:           net.ParseIP(string(gameserver.Ip)).To4().String(),
+			Port:         gameserver.Port,
+			RCONPassword: gameserver.RconPassword,
+			DisplayName:  gameserver.DisplayName,
+			IsPublic:     gameserver.IsPublic,
+		})
+	}
+
+	return ret, nil
+}
+
+// GetGameServersByUsers implements database.GameServersRepository.
+func (gr *gameServerRepository) GetGameServersByUsers(ctx context.Context, userIDs []entity.UserID) (map[entity.UserID][]*database.GameServer, error) {
+	ids := database.IDsToString(userIDs)
+	gameservers, err := gr.queries.GetGameServersByUsers(ctx, ids)
+	if err != nil {
+		return nil, database.NewInternalError(err)
+	}
+
+	ret := make(map[entity.UserID][]*database.GameServer, len(userIDs))
+	// nilが渡されるのを防ぐため、空のスライスを生成する
+	for _, userID := range userIDs {
+		ret[userID] = make([]*database.GameServer, 0)
+	}
+
+	for _, gameserver := range gameservers {
+		ret[entity.UserID(gameserver.UserID)] = append(ret[entity.UserID(gameserver.UserID)], &database.GameServer{
 			ID:           entity.GameServerID(gameserver.ID),
 			UserID:       entity.UserID(gameserver.UserID),
 			Ip:           net.ParseIP(string(gameserver.Ip)).To4().String(),

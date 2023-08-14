@@ -676,6 +676,21 @@ func (mr *MockGameServersRepositoryMockRecorder) GetGameServersByUser(ctx, userI
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetGameServersByUser", reflect.TypeOf((*MockGameServersRepository)(nil).GetGameServersByUser), ctx, userID)
 }
 
+// GetGameServersByUsers mocks base method.
+func (m *MockGameServersRepository) GetGameServersByUsers(ctx context.Context, userIDs []entity.UserID) (map[entity.UserID][]*database.GameServer, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetGameServersByUsers", ctx, userIDs)
+	ret0, _ := ret[0].(map[entity.UserID][]*database.GameServer)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetGameServersByUsers indicates an expected call of GetGameServersByUsers.
+func (mr *MockGameServersRepositoryMockRecorder) GetGameServersByUsers(ctx, userIDs interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetGameServersByUsers", reflect.TypeOf((*MockGameServersRepository)(nil).GetGameServersByUsers), ctx, userIDs)
+}
+
 // GetPublicGameServers mocks base method.
 func (m *MockGameServersRepository) GetPublicGameServers(ctx context.Context) ([]*database.GameServer, error) {
 	m.ctrl.T.Helper()
@@ -788,6 +803,21 @@ func (mr *MockMatchesRepositoryMockRecorder) GetMatchesByUser(ctx, userID interf
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetMatchesByUser", reflect.TypeOf((*MockMatchesRepository)(nil).GetMatchesByUser), ctx, userID)
 }
 
+// GetMatchesByUsers mocks base method.
+func (m *MockMatchesRepository) GetMatchesByUsers(ctx context.Context, userIDs []entity.UserID) (map[entity.UserID][]*database.Match, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetMatchesByUsers", ctx, userIDs)
+	ret0, _ := ret[0].(map[entity.UserID][]*database.Match)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetMatchesByUsers indicates an expected call of GetMatchesByUsers.
+func (mr *MockMatchesRepositoryMockRecorder) GetMatchesByUsers(ctx, userIDs interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetMatchesByUsers", reflect.TypeOf((*MockMatchesRepository)(nil).GetMatchesByUsers), ctx, userIDs)
+}
+
 // GetMatchesByWinner mocks base method.
 func (m *MockMatchesRepository) GetMatchesByWinner(ctx context.Context, teamID entity.TeamID) ([]*database.Match, error) {
 	m.ctrl.T.Helper()
@@ -882,19 +912,19 @@ func (m *MockMapStatRepository) EXPECT() *MockMapStatRepositoryMockRecorder {
 	return m.recorder
 }
 
-// GetMapStats mocks base method.
-func (m *MockMapStatRepository) GetMapStats(ctx context.Context, id entity.MapStatsID) (*database.MapStat, error) {
+// GetMapStat mocks base method.
+func (m *MockMapStatRepository) GetMapStat(ctx context.Context, id entity.MapStatsID) (*database.MapStat, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetMapStats", ctx, id)
+	ret := m.ctrl.Call(m, "GetMapStat", ctx, id)
 	ret0, _ := ret[0].(*database.MapStat)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// GetMapStats indicates an expected call of GetMapStats.
-func (mr *MockMapStatRepositoryMockRecorder) GetMapStats(ctx, id interface{}) *gomock.Call {
+// GetMapStat indicates an expected call of GetMapStat.
+func (mr *MockMapStatRepositoryMockRecorder) GetMapStat(ctx, id interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetMapStats", reflect.TypeOf((*MockMapStatRepository)(nil).GetMapStats), ctx, id)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetMapStat", reflect.TypeOf((*MockMapStatRepository)(nil).GetMapStat), ctx, id)
 }
 
 // GetMapStatsByMatch mocks base method.
@@ -927,6 +957,21 @@ func (mr *MockMapStatRepositoryMockRecorder) GetMapStatsByMatchAndMap(ctx, match
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetMapStatsByMatchAndMap", reflect.TypeOf((*MockMapStatRepository)(nil).GetMapStatsByMatchAndMap), ctx, matchID, mapNumber)
 }
 
+// GetMapStatsByMatches mocks base method.
+func (m *MockMapStatRepository) GetMapStatsByMatches(ctx context.Context, matchIDs []entity.MatchID) (map[entity.MatchID][]*database.MapStat, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetMapStatsByMatches", ctx, matchIDs)
+	ret0, _ := ret[0].(map[entity.MatchID][]*database.MapStat)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetMapStatsByMatches indicates an expected call of GetMapStatsByMatches.
+func (mr *MockMapStatRepositoryMockRecorder) GetMapStatsByMatches(ctx, matchIDs interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetMapStatsByMatches", reflect.TypeOf((*MockMapStatRepository)(nil).GetMapStatsByMatches), ctx, matchIDs)
+}
+
 // MockPlayerStatRepository is a mock of PlayerStatRepository interface.
 type MockPlayerStatRepository struct {
 	ctrl     *gomock.Controller
@@ -951,10 +996,10 @@ func (m *MockPlayerStatRepository) EXPECT() *MockPlayerStatRepositoryMockRecorde
 }
 
 // GetPlayerStatsByMapstats mocks base method.
-func (m *MockPlayerStatRepository) GetPlayerStatsByMapstats(ctx context.Context, mapStatsID entity.MapStatsID) ([]*database.PlayerStat, error) {
+func (m *MockPlayerStatRepository) GetPlayerStatsByMapstats(ctx context.Context, mapStatsID []entity.MapStatsID) (map[entity.MapStatsID][]*database.PlayerStat, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetPlayerStatsByMapstats", ctx, mapStatsID)
-	ret0, _ := ret[0].([]*database.PlayerStat)
+	ret0, _ := ret[0].(map[entity.MapStatsID][]*database.PlayerStat)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -1078,6 +1123,21 @@ func (mr *MockTeamsRepositoryMockRecorder) GetTeamsByUser(ctx, userID interface{
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetTeamsByUser", reflect.TypeOf((*MockTeamsRepository)(nil).GetTeamsByUser), ctx, userID)
 }
 
+// GetTeamsByUsers mocks base method.
+func (m *MockTeamsRepository) GetTeamsByUsers(ctx context.Context, userIDs []entity.UserID) (map[entity.UserID][]*database.Team, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetTeamsByUsers", ctx, userIDs)
+	ret0, _ := ret[0].(map[entity.UserID][]*database.Team)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetTeamsByUsers indicates an expected call of GetTeamsByUsers.
+func (mr *MockTeamsRepositoryMockRecorder) GetTeamsByUsers(ctx, userIDs interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetTeamsByUsers", reflect.TypeOf((*MockTeamsRepository)(nil).GetTeamsByUsers), ctx, userIDs)
+}
+
 // MockPlayersRepository is a mock of PlayersRepository interface.
 type MockPlayersRepository struct {
 	ctrl     *gomock.Controller
@@ -1144,4 +1204,19 @@ func (m *MockPlayersRepository) GetPlayersByTeam(ctx context.Context, teamID ent
 func (mr *MockPlayersRepositoryMockRecorder) GetPlayersByTeam(ctx, teamID interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetPlayersByTeam", reflect.TypeOf((*MockPlayersRepository)(nil).GetPlayersByTeam), ctx, teamID)
+}
+
+// GetPlayersByTeams mocks base method.
+func (m *MockPlayersRepository) GetPlayersByTeams(ctx context.Context, teamIDs []entity.TeamID) (map[entity.TeamID][]*database.Player, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetPlayersByTeams", ctx, teamIDs)
+	ret0, _ := ret[0].(map[entity.TeamID][]*database.Player)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetPlayersByTeams indicates an expected call of GetPlayersByTeams.
+func (mr *MockPlayersRepositoryMockRecorder) GetPlayersByTeams(ctx, teamIDs interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetPlayersByTeams", reflect.TypeOf((*MockPlayersRepository)(nil).GetPlayersByTeams), ctx, teamIDs)
 }

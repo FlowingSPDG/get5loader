@@ -18,32 +18,21 @@ type User interface {
 }
 
 type user struct {
-	jwtService          jwt.JWTService
-	passwordHasher      hash.PasswordHasher
-	repositoryConnector database.RepositoryConnector
+	jwtService     jwt.JWTService
+	passwordHasher hash.PasswordHasher
 }
 
-func NewUser(jwtService jwt.JWTService, passwordHasher hash.PasswordHasher, repositoryConnector database.RepositoryConnector) User {
+func NewUser(jwtService jwt.JWTService, passwordHasher hash.PasswordHasher) User {
 	return &user{
-		jwtService:          jwtService,
-		passwordHasher:      passwordHasher,
-		repositoryConnector: repositoryConnector,
+		jwtService:     jwtService,
+		passwordHasher: passwordHasher,
 	}
 }
 
 func (u *user) GetUser(ctx context.Context, id entity.UserID) (*entity.User, error) {
-	if err := u.repositoryConnector.Open(); err != nil {
-		return nil, err
-	}
-	defer u.repositoryConnector.Close()
+	repositoryConnector := database.GetConnection(ctx)
 
-	userRepository := u.repositoryConnector.GetUserRepository()
-	teamsRepository := u.repositoryConnector.GetTeamsRepository()
-	gameServersRepository := u.repositoryConnector.GetGameServersRepository()
-	matchesRepository := u.repositoryConnector.GetMatchesRepository()
-	playersRepository := u.repositoryConnector.GetPlayersRepository()
-	MapStatRepository := u.repositoryConnector.GetMapStatRepository()
-	PlayerStatRepository := u.repositoryConnector.GetPlayerStatRepository()
+	userRepository := repositoryConnector.GetUserRepository()
 
 	// ユーザーを取得
 	user, err := userRepository.GetUser(ctx, id)
@@ -51,86 +40,14 @@ func (u *user) GetUser(ctx context.Context, id entity.UserID) (*entity.User, err
 		return nil, err
 	}
 
-	// チームを取得
-	teams, err := teamsRepository.GetTeamsByUser(ctx, id)
-	if err != nil {
-		return nil, err
-	}
-
-	// チームのプレイヤーを取得
-	players := make(map[entity.TeamID][]*database.Player)
-	for _, team := range teams {
-		playerForTeam, err := playersRepository.GetPlayersByTeam(ctx, team.ID)
-		if err != nil {
-			return nil, err
-		}
-		players[team.ID] = playerForTeam
-	}
-
-	// 変換処理
-	ts := convertTeams(teams, players)
-
-	// ゲームサーバーの取得処理
-	gameServer, err := gameServersRepository.GetGameServersByUser(ctx, id)
-	if err != nil {
-		return nil, err
-	}
-	gs := convertGameServers(gameServer)
-
-	// マッチの取得処理
-	matches, err := matchesRepository.GetMatchesByUser(ctx, id)
-	if err != nil {
-		return nil, err
-	}
-	ms := make([]*entity.Match, 0, len(matches))
-	for _, match := range matches {
-		// Team1の取得と変換
-		team1, err := teamsRepository.GetTeam(ctx, match.Team1ID)
-		if err != nil {
-			return nil, err
-		}
-		team1players, err := playersRepository.GetPlayersByTeam(ctx, team1.ID)
-		if err != nil {
-			return nil, err
-		}
-
-		// Team2の取得と変換
-		team2, err := teamsRepository.GetTeam(ctx, match.Team2ID)
-		if err != nil {
-			return nil, err
-		}
-		team2players, err := playersRepository.GetPlayersByTeam(ctx, team2.ID)
-		if err != nil {
-			return nil, err
-		}
-
-		// mapstatsの取得
-		mapstats, err := MapStatRepository.GetMapStatsByMatch(ctx, match.ID)
-		if err != nil {
-			return nil, err
-		}
-		maps := make([]*entity.MapStat, 0, len(mapstats))
-		for _, mapstat := range mapstats {
-			playerStats, err := PlayerStatRepository.GetPlayerStatsByMapstats(ctx, mapstat.ID)
-			if err != nil {
-				return nil, err
-			}
-			maps = append(maps, convertMapstat(mapstat, playerStats))
-		}
-
-		ms = append(ms, convertMatch(match, team1, team2, team1players, team2players, maps))
-	}
-	return convertUser(user, ts, gs, ms), nil
+	return convertUser(user), nil
 }
 
 // Handle implements UserRegister.
 func (u *user) Register(ctx context.Context, steamID entity.SteamID, name string, admin bool, password string) (string, error) {
-	if err := u.repositoryConnector.Open(); err != nil {
-		return "", err
-	}
-	defer u.repositoryConnector.Close()
+	repositoryConnector := database.GetConnection(ctx)
 
-	repository := u.repositoryConnector.GetUserRepository()
+	repository := repositoryConnector.GetUserRepository()
 	_, err := repository.GetUserBySteamID(ctx, steamID)
 	if err == nil {
 		return "", errors.New("user already exists")
@@ -163,12 +80,9 @@ func (u *user) Register(ctx context.Context, steamID entity.SteamID, name string
 // HandleLoginSteamID implements UserLoginUsecase.
 func (u *user) IssueJWT(ctx context.Context, userID entity.UserID, password string) (string, error) {
 	// TODO: エラーハンドリング
-	if err := u.repositoryConnector.Open(); err != nil {
-		return "", err
-	}
-	defer u.repositoryConnector.Close()
+	repositoryConnector := database.GetConnection(ctx)
 
-	repository := u.repositoryConnector.GetUserRepository()
+	repository := repositoryConnector.GetUserRepository()
 	user, err := repository.GetUser(ctx, userID)
 	if err != nil {
 		return "", err
@@ -189,12 +103,9 @@ func (u *user) IssueJWT(ctx context.Context, userID entity.UserID, password stri
 // HandleLoginSteamID implements UserLoginUsecase.
 func (u *user) IssueJWTBySteamID(ctx context.Context, steamID entity.SteamID, password string) (string, error) {
 	// TODO: エラーハンドリング
-	if err := u.repositoryConnector.Open(); err != nil {
-		return "", err
-	}
-	defer u.repositoryConnector.Close()
+	repositoryConnector := database.GetConnection(ctx)
 
-	repository := u.repositoryConnector.GetUserRepository()
+	repository := repositoryConnector.GetUserRepository()
 	user, err := repository.GetUserBySteamID(ctx, steamID)
 	if err != nil {
 		return "", err

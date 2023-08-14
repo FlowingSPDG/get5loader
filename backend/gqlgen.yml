@@ -92,3 +92,27 @@ models:
   SteamID:
     model:
       - github.com/99designs/gqlgen/graphql.Uint64
+  User:
+    fields:
+      gameservers:
+        resolver: true
+      teams:
+        resolver: true
+      matches:
+        resolver: true
+  Team:
+    fields:
+      players:
+        resolver: true
+  Match:
+    fields:
+      team1:
+        resolver: true 
+      team2:
+        resolver: true
+      mapStats:
+        resolver: true
+  MapStats:
+    fields:
+      playerstats:
+        resolver: true

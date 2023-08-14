@@ -58,7 +58,7 @@ func (tr *teamsRepository) GetPublicTeams(ctx context.Context) ([]*database.Team
 	teams, err := tr.queries.GetPublicTeams(ctx)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return nil, database.NewNotFoundError(err)
+			return []*database.Team{}, nil
 		}
 		return nil, database.NewInternalError(err)
 	}
@@ -104,7 +104,7 @@ func (tr *teamsRepository) GetTeamsByUser(ctx context.Context, userID entity.Use
 	teams, err := tr.queries.GetTeamByUserID(ctx, string(userID))
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return nil, database.NewNotFoundError(err)
+			return []*database.Team{}, nil
 		}
 		return nil, database.NewInternalError(err)
 	}
@@ -112,6 +112,35 @@ func (tr *teamsRepository) GetTeamsByUser(ctx context.Context, userID entity.Use
 	ret := make([]*database.Team, 0, len(teams))
 	for _, team := range teams {
 		ret = append(ret, &database.Team{
+			ID:     entity.TeamID(team.ID),
+			UserID: entity.UserID(team.UserID),
+			Name:   team.Name,
+			Tag:    team.Tag,
+			Flag:   team.Flag,
+			Logo:   team.Logo,
+			Public: team.PublicTeam.Valid && team.PublicTeam.Bool,
+		})
+	}
+
+	return ret, nil
+}
+
+// GetTeamsByUsers implements database.TeamsRepository.
+func (tr *teamsRepository) GetTeamsByUsers(ctx context.Context, userIDs []entity.UserID) (map[entity.UserID][]*database.Team, error) {
+	ids := database.IDsToString(userIDs)
+	teams, err := tr.queries.GetTeamsByUsers(ctx, ids)
+	if err != nil {
+		return nil, database.NewInternalError(err)
+	}
+
+	ret := make(map[entity.UserID][]*database.Team, len(userIDs))
+	// nilが渡されるのを防ぐため、空のスライスを生成する
+	for _, userID := range userIDs {
+		ret[userID] = []*database.Team{}
+	}
+
+	for _, team := range teams {
+		ret[entity.UserID(team.UserID)] = append(ret[entity.UserID(team.UserID)], &database.Team{
 			ID:     entity.TeamID(team.ID),
 			UserID: entity.UserID(team.UserID),
 			Name:   team.Name,

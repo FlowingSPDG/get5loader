@@ -33,8 +33,9 @@ func NewPlayerStatRepositoryWithTx(uuidGenerator uuid.UUIDGenerator, db *sql.DB,
 }
 
 // GetPlayerStatsByMapstats implements database.PlayerStatRepository.
-func (psr *PlayerStatRepository) GetPlayerStatsByMapstats(ctx context.Context, mapstatsID entity.MapStatsID) ([]*database.PlayerStat, error) {
-	stats, err := psr.queries.GetPlayerStatsByMap(ctx, string(mapstatsID))
+func (psr *PlayerStatRepository) GetPlayerStatsByMapstats(ctx context.Context, mapstatsID []entity.MapStatsID) (map[entity.MapStatsID][]*database.PlayerStat, error) {
+	ids := database.IDsToString(mapstatsID)
+	stats, err := psr.queries.GetPlayerStatsByMapStats(ctx, ids)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, database.NewNotFoundError(err)
@@ -42,9 +43,9 @@ func (psr *PlayerStatRepository) GetPlayerStatsByMapstats(ctx context.Context, m
 		return nil, database.NewInternalError(err)
 	}
 
-	ret := make([]*database.PlayerStat, 0, len(stats))
+	ret := make(map[entity.MapStatsID][]*database.PlayerStat)
 	for _, stat := range stats {
-		ret = append(ret, &database.PlayerStat{
+		ret[entity.MapStatsID(stat.MapID)] = append(ret[entity.MapStatsID(stat.MapID)], &database.PlayerStat{
 			ID:               entity.PlayerStatsID(stat.ID),
 			MatchID:          entity.MatchID(stat.MatchID),
 			MapID:            entity.MapStatsID(stat.MapID),

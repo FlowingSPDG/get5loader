@@ -8,6 +8,7 @@ package users_gen
 import (
 	"context"
 	"database/sql"
+	"strings"
 )
 
 const createUser = `-- name: CreateUser :execresult
@@ -74,4 +75,50 @@ func (q *Queries) GetUserBySteamID(ctx context.Context, steamID uint64) (User, e
 		&i.PasswordHash,
 	)
 	return i, err
+}
+
+const getUsers = `-- name: GetUsers :many
+SELECT id, steam_id, name, admin, created_at, updated_at, password_hash FROM users
+WHERE id IN (/*SLICE:user_ids*/?)
+`
+
+func (q *Queries) GetUsers(ctx context.Context, userIds []string) ([]User, error) {
+	query := getUsers
+	var queryParams []interface{}
+	if len(userIds) > 0 {
+		for _, v := range userIds {
+			queryParams = append(queryParams, v)
+		}
+		query = strings.Replace(query, "/*SLICE:user_ids*/?", strings.Repeat(",?", len(userIds))[1:], 1)
+	} else {
+		query = strings.Replace(query, "/*SLICE:user_ids*/?", "NULL", 1)
+	}
+	rows, err := q.db.QueryContext(ctx, query, queryParams...)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []User
+	for rows.Next() {
+		var i User
+		if err := rows.Scan(
+			&i.ID,
+			&i.SteamID,
+			&i.Name,
+			&i.Admin,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.PasswordHash,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }

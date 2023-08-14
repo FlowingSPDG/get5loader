@@ -8,6 +8,7 @@ package players_gen
 import (
 	"context"
 	"database/sql"
+	"strings"
 )
 
 const addPlayer = `-- name: AddPlayer :execresult
@@ -81,6 +82,49 @@ WHERE team_id = ?
 
 func (q *Queries) GetPlayersByTeam(ctx context.Context, teamID string) ([]Player, error) {
 	rows, err := q.db.QueryContext(ctx, getPlayersByTeam, teamID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Player
+	for rows.Next() {
+		var i Player
+		if err := rows.Scan(
+			&i.ID,
+			&i.TeamID,
+			&i.SteamID,
+			&i.Name,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getPlayersByTeams = `-- name: GetPlayersByTeams :many
+SELECT id, team_id, steam_id, name FROM players
+WHERE team_id IN (/*SLICE:team_ids*/?)
+`
+
+func (q *Queries) GetPlayersByTeams(ctx context.Context, teamIds []string) ([]Player, error) {
+	query := getPlayersByTeams
+	var queryParams []interface{}
+	if len(teamIds) > 0 {
+		for _, v := range teamIds {
+			queryParams = append(queryParams, v)
+		}
+		query = strings.Replace(query, "/*SLICE:team_ids*/?", strings.Repeat(",?", len(teamIds))[1:], 1)
+	} else {
+		query = strings.Replace(query, "/*SLICE:team_ids*/?", "NULL", 1)
+	}
+	rows, err := q.db.QueryContext(ctx, query, queryParams...)
 	if err != nil {
 		return nil, err
 	}

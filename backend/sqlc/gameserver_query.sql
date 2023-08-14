@@ -1,4 +1,4 @@
--- name: GetGameServers :one
+-- name: GetGameServer :one
 SELECT * FROM game_servers
 WHERE id = ? LIMIT 1;
 
@@ -12,6 +12,10 @@ INSERT INTO game_servers (
 -- name: GetGameServersByUser :many
 SELECT * FROM game_servers
 WHERE user_id = ?;
+
+-- name: GetGameServersByUsers :many
+SELECT * FROM game_servers
+WHERE user_id IN (sqlc.slice('user_ids'));
 
 -- name: GetPublicGameServers :many
 SELECT * FROM game_servers

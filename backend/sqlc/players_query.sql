@@ -10,6 +10,10 @@ WHERE steam_id = ? LIMIT 1;
 SELECT * FROM players
 WHERE team_id = ?;
 
+-- name: GetPlayersByTeams :many
+SELECT * FROM players
+WHERE team_id IN (sqlc.slice('team_ids'));
+
 -- name: AddPlayer :execresult
 INSERT INTO players (
   id,

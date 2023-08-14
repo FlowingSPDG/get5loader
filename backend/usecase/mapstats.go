@@ -7,54 +7,41 @@ import (
 	"github.com/FlowingSPDG/get5loader/backend/gateway/database"
 )
 
-type Mapstats interface {
-	GetMapStats(ctx context.Context, id entity.MapStatsID) (*entity.MapStat, error)
+type Mapstat interface {
+	GetMapStat(ctx context.Context, id entity.MapStatsID) (*entity.MapStat, error)
 	GetMapStatsByMatch(ctx context.Context, matchID entity.MatchID) ([]*entity.MapStat, error)
 	// GetMapStatsByTeam(ctx context.Context, teamID entity.TeamID) ([]*entity.MapStat, error)
+
+	// BATCH
+	BatchGetMapstatsByMatch(ctx context.Context, matchIDs []entity.MatchID) (map[entity.MatchID][]*entity.MapStat, error)
 }
 
-type mapstats struct {
-	repositoryConnector database.RepositoryConnector
+type mapstat struct {
 }
 
-func NewMapStats(repositoryConnector database.RepositoryConnector) Mapstats {
-	return &mapstats{
-		repositoryConnector: repositoryConnector,
-	}
+func NewMapStats() Mapstat {
+	return &mapstat{}
 }
 
 // GetMapStats implements Mapstats.
-func (m *mapstats) GetMapStats(ctx context.Context, id entity.MapStatsID) (*entity.MapStat, error) {
-	if err := m.repositoryConnector.Open(); err != nil {
-		return nil, err
-	}
-	defer m.repositoryConnector.Close()
+func (m *mapstat) GetMapStat(ctx context.Context, id entity.MapStatsID) (*entity.MapStat, error) {
+	repositoryConnector := database.GetConnection(ctx)
 
-	MapStatRepository := m.repositoryConnector.GetMapStatRepository()
-	PlayerStatRepository := m.repositoryConnector.GetPlayerStatRepository()
+	MapStatRepository := repositoryConnector.GetMapStatRepository()
 
-	mapstats, err := MapStatRepository.GetMapStats(ctx, id)
+	mapstats, err := MapStatRepository.GetMapStat(ctx, id)
 	if err != nil {
 		return nil, err
 	}
 
-	playerStats, err := PlayerStatRepository.GetPlayerStatsByMapstats(ctx, id)
-	if err != nil {
-		return nil, err
-	}
-
-	return convertMapstat(mapstats, playerStats), nil
+	return convertMapstat(mapstats), nil
 }
 
 // GetMapStatsByMatch implements Mapstats.
-func (m *mapstats) GetMapStatsByMatch(ctx context.Context, matchID entity.MatchID) ([]*entity.MapStat, error) {
-	if err := m.repositoryConnector.Open(); err != nil {
-		return nil, err
-	}
-	defer m.repositoryConnector.Close()
+func (m *mapstat) GetMapStatsByMatch(ctx context.Context, matchID entity.MatchID) ([]*entity.MapStat, error) {
+	repositoryConnector := database.GetConnection(ctx)
 
-	MapStatRepository := m.repositoryConnector.GetMapStatRepository()
-	PlayerStatRepository := m.repositoryConnector.GetPlayerStatRepository()
+	MapStatRepository := repositoryConnector.GetMapStatRepository()
 
 	mapstats, err := MapStatRepository.GetMapStatsByMatch(ctx, matchID)
 	if err != nil {
@@ -63,12 +50,27 @@ func (m *mapstats) GetMapStatsByMatch(ctx context.Context, matchID entity.MatchI
 
 	ret := make([]*entity.MapStat, 0, len(mapstats))
 	for _, mapstat := range mapstats {
-		playerStats, err := PlayerStatRepository.GetPlayerStatsByMapstats(ctx, mapstat.ID)
-		if err != nil {
-			return nil, err
-		}
-		ret = append(ret, convertMapstat(mapstat, playerStats))
+		ret = append(ret, convertMapstat(mapstat))
 	}
 
+	return ret, nil
+}
+
+// BatchGetMapstatsByMatch implements Mapstat.
+func (m *mapstat) BatchGetMapstatsByMatch(ctx context.Context, matchIDs []entity.MatchID) (map[entity.MatchID][]*entity.MapStat, error) {
+	repositoryConnector := database.GetConnection(ctx)
+
+	mapStatRepository := repositoryConnector.GetMapStatRepository()
+
+	mapstats, err := mapStatRepository.GetMapStatsByMatches(ctx, matchIDs)
+	if err != nil {
+		return nil, err
+	}
+
+	ret := make(map[entity.MatchID][]*entity.MapStat, len(matchIDs))
+	// nilが渡されるのを防ぐため、空のスライスを生成する
+	for matchID, mapstats := range mapstats {
+		ret[matchID] = convertMapstats(mapstats)
+	}
 	return ret, nil
 }

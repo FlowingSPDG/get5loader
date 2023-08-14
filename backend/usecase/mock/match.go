@@ -35,6 +35,21 @@ func (m *MockMatch) EXPECT() *MockMatchMockRecorder {
 	return m.recorder
 }
 
+// BatchGetMatchesByUser mocks base method.
+func (m *MockMatch) BatchGetMatchesByUser(ctx context.Context, userIDs []entity.UserID) (map[entity.UserID][]*entity.Match, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "BatchGetMatchesByUser", ctx, userIDs)
+	ret0, _ := ret[0].(map[entity.UserID][]*entity.Match)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// BatchGetMatchesByUser indicates an expected call of BatchGetMatchesByUser.
+func (mr *MockMatchMockRecorder) BatchGetMatchesByUser(ctx, userIDs interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "BatchGetMatchesByUser", reflect.TypeOf((*MockMatch)(nil).BatchGetMatchesByUser), ctx, userIDs)
+}
+
 // CreateMatch mocks base method.
 func (m *MockMatch) CreateMatch(ctx context.Context, userID entity.UserID, serverID entity.GameServerID, team1ID, team2ID entity.TeamID, maxMaps int, title string) (*entity.Match, error) {
 	m.ctrl.T.Helper()
@@ -63,4 +78,19 @@ func (m *MockMatch) GetMatch(ctx context.Context, matchID entity.MatchID) (*enti
 func (mr *MockMatchMockRecorder) GetMatch(ctx, matchID interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetMatch", reflect.TypeOf((*MockMatch)(nil).GetMatch), ctx, matchID)
+}
+
+// GetMatchesByUser mocks base method.
+func (m *MockMatch) GetMatchesByUser(ctx context.Context, userID entity.UserID) ([]*entity.Match, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetMatchesByUser", ctx, userID)
+	ret0, _ := ret[0].([]*entity.Match)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetMatchesByUser indicates an expected call of GetMatchesByUser.
+func (mr *MockMatchMockRecorder) GetMatchesByUser(ctx, userID interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetMatchesByUser", reflect.TypeOf((*MockMatch)(nil).GetMatchesByUser), ctx, userID)
 }
