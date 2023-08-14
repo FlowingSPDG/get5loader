@@ -2,7 +2,6 @@ package dataloaders
 
 import (
 	"context"
-	"errors"
 
 	"github.com/FlowingSPDG/get5loader/backend/entity"
 	"github.com/FlowingSPDG/get5loader/backend/usecase"
@@ -18,7 +17,7 @@ func (u *userServersLoader) BatchGetServers(ctx context.Context, IDs []entity.Us
 	results := make([]*dataloader.Result[[]*entity.GameServer], len(IDs))
 	for i := range results {
 		results[i] = &dataloader.Result[[]*entity.GameServer]{
-			Error: errors.New("not found"),
+			Data: []*entity.GameServer{},
 		}
 	}
 

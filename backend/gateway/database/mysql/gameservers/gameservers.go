@@ -55,7 +55,7 @@ func (gr *gameServerRepository) AddGameServer(ctx context.Context, userID entity
 func (gr *gameServerRepository) DeleteGameServer(ctx context.Context, id entity.GameServerID) error {
 	if _, err := gr.queries.DeleteGameServer(ctx, string(id)); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return database.NewNotFoundError(err)
+			return database.NewNotFoundError(nil)
 		}
 		return database.NewInternalError(err)
 	}
@@ -67,7 +67,7 @@ func (gr *gameServerRepository) GetGameServer(ctx context.Context, id entity.Gam
 	gameserver, err := gr.queries.GetGameServer(ctx, string(id))
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return nil, database.NewNotFoundError(err)
+			return nil, database.NewNotFoundError(nil)
 		}
 		return nil, database.NewInternalError(err)
 	}
@@ -88,7 +88,7 @@ func (gr *gameServerRepository) GetGameServersByUser(ctx context.Context, userID
 	gameservers, err := gr.queries.GetGameServersByUser(ctx, string(userID))
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return nil, database.NewNotFoundError(err)
+			return nil, database.NewNotFoundError(nil)
 		}
 		return nil, database.NewInternalError(err)
 	}

@@ -66,6 +66,10 @@ func convertMatch(match *entity.Match) *model.Match {
 	return &model.Match{
 		ID:         string(match.ID),
 		UserID:     string(match.UserID),
+		Team1:      &model.Team{},
+		Team1Id:    string(match.Team1ID),
+		Team2:      &model.Team{},
+		Team2Id:    string(match.Team2ID),
 		Winner:     string(match.Winner),
 		StartedAt:  match.StartTime,
 		EndedAt:    match.EndTime,
@@ -75,6 +79,7 @@ func convertMatch(match *entity.Match) *model.Match {
 		Team1Score: int(match.Team1Score),
 		Team2Score: int(match.Team2Score),
 		Forfeit:    match.Forfeit,
+		MapStats:   []*model.MapStats{},
 	}
 }
 

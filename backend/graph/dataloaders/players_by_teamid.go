@@ -2,7 +2,6 @@ package dataloaders
 
 import (
 	"context"
-	"errors"
 
 	"github.com/graph-gophers/dataloader/v7"
 
@@ -19,7 +18,7 @@ func (t *teamPlayersLoader) BatchGetPlayers(ctx context.Context, IDs []entity.Te
 	results := make([]*dataloader.Result[[]*entity.Player], len(IDs))
 	for i := range results {
 		results[i] = &dataloader.Result[[]*entity.Player]{
-			Error: errors.New("not found"),
+			Data: []*entity.Player{},
 		}
 	}
 
@@ -46,5 +45,6 @@ func (t *teamPlayersLoader) BatchGetPlayers(ctx context.Context, IDs []entity.Te
 		}
 		results[indexs[teamID]] = result
 	}
+
 	return results
 }

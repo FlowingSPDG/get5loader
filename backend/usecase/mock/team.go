@@ -36,6 +36,21 @@ func (m *MockTeam) EXPECT() *MockTeamMockRecorder {
 	return m.recorder
 }
 
+// BatchGetTeams mocks base method.
+func (m *MockTeam) BatchGetTeams(ctx context.Context, teamIDs []entity.TeamID) (map[entity.TeamID]*entity.Team, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "BatchGetTeams", ctx, teamIDs)
+	ret0, _ := ret[0].(map[entity.TeamID]*entity.Team)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// BatchGetTeams indicates an expected call of BatchGetTeams.
+func (mr *MockTeamMockRecorder) BatchGetTeams(ctx, teamIDs interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "BatchGetTeams", reflect.TypeOf((*MockTeam)(nil).BatchGetTeams), ctx, teamIDs)
+}
+
 // BatchGetTeamsByUsers mocks base method.
 func (m *MockTeam) BatchGetTeamsByUsers(ctx context.Context, matchIDs []entity.UserID) (map[entity.UserID][]*entity.Team, error) {
 	m.ctrl.T.Helper()

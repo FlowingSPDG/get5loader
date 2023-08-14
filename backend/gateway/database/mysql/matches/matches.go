@@ -61,7 +61,7 @@ func (mr *matchRepository) GetMatch(ctx context.Context, id entity.MatchID) (*da
 	match, err := mr.queries.GetMatch(ctx, string(id))
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return nil, database.NewNotFoundError(err)
+			return nil, database.NewNotFoundError(nil)
 		}
 		return nil, database.NewInternalError(err)
 	}
@@ -130,6 +130,13 @@ func (mr *matchRepository) GetMatchesByUsers(ctx context.Context, userIDs []enti
 	ids := database.IDsToString(userIDs)
 	matches, err := mr.queries.GetMatchesByUsers(ctx, ids)
 	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			ret := make(map[entity.UserID][]*database.Match, len(userIDs))
+			for _, userID := range userIDs {
+				ret[userID] = []*database.Match{}
+			}
+			return ret, nil
+		}
 		return nil, database.NewInternalError(err)
 	}
 
@@ -163,7 +170,7 @@ func (mr *matchRepository) GetMatchesByUsers(ctx context.Context, userIDs []enti
 func (mr *matchRepository) CancelMatch(ctx context.Context, matchID entity.MatchID) error {
 	if _, err := mr.queries.CancelMatch(ctx, string(matchID)); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return database.NewNotFoundError(err)
+			return database.NewNotFoundError(nil)
 		}
 		return database.NewInternalError(err)
 	}
@@ -253,7 +260,7 @@ func (mr *matchRepository) StartMatch(ctx context.Context, matchID entity.MatchI
 		StartTime: sql.NullTime{Valid: true, Time: time.Now()},
 	}); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return database.NewNotFoundError(err)
+			return database.NewNotFoundError(nil)
 		}
 		return database.NewInternalError(err)
 	}
@@ -280,7 +287,7 @@ func (mr *matchRepository) UpdateTeam1Score(ctx context.Context, matchID entity.
 		Team1Score: score,
 	}); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return database.NewNotFoundError(err)
+			return database.NewNotFoundError(nil)
 		}
 		return database.NewInternalError(err)
 	}
@@ -295,7 +302,7 @@ func (mr *matchRepository) UpdateTeam2Score(ctx context.Context, matchID entity.
 		Team2Score: score,
 	}); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return database.NewNotFoundError(err)
+			return database.NewNotFoundError(nil)
 		}
 		return database.NewInternalError(err)
 	}

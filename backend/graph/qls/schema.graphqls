@@ -125,7 +125,9 @@ type Match {
 	id: ID!
 	userId: ID!
 	team1: Team!
+    team1Id: ID!
 	team2: Team!
+    team2Id: ID!
 	winner: ID!
 	startedAt: DateTime
 	endedAt: DateTime

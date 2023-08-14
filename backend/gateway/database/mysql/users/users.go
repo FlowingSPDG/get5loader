@@ -53,7 +53,7 @@ func (ur *usersRepositry) GetUser(ctx context.Context, id entity.UserID) (*datab
 	user, err := ur.queries.GetUser(ctx, string(id))
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return nil, database.NewNotFoundError(err)
+			return nil, database.NewNotFoundError(nil)
 		}
 		return nil, database.NewInternalError(err)
 	}
@@ -73,7 +73,7 @@ func (ur *usersRepositry) GetUserBySteamID(ctx context.Context, steamID entity.S
 	user, err := ur.queries.GetUserBySteamID(ctx, uint64(steamID))
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return nil, database.NewNotFoundError(err)
+			return nil, database.NewNotFoundError(nil)
 		}
 		return nil, database.NewInternalError(err)
 	}

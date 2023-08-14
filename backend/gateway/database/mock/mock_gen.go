@@ -1108,6 +1108,21 @@ func (mr *MockTeamsRepositoryMockRecorder) GetTeam(ctx, id interface{}) *gomock.
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetTeam", reflect.TypeOf((*MockTeamsRepository)(nil).GetTeam), ctx, id)
 }
 
+// GetTeams mocks base method.
+func (m *MockTeamsRepository) GetTeams(ctx context.Context, ids []entity.TeamID) (map[entity.TeamID]*database.Team, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetTeams", ctx, ids)
+	ret0, _ := ret[0].(map[entity.TeamID]*database.Team)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetTeams indicates an expected call of GetTeams.
+func (mr *MockTeamsRepositoryMockRecorder) GetTeams(ctx, ids interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetTeams", reflect.TypeOf((*MockTeamsRepository)(nil).GetTeams), ctx, ids)
+}
+
 // GetTeamsByUser mocks base method.
 func (m *MockTeamsRepository) GetTeamsByUser(ctx context.Context, userID entity.UserID) ([]*database.Team, error) {
 	m.ctrl.T.Helper()

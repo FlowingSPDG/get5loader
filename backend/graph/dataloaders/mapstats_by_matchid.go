@@ -2,7 +2,6 @@ package dataloaders
 
 import (
 	"context"
-	"errors"
 
 	"github.com/graph-gophers/dataloader/v7"
 
@@ -19,7 +18,7 @@ func (m *matchMapstat) BatchGetMapStats(ctx context.Context, IDs []entity.MatchI
 	results := make([]*dataloader.Result[[]*entity.MapStat], len(IDs))
 	for i := range results {
 		results[i] = &dataloader.Result[[]*entity.MapStat]{
-			Error: errors.New("not found"),
+			Data: []*entity.MapStat{},
 		}
 	}
 
