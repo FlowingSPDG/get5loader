@@ -7,24 +7,24 @@ import (
 	"github.com/FlowingSPDG/get5loader/backend/gateway/database"
 )
 
-type Mapstats interface {
-	GetMapStats(ctx context.Context, id entity.MapStatsID) (*entity.MapStat, error)
+type Mapstat interface {
+	GetMapStat(ctx context.Context, id entity.MapStatsID) (*entity.MapStat, error)
 	GetMapStatsByMatch(ctx context.Context, matchID entity.MatchID) ([]*entity.MapStat, error)
 	// GetMapStatsByTeam(ctx context.Context, teamID entity.TeamID) ([]*entity.MapStat, error)
 }
 
-type mapstats struct {
+type mapstat struct {
 	repositoryConnector database.RepositoryConnector
 }
 
-func NewMapStats(repositoryConnector database.RepositoryConnector) Mapstats {
-	return &mapstats{
+func NewMapStats(repositoryConnector database.RepositoryConnector) Mapstat {
+	return &mapstat{
 		repositoryConnector: repositoryConnector,
 	}
 }
 
 // GetMapStats implements Mapstats.
-func (m *mapstats) GetMapStats(ctx context.Context, id entity.MapStatsID) (*entity.MapStat, error) {
+func (m *mapstat) GetMapStat(ctx context.Context, id entity.MapStatsID) (*entity.MapStat, error) {
 	if err := m.repositoryConnector.Open(); err != nil {
 		return nil, err
 	}
@@ -47,7 +47,7 @@ func (m *mapstats) GetMapStats(ctx context.Context, id entity.MapStatsID) (*enti
 }
 
 // GetMapStatsByMatch implements Mapstats.
-func (m *mapstats) GetMapStatsByMatch(ctx context.Context, matchID entity.MatchID) ([]*entity.MapStat, error) {
+func (m *mapstat) GetMapStatsByMatch(ctx context.Context, matchID entity.MatchID) ([]*entity.MapStat, error) {
 	if err := m.repositoryConnector.Open(); err != nil {
 		return nil, err
 	}

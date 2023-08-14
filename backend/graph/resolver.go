@@ -10,6 +10,7 @@ type Resolver struct {
 	GameServerUsecase usecase.GameServer
 	UserUsecase       usecase.User
 	MatchUsecase      usecase.Match
+	MapstatUsecase    usecase.Mapstat
 	TeamUsecase       usecase.Team
 	PlayerUsecase     usecase.Player
 }

@@ -6,7 +6,6 @@ package graph
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/FlowingSPDG/get5loader/backend/entity"
 	"github.com/FlowingSPDG/get5loader/backend/g5ctx"
@@ -16,7 +15,12 @@ import (
 
 // MapStats is the resolver for the mapStats field.
 func (r *matchResolver) MapStats(ctx context.Context, obj *model.Match) ([]*model.MapStats, error) {
-	panic(fmt.Errorf("not implemented: MapStats - mapStats"))
+	mapstats, err := r.MapstatUsecase.GetMapStatsByMatch(ctx, entity.MatchID(obj.ID))
+	if err != nil {
+		return nil, err
+	}
+
+	return convertMapStats(mapstats), nil
 }
 
 // RegisterTeam is the resolver for the registerTeam field.
