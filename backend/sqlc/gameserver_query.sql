@@ -13,6 +13,10 @@ INSERT INTO game_servers (
 SELECT * FROM game_servers
 WHERE user_id = ?;
 
+-- name: GetGameServersByUsers :many
+SELECT * FROM game_servers
+WHERE user_id IN (sqlc.slice('user_ids'));
+
 -- name: GetPublicGameServers :many
 SELECT * FROM game_servers
 WHERE is_public = TRUE ;

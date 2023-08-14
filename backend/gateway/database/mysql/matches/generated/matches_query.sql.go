@@ -8,6 +8,7 @@ package matches_gen
 import (
 	"context"
 	"database/sql"
+	"strings"
 )
 
 const addMatch = `-- name: AddMatch :execresult
@@ -148,6 +149,62 @@ WHERE user_id = ?
 
 func (q *Queries) GetMatchesByUser(ctx context.Context, userID string) ([]Match, error) {
 	rows, err := q.db.QueryContext(ctx, getMatchesByUser, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Match
+	for rows.Next() {
+		var i Match
+		if err := rows.Scan(
+			&i.ID,
+			&i.UserID,
+			&i.ServerID,
+			&i.Team1ID,
+			&i.Team2ID,
+			&i.Winner,
+			&i.Cancelled,
+			&i.StartTime,
+			&i.EndTime,
+			&i.MaxMaps,
+			&i.Title,
+			&i.SkipVeto,
+			&i.ApiKey,
+			&i.Team1Score,
+			&i.Team2Score,
+			&i.Forfeit,
+			&i.Status,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getMatchesByUsers = `-- name: GetMatchesByUsers :many
+SELECT id, user_id, server_id, team1_id, team2_id, winner, cancelled, start_time, end_time, max_maps, title, skip_veto, api_key, team1_score, team2_score, forfeit, status FROM matches
+WHERE user_id IN (/*SLICE:user_ids*/?)
+`
+
+func (q *Queries) GetMatchesByUsers(ctx context.Context, userIds []string) ([]Match, error) {
+	query := getMatchesByUsers
+	var queryParams []interface{}
+	if len(userIds) > 0 {
+		for _, v := range userIds {
+			queryParams = append(queryParams, v)
+		}
+		query = strings.Replace(query, "/*SLICE:user_ids*/?", strings.Repeat(",?", len(userIds))[1:], 1)
+	} else {
+		query = strings.Replace(query, "/*SLICE:user_ids*/?", "NULL", 1)
+	}
+	rows, err := q.db.QueryContext(ctx, query, queryParams...)
 	if err != nil {
 		return nil, err
 	}

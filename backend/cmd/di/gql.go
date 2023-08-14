@@ -12,6 +12,7 @@ import (
 	config "github.com/FlowingSPDG/get5loader/backend/cfg"
 	"github.com/FlowingSPDG/get5loader/backend/g5ctx"
 	"github.com/FlowingSPDG/get5loader/backend/graph"
+	"github.com/FlowingSPDG/get5loader/backend/graph/dataloaders"
 	"github.com/FlowingSPDG/get5loader/backend/service/jwt"
 	hash "github.com/FlowingSPDG/get5loader/backend/service/password_hash"
 	"github.com/FlowingSPDG/get5loader/backend/usecase"
@@ -23,12 +24,16 @@ func InitializeGraphQLHandler(cfg config.Config) gin.HandlerFunc {
 	passwordHasher := hash.NewPasswordHasher(bcrypt.DefaultCost)
 
 	// usecases
-	gameServerUc := usecase.NewGameServer()
 	userUc := usecase.NewUser(jwtService, passwordHasher)
-	matchUc := usecase.NewMatch()
-	mapStatUc := usecase.NewMapStats()
 	teamUc := usecase.NewTeam()
 	playerUc := usecase.NewPlayer()
+	gameServerUc := usecase.NewGameServer()
+	matchUc := usecase.NewMatch()
+	mapStatUc := usecase.NewMapStats()
+	playerStatUc := usecase.NewPlayerStat()
+
+	// dataloader
+	dl := dataloaders.NewLoaders(playerUc, matchUc, teamUc, mapStatUc, playerStatUc, gameServerUc)
 
 	// handler
 	h := handler.NewDefaultServer(graph.NewExecutableSchema(graph.Config{Resolvers: &graph.Resolver{
@@ -38,6 +43,7 @@ func InitializeGraphQLHandler(cfg config.Config) gin.HandlerFunc {
 		MapstatUsecase:    mapStatUc,
 		TeamUsecase:       teamUc,
 		PlayerUsecase:     playerUc,
+		DataLoader:        dl,
 	}}))
 
 	// middleware
@@ -53,10 +59,15 @@ func InitializeGraphQLHandler(cfg config.Config) gin.HandlerFunc {
 			return
 		}
 
+		// DataLoaderのキャッシュをクリアする
+		dl.ClearAll()
+
 		// contextにuserIDを入れる
 		g5ctx.SetUserTokenGinContext(c, token)
 		g5ctx.SetOperationGinContext(c, g5ctx.OperationTypeUser)
 		c.Request = c.Request.WithContext(c)
+
+		// serve
 		h.ServeHTTP(c.Writer, c.Request)
 	}
 }

@@ -38,6 +38,7 @@ type Config struct {
 }
 
 type ResolverRoot interface {
+	MapStats() MapStatsResolver
 	Match() MatchResolver
 	Mutation() MutationResolver
 	Query() QueryResolver
@@ -170,6 +171,9 @@ type ComplexityRoot struct {
 	}
 }
 
+type MapStatsResolver interface {
+	Playerstats(ctx context.Context, obj *model.MapStats) ([]*model.PlayerStats, error)
+}
 type MatchResolver interface {
 	Team1(ctx context.Context, obj *model.Match) (*model.Team, error)
 	Team2(ctx context.Context, obj *model.Match) (*model.Team, error)
@@ -1856,7 +1860,7 @@ func (ec *executionContext) _MapStats_playerstats(ctx context.Context, field gra
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.Playerstats, nil
+		return ec.resolvers.MapStats().Playerstats(rctx, obj)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1877,8 +1881,8 @@ func (ec *executionContext) fieldContext_MapStats_playerstats(ctx context.Contex
 	fc = &graphql.FieldContext{
 		Object:     "MapStats",
 		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
+		IsMethod:   true,
+		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
 			case "id":
@@ -8103,22 +8107,22 @@ func (ec *executionContext) _MapStats(ctx context.Context, sel ast.SelectionSet,
 		case "id":
 			out.Values[i] = ec._MapStats_id(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				out.Invalids++
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "matchId":
 			out.Values[i] = ec._MapStats_matchId(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				out.Invalids++
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "mapNumber":
 			out.Values[i] = ec._MapStats_mapNumber(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				out.Invalids++
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "mapName":
 			out.Values[i] = ec._MapStats_mapName(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				out.Invalids++
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "startedAt":
 			out.Values[i] = ec._MapStats_startedAt(ctx, field, obj)
@@ -8129,18 +8133,49 @@ func (ec *executionContext) _MapStats(ctx context.Context, sel ast.SelectionSet,
 		case "team1score":
 			out.Values[i] = ec._MapStats_team1score(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				out.Invalids++
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "team2score":
 			out.Values[i] = ec._MapStats_team2score(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				out.Invalids++
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "playerstats":
-			out.Values[i] = ec._MapStats_playerstats(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				out.Invalids++
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._MapStats_playerstats(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
 			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}

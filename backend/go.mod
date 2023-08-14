@@ -11,6 +11,7 @@ require (
 	github.com/go-sql-driver/mysql v1.7.1
 	github.com/golang-jwt/jwt/v5 v5.0.0
 	github.com/google/uuid v1.3.0
+	github.com/graph-gophers/dataloader/v7 v7.1.0
 	github.com/rumblefrog/go-a2s v1.0.2
 	github.com/stretchr/testify v1.8.4
 	github.com/vektah/gqlparser/v2 v2.5.8

@@ -124,3 +124,32 @@ func (tr *teamsRepository) GetTeamsByUser(ctx context.Context, userID entity.Use
 
 	return ret, nil
 }
+
+// GetTeamsByUsers implements database.TeamsRepository.
+func (tr *teamsRepository) GetTeamsByUsers(ctx context.Context, userIDs []entity.UserID) (map[entity.UserID][]*database.Team, error) {
+	ids := database.IDsToString(userIDs)
+	teams, err := tr.queries.GetTeamsByUsers(ctx, ids)
+	if err != nil {
+		return nil, database.NewInternalError(err)
+	}
+
+	ret := make(map[entity.UserID][]*database.Team, len(userIDs))
+	// nilが渡されるのを防ぐため、空のスライスを生成する
+	for _, userID := range userIDs {
+		ret[userID] = []*database.Team{}
+	}
+
+	for _, team := range teams {
+		ret[entity.UserID(team.UserID)] = append(ret[entity.UserID(team.UserID)], &database.Team{
+			ID:     entity.TeamID(team.ID),
+			UserID: entity.UserID(team.UserID),
+			Name:   team.Name,
+			Tag:    team.Tag,
+			Flag:   team.Flag,
+			Logo:   team.Logo,
+			Public: team.PublicTeam.Valid && team.PublicTeam.Bool,
+		})
+	}
+
+	return ret, nil
+}

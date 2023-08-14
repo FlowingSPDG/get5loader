@@ -6,7 +6,11 @@ WHERE id = ? LIMIT 1;
 SELECT * FROM player_stats
 WHERE match_id = ?;
 
--- name: GetPlayerStatsByMap :many
+-- name: GetPlayerStatsByMapStats :many
+SELECT * FROM player_stats
+WHERE map_id IN (sqlc.slice('map_ids'));
+
+-- name: GetPlayerStatsByMapStat :many
 SELECT * FROM player_stats
 WHERE map_id = ?;
 

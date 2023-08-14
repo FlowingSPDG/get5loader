@@ -11,6 +11,8 @@ type Match interface {
 	CreateMatch(ctx context.Context, userID entity.UserID, serverID entity.GameServerID, team1ID entity.TeamID, team2ID entity.TeamID, maxMaps int, title string) (*entity.Match, error)
 	GetMatch(ctx context.Context, matchID entity.MatchID) (*entity.Match, error)
 	GetMatchesByUser(ctx context.Context, userID entity.UserID) ([]*entity.Match, error)
+	// BATCH
+	BatchGetMatchesByUser(ctx context.Context, userIDs []entity.UserID) (map[entity.UserID][]*entity.Match, error)
 }
 
 type match struct {
@@ -68,4 +70,24 @@ func (gm *match) GetMatchesByUser(ctx context.Context, userID entity.UserID) ([]
 	}
 
 	return convertMatches(matches), nil
+}
+
+// GetMatchesByUsers implements Match.
+func (*match) BatchGetMatchesByUser(ctx context.Context, userIDs []entity.UserID) (map[entity.UserID][]*entity.Match, error) {
+	// TODO: publicでない場合の認証処理の追加
+	repositoryConnector := database.GetConnection(ctx)
+
+	matchRepository := repositoryConnector.GetMatchesRepository()
+
+	matches, err := matchRepository.GetMatchesByUsers(ctx, userIDs)
+	if err != nil {
+		return nil, err
+	}
+
+	ret := make(map[entity.UserID][]*entity.Match, len(userIDs))
+	for userID, matches := range matches {
+		ret[userID] = convertMatches(matches)
+	}
+
+	return ret, nil
 }

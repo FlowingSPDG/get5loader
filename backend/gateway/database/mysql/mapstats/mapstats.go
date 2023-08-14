@@ -86,6 +86,37 @@ func (msr *MapStatRepository) GetMapStatsByMatch(ctx context.Context, matchID en
 	return mapStats, nil
 }
 
+// GetMapStatsByMatches implements database.MapStatRepository.
+func (msr *MapStatRepository) GetMapStatsByMatches(ctx context.Context, matchIDs []entity.MatchID) (map[entity.MatchID][]*database.MapStat, error) {
+	ids := database.IDsToString(matchIDs)
+	mapstats, err := msr.queries.GetMapStatsByMatches(ctx, ids)
+	if err != nil {
+		return nil, database.NewInternalError(err)
+	}
+
+	ret := make(map[entity.MatchID][]*database.MapStat, len(matchIDs))
+	// nilが渡されるのを防ぐため、空のスライスを生成する
+	for _, matchID := range matchIDs {
+		ret[matchID] = make([]*database.MapStat, 0)
+	}
+
+	for _, m := range mapstats {
+		winner := entity.TeamID(m.Winner.String)
+		ret[entity.MatchID(m.MatchID)] = append(ret[entity.MatchID(m.MatchID)], &database.MapStat{
+			ID:         entity.MapStatsID(m.ID),
+			MatchID:    entity.MatchID(m.MatchID),
+			MapNumber:  m.MapNumber,
+			MapName:    m.MapName,
+			StartTime:  &m.StartTime.Time,
+			EndTime:    &m.EndTime.Time,
+			Winner:     &winner,
+			Team1Score: m.Team1Score,
+			Team2Score: m.Team2Score,
+		})
+	}
+	return ret, nil
+}
+
 // GetMapStatsByMatchAndMap implements database.MapStatRepository.
 func (msr *MapStatRepository) GetMapStatsByMatchAndMap(ctx context.Context, matchID entity.MatchID, mapNumber uint32) (*database.MapStat, error) {
 	res, err := msr.queries.GetMapStatsByMatchAndMap(ctx, mapstats_gen.GetMapStatsByMatchAndMapParams{

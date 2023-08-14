@@ -2,6 +2,10 @@
 SELECT * FROM map_stats
 WHERE id = ? LIMIT 1;
 
+-- name: GetMapStatsByMatches :many
+SELECT * FROM map_stats
+WHERE match_id IN (sqlc.slice('match_ids'));
+
 -- name: GetMapStatsByMatch :many
 SELECT * FROM map_stats
 WHERE match_id = ?;

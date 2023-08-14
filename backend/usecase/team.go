@@ -27,6 +27,8 @@ type Team interface {
 	GetTeam(ctx context.Context, id entity.TeamID) (*entity.Team, error)
 	GetTeamsByMatch(ctx context.Context, matchID entity.MatchID) (*entity.Team, *entity.Team, error)
 	GetTeamsByUser(ctx context.Context, userID entity.UserID) ([]*entity.Team, error)
+	// BATCH
+	BatchGetTeamsByUsers(ctx context.Context, matchIDs []entity.UserID) (map[entity.UserID][]*entity.Team, error)
 }
 
 type team struct {
@@ -109,6 +111,24 @@ func (t *team) GetTeamsByUser(ctx context.Context, userID entity.UserID) ([]*ent
 	ret := make([]*entity.Team, 0, len(teams))
 	for _, team := range teams {
 		ret = append(ret, convertTeam(team))
+	}
+	return ret, nil
+}
+
+// BatchGetTeamsByMatch implements Team.
+func (t *team) BatchGetTeamsByUsers(ctx context.Context, matchIDs []entity.UserID) (map[entity.UserID][]*entity.Team, error) {
+	repositoryConnector := database.GetConnection(ctx)
+
+	teamRepository := repositoryConnector.GetTeamsRepository()
+
+	teams, err := teamRepository.GetTeamsByUsers(ctx, matchIDs)
+	if err != nil {
+		return nil, err
+	}
+
+	ret := make(map[entity.UserID][]*entity.Team, len(matchIDs))
+	for userID, teams := range teams {
+		ret[userID] = convertTeams(teams)
 	}
 	return ret, nil
 }

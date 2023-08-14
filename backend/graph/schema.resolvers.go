@@ -13,6 +13,16 @@ import (
 	"github.com/FlowingSPDG/get5loader/backend/usecase"
 )
 
+// Playerstats is the resolver for the playerstats field.
+func (r *mapStatsResolver) Playerstats(ctx context.Context, obj *model.MapStats) ([]*model.PlayerStats, error) {
+	thunk := r.DataLoader.PlayerStatsByMapStatID.Load(ctx, entity.MapStatsID(obj.ID))
+	playerstats, err := thunk()
+	if err != nil {
+		return nil, err
+	}
+	return convertPlayerstats(playerstats), nil
+}
+
 // Team1 is the resolver for the team1 field.
 func (r *matchResolver) Team1(ctx context.Context, obj *model.Match) (*model.Team, error) {
 	team1, _, err := r.TeamUsecase.GetTeamsByMatch(ctx, entity.MatchID(obj.ID))
@@ -33,7 +43,8 @@ func (r *matchResolver) Team2(ctx context.Context, obj *model.Match) (*model.Tea
 
 // MapStats is the resolver for the mapStats field.
 func (r *matchResolver) MapStats(ctx context.Context, obj *model.Match) ([]*model.MapStats, error) {
-	mapstats, err := r.MapstatUsecase.GetMapStatsByMatch(ctx, entity.MatchID(obj.ID))
+	thunk := r.DataLoader.MapStatsByMatchID.Load(ctx, entity.MatchID(obj.ID))
+	mapstats, err := thunk()
 	if err != nil {
 		return nil, err
 	}
@@ -133,7 +144,8 @@ func (r *queryResolver) GetTeamsByUser(ctx context.Context) ([]*model.Team, erro
 	if err != nil {
 		return nil, err
 	}
-	teams, err := r.TeamUsecase.GetTeamsByUser(ctx, token.UserID)
+	thunk := r.DataLoader.TeamByUserID.Load(ctx, token.UserID)
+	teams, err := thunk()
 	if err != nil {
 		return nil, err
 	}
@@ -153,7 +165,8 @@ func (r *queryResolver) GetMatch(ctx context.Context, id string) (*model.Match, 
 
 // GetMatchesByUser is the resolver for the getMatchesByUser field.
 func (r *queryResolver) GetMatchesByUser(ctx context.Context, id string) ([]*model.Match, error) {
-	matches, err := r.MatchUsecase.GetMatchesByUser(ctx, entity.UserID(id))
+	thunk := r.DataLoader.MatchByUserID.Load(ctx, entity.UserID(id))
+	matches, err := thunk()
 	if err != nil {
 		return nil, err
 	}
@@ -168,7 +181,8 @@ func (r *queryResolver) GetMatchesByMe(ctx context.Context) ([]*model.Match, err
 		return nil, err
 	}
 
-	matches, err := r.MatchUsecase.GetMatchesByUser(ctx, token.UserID)
+	thunk := r.DataLoader.MatchByUserID.Load(ctx, token.UserID)
+	matches, err := thunk()
 	if err != nil {
 		return nil, err
 	}
@@ -198,7 +212,8 @@ func (r *queryResolver) GetPublicServers(ctx context.Context) ([]*model.GameServ
 
 // Players is the resolver for the players field.
 func (r *teamResolver) Players(ctx context.Context, obj *model.Team) ([]*model.Player, error) {
-	p, err := r.PlayerUsecase.GetPlayersByTeam(ctx, entity.TeamID(obj.ID))
+	thunk := r.DataLoader.PlayersByTeamID.Load(ctx, entity.TeamID(obj.ID))
+	p, err := thunk()
 	if err != nil {
 		return nil, err
 	}
@@ -207,7 +222,8 @@ func (r *teamResolver) Players(ctx context.Context, obj *model.Team) ([]*model.P
 
 // Gameservers is the resolver for the gameservers field.
 func (r *userResolver) Gameservers(ctx context.Context, obj *model.User) ([]*model.GameServer, error) {
-	gss, err := r.GameServerUsecase.GetGameServersByUser(ctx, entity.UserID(obj.ID))
+	thunk := r.DataLoader.ServersByUserID.Load(ctx, entity.UserID(obj.ID))
+	gss, err := thunk()
 	if err != nil {
 		return nil, err
 	}
@@ -217,7 +233,8 @@ func (r *userResolver) Gameservers(ctx context.Context, obj *model.User) ([]*mod
 
 // Teams is the resolver for the teams field.
 func (r *userResolver) Teams(ctx context.Context, obj *model.User) ([]*model.Team, error) {
-	teams, err := r.TeamUsecase.GetTeamsByUser(ctx, entity.UserID(obj.ID))
+	thunk := r.DataLoader.TeamByUserID.Load(ctx, entity.UserID(obj.ID))
+	teams, err := thunk()
 	if err != nil {
 		return nil, err
 	}
@@ -227,13 +244,17 @@ func (r *userResolver) Teams(ctx context.Context, obj *model.User) ([]*model.Tea
 
 // Matches is the resolver for the matches field.
 func (r *userResolver) Matches(ctx context.Context, obj *model.User) ([]*model.Match, error) {
-	matches, err := r.MatchUsecase.GetMatchesByUser(ctx, entity.UserID(obj.ID))
+	thunk := r.DataLoader.MatchByUserID.Load(ctx, entity.UserID(obj.ID))
+	matches, err := thunk()
 	if err != nil {
 		return nil, err
 	}
 
 	return convertMatches(matches), nil
 }
+
+// MapStats returns MapStatsResolver implementation.
+func (r *Resolver) MapStats() MapStatsResolver { return &mapStatsResolver{r} }
 
 // Match returns MatchResolver implementation.
 func (r *Resolver) Match() MatchResolver { return &matchResolver{r} }
@@ -250,6 +271,7 @@ func (r *Resolver) Team() TeamResolver { return &teamResolver{r} }
 // User returns UserResolver implementation.
 func (r *Resolver) User() UserResolver { return &userResolver{r} }
 
+type mapStatsResolver struct{ *Resolver }
 type matchResolver struct{ *Resolver }
 type mutationResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }

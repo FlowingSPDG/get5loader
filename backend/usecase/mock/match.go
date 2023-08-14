@@ -35,6 +35,21 @@ func (m *MockMatch) EXPECT() *MockMatchMockRecorder {
 	return m.recorder
 }
 
+// BatchGetMatchesByUser mocks base method.
+func (m *MockMatch) BatchGetMatchesByUser(ctx context.Context, userIDs []entity.UserID) (map[entity.UserID][]*entity.Match, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "BatchGetMatchesByUser", ctx, userIDs)
+	ret0, _ := ret[0].(map[entity.UserID][]*entity.Match)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// BatchGetMatchesByUser indicates an expected call of BatchGetMatchesByUser.
+func (mr *MockMatchMockRecorder) BatchGetMatchesByUser(ctx, userIDs interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "BatchGetMatchesByUser", reflect.TypeOf((*MockMatch)(nil).BatchGetMatchesByUser), ctx, userIDs)
+}
+
 // CreateMatch mocks base method.
 func (m *MockMatch) CreateMatch(ctx context.Context, userID entity.UserID, serverID entity.GameServerID, team1ID, team2ID entity.TeamID, maxMaps int, title string) (*entity.Match, error) {
 	m.ctrl.T.Helper()

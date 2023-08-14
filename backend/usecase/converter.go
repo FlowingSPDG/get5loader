@@ -27,7 +27,7 @@ func convertGameServers(gss []*database.GameServer) []*entity.GameServer {
 	}
 	return ret
 }
-func convertMapstat(ms *database.MapStat, playerstats []*database.PlayerStat) *entity.MapStat {
+func convertMapstat(ms *database.MapStat) *entity.MapStat {
 	return &entity.MapStat{
 		ID:         ms.ID,
 		MatchID:    ms.MatchID,
@@ -41,10 +41,10 @@ func convertMapstat(ms *database.MapStat, playerstats []*database.PlayerStat) *e
 	}
 }
 
-func convertMapstats(mss []*database.MapStat, pss [][]*database.PlayerStat) []*entity.MapStat {
+func convertMapstats(mss []*database.MapStat) []*entity.MapStat {
 	ret := make([]*entity.MapStat, 0, len(mss))
-	for i, ms := range mss {
-		ret = append(ret, convertMapstat(ms, pss[i]))
+	for _, ms := range mss {
+		ret = append(ret, convertMapstat(ms))
 	}
 	return ret
 }

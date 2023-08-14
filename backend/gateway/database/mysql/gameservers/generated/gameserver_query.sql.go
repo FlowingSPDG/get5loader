@@ -8,6 +8,7 @@ package gameservers_gen
 import (
 	"context"
 	"database/sql"
+	"strings"
 )
 
 const addGameServer = `-- name: AddGameServer :execresult
@@ -77,6 +78,53 @@ WHERE user_id = ?
 
 func (q *Queries) GetGameServersByUser(ctx context.Context, userID string) ([]GameServer, error) {
 	rows, err := q.db.QueryContext(ctx, getGameServersByUser, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GameServer
+	for rows.Next() {
+		var i GameServer
+		if err := rows.Scan(
+			&i.ID,
+			&i.UserID,
+			&i.Ip,
+			&i.Port,
+			&i.RconPassword,
+			&i.DisplayName,
+			&i.IsPublic,
+			&i.Status,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getGameServersByUsers = `-- name: GetGameServersByUsers :many
+SELECT id, user_id, ip, port, rcon_password, display_name, is_public, status FROM game_servers
+WHERE user_id IN (/*SLICE:user_ids*/?)
+`
+
+func (q *Queries) GetGameServersByUsers(ctx context.Context, userIds []string) ([]GameServer, error) {
+	query := getGameServersByUsers
+	var queryParams []interface{}
+	if len(userIds) > 0 {
+		for _, v := range userIds {
+			queryParams = append(queryParams, v)
+		}
+		query = strings.Replace(query, "/*SLICE:user_ids*/?", strings.Repeat(",?", len(userIds))[1:], 1)
+	} else {
+		query = strings.Replace(query, "/*SLICE:user_ids*/?", "NULL", 1)
+	}
+	rows, err := q.db.QueryContext(ctx, query, queryParams...)
 	if err != nil {
 		return nil, err
 	}

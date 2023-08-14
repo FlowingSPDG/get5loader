@@ -114,5 +114,5 @@ models:
         resolver: true
   MapStats:
     fields:
-      playerStats:
+      playerstats:
         resolver: true

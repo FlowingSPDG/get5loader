@@ -1,6 +1,7 @@
 package graph
 
 import (
+	"github.com/FlowingSPDG/get5loader/backend/graph/dataloaders"
 	"github.com/FlowingSPDG/get5loader/backend/usecase"
 )
 
@@ -15,4 +16,5 @@ type Resolver struct {
 	MapstatUsecase    usecase.Mapstat
 	TeamUsecase       usecase.Team
 	PlayerUsecase     usecase.Player
+	DataLoader        *dataloaders.Loaders
 }

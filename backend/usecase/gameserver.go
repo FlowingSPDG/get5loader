@@ -13,11 +13,12 @@ type GameServer interface {
 	// GetGameServer returns a game server.
 	GetGameServer(ctx context.Context, id entity.GameServerID) (*entity.GameServer, error)
 	// GetGameServersByUser returns game servers owned by a user.
-	GetGameServersByUser(ctx context.Context, userID entity.UserID) ([]*entity.GameServer, error)
 	// AddGameServer adds a game server.
 	AddGameServer(ctx context.Context, userID entity.UserID, ip string, port uint32, rconPassword string, name string, isPublic bool) (*entity.GameServer, error)
 	// DeleteGameServer deletes a game server.
 	DeleteGameServer(ctx context.Context, id entity.GameServerID) error
+
+	BatchGetGameServersByUser(ctx context.Context, userIDs []entity.UserID) (map[entity.UserID][]*entity.GameServer, error)
 }
 
 type gameServer struct {
@@ -80,4 +81,24 @@ func (gs *gameServer) GetGameServersByUser(ctx context.Context, userID entity.Us
 	}
 
 	return convertGameServers(gss), nil
+}
+
+// BatchGetGameServersByUser implements GameServer.
+func (gs *gameServer) BatchGetGameServersByUser(ctx context.Context, userIDs []entity.UserID) (map[entity.UserID][]*entity.GameServer, error) {
+	repositoryConnector := database.GetConnection(ctx)
+
+	repository := repositoryConnector.GetGameServersRepository()
+
+	gss, err := repository.GetGameServersByUsers(ctx, userIDs)
+	if err != nil {
+		return nil, err
+	}
+
+	ret := make(map[entity.UserID][]*entity.GameServer, len(userIDs))
+	// nilが渡されるのを防ぐため、空のスライスを生成する
+	for userID, gss := range gss {
+		ret[userID] = convertGameServers(gss)
+	}
+
+	return ret, nil
 }

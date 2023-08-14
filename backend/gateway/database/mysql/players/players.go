@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"fmt"
 
 	"github.com/FlowingSPDG/get5loader/backend/entity"
 	"github.com/FlowingSPDG/get5loader/backend/gateway/database"
@@ -67,6 +68,7 @@ func (pr *playersRepository) GetPlayer(ctx context.Context, id entity.PlayerID) 
 
 // GetPlayersByTeam implements database.PlayersRepository.
 func (pr *playersRepository) GetPlayersByTeam(ctx context.Context, teamID entity.TeamID) ([]*database.Player, error) {
+	fmt.Println("GetPlayersByTeam")
 	res, err := pr.queries.GetPlayersByTeam(ctx, string(teamID))
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
@@ -86,4 +88,29 @@ func (pr *playersRepository) GetPlayersByTeam(ctx context.Context, teamID entity
 	}
 
 	return players, nil
+}
+
+// GetPlayersByTeams implements database.PlayersRepository.
+func (pr *playersRepository) GetPlayersByTeams(ctx context.Context, teamIDs []entity.TeamID) (map[entity.TeamID][]*database.Player, error) {
+	ids := database.IDsToString(teamIDs)
+	players, err := pr.queries.GetPlayersByTeams(ctx, ids)
+	if err != nil {
+		return nil, database.NewInternalError(err)
+	}
+
+	ret := make(map[entity.TeamID][]*database.Player, len(teamIDs))
+	// nilが渡されるのを防ぐため、空のスライスを生成する
+	for _, teamID := range teamIDs {
+		ret[teamID] = make([]*database.Player, 0)
+	}
+
+	for _, p := range players {
+		ret[entity.TeamID(p.TeamID)] = append(ret[entity.TeamID(p.TeamID)], &database.Player{
+			ID:      entity.PlayerID(p.ID),
+			TeamID:  entity.TeamID(p.TeamID),
+			SteamID: entity.SteamID(p.SteamID),
+			Name:    p.Name,
+		})
+	}
+	return ret, nil
 }

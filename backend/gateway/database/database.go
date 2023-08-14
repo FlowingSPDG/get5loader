@@ -96,6 +96,7 @@ type UsersRepositry interface {
 	CreateUser(ctx context.Context, steamID entity.SteamID, name string, admin bool, hash []byte) (entity.UserID, error)
 	// GetUser returns a user.
 	GetUser(ctx context.Context, id entity.UserID) (*User, error)
+	// GetUserBySteamID returns a user.
 	GetUserBySteamID(ctx context.Context, steamID entity.SteamID) (*User, error)
 }
 
@@ -109,6 +110,8 @@ type GameServersRepository interface {
 	GetPublicGameServers(ctx context.Context) ([]*GameServer, error)
 	// GetGameServersByUser returns game servers owned by a user.
 	GetGameServersByUser(ctx context.Context, userID entity.UserID) ([]*GameServer, error)
+	// GetGameServersByUsers returns game servers owned by users.
+	GetGameServersByUsers(ctx context.Context, userIDs []entity.UserID) (map[entity.UserID][]*GameServer, error)
 	// DeleteGameServer deletes a game server.
 	DeleteGameServer(ctx context.Context, id entity.GameServerID) error
 }
@@ -121,6 +124,8 @@ type MatchesRepository interface {
 	GetMatch(ctx context.Context, id entity.MatchID) (*Match, error)
 	// GetMatchesByUser returns matches owned by a user.
 	GetMatchesByUser(ctx context.Context, userID entity.UserID) ([]*Match, error)
+	// GetMatchesByUsers returns matches owned by users.
+	GetMatchesByUsers(ctx context.Context, userIDs []entity.UserID) (map[entity.UserID][]*Match, error)
 	// GetMatchesByTeam returns matches owned by a team.
 	GetMatchesByTeam(ctx context.Context, teamID entity.TeamID) ([]*Match, error)
 	// GetMatchesByWinner returns matches won by a team.
@@ -145,6 +150,8 @@ type MapStatRepository interface {
 	GetMapStat(ctx context.Context, id entity.MapStatsID) (*MapStat, error)
 	// GetMapStatsByMatch returns map stats owned by a match.
 	GetMapStatsByMatch(ctx context.Context, matchID entity.MatchID) ([]*MapStat, error)
+	// BatchGetMapStatsByMatches returns map stats owned by matches.
+	GetMapStatsByMatches(ctx context.Context, matchIDs []entity.MatchID) (map[entity.MatchID][]*MapStat, error)
 	// GetMapStatsByMatchAndMap returns map stats owned by a match and map number.
 	GetMapStatsByMatchAndMap(ctx context.Context, matchID entity.MatchID, mapNumber uint32) (*MapStat, error)
 }
@@ -158,7 +165,7 @@ type PlayerStatRepository interface {
 	// GetPlayerStatsByMatch returns player stats owned by a match.
 	GetPlayerStatsByMatch(ctx context.Context, matchID entity.MatchID) ([]*PlayerStat, error)
 	// GetPlayerStatsByMapstats returns player stats owned by a map stats.
-	GetPlayerStatsByMapstats(ctx context.Context, mapStatsID entity.MapStatsID) ([]*PlayerStat, error)
+	GetPlayerStatsByMapstats(ctx context.Context, mapStatsID []entity.MapStatsID) (map[entity.MapStatsID][]*PlayerStat, error)
 }
 
 // TeamsRepository is an interface for team repository.
@@ -169,6 +176,8 @@ type TeamsRepository interface {
 	GetTeam(ctx context.Context, id entity.TeamID) (*Team, error)
 	// GetTeamsByUser returns teams owned by a user.
 	GetTeamsByUser(ctx context.Context, userID entity.UserID) ([]*Team, error)
+	// GetTeamsByUsers returns teams owned by users.
+	GetTeamsByUsers(ctx context.Context, userIDs []entity.UserID) (map[entity.UserID][]*Team, error)
 	// GetPublicTeams returns public teams.
 	GetPublicTeams(ctx context.Context) ([]*Team, error)
 }
@@ -181,6 +190,8 @@ type PlayersRepository interface {
 	GetPlayer(ctx context.Context, id entity.PlayerID) (*Player, error)
 	// GetPlayersByTeam returns players owned by a team.
 	GetPlayersByTeam(ctx context.Context, teamID entity.TeamID) ([]*Player, error)
+	// GetPlayersByTeams returns players owned by teams.
+	GetPlayersByTeams(ctx context.Context, teamIDs []entity.TeamID) (map[entity.TeamID][]*Player, error)
 	// DeletePlayer deletes a player.
 	// DeletePlayer(ctx context.Context, id int64) error
 }

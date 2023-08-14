@@ -125,6 +125,40 @@ func (mr *matchRepository) GetMatchesByUser(ctx context.Context, userID entity.U
 	return ret, nil
 }
 
+// GetMatchesByUsers implements database.MatchesRepository.
+func (mr *matchRepository) GetMatchesByUsers(ctx context.Context, userIDs []entity.UserID) (map[entity.UserID][]*database.Match, error) {
+	ids := database.IDsToString(userIDs)
+	matches, err := mr.queries.GetMatchesByUsers(ctx, ids)
+	if err != nil {
+		return nil, database.NewInternalError(err)
+	}
+
+	ret := make(map[entity.UserID][]*database.Match, len(userIDs))
+	for _, match := range matches {
+		winner := entity.TeamID(match.Winner.String)
+		ret[entity.UserID(match.UserID)] = append(ret[entity.UserID(match.UserID)], &database.Match{
+			ID:         entity.MatchID(match.ID),
+			UserID:     entity.UserID(match.UserID),
+			ServerID:   entity.GameServerID(match.ServerID),
+			Team1ID:    entity.TeamID(match.Team1ID),
+			Team2ID:    entity.TeamID(match.Team2ID),
+			Winner:     winner,
+			StartTime:  &match.StartTime.Time,
+			EndTime:    &match.EndTime.Time,
+			MaxMaps:    match.MaxMaps,
+			Title:      match.Title,
+			SkipVeto:   match.SkipVeto,
+			APIKey:     match.ApiKey,
+			Team1Score: match.Team1Score,
+			Team2Score: match.Team2Score,
+			Forfeit:    &match.Forfeit.Bool,
+			Status:     entity.MATCH_STATUS(match.Status),
+		})
+	}
+
+	return ret, nil
+}
+
 // CancelMatch implements database.MatchRepository.
 func (mr *matchRepository) CancelMatch(ctx context.Context, matchID entity.MatchID) error {
 	if _, err := mr.queries.CancelMatch(ctx, string(matchID)); err != nil {
