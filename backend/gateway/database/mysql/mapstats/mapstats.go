@@ -37,7 +37,7 @@ func (msr *MapStatRepository) GetMapStat(ctx context.Context, id entity.MapStats
 	res, err := msr.queries.GetMapStat(ctx, string(id))
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return nil, database.NewNotFoundError(err)
+			return nil, database.NewNotFoundError(nil)
 		}
 		return nil, database.NewInternalError(err)
 	}
@@ -125,7 +125,7 @@ func (msr *MapStatRepository) GetMapStatsByMatchAndMap(ctx context.Context, matc
 	})
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return nil, database.NewNotFoundError(err)
+			return nil, database.NewNotFoundError(nil)
 		}
 		return nil, database.NewInternalError(err)
 	}

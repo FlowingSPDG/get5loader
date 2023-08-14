@@ -29,6 +29,7 @@ type Team interface {
 	GetTeamsByUser(ctx context.Context, userID entity.UserID) ([]*entity.Team, error)
 	// BATCH
 	BatchGetTeamsByUsers(ctx context.Context, matchIDs []entity.UserID) (map[entity.UserID][]*entity.Team, error)
+	BatchGetTeams(ctx context.Context, teamIDs []entity.TeamID) ([]*entity.Team, error)
 }
 
 type team struct {
@@ -131,4 +132,18 @@ func (t *team) BatchGetTeamsByUsers(ctx context.Context, matchIDs []entity.UserI
 		ret[userID] = convertTeams(teams)
 	}
 	return ret, nil
+}
+
+// BatchGetTeams implements Team.
+func (t *team) BatchGetTeams(ctx context.Context, teamIDs []entity.TeamID) ([]*entity.Team, error) {
+	repositoryConnector := database.GetConnection(ctx)
+
+	teamRepository := repositoryConnector.GetTeamsRepository()
+
+	teams, err := teamRepository.GetTeams(ctx, teamIDs)
+	if err != nil {
+		return nil, err
+	}
+
+	return convertTeams(teams), nil
 }

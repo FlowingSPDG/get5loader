@@ -83,7 +83,7 @@ func (tr *teamsRepository) GetTeam(ctx context.Context, id entity.TeamID) (*data
 	team, err := tr.queries.GetTeam(ctx, string(id))
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return nil, database.NewNotFoundError(err)
+			return nil, database.NewNotFoundError(nil)
 		}
 		return nil, database.NewInternalError(err)
 	}
@@ -97,6 +97,32 @@ func (tr *teamsRepository) GetTeam(ctx context.Context, id entity.TeamID) (*data
 		Logo:   team.Logo,
 		Public: team.PublicTeam.Valid && team.PublicTeam.Bool,
 	}, nil
+}
+
+// GetTeams implements database.TeamsRepository.
+func (tr *teamsRepository) GetTeams(ctx context.Context, ids []entity.TeamID) ([]*database.Team, error) {
+	teams, err := tr.queries.GetTeams(ctx, database.IDsToString(ids))
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, database.NewNotFoundError(nil)
+		}
+		return nil, database.NewInternalError(err)
+	}
+
+	ret := make([]*database.Team, 0, len(teams))
+	for _, team := range teams {
+		ret = append(ret, &database.Team{
+			ID:     entity.TeamID(team.ID),
+			UserID: entity.UserID(team.UserID),
+			Name:   team.Name,
+			Tag:    team.Tag,
+			Flag:   team.Flag,
+			Logo:   team.Logo,
+			Public: team.PublicTeam.Valid && team.PublicTeam.Bool,
+		})
+	}
+
+	return ret, nil
 }
 
 // GetTeamsByUser implements database.TeamsRepository.

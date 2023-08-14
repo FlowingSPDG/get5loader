@@ -35,7 +35,9 @@ type Match struct {
 	ID         string      `json:"id"`
 	UserID     string      `json:"userId"`
 	Team1      *Team       `json:"team1"`
+	Team1Id    string      `json:"team1Id"`
 	Team2      *Team       `json:"team2"`
+	Team2Id    string      `json:"team2Id"`
 	Winner     string      `json:"winner"`
 	StartedAt  *time.Time  `json:"startedAt,omitempty"`
 	EndedAt    *time.Time  `json:"endedAt,omitempty"`

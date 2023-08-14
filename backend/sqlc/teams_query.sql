@@ -2,6 +2,10 @@
 SELECT * FROM teams
 WHERE id = ? LIMIT 1;
 
+-- name: GetTeams :many
+SELECT * FROM teams
+WHERE id IN (sqlc.slice('ids'));
+
 -- name: GetTeamByUserID :many
 SELECT * FROM teams
 WHERE user_id = ?;

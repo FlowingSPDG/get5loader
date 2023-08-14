@@ -174,6 +174,8 @@ type TeamsRepository interface {
 	AddTeam(ctx context.Context, userID entity.UserID, name string, tag string, flag string, logo string, public bool) (entity.TeamID, error)
 	// GetTeam returns a team.
 	GetTeam(ctx context.Context, id entity.TeamID) (*Team, error)
+	// GetTeams returns teams.
+	GetTeams(ctx context.Context, ids []entity.TeamID) ([]*Team, error)
 	// GetTeamsByUser returns teams owned by a user.
 	GetTeamsByUser(ctx context.Context, userID entity.UserID) ([]*Team, error)
 	// GetTeamsByUsers returns teams owned by users.

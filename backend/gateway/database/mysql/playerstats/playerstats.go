@@ -38,7 +38,7 @@ func (psr *PlayerStatRepository) GetPlayerStatsByMapstats(ctx context.Context, m
 	stats, err := psr.queries.GetPlayerStatsByMapStats(ctx, ids)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return nil, database.NewNotFoundError(err)
+			return nil, database.NewNotFoundError(nil)
 		}
 		return nil, database.NewInternalError(err)
 	}
@@ -87,7 +87,7 @@ func (psr *PlayerStatRepository) GetPlayerStatsByMatch(ctx context.Context, matc
 	stats, err := psr.queries.GetPlayerStatsByMatch(ctx, string(matchID))
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return nil, database.NewNotFoundError(err)
+			return nil, database.NewNotFoundError(nil)
 		}
 		return nil, database.NewInternalError(err)
 	}
@@ -134,7 +134,7 @@ func (psr *PlayerStatRepository) GetPlayerStatsBySteamID(ctx context.Context, st
 	stats, err := psr.queries.GetPlayerStatsBySteamID(ctx, uint64(steamID))
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return nil, database.NewNotFoundError(err)
+			return nil, database.NewNotFoundError(nil)
 		}
 		return nil, database.NewInternalError(err)
 	}

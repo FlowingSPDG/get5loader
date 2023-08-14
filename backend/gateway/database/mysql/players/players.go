@@ -53,7 +53,7 @@ func (pr *playersRepository) GetPlayer(ctx context.Context, id entity.PlayerID) 
 	res, err := pr.queries.GetPlayer(ctx, string(id))
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return nil, database.NewNotFoundError(err)
+			return nil, database.NewNotFoundError(nil)
 		}
 		return nil, database.NewInternalError(err)
 	}

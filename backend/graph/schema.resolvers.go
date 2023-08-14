@@ -25,20 +25,22 @@ func (r *mapStatsResolver) Playerstats(ctx context.Context, obj *model.MapStats)
 
 // Team1 is the resolver for the team1 field.
 func (r *matchResolver) Team1(ctx context.Context, obj *model.Match) (*model.Team, error) {
-	team1, _, err := r.TeamUsecase.GetTeamsByMatch(ctx, entity.MatchID(obj.ID))
+	thunk := r.DataLoader.TeamsByTeamID.Load(ctx, entity.TeamID(obj.Team1Id))
+	team, err := thunk()
 	if err != nil {
 		return nil, err
 	}
-	return convertTeam(team1), nil
+	return convertTeam(team), nil
 }
 
 // Team2 is the resolver for the team2 field.
 func (r *matchResolver) Team2(ctx context.Context, obj *model.Match) (*model.Team, error) {
-	_, team2, err := r.TeamUsecase.GetTeamsByMatch(ctx, entity.MatchID(obj.ID))
+	thunk := r.DataLoader.TeamsByTeamID.Load(ctx, entity.TeamID(obj.Team2Id))
+	team, err := thunk()
 	if err != nil {
 		return nil, err
 	}
-	return convertTeam(team2), nil
+	return convertTeam(team), nil
 }
 
 // MapStats is the resolver for the mapStats field.

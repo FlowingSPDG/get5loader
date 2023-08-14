@@ -2,7 +2,6 @@ package dataloaders
 
 import (
 	"context"
-	"errors"
 
 	"github.com/FlowingSPDG/get5loader/backend/entity"
 	"github.com/FlowingSPDG/get5loader/backend/usecase"
@@ -18,7 +17,7 @@ func (u *userMatchLoader) BatchGetMatches(ctx context.Context, IDs []entity.User
 	results := make([]*dataloader.Result[[]*entity.Match], len(IDs))
 	for i := range results {
 		results[i] = &dataloader.Result[[]*entity.Match]{
-			Error: errors.New("not found"),
+			Data: []*entity.Match{},
 		}
 	}
 

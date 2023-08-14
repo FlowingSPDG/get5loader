@@ -84,8 +84,10 @@ type ComplexityRoot struct {
 		SkipVeto   func(childComplexity int) int
 		StartedAt  func(childComplexity int) int
 		Team1      func(childComplexity int) int
+		Team1Id    func(childComplexity int) int
 		Team1Score func(childComplexity int) int
 		Team2      func(childComplexity int) int
+		Team2Id    func(childComplexity int) int
 		Team2Score func(childComplexity int) int
 		Title      func(childComplexity int) int
 		UserID     func(childComplexity int) int
@@ -176,6 +178,7 @@ type MapStatsResolver interface {
 }
 type MatchResolver interface {
 	Team1(ctx context.Context, obj *model.Match) (*model.Team, error)
+
 	Team2(ctx context.Context, obj *model.Match) (*model.Team, error)
 
 	MapStats(ctx context.Context, obj *model.Match) ([]*model.MapStats, error)
@@ -388,6 +391,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Match.Team1(childComplexity), true
 
+	case "Match.team1Id":
+		if e.complexity.Match.Team1Id == nil {
+			break
+		}
+
+		return e.complexity.Match.Team1Id(childComplexity), true
+
 	case "Match.team1Score":
 		if e.complexity.Match.Team1Score == nil {
 			break
@@ -401,6 +411,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Match.Team2(childComplexity), true
+
+	case "Match.team2Id":
+		if e.complexity.Match.Team2Id == nil {
+			break
+		}
+
+		return e.complexity.Match.Team2Id(childComplexity), true
 
 	case "Match.team2Score":
 		if e.complexity.Match.Team2Score == nil {
@@ -2100,6 +2117,50 @@ func (ec *executionContext) fieldContext_Match_team1(ctx context.Context, field 
 	return fc, nil
 }
 
+func (ec *executionContext) _Match_team1Id(ctx context.Context, field graphql.CollectedField, obj *model.Match) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Match_team1Id(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Team1Id, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNID2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Match_team1Id(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Match",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type ID does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Match_team2(ctx context.Context, field graphql.CollectedField, obj *model.Match) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Match_team2(ctx, field)
 	if err != nil {
@@ -2157,6 +2218,50 @@ func (ec *executionContext) fieldContext_Match_team2(ctx context.Context, field 
 				return ec.fieldContext_Team_players(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Team", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Match_team2Id(ctx context.Context, field graphql.CollectedField, obj *model.Match) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Match_team2Id(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Team2Id, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNID2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Match_team2Id(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Match",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type ID does not have child fields")
 		},
 	}
 	return fc, nil
@@ -2733,8 +2838,12 @@ func (ec *executionContext) fieldContext_Mutation_createMatch(ctx context.Contex
 				return ec.fieldContext_Match_userId(ctx, field)
 			case "team1":
 				return ec.fieldContext_Match_team1(ctx, field)
+			case "team1Id":
+				return ec.fieldContext_Match_team1Id(ctx, field)
 			case "team2":
 				return ec.fieldContext_Match_team2(ctx, field)
+			case "team2Id":
+				return ec.fieldContext_Match_team2Id(ctx, field)
 			case "winner":
 				return ec.fieldContext_Match_winner(ctx, field)
 			case "startedAt":
@@ -4603,8 +4712,12 @@ func (ec *executionContext) fieldContext_Query_getMatch(ctx context.Context, fie
 				return ec.fieldContext_Match_userId(ctx, field)
 			case "team1":
 				return ec.fieldContext_Match_team1(ctx, field)
+			case "team1Id":
+				return ec.fieldContext_Match_team1Id(ctx, field)
 			case "team2":
 				return ec.fieldContext_Match_team2(ctx, field)
+			case "team2Id":
+				return ec.fieldContext_Match_team2Id(ctx, field)
 			case "winner":
 				return ec.fieldContext_Match_winner(ctx, field)
 			case "startedAt":
@@ -4688,8 +4801,12 @@ func (ec *executionContext) fieldContext_Query_getMatchesByUser(ctx context.Cont
 				return ec.fieldContext_Match_userId(ctx, field)
 			case "team1":
 				return ec.fieldContext_Match_team1(ctx, field)
+			case "team1Id":
+				return ec.fieldContext_Match_team1Id(ctx, field)
 			case "team2":
 				return ec.fieldContext_Match_team2(ctx, field)
+			case "team2Id":
+				return ec.fieldContext_Match_team2Id(ctx, field)
 			case "winner":
 				return ec.fieldContext_Match_winner(ctx, field)
 			case "startedAt":
@@ -4773,8 +4890,12 @@ func (ec *executionContext) fieldContext_Query_getMatchesByMe(ctx context.Contex
 				return ec.fieldContext_Match_userId(ctx, field)
 			case "team1":
 				return ec.fieldContext_Match_team1(ctx, field)
+			case "team1Id":
+				return ec.fieldContext_Match_team1Id(ctx, field)
 			case "team2":
 				return ec.fieldContext_Match_team2(ctx, field)
+			case "team2Id":
+				return ec.fieldContext_Match_team2Id(ctx, field)
 			case "winner":
 				return ec.fieldContext_Match_winner(ctx, field)
 			case "startedAt":
@@ -5755,8 +5876,12 @@ func (ec *executionContext) fieldContext_User_matches(ctx context.Context, field
 				return ec.fieldContext_Match_userId(ctx, field)
 			case "team1":
 				return ec.fieldContext_Match_team1(ctx, field)
+			case "team1Id":
+				return ec.fieldContext_Match_team1Id(ctx, field)
 			case "team2":
 				return ec.fieldContext_Match_team2(ctx, field)
+			case "team2Id":
+				return ec.fieldContext_Match_team2Id(ctx, field)
 			case "winner":
 				return ec.fieldContext_Match_winner(ctx, field)
 			case "startedAt":
@@ -8256,6 +8381,11 @@ func (ec *executionContext) _Match(ctx context.Context, sel ast.SelectionSet, ob
 			}
 
 			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "team1Id":
+			out.Values[i] = ec._Match_team1Id(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
 		case "team2":
 			field := field
 
@@ -8292,6 +8422,11 @@ func (ec *executionContext) _Match(ctx context.Context, sel ast.SelectionSet, ob
 			}
 
 			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "team2Id":
+			out.Values[i] = ec._Match_team2Id(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
 		case "winner":
 			out.Values[i] = ec._Match_winner(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
