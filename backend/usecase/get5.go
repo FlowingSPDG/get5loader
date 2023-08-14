@@ -12,27 +12,19 @@ type Get5 interface {
 }
 
 type get5 struct {
-	repositoryConnector database.RepositoryConnector
 }
 
-func NewGet5(
-	repositoryConnector database.RepositoryConnector,
-) Get5 {
-	return &get5{
-		repositoryConnector: repositoryConnector,
-	}
+func NewGet5() Get5 {
+	return &get5{}
 }
 
 // GetMatch implements Get5.
 func (g *get5) GetMatch(ctx context.Context, matchID entity.MatchID) (*entity.Get5Match, error) {
-	if err := g.repositoryConnector.Open(); err != nil {
-		return nil, err
-	}
-	defer g.repositoryConnector.Close()
+	repositoryConnector := database.GetConnection(ctx)
 
-	matchRepository := g.repositoryConnector.GetMatchesRepository()
-	teamRepository := g.repositoryConnector.GetTeamsRepository()
-	playerRepository := g.repositoryConnector.GetPlayersRepository()
+	matchRepository := repositoryConnector.GetMatchesRepository()
+	teamRepository := repositoryConnector.GetTeamsRepository()
+	playerRepository := repositoryConnector.GetPlayersRepository()
 
 	match, err := matchRepository.GetMatch(ctx, matchID)
 	if err != nil {

@@ -14,24 +14,18 @@ type Mapstat interface {
 }
 
 type mapstat struct {
-	repositoryConnector database.RepositoryConnector
 }
 
-func NewMapStats(repositoryConnector database.RepositoryConnector) Mapstat {
-	return &mapstat{
-		repositoryConnector: repositoryConnector,
-	}
+func NewMapStats() Mapstat {
+	return &mapstat{}
 }
 
 // GetMapStats implements Mapstats.
 func (m *mapstat) GetMapStat(ctx context.Context, id entity.MapStatsID) (*entity.MapStat, error) {
-	if err := m.repositoryConnector.Open(); err != nil {
-		return nil, err
-	}
-	defer m.repositoryConnector.Close()
+	repositoryConnector := database.GetConnection(ctx)
 
-	MapStatRepository := m.repositoryConnector.GetMapStatRepository()
-	PlayerStatRepository := m.repositoryConnector.GetPlayerStatRepository()
+	MapStatRepository := repositoryConnector.GetMapStatRepository()
+	PlayerStatRepository := repositoryConnector.GetPlayerStatRepository()
 
 	mapstats, err := MapStatRepository.GetMapStats(ctx, id)
 	if err != nil {
@@ -48,13 +42,10 @@ func (m *mapstat) GetMapStat(ctx context.Context, id entity.MapStatsID) (*entity
 
 // GetMapStatsByMatch implements Mapstats.
 func (m *mapstat) GetMapStatsByMatch(ctx context.Context, matchID entity.MatchID) ([]*entity.MapStat, error) {
-	if err := m.repositoryConnector.Open(); err != nil {
-		return nil, err
-	}
-	defer m.repositoryConnector.Close()
+	repositoryConnector := database.GetConnection(ctx)
 
-	MapStatRepository := m.repositoryConnector.GetMapStatRepository()
-	PlayerStatRepository := m.repositoryConnector.GetPlayerStatRepository()
+	MapStatRepository := repositoryConnector.GetMapStatRepository()
+	PlayerStatRepository := repositoryConnector.GetPlayerStatRepository()
 
 	mapstats, err := MapStatRepository.GetMapStatsByMatch(ctx, matchID)
 	if err != nil {

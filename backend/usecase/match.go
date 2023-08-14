@@ -14,25 +14,18 @@ type Match interface {
 }
 
 type match struct {
-	repositoryConnector database.RepositoryConnector
 }
 
-func NewMatch(
-	repositoryConnector database.RepositoryConnector,
-) Match {
-	return &match{
-		repositoryConnector: repositoryConnector,
-	}
+func NewMatch() Match {
+	return &match{}
 }
 
 func (gm *match) GetMatch(ctx context.Context, matchID entity.MatchID) (*entity.Match, error) {
 	// TODO: publicでない場合の認証処理の追加
-	if err := gm.repositoryConnector.Open(); err != nil {
-		return nil, err
-	}
-	defer gm.repositoryConnector.Close()
+	repositoryConnector := database.GetConnection(ctx)
 
-	matchRepository := gm.repositoryConnector.GetMatchesRepository()
+	matchRepository := repositoryConnector.GetMatchesRepository()
+
 	match, err := matchRepository.GetMatch(ctx, matchID)
 	if err != nil {
 		return nil, err
@@ -43,13 +36,9 @@ func (gm *match) GetMatch(ctx context.Context, matchID entity.MatchID) (*entity.
 
 // CreateMatch implements Match.
 func (gm *match) CreateMatch(ctx context.Context, userID entity.UserID, serverID entity.GameServerID, team1ID entity.TeamID, team2ID entity.TeamID, maxMaps int, title string) (*entity.Match, error) {
-	// TODO: teamが存在しない場合のエラーハンドリング
-	if err := gm.repositoryConnector.Open(); err != nil {
-		return nil, err
-	}
-	defer gm.repositoryConnector.Close()
+	repositoryConnector := database.GetConnection(ctx)
 
-	matchRepository := gm.repositoryConnector.GetMatchesRepository()
+	matchRepository := repositoryConnector.GetMatchesRepository()
 
 	mID, err := matchRepository.AddMatch(ctx, userID, serverID, team1ID, team2ID, int32(maxMaps), title, false, "")
 	if err != nil {
@@ -69,12 +58,9 @@ func (gm *match) CreateMatch(ctx context.Context, userID entity.UserID, serverID
 // GetMatchesByUser implements Match.
 func (gm *match) GetMatchesByUser(ctx context.Context, userID entity.UserID) ([]*entity.Match, error) {
 	// TODO: publicでない場合の認証処理の追加
-	if err := gm.repositoryConnector.Open(); err != nil {
-		return nil, err
-	}
-	defer gm.repositoryConnector.Close()
+	repositoryConnector := database.GetConnection(ctx)
 
-	matchRepository := gm.repositoryConnector.GetMatchesRepository()
+	matchRepository := repositoryConnector.GetMatchesRepository()
 
 	matches, err := matchRepository.GetMatchesByUser(ctx, userID)
 	if err != nil {

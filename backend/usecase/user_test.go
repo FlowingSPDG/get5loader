@@ -93,7 +93,7 @@ func TestRegisterUser(t *testing.T) {
 			mockPasswordHasher.EXPECT().Hash(tc.input.password).Return(tc.expected.hash, nil)
 
 			// テストの実行とassert
-			uc := usecase.NewUser(mockJwtService, mockPasswordHasher, mockConnector)
+			uc := usecase.NewUser(mockJwtService, mockPasswordHasher)
 			jwt, err := uc.Register(ctx, tc.input.steamid, tc.input.name, tc.input.admin, tc.input.password)
 			assert.Equal(t, tc.expected.jwt, jwt)
 			assert.Equal(t, tc.err, err)
@@ -174,7 +174,7 @@ func TestIssueJWTBySteamID(t *testing.T) {
 			mockPasswordHasher := mock_hash.NewMockPasswordHasher(ctrl)
 			mockPasswordHasher.EXPECT().Compare(tc.expected.user.Hash, tc.input.password).Return(nil)
 
-			uc := usecase.NewUser(mockJwtService, mockPasswordHasher, mockConnector)
+			uc := usecase.NewUser(mockJwtService, mockPasswordHasher)
 			actual, err := uc.IssueJWTBySteamID(ctx, tc.input.steamid, tc.input.password)
 			assert.Equal(t, tc.expected.jwt, actual)
 			assert.Equal(t, tc.expected.err, err)

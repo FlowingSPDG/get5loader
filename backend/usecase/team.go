@@ -29,23 +29,17 @@ type Team interface {
 }
 
 type team struct {
-	repositoryConnector database.RepositoryConnector
 }
 
-func NewTeam(repositoryConnector database.RepositoryConnector) Team {
-	return &team{
-		repositoryConnector: repositoryConnector,
-	}
+func NewTeam() Team {
+	return &team{}
 }
 
 func (t *team) RegisterTeam(ctx context.Context, input RegisterTeamInput) (*entity.Team, error) {
-	if err := t.repositoryConnector.Open(); err != nil {
-		return nil, err
-	}
-	defer t.repositoryConnector.Close()
+	repositoryConnector := database.GetConnection(ctx)
 
-	teamRepository := t.repositoryConnector.GetTeamsRepository()
-	playerRepository := t.repositoryConnector.GetPlayersRepository()
+	teamRepository := repositoryConnector.GetTeamsRepository()
+	playerRepository := repositoryConnector.GetPlayersRepository()
 
 	teamID, err := teamRepository.AddTeam(ctx, input.UserID, input.Name, input.Tag, input.Flag, input.Logo, input.PublicTeam)
 	if err != nil {
@@ -70,13 +64,10 @@ func (t *team) RegisterTeam(ctx context.Context, input RegisterTeamInput) (*enti
 
 // GetTeam implements Team.
 func (t *team) GetTeam(ctx context.Context, id entity.TeamID) (*entity.Team, error) {
-	if err := t.repositoryConnector.Open(); err != nil {
-		return nil, err
-	}
-	defer t.repositoryConnector.Close()
+	repositoryConnector := database.GetConnection(ctx)
 
-	teamsRepository := t.repositoryConnector.GetTeamsRepository()
-	playersRepository := t.repositoryConnector.GetPlayersRepository()
+	teamsRepository := repositoryConnector.GetTeamsRepository()
+	playersRepository := repositoryConnector.GetPlayersRepository()
 
 	team, err := teamsRepository.GetTeam(ctx, id)
 	if err != nil {
@@ -93,13 +84,10 @@ func (t *team) GetTeam(ctx context.Context, id entity.TeamID) (*entity.Team, err
 
 // GetTeamsByUser implements Team.
 func (t *team) GetTeamsByUser(ctx context.Context, userID entity.UserID) ([]*entity.Team, error) {
-	if err := t.repositoryConnector.Open(); err != nil {
-		return nil, err
-	}
-	defer t.repositoryConnector.Close()
+	repositoryConnector := database.GetConnection(ctx)
 
-	teamRepository := t.repositoryConnector.GetTeamsRepository()
-	playersRepository := t.repositoryConnector.GetPlayersRepository()
+	teamRepository := repositoryConnector.GetTeamsRepository()
+	playersRepository := repositoryConnector.GetPlayersRepository()
 
 	teams, err := teamRepository.GetTeamsByUser(ctx, userID)
 	if err != nil {

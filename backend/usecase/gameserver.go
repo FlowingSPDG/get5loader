@@ -21,25 +21,16 @@ type GameServer interface {
 }
 
 type gameServer struct {
-	repositoryConnector database.RepositoryConnector
 }
 
-func NewGameServer(
-	repositoryConnector database.RepositoryConnector,
-) GameServer {
-	return &gameServer{
-		repositoryConnector: repositoryConnector,
-	}
+func NewGameServer() GameServer {
+	return &gameServer{}
 }
 
 // GetPublicServers implements GameServer.
 func (gs *gameServer) GetPublicServers(ctx context.Context) ([]*entity.GameServer, error) {
-	if err := gs.repositoryConnector.Open(); err != nil {
-		return nil, err
-	}
-	defer gs.repositoryConnector.Close()
-
-	repository := gs.repositoryConnector.GetGameServersRepository()
+	repositoryConnector := database.GetConnection(ctx)
+	repository := repositoryConnector.GetGameServersRepository()
 
 	gameServers, err := repository.GetPublicGameServers(ctx)
 	if err != nil {
@@ -51,14 +42,8 @@ func (gs *gameServer) GetPublicServers(ctx context.Context) ([]*entity.GameServe
 
 // AddGameServer implements GameServer.
 func (gs *gameServer) AddGameServer(ctx context.Context, userID entity.UserID, ip string, port uint32, rconPassword string, name string, isPublic bool) (*entity.GameServer, error) {
-	// TODO: Query SRCDS
-	// TODO: Check RCON Password
-	if err := gs.repositoryConnector.Open(); err != nil {
-		return nil, err
-	}
-	defer gs.repositoryConnector.Close()
-
-	repository := gs.repositoryConnector.GetGameServersRepository()
+	repositoryConnector := database.GetConnection(ctx)
+	repository := repositoryConnector.GetGameServersRepository()
 
 	gameServerID, err := repository.AddGameServer(ctx, userID, ip, port, rconPassword, name, isPublic)
 	if err != nil {
@@ -85,12 +70,9 @@ func (gs *gameServer) GetGameServer(ctx context.Context, id entity.GameServerID)
 
 // GetGameServersByUser implements GameServer.
 func (gs *gameServer) GetGameServersByUser(ctx context.Context, userID entity.UserID) ([]*entity.GameServer, error) {
-	if err := gs.repositoryConnector.Open(); err != nil {
-		return nil, err
-	}
-	defer gs.repositoryConnector.Close()
+	repositoryConnector := database.GetConnection(ctx)
 
-	repository := gs.repositoryConnector.GetGameServersRepository()
+	repository := repositoryConnector.GetGameServersRepository()
 
 	gss, err := repository.GetGameServersByUser(ctx, userID)
 	if err != nil {

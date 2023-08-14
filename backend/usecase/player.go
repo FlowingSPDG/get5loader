@@ -12,23 +12,17 @@ type Player interface {
 }
 
 type player struct {
-	repositoryConnector database.RepositoryConnector
 }
 
-func NewPlayer(repositoryConnector database.RepositoryConnector) Player {
-	return &player{
-		repositoryConnector: repositoryConnector,
-	}
+func NewPlayer() Player {
+	return &player{}
 }
 
 // GetPlayersByTeam implements Player.
 func (p *player) GetPlayersByTeam(ctx context.Context, teamID entity.TeamID) ([]*entity.Player, error) {
-	if err := p.repositoryConnector.Open(); err != nil {
-		return nil, err
-	}
-	defer p.repositoryConnector.Close()
+	repositoryConnector := database.GetConnection(ctx)
 
-	playerRepository := p.repositoryConnector.GetPlayersRepository()
+	playerRepository := repositoryConnector.GetPlayersRepository()
 
 	players, err := playerRepository.GetPlayersByTeam(ctx, teamID)
 	if err != nil {

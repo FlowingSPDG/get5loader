@@ -93,9 +93,6 @@ func (mr *matchRepository) GetMatch(ctx context.Context, id entity.MatchID) (*da
 func (mr *matchRepository) GetMatchesByUser(ctx context.Context, userID entity.UserID) ([]*database.Match, error) {
 	matches, err := mr.queries.GetMatchesByUser(ctx, string(userID))
 	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
-			return nil, database.NewNotFoundError(err)
-		}
 		return nil, database.NewInternalError(err)
 	}
 

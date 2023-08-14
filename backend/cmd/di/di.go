@@ -14,23 +14,24 @@ import (
 )
 
 func InitializeUserLoginController(cfg config.Config) gin_controller.UserLoginController {
-	uuidGenerator := uuid.NewUUIDGenerator()
-	mysqlConnector := mustGetWriteConnector(cfg)
-	mysqlUsersRepositoryConnector := mysqlconnector.NewMySQLRepositoryConnector(uuidGenerator, mysqlConnector)
 	jwtService := jwt.NewJWTGateway([]byte(cfg.SecretKey))
 	passwordHasher := hash.NewPasswordHasher(bcrypt.DefaultCost)
-	uc := usecase.NewUser(jwtService, passwordHasher, mysqlUsersRepositoryConnector)
+	uc := usecase.NewUser(jwtService, passwordHasher)
 	presenter := gin_presenter.NewJWTPresenter()
 	return gin_controller.NewUserLoginController(uc, presenter)
 }
 
 func InitializeUserRegisterController(cfg config.Config) gin_controller.UserRegisterController {
+	jwtService := jwt.NewJWTGateway([]byte(cfg.SecretKey))
+	passwordHasher := hash.NewPasswordHasher(bcrypt.DefaultCost)
+	uc := usecase.NewUser(jwtService, passwordHasher)
+	presenter := gin_presenter.NewJWTPresenter()
+	return gin_controller.NewUserRegisterController(uc, presenter)
+}
+
+func InitializeDatabaseConnectionMiddleware(cfg config.Config) gin_controller.DatabaseConnectionMiddleware {
 	uuidGenerator := uuid.NewUUIDGenerator()
 	mysqlConnector := mustGetWriteConnector(cfg)
 	mysqlUsersRepositoryConnector := mysqlconnector.NewMySQLRepositoryConnector(uuidGenerator, mysqlConnector)
-	jwtService := jwt.NewJWTGateway([]byte(cfg.SecretKey))
-	passwordHasher := hash.NewPasswordHasher(bcrypt.DefaultCost)
-	uc := usecase.NewUser(jwtService, passwordHasher, mysqlUsersRepositoryConnector)
-	presenter := gin_presenter.NewJWTPresenter()
-	return gin_controller.NewUserRegisterController(uc, presenter)
+	return gin_controller.NewDatabaseConnectionMiddleware(uuidGenerator, mysqlUsersRepositoryConnector)
 }

@@ -18,26 +18,21 @@ type User interface {
 }
 
 type user struct {
-	jwtService          jwt.JWTService
-	passwordHasher      hash.PasswordHasher
-	repositoryConnector database.RepositoryConnector
+	jwtService     jwt.JWTService
+	passwordHasher hash.PasswordHasher
 }
 
-func NewUser(jwtService jwt.JWTService, passwordHasher hash.PasswordHasher, repositoryConnector database.RepositoryConnector) User {
+func NewUser(jwtService jwt.JWTService, passwordHasher hash.PasswordHasher) User {
 	return &user{
-		jwtService:          jwtService,
-		passwordHasher:      passwordHasher,
-		repositoryConnector: repositoryConnector,
+		jwtService:     jwtService,
+		passwordHasher: passwordHasher,
 	}
 }
 
 func (u *user) GetUser(ctx context.Context, id entity.UserID) (*entity.User, error) {
-	if err := u.repositoryConnector.Open(); err != nil {
-		return nil, err
-	}
-	defer u.repositoryConnector.Close()
+	repositoryConnector := database.GetConnection(ctx)
 
-	userRepository := u.repositoryConnector.GetUserRepository()
+	userRepository := repositoryConnector.GetUserRepository()
 
 	// ユーザーを取得
 	user, err := userRepository.GetUser(ctx, id)
@@ -50,12 +45,9 @@ func (u *user) GetUser(ctx context.Context, id entity.UserID) (*entity.User, err
 
 // Handle implements UserRegister.
 func (u *user) Register(ctx context.Context, steamID entity.SteamID, name string, admin bool, password string) (string, error) {
-	if err := u.repositoryConnector.Open(); err != nil {
-		return "", err
-	}
-	defer u.repositoryConnector.Close()
+	repositoryConnector := database.GetConnection(ctx)
 
-	repository := u.repositoryConnector.GetUserRepository()
+	repository := repositoryConnector.GetUserRepository()
 	_, err := repository.GetUserBySteamID(ctx, steamID)
 	if err == nil {
 		return "", errors.New("user already exists")
@@ -88,12 +80,9 @@ func (u *user) Register(ctx context.Context, steamID entity.SteamID, name string
 // HandleLoginSteamID implements UserLoginUsecase.
 func (u *user) IssueJWT(ctx context.Context, userID entity.UserID, password string) (string, error) {
 	// TODO: エラーハンドリング
-	if err := u.repositoryConnector.Open(); err != nil {
-		return "", err
-	}
-	defer u.repositoryConnector.Close()
+	repositoryConnector := database.GetConnection(ctx)
 
-	repository := u.repositoryConnector.GetUserRepository()
+	repository := repositoryConnector.GetUserRepository()
 	user, err := repository.GetUser(ctx, userID)
 	if err != nil {
 		return "", err
@@ -114,12 +103,9 @@ func (u *user) IssueJWT(ctx context.Context, userID entity.UserID, password stri
 // HandleLoginSteamID implements UserLoginUsecase.
 func (u *user) IssueJWTBySteamID(ctx context.Context, steamID entity.SteamID, password string) (string, error) {
 	// TODO: エラーハンドリング
-	if err := u.repositoryConnector.Open(); err != nil {
-		return "", err
-	}
-	defer u.repositoryConnector.Close()
+	repositoryConnector := database.GetConnection(ctx)
 
-	repository := u.repositoryConnector.GetUserRepository()
+	repository := repositoryConnector.GetUserRepository()
 	user, err := repository.GetUserBySteamID(ctx, steamID)
 	if err != nil {
 		return "", err

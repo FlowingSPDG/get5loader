@@ -94,7 +94,7 @@ func (m *match) ToG5Format() got5.Match {
 
 // Load implements got5.MatchLoader.
 func (ml *matchLoader) Load(ctx context.Context, mid string) (got5.G5Match, error) {
-	uc := usecase.NewGet5(ml.repositoryConnector)
+	uc := usecase.NewGet5()
 	m, err := uc.GetMatch(ctx, entity.MatchID(mid))
 	if err != nil {
 		return nil, err

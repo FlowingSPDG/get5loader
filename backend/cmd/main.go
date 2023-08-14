@@ -16,6 +16,7 @@ func main() {
 	cfg := config.GetConfig()
 
 	v1 := r.Group("/api/v1")
+	v1.Use(di.InitializeDatabaseConnectionMiddleware(cfg).Handle)
 	v1.POST("/login", di.InitializeUserLoginController(cfg).Handle)
 	v1.POST("/register", di.InitializeUserRegisterController(cfg).Handle)
 
