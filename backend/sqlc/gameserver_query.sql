@@ -1,4 +1,4 @@
--- name: GetGameServers :one
+-- name: GetGameServer :one
 SELECT * FROM game_servers
 WHERE id = ? LIMIT 1;
 

@@ -27,7 +27,7 @@ func (m *mapstat) GetMapStat(ctx context.Context, id entity.MapStatsID) (*entity
 	MapStatRepository := repositoryConnector.GetMapStatRepository()
 	PlayerStatRepository := repositoryConnector.GetPlayerStatRepository()
 
-	mapstats, err := MapStatRepository.GetMapStats(ctx, id)
+	mapstats, err := MapStatRepository.GetMapStat(ctx, id)
 	if err != nil {
 		return nil, err
 	}

@@ -49,13 +49,13 @@ func (q *Queries) DeleteGameServer(ctx context.Context, id string) (sql.Result, 
 	return q.db.ExecContext(ctx, deleteGameServer, id)
 }
 
-const getGameServers = `-- name: GetGameServers :one
+const getGameServer = `-- name: GetGameServer :one
 SELECT id, user_id, ip, port, rcon_password, display_name, is_public, status FROM game_servers
 WHERE id = ? LIMIT 1
 `
 
-func (q *Queries) GetGameServers(ctx context.Context, id string) (GameServer, error) {
-	row := q.db.QueryRowContext(ctx, getGameServers, id)
+func (q *Queries) GetGameServer(ctx context.Context, id string) (GameServer, error) {
+	row := q.db.QueryRowContext(ctx, getGameServer, id)
 	var i GameServer
 	err := row.Scan(
 		&i.ID,

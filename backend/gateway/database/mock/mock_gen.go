@@ -882,19 +882,19 @@ func (m *MockMapStatRepository) EXPECT() *MockMapStatRepositoryMockRecorder {
 	return m.recorder
 }
 
-// GetMapStats mocks base method.
-func (m *MockMapStatRepository) GetMapStats(ctx context.Context, id entity.MapStatsID) (*database.MapStat, error) {
+// GetMapStat mocks base method.
+func (m *MockMapStatRepository) GetMapStat(ctx context.Context, id entity.MapStatsID) (*database.MapStat, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetMapStats", ctx, id)
+	ret := m.ctrl.Call(m, "GetMapStat", ctx, id)
 	ret0, _ := ret[0].(*database.MapStat)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// GetMapStats indicates an expected call of GetMapStats.
-func (mr *MockMapStatRepositoryMockRecorder) GetMapStats(ctx, id interface{}) *gomock.Call {
+// GetMapStat indicates an expected call of GetMapStat.
+func (mr *MockMapStatRepositoryMockRecorder) GetMapStat(ctx, id interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetMapStats", reflect.TypeOf((*MockMapStatRepository)(nil).GetMapStats), ctx, id)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetMapStat", reflect.TypeOf((*MockMapStatRepository)(nil).GetMapStat), ctx, id)
 }
 
 // GetMapStatsByMatch mocks base method.

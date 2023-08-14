@@ -142,7 +142,7 @@ type MapStatRepository interface {
 	// TODO.
 	// AddMapStats(ctx context.Context, matchID int64, mapNumber uint32, mapName string, winnerID int64, team1Score uint32, team2Score uint32) (*entity.MapStats, error)
 	// GetMapStats returns map stats.
-	GetMapStats(ctx context.Context, id entity.MapStatsID) (*MapStat, error)
+	GetMapStat(ctx context.Context, id entity.MapStatsID) (*MapStat, error)
 	// GetMapStatsByMatch returns map stats owned by a match.
 	GetMapStatsByMatch(ctx context.Context, matchID entity.MatchID) ([]*MapStat, error)
 	// GetMapStatsByMatchAndMap returns map stats owned by a match and map number.

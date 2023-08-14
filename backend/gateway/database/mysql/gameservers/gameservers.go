@@ -64,7 +64,7 @@ func (gr *gameServerRepository) DeleteGameServer(ctx context.Context, id entity.
 
 // GetGameServer implements database.GameServerRepository.
 func (gr *gameServerRepository) GetGameServer(ctx context.Context, id entity.GameServerID) (*database.GameServer, error) {
-	gameserver, err := gr.queries.GetGameServers(ctx, string(id))
+	gameserver, err := gr.queries.GetGameServer(ctx, string(id))
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, database.NewNotFoundError(err)

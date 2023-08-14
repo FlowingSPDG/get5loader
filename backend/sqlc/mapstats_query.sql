@@ -1,4 +1,4 @@
--- name: GetMapStats :one
+-- name: GetMapStat :one
 SELECT * FROM map_stats
 WHERE id = ? LIMIT 1;
 

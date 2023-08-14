@@ -33,8 +33,8 @@ func NewMapStatRepositoryWithTx(uuidGenerator uuid.UUIDGenerator, db *sql.DB, tx
 }
 
 // GetMapStats implements database.MapStatRepository.
-func (msr *MapStatRepository) GetMapStats(ctx context.Context, id entity.MapStatsID) (*database.MapStat, error) {
-	res, err := msr.queries.GetMapStats(ctx, string(id))
+func (msr *MapStatRepository) GetMapStat(ctx context.Context, id entity.MapStatsID) (*database.MapStat, error) {
+	res, err := msr.queries.GetMapStat(ctx, string(id))
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, database.NewNotFoundError(err)

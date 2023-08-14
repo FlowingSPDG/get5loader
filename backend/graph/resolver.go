@@ -1,6 +1,8 @@
 package graph
 
-import "github.com/FlowingSPDG/get5loader/backend/usecase"
+import (
+	"github.com/FlowingSPDG/get5loader/backend/usecase"
+)
 
 // This file will not be regenerated automatically.
 //

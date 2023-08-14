@@ -64,3 +64,18 @@ func (mr *MockMatchMockRecorder) GetMatch(ctx, matchID interface{}) *gomock.Call
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetMatch", reflect.TypeOf((*MockMatch)(nil).GetMatch), ctx, matchID)
 }
+
+// GetMatchesByUser mocks base method.
+func (m *MockMatch) GetMatchesByUser(ctx context.Context, userID entity.UserID) ([]*entity.Match, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetMatchesByUser", ctx, userID)
+	ret0, _ := ret[0].([]*entity.Match)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetMatchesByUser indicates an expected call of GetMatchesByUser.
+func (mr *MockMatchMockRecorder) GetMatchesByUser(ctx, userID interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetMatchesByUser", reflect.TypeOf((*MockMatch)(nil).GetMatchesByUser), ctx, userID)
+}

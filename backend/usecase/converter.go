@@ -192,3 +192,11 @@ func convertUser(u *database.User) *entity.User {
 		UpdatedAt: u.UpdatedAt,
 	}
 }
+
+func convertUsers(us []*database.User) []*entity.User {
+	ret := make([]*entity.User, 0, len(us))
+	for _, u := range us {
+		ret = append(ret, convertUser(u))
+	}
+	return ret
+}
