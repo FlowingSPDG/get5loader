@@ -13,6 +13,24 @@ import (
 	"github.com/FlowingSPDG/get5loader/backend/usecase"
 )
 
+// Team1 is the resolver for the team1 field.
+func (r *matchResolver) Team1(ctx context.Context, obj *model.Match) (*model.Team, error) {
+	team1, _, err := r.TeamUsecase.GetTeamsByMatch(ctx, entity.MatchID(obj.ID))
+	if err != nil {
+		return nil, err
+	}
+	return convertTeam(team1), nil
+}
+
+// Team2 is the resolver for the team2 field.
+func (r *matchResolver) Team2(ctx context.Context, obj *model.Match) (*model.Team, error) {
+	_, team2, err := r.TeamUsecase.GetTeamsByMatch(ctx, entity.MatchID(obj.ID))
+	if err != nil {
+		return nil, err
+	}
+	return convertTeam(team2), nil
+}
+
 // MapStats is the resolver for the mapStats field.
 func (r *matchResolver) MapStats(ctx context.Context, obj *model.Match) ([]*model.MapStats, error) {
 	mapstats, err := r.MapstatUsecase.GetMapStatsByMatch(ctx, entity.MatchID(obj.ID))

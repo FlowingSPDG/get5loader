@@ -93,6 +93,9 @@ func (mr *matchRepository) GetMatch(ctx context.Context, id entity.MatchID) (*da
 func (mr *matchRepository) GetMatchesByUser(ctx context.Context, userID entity.UserID) ([]*database.Match, error) {
 	matches, err := mr.queries.GetMatchesByUser(ctx, string(userID))
 	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return []*database.Match{}, nil
+		}
 		return nil, database.NewInternalError(err)
 	}
 
@@ -125,6 +128,9 @@ func (mr *matchRepository) GetMatchesByUser(ctx context.Context, userID entity.U
 // CancelMatch implements database.MatchRepository.
 func (mr *matchRepository) CancelMatch(ctx context.Context, matchID entity.MatchID) error {
 	if _, err := mr.queries.CancelMatch(ctx, string(matchID)); err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return database.NewNotFoundError(err)
+		}
 		return database.NewInternalError(err)
 	}
 
@@ -139,7 +145,7 @@ func (mr *matchRepository) GetMatchesByTeam(ctx context.Context, teamID entity.T
 	})
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return nil, database.NewNotFoundError(err)
+			return []*database.Match{}, nil
 		}
 		return nil, database.NewInternalError(err)
 	}
@@ -175,7 +181,7 @@ func (mr *matchRepository) GetMatchesByWinner(ctx context.Context, teamID entity
 	matches, err := mr.queries.GetMatchesByWinner(ctx, sql.NullString{String: string(teamID), Valid: true})
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return nil, database.NewNotFoundError(err)
+			return []*database.Match{}, nil
 		}
 		return nil, database.NewInternalError(err)
 	}
@@ -212,6 +218,9 @@ func (mr *matchRepository) StartMatch(ctx context.Context, matchID entity.MatchI
 		ID:        string(matchID),
 		StartTime: sql.NullTime{Valid: true, Time: time.Now()},
 	}); err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return database.NewNotFoundError(err)
+		}
 		return database.NewInternalError(err)
 	}
 
@@ -236,6 +245,9 @@ func (mr *matchRepository) UpdateTeam1Score(ctx context.Context, matchID entity.
 		ID:         string(matchID),
 		Team1Score: score,
 	}); err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return database.NewNotFoundError(err)
+		}
 		return database.NewInternalError(err)
 	}
 
@@ -248,6 +260,9 @@ func (mr *matchRepository) UpdateTeam2Score(ctx context.Context, matchID entity.
 		ID:         string(matchID),
 		Team2Score: score,
 	}); err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return database.NewNotFoundError(err)
+		}
 		return database.NewInternalError(err)
 	}
 

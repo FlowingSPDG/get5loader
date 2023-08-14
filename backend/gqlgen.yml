@@ -106,6 +106,10 @@ models:
         resolver: true
   Match:
     fields:
+      team1:
+        resolver: true 
+      team2:
+        resolver: true
       mapStats:
         resolver: true
   MapStats:

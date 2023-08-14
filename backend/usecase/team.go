@@ -25,6 +25,7 @@ type RegisterTeamInput struct {
 type Team interface {
 	RegisterTeam(ctx context.Context, input RegisterTeamInput) (*entity.Team, error)
 	GetTeam(ctx context.Context, id entity.TeamID) (*entity.Team, error)
+	GetTeamsByMatch(ctx context.Context, matchID entity.MatchID) (*entity.Team, *entity.Team, error)
 	GetTeamsByUser(ctx context.Context, userID entity.UserID) ([]*entity.Team, error)
 }
 
@@ -54,12 +55,7 @@ func (t *team) RegisterTeam(ctx context.Context, input RegisterTeamInput) (*enti
 	if err != nil {
 		return nil, err
 	}
-
-	players, err := playerRepository.GetPlayersByTeam(ctx, teamID)
-	if err != nil {
-		return nil, err
-	}
-	return convertTeam(team, players), nil
+	return convertTeam(team), nil
 }
 
 // GetTeam implements Team.
@@ -67,19 +63,36 @@ func (t *team) GetTeam(ctx context.Context, id entity.TeamID) (*entity.Team, err
 	repositoryConnector := database.GetConnection(ctx)
 
 	teamsRepository := repositoryConnector.GetTeamsRepository()
-	playersRepository := repositoryConnector.GetPlayersRepository()
 
 	team, err := teamsRepository.GetTeam(ctx, id)
 	if err != nil {
 		return nil, err
 	}
 
-	players, err := playersRepository.GetPlayersByTeam(ctx, id)
+	return convertTeam(team), nil
+}
+
+// GetTeamsByMatch implements Team.
+func (t *team) GetTeamsByMatch(ctx context.Context, matchID entity.MatchID) (*entity.Team, *entity.Team, error) {
+	repositoryConnector := database.GetConnection(ctx)
+
+	matchRepository := repositoryConnector.GetMatchesRepository()
+	teamRepository := repositoryConnector.GetTeamsRepository()
+
+	match, err := matchRepository.GetMatch(ctx, matchID)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
+	}
+	team1, err := teamRepository.GetTeam(ctx, match.Team1ID)
+	if err != nil {
+		return nil, nil, err
+	}
+	team2, err := teamRepository.GetTeam(ctx, match.Team2ID)
+	if err != nil {
+		return nil, nil, err
 	}
 
-	return convertTeam(team, players), nil
+	return convertTeam(team1), convertTeam(team2), nil
 }
 
 // GetTeamsByUser implements Team.
@@ -87,7 +100,6 @@ func (t *team) GetTeamsByUser(ctx context.Context, userID entity.UserID) ([]*ent
 	repositoryConnector := database.GetConnection(ctx)
 
 	teamRepository := repositoryConnector.GetTeamsRepository()
-	playersRepository := repositoryConnector.GetPlayersRepository()
 
 	teams, err := teamRepository.GetTeamsByUser(ctx, userID)
 	if err != nil {
@@ -96,12 +108,7 @@ func (t *team) GetTeamsByUser(ctx context.Context, userID entity.UserID) ([]*ent
 
 	ret := make([]*entity.Team, 0, len(teams))
 	for _, team := range teams {
-		players, err := playersRepository.GetPlayersByTeam(ctx, team.ID)
-		if err != nil {
-			return nil, err
-		}
-
-		ret = append(ret, convertTeam(team, players))
+		ret = append(ret, convertTeam(team))
 	}
 	return ret, nil
 }

@@ -92,7 +92,7 @@ func convertPlayerStats(pss []*database.PlayerStat) []*entity.PlayerStat {
 	return ret
 }
 
-func convertTeam(t *database.Team, players []*database.Player) *entity.Team {
+func convertTeam(t *database.Team) *entity.Team {
 	return &entity.Team{
 		ID:     t.ID,
 		UserID: t.UserID,
@@ -104,10 +104,10 @@ func convertTeam(t *database.Team, players []*database.Player) *entity.Team {
 	}
 }
 
-func convertTeams(ts []*database.Team, pss map[entity.TeamID][]*database.Player) []*entity.Team {
+func convertTeams(ts []*database.Team) []*entity.Team {
 	ret := make([]*entity.Team, 0, len(ts))
 	for _, t := range ts {
-		ret = append(ret, convertTeam(t, pss[t.ID]))
+		ret = append(ret, convertTeam(t))
 	}
 	return ret
 }

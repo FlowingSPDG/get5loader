@@ -58,7 +58,7 @@ func (tr *teamsRepository) GetPublicTeams(ctx context.Context) ([]*database.Team
 	teams, err := tr.queries.GetPublicTeams(ctx)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return nil, database.NewNotFoundError(err)
+			return []*database.Team{}, nil
 		}
 		return nil, database.NewInternalError(err)
 	}
@@ -104,7 +104,7 @@ func (tr *teamsRepository) GetTeamsByUser(ctx context.Context, userID entity.Use
 	teams, err := tr.queries.GetTeamByUserID(ctx, string(userID))
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return nil, database.NewNotFoundError(err)
+			return []*database.Team{}, nil
 		}
 		return nil, database.NewInternalError(err)
 	}

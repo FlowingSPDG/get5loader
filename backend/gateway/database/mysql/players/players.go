@@ -70,7 +70,7 @@ func (pr *playersRepository) GetPlayersByTeam(ctx context.Context, teamID entity
 	res, err := pr.queries.GetPlayersByTeam(ctx, string(teamID))
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return nil, database.NewNotFoundError(err)
+			return []*database.Player{}, nil
 		}
 		return nil, database.NewInternalError(err)
 	}
