@@ -6,12 +6,18 @@ package graph
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/FlowingSPDG/get5loader/backend/entity"
 	"github.com/FlowingSPDG/get5loader/backend/g5ctx"
 	"github.com/FlowingSPDG/get5loader/backend/graph/model"
 	"github.com/FlowingSPDG/get5loader/backend/usecase"
 )
+
+// MapStats is the resolver for the mapStats field.
+func (r *matchResolver) MapStats(ctx context.Context, obj *model.Match) ([]*model.MapStats, error) {
+	panic(fmt.Errorf("not implemented: MapStats - mapStats"))
+}
 
 // RegisterTeam is the resolver for the registerTeam field.
 func (r *mutationResolver) RegisterTeam(ctx context.Context, input model.NewTeam) (*model.Team, error) {
@@ -168,11 +174,43 @@ func (r *queryResolver) GetPublicServers(ctx context.Context) ([]*model.GameServ
 	return convertGameServers(gs), nil
 }
 
+// Players is the resolver for the players field.
+func (r *teamResolver) Players(ctx context.Context, obj *model.Team) ([]*model.Player, error) {
+	panic(fmt.Errorf("not implemented: Players - players"))
+}
+
+// Gameservers is the resolver for the gameservers field.
+func (r *userResolver) Gameservers(ctx context.Context, obj *model.User) ([]*model.GameServer, error) {
+	panic(fmt.Errorf("not implemented: Gameservers - gameservers"))
+}
+
+// Teams is the resolver for the teams field.
+func (r *userResolver) Teams(ctx context.Context, obj *model.User) ([]*model.Team, error) {
+	panic(fmt.Errorf("not implemented: Teams - teams"))
+}
+
+// Matches is the resolver for the matches field.
+func (r *userResolver) Matches(ctx context.Context, obj *model.User) ([]*model.Match, error) {
+	panic(fmt.Errorf("not implemented: Matches - matches"))
+}
+
+// Match returns MatchResolver implementation.
+func (r *Resolver) Match() MatchResolver { return &matchResolver{r} }
+
 // Mutation returns MutationResolver implementation.
 func (r *Resolver) Mutation() MutationResolver { return &mutationResolver{r} }
 
 // Query returns QueryResolver implementation.
 func (r *Resolver) Query() QueryResolver { return &queryResolver{r} }
 
+// Team returns TeamResolver implementation.
+func (r *Resolver) Team() TeamResolver { return &teamResolver{r} }
+
+// User returns UserResolver implementation.
+func (r *Resolver) User() UserResolver { return &userResolver{r} }
+
+type matchResolver struct{ *Resolver }
 type mutationResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }
+type teamResolver struct{ *Resolver }
+type userResolver struct{ *Resolver }

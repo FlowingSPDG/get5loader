@@ -21,10 +21,6 @@ type User struct {
 	Hash      []byte
 	CreatedAt time.Time
 	UpdatedAt time.Time
-
-	Teams   []*Team
-	Servers []*GameServer
-	Matches []*Match
 }
 
 type GameServer struct {
@@ -41,8 +37,8 @@ type GameServer struct {
 type Match struct {
 	ID         MatchID
 	UserID     UserID
-	Team1      Team
-	Team2      Team
+	Team1ID    TeamID
+	Team2ID    TeamID
 	Winner     TeamID // 0 for not decided yet
 	StartTime  *time.Time
 	EndTime    *time.Time
@@ -54,20 +50,29 @@ type Match struct {
 	Team2Score uint32
 	Forfeit    *bool
 	Status     MATCH_STATUS
-	Mapstats   []*MapStat
+}
+
+type Get5Match struct {
+	ID       MatchID
+	Team1    Get5Team
+	Team2    Get5Team
+	Winner   TeamID // 0 for not decided yet
+	MaxMaps  int32
+	Title    string
+	SkipVeto bool
+	APIKey   string
 }
 
 type MapStat struct {
-	ID          MapStatsID
-	MatchID     MatchID
-	MapNumber   uint32
-	MapName     string
-	StartTime   *time.Time
-	EndTime     *time.Time
-	Winner      *TeamID
-	Team1Score  uint32
-	Team2Score  uint32
-	PlayerStats []*PlayerStat
+	ID         MapStatsID
+	MatchID    MatchID
+	MapNumber  uint32
+	MapName    string
+	StartTime  *time.Time
+	EndTime    *time.Time
+	Winner     *TeamID
+	Team1Score uint32
+	Team2Score uint32
 }
 
 type PlayerStat struct {
@@ -108,13 +113,21 @@ type PlayerStat struct {
 }
 
 type Team struct {
+	ID     TeamID
+	UserID UserID
+	Name   string
+	Flag   string
+	Tag    string
+	Logo   string
+	Public bool
+}
+
+type Get5Team struct {
 	ID      TeamID
-	UserID  UserID
 	Name    string
 	Flag    string
 	Tag     string
 	Logo    string
-	Public  bool
 	Players []*Player
 }
 

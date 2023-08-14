@@ -29,16 +29,15 @@ func convertGameServers(gss []*database.GameServer) []*entity.GameServer {
 }
 func convertMapstat(ms *database.MapStat, playerstats []*database.PlayerStat) *entity.MapStat {
 	return &entity.MapStat{
-		ID:          ms.ID,
-		MatchID:     ms.MatchID,
-		MapNumber:   ms.MapNumber,
-		MapName:     ms.MapName,
-		StartTime:   ms.StartTime,
-		EndTime:     ms.EndTime,
-		Winner:      ms.Winner,
-		Team1Score:  ms.Team1Score,
-		Team2Score:  ms.Team2Score,
-		PlayerStats: convertPlayerStats(playerstats),
+		ID:         ms.ID,
+		MatchID:    ms.MatchID,
+		MapNumber:  ms.MapNumber,
+		MapName:    ms.MapName,
+		StartTime:  ms.StartTime,
+		EndTime:    ms.EndTime,
+		Winner:     ms.Winner,
+		Team1Score: ms.Team1Score,
+		Team2Score: ms.Team2Score,
 	}
 }
 
@@ -95,14 +94,13 @@ func convertPlayerStats(pss []*database.PlayerStat) []*entity.PlayerStat {
 
 func convertTeam(t *database.Team, players []*database.Player) *entity.Team {
 	return &entity.Team{
-		ID:      t.ID,
-		UserID:  t.UserID,
-		Name:    t.Name,
-		Flag:    t.Flag,
-		Tag:     t.Tag,
-		Logo:    t.Logo,
-		Public:  t.Public,
-		Players: convertPlayers(players),
+		ID:     t.ID,
+		UserID: t.UserID,
+		Name:   t.Name,
+		Flag:   t.Flag,
+		Tag:    t.Tag,
+		Logo:   t.Logo,
+		Public: t.Public,
 	}
 }
 
@@ -113,6 +111,7 @@ func convertTeams(ts []*database.Team, pss map[entity.TeamID][]*database.Player)
 	}
 	return ret
 }
+
 func convertPlayer(p *database.Player) *entity.Player {
 	return &entity.Player{
 		ID:      p.ID,
@@ -130,12 +129,12 @@ func convertPlayers(ps []*database.Player) []*entity.Player {
 	return ret
 }
 
-func convertMatch(m *database.Match, team1, team2 *database.Team, team1players, team2players []*database.Player, mapStats []*entity.MapStat) *entity.Match {
+func convertMatch(m *database.Match) *entity.Match {
 	return &entity.Match{
 		ID:         m.ID,
 		UserID:     m.UserID,
-		Team1:      *convertTeam(team1, team1players),
-		Team2:      *convertTeam(team2, team2players),
+		Team1ID:    m.Team1ID,
+		Team2ID:    m.Team2ID,
 		Winner:     m.Winner,
 		StartTime:  m.StartTime,
 		EndTime:    m.EndTime,
@@ -147,11 +146,42 @@ func convertMatch(m *database.Match, team1, team2 *database.Team, team1players, 
 		Team2Score: m.Team2Score,
 		Forfeit:    m.Forfeit,
 		Status:     m.Status,
-		Mapstats:   mapStats,
 	}
 }
 
-func convertUser(u *database.User, teams []*entity.Team, servers []*entity.GameServer, matches []*entity.Match) *entity.User {
+func convertMatches(ms []*database.Match) []*entity.Match {
+	ret := make([]*entity.Match, 0, len(ms))
+	for _, m := range ms {
+		ret = append(ret, convertMatch(m))
+	}
+	return ret
+}
+
+func convertGet5Team(t *database.Team, players []*database.Player) *entity.Get5Team {
+	return &entity.Get5Team{
+		ID:      t.ID,
+		Name:    t.Name,
+		Flag:    t.Flag,
+		Tag:     t.Tag,
+		Logo:    t.Logo,
+		Players: convertPlayers(players),
+	}
+}
+
+func convertGet5Match(m *database.Match, team1, team2 *database.Team, team1players, team2players []*database.Player) *entity.Get5Match {
+	return &entity.Get5Match{
+		ID:       m.ID,
+		Team1:    *convertGet5Team(team1, team1players),
+		Team2:    *convertGet5Team(team2, team2players),
+		Winner:   m.Winner,
+		MaxMaps:  m.MaxMaps,
+		Title:    m.Title,
+		SkipVeto: m.SkipVeto,
+		APIKey:   m.APIKey,
+	}
+}
+
+func convertUser(u *database.User) *entity.User {
 	return &entity.User{
 		ID:        u.ID,
 		SteamID:   u.SteamID,
@@ -160,8 +190,5 @@ func convertUser(u *database.User, teams []*entity.Team, servers []*entity.GameS
 		Hash:      u.Hash,
 		CreatedAt: u.CreatedAt,
 		UpdatedAt: u.UpdatedAt,
-		Teams:     teams,
-		Servers:   servers,
-		Matches:   matches,
 	}
 }

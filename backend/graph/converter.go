@@ -26,16 +26,14 @@ func convertGameServers(gss []*entity.GameServer) []*model.GameServer {
 }
 
 func convertTeam(team *entity.Team) *model.Team {
-	players := convertPlayers(team.Players)
 	return &model.Team{
-		ID:      string(team.ID),
-		UserID:  "",
-		Name:    team.Name,
-		Flag:    team.Flag,
-		Tag:     team.Tag,
-		Logo:    team.Logo,
-		Public:  team.Public,
-		Players: players,
+		ID:     string(team.ID),
+		UserID: "",
+		Name:   team.Name,
+		Flag:   team.Flag,
+		Tag:    team.Tag,
+		Logo:   team.Logo,
+		Public: team.Public,
 	}
 }
 
@@ -65,13 +63,9 @@ func convertPlayers(players []*entity.Player) []*model.Player {
 }
 
 func convertMatch(match *entity.Match) *model.Match {
-	team1players := convertPlayers(match.Team1.Players)
-	team2players := convertPlayers(match.Team2.Players)
 	return &model.Match{
 		ID:         string(match.ID),
 		UserID:     string(match.UserID),
-		Team1:      &model.Team{ID: string(match.Team1.ID), UserID: string(match.Team1.UserID), Name: match.Team1.Name, Flag: match.Team1.Flag, Tag: match.Team1.Tag, Logo: match.Team1.Logo, Public: match.Team1.Public, Players: team1players},
-		Team2:      &model.Team{ID: string(match.Team2.ID), UserID: string(match.Team2.UserID), Name: match.Team2.Name, Flag: match.Team2.Flag, Tag: match.Team2.Tag, Logo: match.Team2.Logo, Public: match.Team2.Public, Players: team2players},
 		Winner:     string(match.Winner),
 		StartedAt:  match.StartTime,
 		EndedAt:    match.EndTime,
@@ -81,7 +75,6 @@ func convertMatch(match *entity.Match) *model.Match {
 		Team1Score: int(match.Team1Score),
 		Team2Score: int(match.Team2Score),
 		Forfeit:    match.Forfeit,
-		MapStats:   convertMapStats(match.Mapstats),
 	}
 }
 
@@ -95,16 +88,15 @@ func convertMatches(matches []*entity.Match) []*model.Match {
 
 func convertMapstat(mapstat *entity.MapStat) *model.MapStats {
 	return &model.MapStats{
-		ID:          string(mapstat.ID),
-		MatchID:     string(mapstat.MatchID),
-		MapNumber:   int(mapstat.MapNumber),
-		MapName:     mapstat.MapName,
-		StartedAt:   mapstat.StartTime,
-		EndedAt:     mapstat.EndTime,
-		Winner:      (*string)(mapstat.Winner),
-		Team1score:  int(mapstat.Team1Score),
-		Team2score:  int(mapstat.Team2Score),
-		Playerstats: convertPlayerstats(mapstat.PlayerStats),
+		ID:         string(mapstat.ID),
+		MatchID:    string(mapstat.MatchID),
+		MapNumber:  int(mapstat.MapNumber),
+		MapName:    mapstat.MapName,
+		StartedAt:  mapstat.StartTime,
+		EndedAt:    mapstat.EndTime,
+		Winner:     (*string)(mapstat.Winner),
+		Team1score: int(mapstat.Team1Score),
+		Team2score: int(mapstat.Team2Score),
 	}
 }
 
@@ -160,12 +152,9 @@ func convertPlayerstats(playerstats []*entity.PlayerStat) []*model.PlayerStats {
 
 func convertUser(user *entity.User) *model.User {
 	return &model.User{
-		ID:          string(user.ID),
-		SteamID:     uint64(user.SteamID),
-		Name:        user.Name,
-		Admin:       false,
-		Gameservers: convertGameServers(user.Servers),
-		Teams:       convertTeams(user.Teams),
-		Matches:     convertMatches(user.Matches),
+		ID:      string(user.ID),
+		SteamID: uint64(user.SteamID),
+		Name:    user.Name,
+		Admin:   false,
 	}
 }
